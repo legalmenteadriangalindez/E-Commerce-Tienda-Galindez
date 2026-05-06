@@ -1,0 +1,16 @@
+/* ================= PRODUCT INFO ================= */
+
+.product-info h2 {
+    font-weight: bold;
+    color: var(--primary-dark);
+}
+
+.product-info p {
+    margin-bottom: 10px;
+}
+
+.product-price {
+    color: #198754;
+    font-size: 28px;
+    font-weight: bold;
+}

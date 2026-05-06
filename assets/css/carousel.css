@@ -1,0 +1,53 @@
+
+
+/*============================== carousel ============================*/
+.container-carousel {
+    border-bottom: 5px solid var(--warm-tan);
+    max-width: 1400px;
+    margin: auto;
+    transition: transform 0.3s ease;
+}
+
+/* hover suave en todo el carrusel */
+.container-carousel:hover {
+    transform: scale(1.01);
+}
+
+/* ITEM DEL CARRUSEL */
+.carousel-item {
+    height: 600px;
+    overflow: hidden;
+}
+
+/* IMAGEN */
+.carousel-item img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+
+    /* suavidad */
+    transition: transform 0.5s ease;
+}
+
+/* zoom suave en hover del slide */
+.carousel-item:hover img {
+    transform: scale(1.03);
+}
+
+/* CAPTION */
+.carousel-caption {
+    background: rgba(49, 27, 20, 0.7);
+    border-radius: 15px;
+    padding: 20px;
+    border-left: 5px solid var(--accent-orange);
+
+    /* mejora leve sin cambiar diseño */
+    backdrop-filter: blur(2px);
+}
+
+.carousel-caption h5 {
+    color: var(--warm-tan);
+    font-weight: bold;
+}
+

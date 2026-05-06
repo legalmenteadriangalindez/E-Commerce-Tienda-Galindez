@@ -1,0 +1,30 @@
+/* ================= REVIEWS ================= */
+
+.reviews-section h3 {
+    margin-top: 40px;
+    color: var(--primary-dark);
+}
+
+.review-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+.review-card:hover {
+    box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+}
+
+.review-images img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    margin-right: 5px;
+    border-radius: 6px;
+}
+
+.review-video {
+    margin-top: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+}
