@@ -1,0 +1,132 @@
+<!-- include header -->
+<%- include('../../include/_header') %>
+<!-- /include header -->
+
+<div class="container">
+    <h1>Carrito de Compras</h1>
+</div>
+
+<p>Revisa los productos que has agregado a tu carrito de compras y realiza el checkout cuando estés listo.</p>
+
+<main class="main-cart">
+  <div class="cart-wrapper">
+
+    <!-- Productos en el carrito -->
+    <section class="items-section">
+
+      <header class="cart-header">
+        <h1>Tu Despensa</h1>
+        <span class="badge"><%= productosCarrito.length %> Articulo</span>
+      </header>
+
+      <div class="product-list">
+
+        <% if(productosCarrito.length === 0){ %>
+            <p>Tu carrito está vacío.</p>
+        <% } %>
+
+        <% productosCarrito.forEach(producto => { %>
+
+        <article class="product-card">
+
+          <!-- Imagen -->
+          <div class="img-container">
+            <img 
+              src="<%= producto.foto || '/assets/img/default.jpg' %>" 
+              alt="<%= producto.nombre %>"
+            >
+          </div>
+
+          <!-- Info producto -->
+          <div class="product-info">
+            <h3><%= producto.nombre %></h3>
+
+            <p class="category">
+              <%= producto.categoria?.nombre || 'Sin categoría' %>
+            </p>
+          </div>
+
+          <!-- Control de cantidad -->
+         <div class="quantity-picker">
+         
+           <!-- Disminuir -->
+           <form action="/carrito/actualizar" method="POST">
+             <input type="hidden" name="productoId" value="<%= producto._id %>">
+             <input type="hidden" name="cantidad" value="<%= producto.cantidad - 1 %>">
+             <button type="submit">-</button>
+           </form>
+         
+           <!-- Cantidad -->
+           <span class="cantidad"><%= producto.cantidad %></span>
+         
+           <!-- Aumentar -->
+           <form action="/carrito/actualizar" method="POST">
+             <input type="hidden" name="productoId" value="<%= producto._id %>">
+             <input type="hidden" name="cantidad" value="<%= producto.cantidad + 1 %>">
+             <button type="submit">+</button>
+           </form>
+         
+         </div>
+
+          <!-- Precio -->
+          <p class="price">
+            $<%= (producto.precio * producto.cantidad).toFixed(2) %>
+          </p>
+
+          <!-- Eliminar producto -->
+          <form action="/carrito/eliminar" method="POST">
+            <input type="hidden" name="productoId" value="<%= producto._id %>">
+            <button class="remove-btn">✕</button>
+          </form>
+
+        </article>
+
+        <% }) %>
+
+      </div>
+
+    </section>
+
+    <!-- Resumen -->
+    <aside class="summary-section">
+
+      <div class="summary-card">
+
+        <h2 class="text-sumary">Resumen</h2>
+
+        <div class="divider"></div>
+
+        <div class="summary-line">
+          <span class="text-sumary">Subtotal</span>
+          <span class="text-sumary">$<%= subtotal.toFixed(2) %></span>
+        </div>
+
+        <div class="summary-line">
+          <span class="text-sumary">Envío</span>
+          <span class="text-sumary" class="free">Gratis</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="summary-line total">
+          <span class="text-sumary">Total</span>
+          <span class="text-sumary" class="total-amount">$<%= subtotal.toFixed(2) %></span>
+        </div>
+
+        <!-- Checkout -->
+        <form action="/payment-point" method="GET">
+            <button type="submit" class="pay-btn">
+                <i class="fas fa-lock"></i> Proceder al pago
+            </button>
+        </form>
+
+      </div>
+
+    </aside>
+
+  </div>
+</main>
+
+<!-- include footer -->
+<%- include('../../include/_footer') %>
+<!-- /include footer -->

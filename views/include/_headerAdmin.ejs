@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Tienda Galindez</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/header.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/assets/css/footer.css">
+    <link rel="stylesheet" href="/assets/css/payment_point.css">
+    <link rel="stylesheet" href="/assets/css/analytics.css">
+    <link rel="stylesheet" href="/assets/css/products.css">
+    <link rel="stylesheet" href="/assets/css/rols.css">
+    <link rel="stylesheet" href="/assets/css/users.css">
+    <link rel="stylesheet" href="/css/read_products.css">
+    <link rel="stylesheet" href="/css/profile.css">
+</head>
+
+<body>
+
+
+<header id="header">
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+
+  <div class="container-fluid">
+
+    <!-- BRAND -->
+    <a class="navbar-brand d-flex align-items-center" href="/billing-point">
+        <i class="bi bi-shield-lock me-2"></i>
+        <span class="brand-text">Admin Galindez</span>
+    </a>
+
+    <!-- TOGGLER -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarAdmin">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- NAV -->
+    <div class="collapse navbar-collapse" id="navbarAdmin">
+
+      <!-- LEFT -->
+      <ul class="navbar-nav me-auto">
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bi bi-gear"></i> Gestión
+          </a>
+
+          <ul class="dropdown-menu">
+
+            <li><a class="dropdown-item" href="/read-producto"><i class="bi bi-box-seam"></i> Productos</a></li>
+            <li><a class="dropdown-item" href="/read-categoria"><i class="bi bi-tags"></i> Categorías</a></li>
+            <li><a class="dropdown-item" href="/read-marca"><i class="bi bi-bookmark-star"></i> Marcas</a></li>
+            <li><a class="dropdown-item" href="/read-proveedor"><i class="bi bi-truck"></i> Proveedores</a></li>
+            <li><a class="dropdown-item" href="/read-rol"><i class="bi bi-person-badge"></i> Roles</a></li>
+            <li><a class="dropdown-item" href="/read-user"><i class="bi bi-person-plus"></i> Usuarios</a></li>
+
+            <li><hr class="dropdown-divider"></li>
+
+            <li><a class="dropdown-item" href="/read-ventas"><i class="bi bi-cart-check"></i> Ventas</a></li>
+
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="/admin-analytics">
+            <i class="bi bi-speedometer2"></i> Mi Tienda
+          </a>
+        </li>
+
+      </ul>
+
+      <!-- RIGHT -->
+      <div class="nav-right">
+
+        <!-- PERFIL ADMIN -->
+        <div class="dropdown">
+          <a class="profile-btn d-flex align-items-center" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle"></i>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/admin/perfil"><i class="bi bi-person"></i> Perfil</a></li>
+            <li><a class="dropdown-item" href="/billing-point"><i class="bi bi-grid"></i> Panel</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</nav>
+
+</header>

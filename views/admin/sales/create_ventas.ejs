@@ -1,0 +1,33 @@
+
+<!-- include header -->
+    <%- include('include/_header') %>
+<!-- /include header -->
+
+
+    <!-- Main Site -->
+    <main id="site-main">
+    <h1 class="mb-4">Formulario de Ventas</h1>
+    <div class="container mt-5">
+
+        <form action="/create-ventas" method="POST">
+            <div class="mb-3">
+                <label for="fecha" class="form-label">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" value="<%= new Date().toISOString().split('T')[0] %>">
+            </div>
+
+            <div class="mb-3">
+                <label for="total" class="form-label">Total ($)</label>
+                <input type="number" class="form-control" id="total" name="total" required>
+            </div>
+
+            <button type="submit" class="btn btn-success">Registrar Venta</button>
+        </form>
+    </div>
+        
+    </main>
+    <!-- /Main Site -->
+
+
+<!-- include footer -->
+<%- include('include/_footer') %>
+<!-- /include footer -->

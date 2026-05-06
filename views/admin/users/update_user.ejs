@@ -1,0 +1,109 @@
+<%- include('../../include/_headerAdmin') %>
+
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <h1>Editar Usuario</h1>
+    <p>Actualiza la información del usuario registrado</p>
+  </div>
+
+  <div class="form-card">
+
+    <form action="/update-user/<%= user._id %>" method="POST" class="user-form">
+
+      <div class="form-grid">
+
+        <!-- Nombre -->
+        <div class="form-group full">
+          <label>Nombre completo</label>
+          <input
+            type="text"
+            name="nombre"
+            value="<%= user.nombre %>"
+            required
+          >
+        </div>
+
+        <!-- Email -->
+        <div class="form-group full">
+          <label>Correo electrónico</label>
+          <input
+            type="email"
+            name="email"
+            value="<%= user.email %>"
+            readonly
+          >
+        </div>
+
+        <!-- Teléfono -->
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input
+            type="text"
+            name="telefono"
+            value="<%= user.telefono %>"
+          >
+        </div>
+
+        <!-- Género -->
+        <div class="form-group">
+          <label>Género</label>
+          <input
+            type="text"
+            name="genero"
+            value="<%= user.genero %>"
+          >
+        </div>
+
+        <!-- Dirección -->
+        <div class="form-group full">
+          <label>Dirección</label>
+          <input
+            type="text"
+            name="direccion"
+            value="<%= user.direccion %>"
+          >
+        </div>
+
+        <!-- Barrio -->
+        <div class="form-group">
+          <label>Barrio</label>
+          <input
+            type="text"
+            name="barrio"
+            value="<%= user.barrio %>"
+          >
+        </div>
+
+        <!-- Ciudad -->
+        <div class="form-group">
+          <label>Ciudad</label>
+          <input
+            type="text"
+            name="ciudad"
+            value="<%= user.ciudad %>"
+          >
+        </div>
+
+        <!-- Punto de referencia -->
+        <div class="form-group full">
+          <label>Punto de referencia</label>
+          <input
+            type="text"
+            name="puntoReferencia"
+            value="<%= user.puntoReferencia %>"
+          >
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button type="submit">Actualizar usuario</button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<%- include('../../include/_footerAdmin') %>

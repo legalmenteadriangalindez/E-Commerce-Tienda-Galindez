@@ -1,0 +1,23 @@
+
+<!-- include header -->
+    <%- include('../../include/_header') %>
+<!-- /include header -->
+
+
+    <!-- Main Site -->
+<main id="site-main">
+    <h1>Categoria: <%= categoria.nombre %></h1>
+     
+    <div class="container-cards">
+        <% productos.forEach(p => { %>
+            <%- include('../../include/card', { p }) %>
+        <% }) %>
+    </div>
+
+</main>
+<!-- /Main Site -->
+
+
+<!-- include footer -->
+<%- include('../../include/_footer') %>
+<!-- /include footer -->

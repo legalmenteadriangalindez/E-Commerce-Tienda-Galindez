@@ -1,0 +1,129 @@
+<%- include('../../include/_header') %>
+
+<div class="checkout-wrapper">
+
+    <div class="checkout-header">
+        <h1>
+            <i class="fas fa-store"></i> Confirmación de Compra
+        </h1>
+
+        <div class="badge-secure">
+            <i class="fas fa-lock"></i> Pago seguro y encriptado
+        </div>
+    </div>
+
+    <div class="checkout-grid">
+
+        <!-- FORM -->
+        <div class="form-card">
+
+            <div class="section-title">
+                <i class="fas fa-user-pen"></i>
+                <span>Datos del cliente</span>
+            </div>
+
+            <div class="input-group">
+                <label>Nombre</label>
+                <input type="text" value="<%= user?.nombre || '' %>" readonly>
+            </div>
+
+            <div class="input-row">
+
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" value="<%= user?.email || '' %>" readonly>
+                </div>
+
+                <div class="input-group">
+                    <label>Teléfono</label>
+                    <input type="text" value="<%= user?.telefono || '' %>" readonly>
+                </div>
+
+            </div>
+
+            <div class="input-group">
+                <label>Dirección</label>
+                <input type="text" value="<%= user?.direccion || '' %>" readonly>
+            </div>
+
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="summary-card">
+
+            <div class="section-title">
+                <i class="fas fa-bag-shopping"></i>
+                <span>Resumen del pedido</span>
+            </div>
+
+            <div class="order-items-list">
+
+                <% let subtotal = cart?.total || 0; %>
+                <% let envio = 5000; %>
+                <% let impuestos = 300; %>
+                <% let totalFinal = subtotal + envio + impuestos; %>
+
+                <% cart?.items?.forEach(item => { %>
+
+                <div class="order-item">
+
+                    <div class="item-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+
+                    <div class="item-details">
+                        <div class="item-title"><%= item.nombre %></div>
+                        <div class="item-price">$<%= item.precio %></div>
+                        <div class="item-quantity">Cantidad: <%= item.cantidad %></div>
+                    </div>
+
+                    <div class="item-line-price">
+                        $<%= item.precio * item.cantidad %>
+                    </div>
+
+                </div>
+
+                <% }) %>
+
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="summary-line">
+                <span>Subtotal</span>
+                <span>$<%= subtotal %></span>
+            </div>
+
+            <div class="summary-line">
+                <span>Envío</span>
+                <span>$<%= envio %></span>
+            </div>
+
+            <div class="summary-line">
+                <span>Impuestos</span>
+                <span>$<%= impuestos %></span>
+            </div>
+
+            <div class="summary-line total">
+                <span>Total</span>
+                <span>$<%= totalFinal %></span>
+            </div>
+
+            <!-- FORM FINAL -->
+            <form action="/checkout" method="POST">
+
+                <input type="hidden" name="cliente" value="<%= user._id %>">
+                <input type="hidden" name="total" value="<%= totalFinal %>">
+
+                <button class="pay-btn">
+                    <i class="fas fa-lock"></i>
+                    Confirmar pago · $<%= totalFinal %>
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<%- include('../../include/_footer') %>

@@ -1,0 +1,256 @@
+<%- include('../../include/_headerAdmin') %>
+
+<div class="checkout-wrapper">
+
+    <div class="checkout-header">
+        <h1>
+            <i class="fas fa-store"></i> Confirmación de Compra
+        </h1>
+
+        <div class="badge-secure">
+            <i class="fas fa-lock"></i> Pago seguro y encriptado
+        </div>
+    </div>
+
+    <div class="checkout-grid">
+
+        <!-- FORM CLIENTE -->
+        <div class="form-card">
+
+            <div class="section-title">
+                <i class="fas fa-user-pen"></i>
+                <span>Datos del cliente</span>
+            </div>
+
+            <!-- 🔎 BUSCADOR -->
+            <div class="input-group" style="position: relative;">
+                <label>Buscar cliente</label>
+                <input type="text" id="buscarCliente" placeholder="Nombre o email">
+                <div id="resultadosClientes" class="search-results"></div>
+            </div>
+
+            <!-- ID oculto -->
+            <input type="hidden" id="clienteId" name="clienteId">
+
+            <div class="input-group">
+                <label>Nombre</label>
+                <input type="text" id="clienteNombre" name="nombre">
+            </div>
+
+            <div class="input-row">
+
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="clienteEmail" name="email">
+                </div>
+
+                <div class="input-group">
+                    <label>Teléfono</label>
+                    <input type="text" id="clienteTelefono" name="telefono">
+                </div>
+
+            </div>
+
+            <div class="input-group">
+                <label>Dirección</label>
+                <input type="text" id="clienteDireccion" name="direccion">
+            </div>
+
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="summary-card">
+
+            <div class="section-title">
+                <i class="fas fa-bag-shopping"></i>
+                <span>Resumen del pedido</span>
+            </div>
+
+            <div class="order-items-list">
+
+                <% let subtotal = cart?.total || 0; %>
+                <% let envio = 5000; %>
+                <% let impuestos = 300; %>
+                <% let totalFinal = subtotal + envio + impuestos; %>
+
+                <% cart?.items?.forEach(item => { %>
+
+                <div class="order-item">
+
+                    <div class="item-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+
+                    <div class="item-details">
+                        <div class="item-title"><%= item.nombre %></div>
+                        <div class="item-price">$<%= item.precio %></div>
+                        <div class="item-quantity">Cantidad: <%= item.cantidad %></div>
+                    </div>
+
+                    <div class="item-line-price">
+                        $<%= item.precio * item.cantidad %>
+                    </div>
+
+                </div>
+
+                <% }) %>
+
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="summary-line">
+                <span>Subtotal</span>
+                <span>$<%= subtotal %></span>
+            </div>
+
+            <div class="summary-line">
+                <span>Envío</span>
+                <span>$<%= envio %></span>
+            </div>
+
+            <div class="summary-line">
+                <span>Impuestos</span>
+                <span>$<%= impuestos %></span>
+            </div>
+
+            <div class="summary-line total">
+                <span>Total</span>
+                <span>$<%= totalFinal %></span>
+            </div>
+
+            <!-- FORM FINAL -->
+            <form action="/checkout" method="POST">
+
+                <input type="hidden" name="clienteId" id="clienteIdHidden">
+                <input type="hidden" name="total" value="<%= totalFinal %>">
+
+                <!-- <button class="pay-btn">
+                    <i class="fas fa-lock"></i>
+                    Confirmar pago · $<%= totalFinal %>
+                </button> -->
+                <button type="button" class="pay-btn" onclick="confirmarPago()">
+                    <i class="fas fa-lock"></i>
+                    Confirmar pago · $<%= totalFinal %>
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+let timeoutCliente = null;
+
+// 🔎 BUSCAR CLIENTES
+document.getElementById("buscarCliente").addEventListener("keyup", function(){
+
+    clearTimeout(timeoutCliente);
+    const texto = this.value;
+
+    if(texto.length < 2){
+        document.getElementById("resultadosClientes").innerHTML = "";
+        return;
+    }
+
+    timeoutCliente = setTimeout(async () => {
+
+        try{
+            const res = await fetch(`/api/users/search?search=${texto}`);
+            const clientes = await res.json();
+            renderClientes(clientes);
+        }catch(err){
+            console.error(err);
+        }
+
+    }, 300);
+
+});
+
+// 🎯 RENDER CLIENTES
+function renderClientes(clientes){
+
+    const contenedor = document.getElementById("resultadosClientes");
+    contenedor.innerHTML = "";
+
+    if(!clientes || clientes.length === 0){
+        contenedor.innerHTML = "<div class='search-item'>No hay resultados</div>";
+        return;
+    }
+
+    clientes.forEach(c => {
+        contenedor.innerHTML += `
+            <div class="search-item" onclick='seleccionarCliente(${JSON.stringify(c).replace(/'/g, "\\'")})''>
+                ${c.nombre} - ${c.email}
+            </div>
+        `;
+    });
+}
+
+// ✅ SELECCIONAR CLIENTE
+function seleccionarCliente(cliente){
+
+    document.getElementById("clienteId").value = cliente._id;
+    document.getElementById("clienteIdHidden").value = cliente._id;
+
+    document.getElementById("clienteNombre").value = cliente.nombre;
+    document.getElementById("clienteEmail").value = cliente.email;
+    document.getElementById("clienteTelefono").value = cliente.telefono || "";
+    document.getElementById("clienteDireccion").value = cliente.direccion || "";
+
+    document.getElementById("resultadosClientes").innerHTML = "";
+}
+
+// ❌ CERRAR RESULTADOS
+document.addEventListener("click", function(e){
+    if(!e.target.closest("#buscarCliente")){
+        document.getElementById("resultadosClientes").innerHTML = "";
+    }
+});
+
+async function confirmarPago(){
+
+    const clienteId = document.getElementById("clienteIdHidden").value;
+    const total = "<%= totalFinal %>";
+
+    if(!clienteId){
+        alert("Debes seleccionar un cliente");
+        return;
+    }
+
+    try{
+        const res = await fetch("/admin/finalizar-venta", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                cliente: clienteId,
+                total: total
+            })
+        });
+
+        const data = await res.json();
+
+        if(data.ok){
+
+            alert("✔ Venta registrada correctamente");
+
+            // opcional: limpiar formulario
+            window.location.reload();
+
+        }else{
+            alert("Error al registrar la venta");
+        }
+
+    }catch(err){
+        console.error(err);
+        alert("Error de servidor");
+    }
+}
+
+</script>
+
+<%- include('../../include/_footerAdmin') %>

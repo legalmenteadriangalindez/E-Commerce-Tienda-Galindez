@@ -1,0 +1,137 @@
+<!-- include header -->
+<%- include('../../include/_headerAdmin') %>
+
+<div class="checkout-wrapper">
+
+    <div class="checkout-header">
+        <h1><i class="fas fa-cash-register"></i> Punto de Facturación</h1>
+        <div class="badge-secure">
+            <i class="fas fa-store"></i> Modo cajero · Venta directa
+        </div>
+    </div>
+
+    <div class="checkout-grid">
+
+        <!-- COLUMNA IZQUIERDA -->
+        <div class="form-card">
+
+            <div class="section-title">
+                <i class="fas fa-barcode"></i>
+                <span>Registrar producto</span>
+            </div>
+
+            <!-- BUSCADOR -->
+            <div class="input-group" style="position: relative;">
+                <label>Buscar producto</label>
+                <input type="text" id="buscarProducto" placeholder="escribir nombre">
+
+                <!-- 🔥 CONTENEDOR RESULTADOS -->
+                <div id="resultadosBusqueda" class="search-results"></div>
+            </div>
+
+            <!-- DATOS PRODUCTO -->
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Producto</label>
+                    <input type="text" id="productoNombre" placeholder="Arroz Florecita">
+                    <input type="hidden" id="productoId">
+                </div>
+
+                <div class="input-group">
+                    <label>Cantidad</label>
+                    <input id="cantidad" type="number" value="1">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Precio</label>
+                    <input id="precio" type="number" value="45000">
+                </div>
+            </div>
+
+            <button class="pay-btn" style="margin-top:10px" onclick="agregarProducto()" >
+                <i class="fas fa-plus"></i> Agregar a la venta
+            </button>
+
+            <div class="divider"></div>
+
+            <!-- LISTA PRODUCTOS VENTA -->
+            <div class="section-title">
+                <i class="fas fa-cart-shopping"></i>
+                <span>Productos en la venta</span>
+            </div>
+
+            <div class="order-items-list" id="listaProductos"></div>
+
+        </div>
+
+        <!-- COLUMNA DERECHA -->
+        <div class="summary-card">
+
+            <div class="section-title">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Resumen de factura</span>
+            </div>
+
+            <div class="summary-line">
+                <span>Subtotal</span>
+                <span id="subtotal">$134.990</span>
+            </div>
+
+            <div class="summary-line">
+                <span>IVA</span>
+                <span id="iva">$25.648</span>
+            </div>
+
+            <div class="summary-line total">
+                <span>Total</span>
+                <span id="total">$160.638</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- METODO DE PAGO -->
+            <div class="section-title" style="font-size:1.2rem;">
+                <i class="fas fa-credit-card"></i>
+                <span>Método de pago</span>
+            </div>
+
+            <div class="methods-group">
+                <div class="method-option selected">
+                    <input type="radio" checked>
+                    <label><i class="fas fa-money-bill-wave"></i> Efectivo</label>
+                </div>
+
+                <div class="method-option">
+                    <input type="radio">
+                    <label><i class="fas fa-credit-card"></i> Tarjeta</label>
+                </div>
+
+                <div class="method-option">
+                    <input type="radio">
+                    <label><i class="fas fa-mobile-alt"></i> Transferencia</label>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- ACCIONES -->
+            <button class="pay-btn" onclick="finalizarVenta()">
+                <i class="fas fa-check"></i> Finalizar venta
+            </button>
+
+            <button class="btn-outline" style="width:100%; margin-top:10px;" onclick="cancelarVenta()">
+                <i class="fas fa-trash"></i> Cancelar venta
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<br>
+<br>
+<!-- include footer -->
+<%- include('../../include/_footerAdmin') %>

@@ -1,0 +1,28 @@
+<section class="analytics-section">
+
+    <h2><%= title %></h2>
+
+    <% 
+        const max = Math.max(...data.map(i => i.value || 0), 1);
+    %>
+
+    <% data.forEach(item => { 
+        const percent = ((item.value || 0) / max) * 100;
+    %>
+
+        <div class="bar-row">
+            <span><%= item.name %></span>
+
+            <div class="bar">
+                <div 
+                    class="fill <%= item.color || '' %>" 
+                    <div class="fill" style="--width: <%= percent %>%"></div>
+                </div>
+            </div>
+
+            <span><%= item.label || item.value %></span>
+        </div>
+
+    <% }) %>
+
+</section>

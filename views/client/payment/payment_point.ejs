@@ -1,0 +1,193 @@
+<!-- include header -->
+<%- include('../../include/_header') %>
+<!-- /include header -->
+
+<div class="checkout-wrapper">
+    <div class="checkout-header">
+        <h1><i class="fas fa-store"></i> Punto de Pago Seguro</h1>
+        <div class="badge-secure"><i class="fas fa-lock"></i> Transacción 100% encriptada · Pago protegido</div>
+    </div>
+
+    <div class="checkout-grid">
+        <!-- COLUMNA IZQUIERDA: Formulario de facturación y pago -->
+        <div class="form-card">
+            <div class="section-title">
+                <i class="fas fa-user-pen"></i>
+                <span>Información de facturación</span>
+            </div>
+                <div class="input-group">
+                    <label>Nombre completo</label>
+                    <input type="text" id="fullName" value="<%= user.nombre %>">
+                </div>
+                
+                <div class="input-row">
+                
+                    <div class="input-group">
+                        <label>Correo electrónico</label>
+                        <input type="email" id="email" value="<%= user.email %>">
+                    </div>
+                
+                    <div class="input-group">
+                        <label>Teléfono</label>
+                        <input type="tel" id="phone" value="<%= user.telefono %>">
+                    </div>
+                
+                </div>
+                
+                <div class="input-group">
+                    <label>Dirección</label>
+                    <input type="text" id="address" value="<%= user.direccion %>">
+                </div>
+                
+                <div class="input-row">
+                
+                    <div class="input-group">
+                        <label>Ciudad</label>
+                        <input type="text" id="city" value="<%= user.ciudad %>">
+                    </div>
+                
+                    <div class="input-group">
+                        <label>Código postal</label>
+                        <input type="text" id="zip" value="">
+                    </div>
+                
+                </div>
+
+            <div class="payment-methods">
+                <div class="section-title" style="margin-bottom: 1rem;">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Método de pago</span>
+                </div>
+                <div class="methods-group" id="paymentMethodsGroup">
+                    <div class="method-option" data-method="credit">
+                        <input type="radio" name="paymentMethod" id="creditCardRadio" value="credit" checked>
+                        <label for="creditCardRadio"><i class="fab fa-cc-visa"></i> <i class="fab fa-cc-mastercard"></i> Tarjeta</label>
+                    </div>
+                    <div class="method-option" data-method="paypal">
+                        <input type="radio" name="paymentMethod" id="paypalRadio" value="paypal">
+                        <label for="paypalRadio"><i class="fab fa-paypal"></i> PayPal</label>
+                    </div>
+                    <div class="method-option" data-method="googlepay">
+                        <input type="radio" name="paymentMethod" id="googlePayRadio" value="googlepay">
+                        <label for="googlePayRadio"><i class="fab fa-google-pay"></i> Google Pay</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenedor dinámico para métodos de pago -->
+            <div id="paymentDetailsDynamic" class="payment-details-container">
+                <!-- CREDIT CARD FIELDS (visible por defecto) -->
+                <div id="creditCardFields">
+                    <div class="input-group"><label>Nombre en la tarjeta</label><input type="text" id="cardName" placeholder="Como aparece en la tarjeta" value="ADRIAN GALINDEZ"></div>
+                    <div class="input-group"><label>Número de tarjeta</label><input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" value="4242 4242 4242 4242"></div>
+                    <div class="card-row">
+                        <div class="input-group"><label>Fecha expiración</label><input type="text" id="expiry" placeholder="MM/AA" value="12/28"></div>
+                        <div class="input-group"><label>CVV</label><input type="text" id="cvv" placeholder="123" value="123"></div>
+                    </div>
+                </div>
+                <!-- PayPal alternate -->
+                <div id="paypalFields" style="display: none;">
+                    <div style="text-align: center; padding: 1rem 0;">
+                        <i class="fab fa-paypal" style="font-size: 3rem; color: var(--accent-orange);"></i>
+                        <p style="margin-top: 12px; font-weight: 500;">Serás redirigido a PayPal para completar el pago de forma segura.</p>
+                        <p style="font-size: 0.8rem; margin-top: 8px;">Conecta tu cuenta PayPal o paga con tarjeta sin registrarte.</p>
+                    </div>
+                </div>
+                <!-- Google Pay alternate -->
+                <div id="googlepayFields" style="display: none;">
+                    <div style="text-align: center; padding: 1rem 0;">
+                        <i class="fab fa-google-pay" style="font-size: 3rem; color: var(--accent-orange);"></i>
+                        <p style="margin-top: 12px; font-weight: 500;">Pago exprés con Google Pay</p>
+                        <div style="background: #f1f5f9; border-radius: 60px; padding: 12px; margin-top: 12px; font-size: 0.85rem;">
+                            <i class="fas fa-check-circle"></i> Configurado para pagar con tus tarjetas guardadas
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="trust-badge">
+                <span><i class="fas fa-shield-alt"></i> Datos seguros</span>
+                <span><i class="fas fa-clock"></i> Soporte 24/7</span>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: Resumen del pedido -->
+        <div class="summary-card">
+            <div class="section-title">
+                <i class="fas fa-bag-shopping"></i>
+                <span>Tu pedido</span>
+            </div>
+
+            <div class="order-items-list" class="text-sumary">
+                
+                <% cart.items.forEach(item => { %>
+                
+                <div class="order-item">
+                
+                    <div class="item-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                
+                    <div class="item-details">
+                
+                        <div class="item-title">
+                            <%= item.nombre %>
+                        </div>
+                
+                        <div class="item-price">
+                            <%= item.precio %> $
+                        </div>
+                
+                        <div class="item-quantity">
+                            Cantidad: <%= item.cantidad %>
+                        </div>
+                
+                    </div>
+                
+                    <div class="item-line-price">
+                        <%= item.precio * item.cantidad %> $
+                    </div>
+                
+                </div>
+                
+                <% }) %>
+                
+            </div>
+
+            <div class="divider"></div>
+            <div class="summary-line text-sumary">
+               <span>Subtotal</span>
+               <span id="totalAmount"><%= cart.total %> $</span>
+            </div>
+
+            <div class="summary-line text-sumary"><span>Envío</span><span>$5000</span></div>
+            <div class="summary-line text-sumary"><span>Impuestos (estimado)</span><span>$300</span></div>
+            <% let envio = 5000; %>
+            <% let impuestos = 300; %>
+            <% let totalFinal = (cart.total || 0) + envio + impuestos; %>
+            <div class="promo-code">
+                <input type="text" id="promoInput" placeholder="Código de descuento">
+                <button class="btn-outline" id="applyPromoBtn">Aplicar</button>
+            </div>
+            <div class="summary-line total text-sumary"><span>Total a pagar</span><span id="totalAmount">$<%= (cart.total || 0).toFixed(2) %></span></div>
+
+            <form action="/checkout" method="POST">
+                <input type="hidden" name="cliente" value="<%= user._id %>">
+                <button class="pay-btn">
+                    <i class="fas fa-lock"></i> Confirmar pago · $<%= totalFinal.toFixed(2) %>
+                </button>
+            </form>
+
+            <div class="trust-badge" style="justify-content: space-between; margin-top: 18px;">
+                <span><i class="fab fa-cc-visa"></i> Visa</span>
+                <span><i class="fab fa-cc-mastercard"></i> Mastercard</span>
+                <span><i class="fab fa-cc-amex"></i> Amex</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+// <!-- include footer -->
+<%- include('../../include/_footer') %>
+// <!-- /include footer -->
