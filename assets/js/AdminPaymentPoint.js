@@ -156,37 +156,9 @@ document.addEventListener("click", function(e){
 // 💳 FINALIZAR VENTA
 // ======================================================
 
-async function finalizarVenta(){
+function finalizarVenta(){
 
-    try{
-
-        const res = await fetch("/carrito/checkout", {
-
-            method:"POST",
-
-            headers:{
-                "Content-Type":"application/json"
-            }
-        });
-
-        const data = await res.json();
-
-        if(data.success){
-
-            window.location =
-                `/checkout/confirmacion/${data.ventaId}`;
-
-        }else{
-
-            alert(data.message || "Error en la venta");
-        }
-
-    }catch(err){
-
-        console.error(err);
-
-        alert("Error al finalizar venta");
-    }
+    window.location.href ="/carrito/checkout/confirmacion";
 }
 
 
