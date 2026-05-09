@@ -75,7 +75,5 @@ router.get('/delete-user/:id', isAdmin, servicesRenderUser.delete_user);
 router.post("/admin/finalizar-venta", saleController.finalizarVenta);
 router.get("/admin/confirmacion", saleController.confirmacion);
 
-// router.post('/checkout', isLogged, cartController.checkout);
-// router.get('/checkout/confirmacion/:id', isLogged, cartController.confirmacion);
 
 module.exports = router;

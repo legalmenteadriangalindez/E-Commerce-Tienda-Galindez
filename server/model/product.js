@@ -29,7 +29,7 @@ var schema = new mongoose.Schema({
     },
         unidadBase: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'unidaddb',
+        ref: 'Unidaddbs',
         required: true
     },
         // 🔹 Presentaciones del producto
@@ -37,7 +37,7 @@ var schema = new mongoose.Schema({
         {
             unidad: {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'unidaddb'
+                ref: 'Unidaddbs'
             },
             precio: Number,
             codigoBarras: String

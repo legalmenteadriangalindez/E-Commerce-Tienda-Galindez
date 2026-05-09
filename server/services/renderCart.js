@@ -112,46 +112,24 @@ exports.confirmacion = async (req, res) => {
 
     try {
 
-        const ventaId = req.params.id;
-
         const response = await axios.get(
-            `${API_URL}/confirmacion/${ventaId}`,
+            `${API_URL}/data`,
             getConfig(req)
         );
 
-        const venta = response.data.venta;
-
-        const detalles = response.data.detalles;
-
-        const cart = {
-            items: detalles.map(d => ({
-                nombre: d.producto.nombre,
-                precio: d.precioUnitario,
-                cantidad: d.cantidad
-            })),
-            total: venta.total
-        };
+        const cart = response.data.cart;
 
         return res.render(
-            'client/payment/checkout_confirmation',
+            'admin/payment/checkout_confirmation',
             {
                 user: req.session.user,
-
-                cart,
-
-                subtotal: venta.total,
-
-                envio: 5000,
-
-                impuestos: 300,
-
-                totalFinal: venta.total + 5000 + 300
+                cart
             }
         );
 
     } catch (err) {
 
-        console.error("❌ render confirmacion:", err.message);
+        console.error(err);
 
         return res.status(500).send(err.message);
     }
@@ -262,5 +240,41 @@ exports.checkout = async (req, res) => {
             success: false,
             message: err.response?.data?.message || err.message
         });
+    }
+};
+
+// ======================================================
+// RENDER SALE SUCCESS
+// ======================================================
+
+exports.sale_success = async (req, res) => {
+
+    try{
+
+        const ventaId = req.params.id;
+
+        const response = await axios.get(
+            `${API_URL}/confirmacion/${ventaId}`,
+            getConfig(req)
+        );
+
+        const venta = response.data.venta;
+
+        const detalles = response.data.detalles;
+
+        return res.render(
+            'admin/payment/sale_success',
+            {
+                user: req.session.user,
+                venta,
+                detalles
+            }
+        );
+
+    }catch(err){
+
+        console.error(err);
+
+        return res.status(500).send(err.message);
     }
 };

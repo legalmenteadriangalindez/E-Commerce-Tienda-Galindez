@@ -44,6 +44,8 @@ router.get('/payment-point', isLogged, renderCart.payment_point);
 router.get('/billing-point', isLogged, isAdmin, renderCart.billing_point);
 
 // confirmación
-router.get('/checkout/confirmacion/:id', isLogged, renderCart.confirmacion);
+router.get('/checkout/confirmacion', isLogged, renderCart.confirmacion);
+
+router.get('/venta-finalizada/:id', isLogged, renderCart.sale_success);
 
 module.exports = router;

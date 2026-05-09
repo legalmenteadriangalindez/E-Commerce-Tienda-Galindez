@@ -48,20 +48,14 @@ function calculateCart(cart) {
 // ======================================================
 
 exports.get_cart = async (req, res) => {
-
     try {
-
         const cart = getCart(req);
-
         return res.json({
             success: true,
             cart
         });
-
     } catch (err) {
-
         console.error(err);
-
         return res.status(500).json({
             success: false,
             message: err.message
@@ -76,11 +70,9 @@ exports.get_cart = async (req, res) => {
 exports.add_to_carrito = async (req, res) => {
 
     try {
-
         console.log("🍪 COOKIE HEADER:", req.headers.cookie);
         console.log("🍪 SESSION ID:", req.sessionID);
         console.log("🟣 [ADD CART] SESSION:", req.session);
-
         const userId = req.session.user?._id;
 
         if (!userId) {
@@ -89,43 +81,30 @@ exports.add_to_carrito = async (req, res) => {
                 message: "No autenticado"
             });
         }
-
         const { productoId, cantidad } = req.body;
-
         if (!productoId) {
             return res.status(400).json({
                 success: false,
                 message: "productoId requerido"
             });
         }
-
         const producto = await Productdb.findById(productoId);
-
         console.log("🧪 PRODUCTO:", producto);
-
         if (!producto) {
             return res.status(404).json({
                 success: false,
                 message: "Producto no encontrado"
             });
         }
-
         const cart = getCart(req);
-
         const cant = Math.max(1, parseInt(cantidad) || 1);
-
         const item = cart.items.find(i =>
             i.productoId.toString() === productoId.toString()
         );
-
         if (item) {
-
             item.cantidad += cant;
-
             item.subtotal = item.cantidad * item.precio;
-
         } else {
-
             cart.items.push({
                 productoId: producto._id.toString(),
                 nombre: producto.nombre,
@@ -137,20 +116,15 @@ exports.add_to_carrito = async (req, res) => {
         }
 
         calculateCart(cart);
-
         req.session.cart = cart;
-
         req.session.save(err => {
-
             if (err) {
                 console.error(err);
-
                 return res.status(500).json({
                     success: false,
                     message: "Error guardando sesión"
                 });
             }
-
             return res.json({
                 success: true,
                 message: "Producto agregado",
@@ -161,7 +135,6 @@ exports.add_to_carrito = async (req, res) => {
                 )
             });
         });
-
     } catch (err) {
 
         console.error(err);
@@ -227,17 +200,12 @@ exports.remove_from_carrito = async (req, res) => {
 // ======================================================
 
 exports.update_carrito = async (req, res) => {
-
     try {
-
         const { productoId, cantidad } = req.body;
-
         const cart = getCart(req);
-
         const item = cart.items.find(i =>
             i.productoId.toString() === productoId.toString()
         );
-
         if (!item) {
             return res.status(404).json({
                 success: false,
@@ -246,26 +214,18 @@ exports.update_carrito = async (req, res) => {
         }
 
         const cant = Math.max(1, parseInt(cantidad) || 1);
-
         const producto = await Productdb.findById(item.productoId);
-
         if (!producto) {
             return res.status(404).json({
                 success: false,
                 message: "Producto no encontrado"
             });
         }
-
         item.cantidad = cant;
-
         item.subtotal = producto.precioBase * cant;
-
         calculateCart(cart);
-
         req.session.cart = cart;
-
         req.session.save(err => {
-
             if (err) {
                 console.error(err);
 
@@ -274,7 +234,6 @@ exports.update_carrito = async (req, res) => {
                     message: "Error guardando sesión"
                 });
             }
-
             return res.json({
                 success: true,
                 message: "Carrito actualizado",
@@ -283,9 +242,7 @@ exports.update_carrito = async (req, res) => {
         });
 
     } catch (err) {
-
         console.error(err);
-
         return res.status(500).json({
             success: false,
             message: err.message
@@ -300,25 +257,18 @@ exports.update_carrito = async (req, res) => {
 exports.checkout = async (req, res) => {
 
     try {
-
         console.log("🔴 [CHECKOUT] SESSION ID:", req.sessionID);
         console.log("🔴 [CHECKOUT] CART:", req.session.cart);
-
         const userId = req.session.user?._id;
-
         if (!userId) {
             return res.status(401).json({
                 success: false,
                 message: "No autenticado"
             });
         }
-
         const cart = getCart(req);
-
         if (!cart.items.length) {
-
             console.log("❌ [CHECKOUT] CARRITO VACÍO");
-
             return res.status(400).json({
                 success: false,
                 message: "Carrito vacío"
@@ -326,85 +276,66 @@ exports.checkout = async (req, res) => {
         }
 
         let total = 0;
-
         const detalles = [];
-
         for (const item of cart.items) {
-
             const productoDB = await Productdb.findById(item.productoId);
-
             if (!productoDB) {
                 return res.status(404).json({
                     success: false,
                     message: "Producto no encontrado"
                 });
             }
-
             const cantidad = Number(item.cantidad);
-
             if (productoDB.stock < cantidad) {
                 return res.status(400).json({
                     success: false,
                     message: `Stock insuficiente para ${productoDB.nombre}`
                 });
             }
-
             const subtotal = productoDB.precioBase * cantidad;
-
             total += subtotal;
-
             detalles.push({
                 producto: productoDB._id,
                 cantidad,
                 precioUnitario: productoDB.precioBase,
                 subtotal
             });
-
             productoDB.stock -= cantidad;
-
+            console.log("🧪 PRODUCTO CHECKOUT:", productoDB);
+            console.log("🧪 unidadBase:", productoDB.unidadBase);
             await productoDB.save();
         }
-
         const venta = await Salesdb.create({
             cliente: userId,
             total
         });
-
         for (const d of detalles) {
-
             await SaleDetaildb.create({
                 venta: venta._id,
                 ...d
             });
         }
-
         req.session.cart = {
             items: [],
             total: 0
         };
 
         req.session.save(err => {
-
             if (err) {
                 console.error(err);
-
                 return res.status(500).json({
                     success: false,
                     message: "Error limpiando carrito"
                 });
             }
-
             return res.json({
                 success: true,
                 message: "Venta realizada",
                 ventaId: venta._id
             });
         });
-
     } catch (err) {
-
         console.error("CHECKOUT ERROR:", err);
-
         return res.status(500).json({
             success: false,
             message: err.message
@@ -417,9 +348,7 @@ exports.checkout = async (req, res) => {
 // ======================================================
 
 exports.get_confirmacion = async (req, res) => {
-
     try {
-
         const ventaId = req.params.id;
 
         if (!ventaId) {
@@ -428,7 +357,6 @@ exports.get_confirmacion = async (req, res) => {
                 message: "ID inválido"
             });
         }
-
         const venta = await Salesdb.findById(ventaId)
             .populate('cliente');
 
@@ -442,17 +370,13 @@ exports.get_confirmacion = async (req, res) => {
         const detalles = await SaleDetaildb.find({
             venta: ventaId
         }).populate('producto');
-
         return res.json({
             success: true,
             venta,
             detalles
         });
-
     } catch (err) {
-
         console.error(err);
-
         return res.status(500).json({
             success: false,
             message: err.message

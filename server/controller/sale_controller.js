@@ -227,40 +227,130 @@ exports.findOne = async (req, res) => {
 
 
 exports.finalizarVenta = async (req, res) => {
+
     try {
 
-        const { cliente, total } = req.body;
+        const cart = req.session.cart;
+
+        if(!cart || !cart.items.length){
+
+            return res.status(400).json({
+                ok:false,
+                msg:"Carrito vacío"
+            });
+        }
+
+        const { cliente } = req.body;
+
+        if(!cliente){
+
+            return res.status(400).json({
+                ok:false,
+                msg:"Cliente requerido"
+            });
+        }
+
+        let total = 0;
+
+        const detalles = [];
+
+        for(const item of cart.items){
+
+            const producto = await Productdb.findById(item.productoId);
+
+            if(!producto){
+
+                return res.status(404).json({
+                    ok:false,
+                    msg:`Producto no existe`
+                });
+            }
+
+            if(producto.stock < item.cantidad){
+
+                return res.status(400).json({
+                    ok:false,
+                    msg:`Stock insuficiente para ${producto.nombre}`
+                });
+            }
+
+            producto.stock -= item.cantidad;
+
+            await producto.save();
+
+            const subtotal = item.cantidad * producto.precioBase;
+
+            total += subtotal;
+
+            detalles.push({
+                producto: producto._id,
+                cantidad: item.cantidad,
+                precioUnitario: producto.precioBase,
+                subtotal
+            });
+        }
 
         const venta = await Saledb.create({
             cliente,
-            total,
-            fecha: new Date(),
-            estado: "completada"
+            total
         });
+
+        for(const d of detalles){
+
+            await SaleDetaildb.create({
+                venta: venta._id,
+                ...d
+            });
+        }
+
+        req.session.cart = {
+            items: [],
+            total: 0
+        };
 
         return res.json({
-            ok: true,
-            venta
+            ok:true,
+            ventaId: venta._id
         });
 
-    } catch (error) {
+    } catch(error){
+
         console.error(error);
+
         return res.status(500).json({
-            ok: false,
-            msg: "Error al registrar venta"
+            ok:false,
+            msg:"Error al registrar venta"
         });
     }
 };
 
-exports.confirmacion = (req, res) => {
+exports.confirmacion = async (req, res) => {
 
-    const cart = req.session.cart || {
-        items: [],
-        total: 0
-    };
+    try{
 
-    res.render('admin/payment/checkout_confirmation', {
-        user: req.session.user,
-        cart
-    });
+        const ventaId = req.params.id;
+
+        const venta = await Salesdb
+            .findById(ventaId)
+            .populate("cliente");
+
+        const detalles = await SaleDetaildb
+            .find({ venta: ventaId })
+            .populate("producto");
+
+        res.render(
+            "admin/payment/checkout_confirmation",
+            {
+                venta,
+                detalles,
+                user: req.session.user
+            }
+        );
+
+    }catch(err){
+
+        console.error(err);
+
+        res.redirect("/carrito");
+    }
 };

@@ -19,4 +19,4 @@ const unitSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Unidad', unitSchema);
+module.exports = mongoose.model('Unidaddbs', unitSchema);
