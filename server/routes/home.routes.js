@@ -8,8 +8,7 @@ const servicesRenderBrand = require('../services/renderBrands');
 const servicesRenderProfile = require('../services/renderProfile');
 const servicesRenderCategory = require('../services/renderCategories');
 const servicesRenderProduct = require('../services/renderProducts');
-const cartController = require('../controller/cart_controller');
-
+const renderCart = require('../services/renderCart');
 
 router.get('/', servicesRenderHomeRutes.homeRoutes);
 router.get('/search', servicesRenderHomeRutes.search);
@@ -22,7 +21,5 @@ router.get('/Detalles/:id',  servicesRenderProduct.product_detail);
 router.get('/perfil', servicesRenderProfile.profile);
 router.get('/admin/perfil', servicesRenderProfile.profile);
 
-router.post('/checkout',isLogged, cartController.checkout);
-router.get('/checkout/confirmacion/:id',isLogged, cartController.confirmacion);
 
 module.exports = router;

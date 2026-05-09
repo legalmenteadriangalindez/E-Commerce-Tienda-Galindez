@@ -1,22 +1,49 @@
 const express = require('express');
 const router = express.Router();
 
-const { isLogged } = require('../middleware/auth');
+const { isLogged, isAdmin } = require('../middleware/auth');
+
 const cartController = require('../controller/cart_controller');
+const renderCart = require('../services/renderCart');
 
-router.get('/', isLogged, cartController.car);
-router.post('/', isLogged, cartController.car);
 
-router.post('/actualizar', isLogged, cartController.update_carrito);
-router.post('/eliminar', isLogged, cartController.remove_from_carrito);
+// ======================================================
+// API
+// ======================================================
 
+// obtener carrito
+router.get('/data', isLogged, cartController.get_cart);
+
+// agregar producto
 router.post('/add', isLogged, cartController.add_to_carrito);
+
+// eliminar producto
 router.post('/remove', isLogged, cartController.remove_from_carrito);
 
-router.get('/data', (req, res) => {
-    res.json(req.session.cart || { items: [], total: 0 });
-});
+// actualizar cantidad
+router.post('/actualizar', isLogged, cartController.update_carrito);
+
 // checkout
 router.post('/checkout', isLogged, cartController.checkout);
-router.get('/checkout/confirmacion/:id', isLogged, cartController.confirmacion);
+
+// obtener confirmación api
+router.get('/confirmacion/:id', isLogged, cartController.get_confirmacion);
+
+
+// ======================================================
+// VIEWS
+// ======================================================
+
+// carrito
+router.get('/', isLogged, renderCart.car);
+
+// payment point
+router.get('/payment-point', isLogged, renderCart.payment_point);
+
+// billing point admin
+router.get('/billing-point', isLogged, isAdmin, renderCart.billing_point);
+
+// confirmación
+router.get('/checkout/confirmacion/:id', isLogged, renderCart.confirmacion);
+
 module.exports = router;
