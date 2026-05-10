@@ -160,3 +160,34 @@ exports.delete_product = (req, res) => {
         })
         .catch(err => res.send(err));
 };
+
+
+exports.read_stock = async (req, res) => {
+
+    try {
+
+        const response = await axios.get('http://localhost:3000/read-Stock');
+
+        console.log(response.data);
+
+        res.render('admin/analytics/stock', {
+
+            stockAlerts: response.data.productos || [],
+
+            totalAlertas: response.data.totalAlertas || 0
+
+        });
+
+    } catch (err) {
+
+        console.error("ERROR RENDER STOCK:", err);
+
+        res.render('admin/analytics/stock', {
+
+            stockAlerts: [],
+
+            totalAlertas: 0
+
+        });
+    }
+};

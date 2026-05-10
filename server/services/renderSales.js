@@ -27,8 +27,8 @@ exports.sales = async (req, res) => {
     try {
         const response = await axios.get(`${API}/ventas`);
 
-        res.render('read_sales', {
-            sales: response.data
+        res.render('admin/sales/read_sales', {
+           sales: response.data
         });
 
     } catch (error) {
@@ -42,7 +42,7 @@ exports.view_sale = async (req, res) => {
     try {
         const response = await axios.get(`${API}/ventas/${req.query.id}`);
 
-        res.render('view_sale', {
+        res.render('admin/sales/view_sale', {
             sale: response.data
         });
 
@@ -59,7 +59,7 @@ exports.read_sale_details = async (req, res) => {
     try {
         const response = await axios.get(`${API}/detalle-ventas`);
 
-        res.render('read_detailsSales', {
+        res.render('admin/sales/read_detailsSales', {
             saleDetails: response.data
         });
 
@@ -85,5 +85,73 @@ exports.finalizarVenta = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+
+// ==========================================
+// GANANCIAS TOTALES
+// ==========================================
+
+exports.total_profit = async (req, res) => {
+
+    try {
+
+        const response = await axios.get(`${API}/ventas/analytics/total-profit`);
+
+        res.render(
+            'admin/analytics/total_profit',
+            {
+                profit: response.data
+            }
+        );
+
+    } catch (err) {
+
+        console.error("ERROR TOTAL PROFIT:", err);
+
+        res.render(
+            'admin/analytics/total_profit',
+            {
+                profit: {
+                    ingresosTotales: 0,
+                    costosTotales: 0,
+                    gananciasTotales: 0,
+                    margenPorcentaje: 0
+                }
+            }
+        );
+    }
+};
+
+
+
+// ==========================================
+// GANANCIAS POR PRODUCTO
+// ==========================================
+
+exports.profit_margins = async (req, res) => {
+
+    try {
+
+        const response = await axios.get(`${API}/ventas/analytics/profit-products`)
+
+        res.render(
+            'admin/analytics/profit_margins',
+            {
+                products: response.data || []
+            }
+        );
+
+    } catch (err) {
+
+        console.error("ERROR PROFIT PRODUCTS:", err);
+
+        res.render(
+            'admin/analytics/profit_margins',
+            {
+                products: []
+            }
+        );
     }
 };

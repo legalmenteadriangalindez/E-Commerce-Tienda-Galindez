@@ -387,3 +387,61 @@ exports.getSalesByDay = async () => {
         { name: "Jueves", value: 1600, label: "$1,600", color: "green" }
     ];
 };
+
+// stock bajo 
+exports.getStockAlerts = async (req, res) => {
+    try {
+
+        // límites configurables
+        const STOCK_CRITICO = 3;
+        const STOCK_BAJO = 10;
+
+        const productos = await Productdb.find()
+            .select('nombre stock precioBase categoria')
+            .populate('categoria')
+            .lean();
+
+        const resultado = productos.map(producto => {
+
+            let estado = "NORMAL";
+            let prioridad = 0;
+
+            if (producto.stock <= STOCK_CRITICO) {
+                estado = "CRITICO";
+                prioridad = 3;
+
+            } else if (producto.stock <= STOCK_BAJO) {
+                estado = "BAJO";
+                prioridad = 2;
+            }
+
+            return {
+                id: producto._id,
+                nombre: producto.nombre,
+                stock: producto.stock,
+                categoria: producto.categoria?.nombre || "Sin categoría",
+                estado,
+                prioridad
+            };
+        });
+
+        // ordenar primero los críticos
+        resultado.sort((a, b) => b.prioridad - a.prioridad);
+
+        // solo mostrar bajos/críticos
+        const alertas = resultado.filter(p => p.prioridad > 0);
+
+        res.status(200).send({
+            totalAlertas: alertas.length,
+            productos: alertas
+        });
+
+    } catch (err) {
+
+        console.error("ERROR STOCK ALERTS:", err);
+
+        res.status(500).send({
+            message: "Error validando stock"
+        });
+    }
+};

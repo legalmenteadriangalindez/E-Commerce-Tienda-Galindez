@@ -30,6 +30,7 @@ router.get('/update-producto/:id', isAdmin, servicesRenderProduct.update_product
 router.post('/update-producto/:id', isAdmin, servicesRenderProduct.update_products);
 router.get('/create-producto', isAdmin, servicesRenderProduct.create_product_form);
 router.get('/delete-producto/:id', isAdmin, servicesRenderProduct.delete_product);
+router.get('/read-stock', isAdmin, servicesRenderProduct.read_stock);
 
 router.get('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
 router.post('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
@@ -71,6 +72,11 @@ router.get('/read-user', isAdmin, servicesRenderUser.read_users);
 router.post('/update-user', isAdmin, servicesRenderUser.update_user);
 router.get('/update-user', isAdmin, servicesRenderUser.update_user);
 router.get('/delete-user/:id', isAdmin, servicesRenderUser.delete_user);
+
+router.get('/read-sales',isAdmin,servicesRenderSales.sales);
+router.get('/read-sale-details',isAdmin,servicesRenderSales.read_sale_details);
+router.get('/read-total-profit',isAdmin,servicesRenderSales.total_profit);
+router.get('/read-profit-margins',isAdmin,servicesRenderSales.profit_margins);
 
 router.post("/admin/finalizar-venta", saleController.finalizarVenta);
 router.get("/admin/confirmacion", saleController.confirmacion);

@@ -55,13 +55,13 @@ exports.create = async (req, res) => {
                 });
             }
 
-            const subtotal = producto.precio * item.cantidad;
+            const subtotal = producto.precioBase * item.cantidad;
             total += subtotal;
 
             detalles.push({
                 producto: item.producto,
                 cantidad: item.cantidad,
-                precioUnitario: producto.precio,
+                precioUnitario: producto.precioBase,
                 subtotal
             });
         }
@@ -330,7 +330,7 @@ exports.confirmacion = async (req, res) => {
 
         const ventaId = req.params.id;
 
-        const venta = await Salesdb
+        const venta = await Saledb
             .findById(ventaId)
             .populate("cliente");
 
@@ -352,5 +352,139 @@ exports.confirmacion = async (req, res) => {
         console.error(err);
 
         res.redirect("/carrito");
+    }
+};
+
+// ganancias totales
+exports.getTotalProfit = async (req, res) => {
+
+    try {
+
+        const detalles = await SaleDetaildb.find()
+            .populate('producto')
+            .lean();
+
+        let ingresosTotales = 0;
+        let costosTotales = 0;
+        let gananciasTotales = 0;
+
+        detalles.forEach(detalle => {
+
+            if (!detalle.producto) return;
+
+            const cantidad = detalle.cantidad;
+
+            const precioVenta = detalle.precioUnitario;
+
+            const precioCosto = detalle.producto.precioCosto;
+
+            const ingreso = precioVenta * cantidad;
+
+            const costo = precioCosto * cantidad;
+
+            const ganancia = ingreso - costo;
+
+            ingresosTotales += ingreso;
+
+            costosTotales += costo;
+
+            gananciasTotales += ganancia;
+        });
+
+        return res.status(200).json({
+
+            ingresosTotales,
+
+            costosTotales,
+
+            gananciasTotales,
+
+            margenPorcentaje:
+                ingresosTotales > 0
+                    ? ((gananciasTotales / ingresosTotales) * 100).toFixed(2)
+                    : 0
+        });
+
+    } catch (err) {
+
+        console.error("ERROR TOTAL PROFIT:", err);
+
+        return res.status(500).json({
+            message: "Error calculando ganancias"
+        });
+    }
+};
+
+
+// ganancias por producto 
+exports.getProfitByProduct = async (req, res) => {
+
+    try {
+
+        const detalles = await SaleDetaildb.find()
+            .populate('producto')
+            .lean();
+
+        const productosMap = {};
+
+        detalles.forEach(detalle => {
+
+            if (!detalle.producto) return;
+
+            const producto = detalle.producto;
+
+            const id = producto._id.toString();
+
+            const cantidad = detalle.cantidad;
+
+            const precioVenta = detalle.precioUnitario;
+
+            const precioCosto = producto.precioCosto;
+
+            const ingreso = precioVenta * cantidad;
+
+            const costo = precioCosto * cantidad;
+
+            const ganancia = ingreso - costo;
+
+            if (!productosMap[id]) {
+
+                productosMap[id] = {
+
+                    productoId: id,
+
+                    nombre: producto.nombre,
+
+                    vendidos: 0,
+
+                    ingresos: 0,
+
+                    costos: 0,
+
+                    ganancias: 0
+                };
+            }
+
+            productosMap[id].vendidos += cantidad;
+
+            productosMap[id].ingresos += ingreso;
+
+            productosMap[id].costos += costo;
+
+            productosMap[id].ganancias += ganancia;
+        });
+
+        const resultado = Object.values(productosMap)
+            .sort((a, b) => b.ganancias - a.ganancias);
+
+        return res.status(200).json(resultado);
+
+    } catch (err) {
+
+        console.error("ERROR PROFIT PRODUCTS:", err);
+
+        return res.status(500).json({
+            message: "Error calculando ganancias por producto"
+        });
     }
 };
