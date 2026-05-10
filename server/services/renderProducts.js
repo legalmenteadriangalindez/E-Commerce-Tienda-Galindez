@@ -166,7 +166,7 @@ exports.read_stock = async (req, res) => {
 
     try {
 
-        const response = await axios.get('http://localhost:3000/read-Stock');
+        const response = await axios.get('http://localhost:3000/api/productos/read-Stock');
 
         console.log(response.data);
 

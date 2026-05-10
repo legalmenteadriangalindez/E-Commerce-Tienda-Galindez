@@ -13,6 +13,8 @@ const servicesRenderUser = require('../services/renderUsers');
 const servicesRenderPaymentPoint = require('../services/RenderPaymentPoint');
 const servicesRenderAdminAnalytics = require('../services/renderAdminAnalytics');
 const servicesRenderBrand = require('../services/renderBrands');
+const servicesRenderOrders = require('../services/renderOrders');
+const servicesRenderPayments = require('../services/paymentRender');
 const brandController = require('../controller/brand_controller');
 const saleController = require('../controller/sale_controller');
 const cartController = require('../controller/cart_controller');
@@ -22,6 +24,7 @@ const upload = require('../middleware/upload');
 router.get('/read-categoria', isAdmin, servicesRenderCategory.read_categories);
 router.get('/create-categoria', isAdmin, servicesRenderCategory.create_category_form);
 router.get('/update-categoria', isAdmin, servicesRenderCategory.update_category);
+router.post('/create-categoria', isAdmin, servicesRenderCategory.create_category);
 
 router.post('/create-producto',isAdmin, servicesRenderProduct.create_product);
 router.get('/read-producto', isAdmin, servicesRenderProduct.read_products);
@@ -30,7 +33,27 @@ router.get('/update-producto/:id', isAdmin, servicesRenderProduct.update_product
 router.post('/update-producto/:id', isAdmin, servicesRenderProduct.update_products);
 router.get('/create-producto', isAdmin, servicesRenderProduct.create_product_form);
 router.get('/delete-producto/:id', isAdmin, servicesRenderProduct.delete_product);
+
+
 router.get('/read-stock', isAdmin, servicesRenderProduct.read_stock);
+
+// ==================== ORDERS ====================
+router.get('/create-order',isAdmin,servicesRenderOrders.create_order_form);
+router.post('/create-order',isAdmin,servicesRenderOrders.create_order);
+router.get('/read-order',isAdmin,servicesRenderOrders.read_orders);
+router.post('/read-order',isAdmin,servicesRenderOrders.read_orders);
+router.get('/update-order',isAdmin,servicesRenderOrders.update_order);
+router.post('/update-order/:id',isAdmin,servicesRenderOrders.update_order_data);
+router.get('/delete-order/:id',isAdmin,servicesRenderOrders.delete_order);
+
+// ==================== PAYMENTS ====================
+router.get('/create-payment',isAdmin,servicesRenderPayments.create_payment_form);
+router.post('/create-payment',isAdmin,servicesRenderPayments.create_payment);
+router.get('/read-payment',isAdmin,servicesRenderPayments.read_payments);
+router.post('/read-payment',isAdmin,servicesRenderPayments.read_payments);
+router.get('/update-payment',isAdmin,servicesRenderPayments.update_payment);
+router.post('/update-payment/:id',isAdmin,servicesRenderPayments.update_payment_data);
+router.get('/delete-payment/:id',isAdmin,servicesRenderPayments.delete_payment);
 
 router.get('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
 router.post('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
