@@ -26,6 +26,30 @@ exports.find = (req,res)=>{
         .catch(err => res.status(500).send(err))
 }
 
+exports.findOne = async (req, res) => {
+    try {
+
+        const nombre = req.params.nombre;
+
+        const brand = await Brand_db.findOne({ nombre }).populate('productos');
+
+        if (!brand) {
+            return res.status(404).send({
+                message: "Marca no encontrada"
+            });
+        }
+
+        res.send(brand);
+
+    } catch (err) {
+
+        res.status(500).send({
+            message: err.message
+        });
+
+    }
+};
+
 exports.getBrandForEdit = async (req, res) => {
     try {
         const brand = await Brand_db.findById(req.query.id); 

@@ -7,6 +7,7 @@ const brandController = require('../controller/brand_controller');
 // ✅ API REST (SIN prefijo duplicado)
 router.post('/', upload.single('foto'), brandController.create);
 router.get('/', brandController.find);
+router.get('/:nombre', brandController.findOne);
 router.put('/:id', upload.single('foto'), brandController.update);
 router.delete('/:id', brandController.delete);
 

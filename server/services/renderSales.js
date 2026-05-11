@@ -55,16 +55,32 @@ exports.view_sale = async (req, res) => {
 
 
 // ==================== DETALLES ====================
-exports.read_sale_details = async (req, res) => {
-    try {
-        const response = await axios.get(`${API}/detalle-ventas`);
+exports.saleDetailView = async (req, res) => {
 
-        res.render('admin/sales/read_detailsSales', {
-            saleDetails: response.data
-        });
+    try {
+
+        const { id } = req.params;
+
+        // CONSUMIR API
+        const response = await axios.get(
+            `${API}/ventas/${id}`
+        );
+
+        const venta = response.data;
+
+        res.render(
+            "admin/sales/read_detailsSales",
+            {
+                venta,
+                detalles: venta.detalles || []
+            }
+        );
 
     } catch (error) {
-        res.send(error.message);
+
+        console.error(error);
+
+        res.status(500).send(error.message);
     }
 };
 

@@ -97,7 +97,8 @@ router.get('/update-user', isAdmin, servicesRenderUser.update_user);
 router.get('/delete-user/:id', isAdmin, servicesRenderUser.delete_user);
 
 router.get('/read-sales',isAdmin,servicesRenderSales.sales);
-router.get('/read-sale-details',isAdmin,servicesRenderSales.read_sale_details);
+router.get('/read-sale-details',isAdmin,servicesRenderSales.saleDetailView);
+router.get('/sale/:id', servicesRenderSales.saleDetailView);
 router.get('/read-total-profit',isAdmin,servicesRenderSales.total_profit);
 router.get('/read-profit-margins',isAdmin,servicesRenderSales.profit_margins);
 

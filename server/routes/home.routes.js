@@ -14,6 +14,7 @@ router.get('/', servicesRenderHomeRutes.homeRoutes);
 router.get('/search', servicesRenderHomeRutes.search);
 router.get('/promociones', servicesRenderPromotions.promotions);
 router.get('/marcas', servicesRenderBrand.brands);
+router.get('/brand/:marca', servicesRenderBrand.Productbrands);
 router.get('/categoria/:nombre', servicesRenderCategory.category);
 router.get('/Detalles/:id',  servicesRenderProduct.product_detail);
 

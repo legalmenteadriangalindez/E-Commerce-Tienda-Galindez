@@ -204,24 +204,58 @@ exports.delete = async (req, res) => {
 };
 
 exports.findOne = async (req, res) => {
-    try {
-        const venta = await Saledb.findById(req.params.id)
-            .populate("cliente");
 
-        if (!venta) {
-            return res.status(404).send({ message: "Venta no encontrada" });
+    try {
+
+        const { id } = req.params;
+
+        // VALIDAR OBJECTID
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+
+            return res.status(400).send({
+                message: "ID inválido"
+            });
         }
 
-        const detalles = await SaleDetaildb.find({ venta: venta._id })
-            .populate("producto");
+        // OBTENER VENTA
+        const venta = await Saledb.findById(id)
+            .populate("cliente")
+            .lean();
 
-        res.send({
-            ...venta.toObject(),
-            detalles
+        if (!venta) {
+
+            return res.status(404).send({
+                message: "Venta no encontrada"
+            });
+        }
+
+        // OBTENER DETALLES
+        const detalles = await SaleDetaildb.find({
+            venta: id
+        })
+        .populate("producto")
+        .populate({
+            path: "venta",
+            populate: {
+                path: "cliente"
+            }
+        })
+        .lean();
+
+        // AGREGAR DETALLES A LA VENTA
+        venta.detalles = detalles;
+
+        // RESPUESTA API
+        return res.status(200).json(venta);
+
+    } catch (error) {
+
+        console.error(error);
+
+        return res.status(500).send({
+            message: "Error obteniendo venta",
+            error: error.message
         });
-
-    } catch (err) {
-        res.status(500).send(err);
     }
 };
 
