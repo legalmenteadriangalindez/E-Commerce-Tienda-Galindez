@@ -11,6 +11,7 @@
       <tr>
         <th scope="col" hidden>#</th>
         <th scope="col">Venta</th>
+        <th scope="col">Cliente</th>
         <th scope="col">Producto</th>
         <th scope="col">Cantidad</th>
         <th scope="col">Precio Unitario</th>
@@ -20,12 +21,16 @@
       </tr>
     </thead>
     <tbody>
-      <% saleDetails.forEach(function(detail) { %>
+      <% detalles.forEach(function(detail) { %>
       <tr>
         <th scope="row" hidden><%= detail._id %></th>
 
         <td>
           <%= detail.venta ? detail.venta._id : 'N/A' %>
+        </td>
+
+        <td>
+          <%= detail.venta?.cliente?.nombre || 'N/A' %>
         </td>
 
         <td>
@@ -46,7 +51,7 @@
       </tr>
       <% }); %>
         <tr>
-          <td colspan="4" >
+          <td colspan="8" >
           <a href="/create-sale-detail" class="btn btn-primary">Crear Nueva Detalle de Venta</a>
         </td>
       </tr>

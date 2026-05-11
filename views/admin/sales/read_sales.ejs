@@ -8,42 +8,151 @@
 <h1>Gestionar Ventas</h1>
 </div>
   <table class="table">
+
     <thead>
-      <tr>
-        <th scope="col" hidden>#</th>
-        <th scope="col">Fecha</th>
-        <th scope="col">Total</th>
-        <th scope="col">Editar</th>
-        <th scope="col">Eliminar</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% sales.forEach(function(sale) { %>
-      <tr>
-        <th scope="row" hidden><%= sale._id %></th>
-
-        <td>
-          <%= new Date(sale.fecha).toLocaleDateString() %>
-        </td>
-
-        <td>$ <%= sale.total %></td>
-
-        <td>
-          <a href="/update-sale?id=<%= sale._id %>" class="btn btn-success">Editar</a>
-        </td>
-
-        <td>
-          <a href="/api/sales/<%= sale._id %>" class="btn btn-danger delete">Eliminar</a>
-        </td>
-      </tr>
-      <% }); %>
         <tr>
-          <td colspan="4" >
-          <a href="/create-ventas-form" class="btn btn-primary">Crear Nueva Venta</a>
-        </td>
-      </tr>
+
+            <th hidden>#</th>
+
+            <th>Fecha</th>
+
+            <th>Producto</th>
+
+            <th>Cantidad</th>
+
+            <th>Cliente</th>
+
+            <th>Método Pago</th>
+
+            <th>Total</th>
+
+            <th>Detalles</th>
+
+            <th>Editar</th>
+
+            <th>Eliminar</th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+
+        <% sales.forEach(function(sale) { %>
+
+        <tr>
+
+            <th hidden>
+                <%= sale._id %>
+            </th>
+
+            <!-- FECHA -->
+            <td>
+                <%= new Date(sale.fecha).toLocaleDateString() %>
+            </td>
+
+            <!-- PRODUCTO -->
+            <td>
+
+                <% if(sale.detalles && sale.detalles.length > 0){ %>
+
+                    <% sale.detalles.forEach(function(detalle){ %>
+
+                        <div>
+                            <%= detalle.producto ? detalle.producto.nombre : 'Sin producto' %>
+                        </div>
+
+                    <% }) %>
+
+                <% } else { %>
+
+                    Sin productos
+
+                <% } %>
+
+            </td>
+
+            <!-- CANTIDAD -->
+            <td>
+
+                <% if(sale.detalles && sale.detalles.length > 0){ %>
+
+                    <% sale.detalles.forEach(function(detalle){ %>
+
+                        <div>
+                            <%= detalle.cantidad %>
+                        </div>
+
+                    <% }) %>
+
+                <% } %>
+
+            </td>
+
+            <!-- CLIENTE -->
+            <td>
+                <%= sale.cliente?.nombre || 'Consumidor Final' %>
+            </td>
+
+            <!-- MÉTODO PAGO -->
+            <td>
+                <%= sale.metodo_pago || 'No definido' %>
+            </td>
+
+            <!-- TOTAL -->
+            <td>
+                $ <%= sale.total %>
+            </td>
+
+            <!-- DETALLES -->
+            <td>
+                <a 
+                    href="/sale/<%= sale._id %>"
+                    class="btn btn-info"
+                >
+                    Detalles
+                </a>
+            </td>
+
+            <!-- EDITAR -->
+            <td>
+                <a 
+                    href="/update-sale?id=<%= sale._id %>"
+                    class="btn btn-success"
+                >
+                    Editar
+                </a>
+            </td>
+
+            <!-- ELIMINAR -->
+            <td>
+                <a 
+                    href="/api/sales/<%= sale._id %>"
+                    class="btn btn-danger delete"
+                >
+                    Eliminar
+                </a>
+            </td>
+
+        </tr>
+
+        <% }); %>
+
+        <tr>
+            <td colspan="10">
+
+                <a 
+                    href="/create-ventas-form"
+                    class="btn btn-primary"
+                >
+                    Crear Nueva Venta
+                </a>
+
+            </td>
+        </tr>
+
     </tbody>
-  </table>
+
+</table>
 
 </main>
 
