@@ -159,6 +159,11 @@ document.addEventListener("click", function(e){
 function finalizarVenta(){
 
     window.location.href ="/carrito/checkout/confirmacion";
+    const metodoPago = document.querySelector(
+    'input[name="metodoPago"]:checked'
+    ).value;
+
+    console.log(metodoPago);
 }
 
 
