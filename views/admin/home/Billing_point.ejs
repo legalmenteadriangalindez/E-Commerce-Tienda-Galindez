@@ -98,20 +98,44 @@
             </div>
 
             <div class="methods-group">
-                <div class="method-option selected">
-                    <input type="radio" checked>
-                    <label><i class="fas fa-money-bill-wave"></i> Efectivo</label>
+
+                <div class="method-option">
+                    <input 
+                        type="radio"
+                        name="metodoPago"
+                        value="EFECTIVO"
+                        checked
+                    >
+                    <label>
+                        <i class="fas fa-money-bill-wave"></i>
+                        Efectivo
+                    </label>
                 </div>
 
                 <div class="method-option">
-                    <input type="radio">
-                    <label><i class="fas fa-credit-card"></i> Tarjeta</label>
+                    <input 
+                        type="radio"
+                        name="metodoPago"
+                        value="TARJETA"
+                    >
+                    <label>
+                        <i class="fas fa-credit-card"></i>
+                        Tarjeta
+                    </label>
                 </div>
 
                 <div class="method-option">
-                    <input type="radio">
-                    <label><i class="fas fa-mobile-alt"></i> Transferencia</label>
+                    <input 
+                        type="radio"
+                        name="metodoPago"
+                        value="TRANSFERENCIA"
+                    >
+                    <label>
+                        <i class="fas fa-mobile-alt"></i>
+                        Transferencia
+                    </label>
                 </div>
+
             </div>
 
             <div class="divider"></div>
@@ -135,3 +159,4 @@
 <br>
 <!-- include footer -->
 <%- include('../../include/_footerAdmin') %>
+

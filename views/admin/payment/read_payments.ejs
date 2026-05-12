@@ -1,12 +1,9 @@
-<!-- include header -->
 <%- include('../../include/_headerAdmin') %>
-<!-- /include header -->
-
 
 <main>
 
 <div>
-    <h1>Gestionar Pagos</h1>
+    <h1>Métodos de Pago</h1>
 </div>
 
 <table class="table">
@@ -14,27 +11,17 @@
     <thead>
 
         <tr>
-
-            <th scope="col" hidden>#</th>
-
-            <th scope="col">Orden</th>
-
-            <th scope="col">Usuario</th>
-
-            <th scope="col">Método</th>
-
-            <th scope="col">Monto</th>
-
-            <th scope="col">Estado</th>
-
-            <th scope="col">Proveedor</th>
-
-            <th scope="col">Fecha</th>
-
-            <th scope="col">Editar</th>
-
-            <th scope="col">Eliminar</th>
-
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Código</th>
+            <th>Tipo</th>
+            <th>Descripción</th>
+            <th>Comisión</th>
+            <th>Activo</th>
+            <th>Monedas</th>
+            <th>Fecha</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
         </tr>
 
     </thead>
@@ -45,99 +32,46 @@
 
         <tr>
 
-            <th scope="row" hidden>
-                <%= payment._id %>
-            </th>
+            <td><%= payment._id %></td>
 
-            <td>
-                <%= payment.orden?.numeroOrden || 'Sin orden' %>
-            </td>
+            <td><%= payment.nombre %></td>
 
-            <td>
-                <%= payment.usuario?.nombre || 'Sin usuario' %>
-            </td>
+            <td><%= payment.codigo %></td>
 
-            <td>
-                <%= payment.metodo %>
-            </td>
+            <td><%= payment.tipo %></td>
 
-            <td>
-                $ <%= payment.monto?.toLocaleString() %>
-                <%= payment.moneda %>
-            </td>
+            <td><%= payment.descripcion || 'Sin descripción' %></td>
+
+            <td><%= payment.comision %> %</td>
 
             <td>
 
-                <% if(payment.estado === 'PENDIENTE') { %>
-
-                    <span class="badge bg-warning text-dark">
-                        <%= payment.estado %>
-                    </span>
-
-                <% } %>
-
-                <% if(payment.estado === 'APROBADO') { %>
-
-                    <span class="badge bg-success">
-                        <%= payment.estado %>
-                    </span>
-
-                <% } %>
-
-                <% if(payment.estado === 'RECHAZADO') { %>
-
-                    <span class="badge bg-danger">
-                        <%= payment.estado %>
-                    </span>
-
-                <% } %>
-
-                <% if(payment.estado === 'EXPIRADO') { %>
-
-                    <span class="badge bg-secondary">
-                        <%= payment.estado %>
-                    </span>
-
-                <% } %>
-
-                <% if(payment.estado === 'REEMBOLSADO') { %>
-
-                    <span class="badge bg-info">
-                        <%= payment.estado %>
-                    </span>
-
+                <% if(payment.activo) { %>
+                    <span class="badge bg-success">Activo</span>
+                <% } else { %>
+                    <span class="badge bg-danger">Inactivo</span>
                 <% } %>
 
             </td>
 
             <td>
-                <%= payment.proveedorPago %>
+                <%= payment.monedas?.join(', ') || 'COP' %>
             </td>
 
             <td>
-                <%= new Date(payment.createdAt).toLocaleDateString() %>
+                <%= new Date(payment.fecha_creacion).toLocaleDateString() %>
             </td>
 
             <td>
-
-                <a 
-                    href="/update-payment?id=<%= payment._id %>"
-                    class="btn btn-success"
-                >
+                <a href="/update-payment-method/?id=<%= payment._id %>" class="btn btn-success">
                     Editar
                 </a>
-
             </td>
 
             <td>
-
-                <a 
-                    href="/delete-payment/<%= payment._id %>"
-                    class="btn btn-danger delete"
-                >
+                <a href="/delete-payment/<%= payment._id %>" class="btn btn-danger delete">
                     Eliminar
                 </a>
-
             </td>
 
         </tr>
@@ -145,18 +79,11 @@
         <% }); %>
 
         <tr>
-
-            <td colspan="10">
-
-                <a 
-                    href="/create-payment"
-                    class="btn btn-primary"
-                >
-                    Crear Nuevo Pago
+            <td colspan="11">
+                <a href="/create-payment" class="btn btn-primary">
+                    Crear nuevo método de pago
                 </a>
-
             </td>
-
         </tr>
 
     </tbody>
@@ -165,7 +92,4 @@
 
 </main>
 
-
-<!-- include footer -->
 <%- include('../../include/_footerAdmin') %>
-<!-- /include footer -->

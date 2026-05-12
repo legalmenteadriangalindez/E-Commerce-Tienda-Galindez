@@ -8,84 +8,53 @@
 <h1>Gestionar Ventas</h1>
 </div>
   <table class="table">
-
     <thead>
         <tr>
-
             <th hidden>#</th>
-
             <th>Fecha</th>
-
             <th>Producto</th>
-
             <th>Cantidad</th>
-
             <th>Cliente</th>
-
             <th>Método Pago</th>
-
             <th>Total</th>
-
             <th>Detalles</th>
-
-            <th>Editar</th>
-
-            <th>Eliminar</th>
-
+            <!-- <th>Editar</th>
+            <th>Eliminar</th> -->
         </tr>
     </thead>
 
     <tbody>
 
         <% sales.forEach(function(sale) { %>
-
         <tr>
-
             <th hidden>
                 <%= sale._id %>
             </th>
-
             <!-- FECHA -->
             <td>
                 <%= new Date(sale.fecha).toLocaleDateString() %>
             </td>
-
             <!-- PRODUCTO -->
             <td>
-
                 <% if(sale.detalles && sale.detalles.length > 0){ %>
-
                     <% sale.detalles.forEach(function(detalle){ %>
-
                         <div>
                             <%= detalle.producto ? detalle.producto.nombre : 'Sin producto' %>
                         </div>
-
                     <% }) %>
-
                 <% } else { %>
-
                     Sin productos
-
                 <% } %>
-
             </td>
-
             <!-- CANTIDAD -->
             <td>
-
                 <% if(sale.detalles && sale.detalles.length > 0){ %>
-
                     <% sale.detalles.forEach(function(detalle){ %>
-
                         <div>
                             <%= detalle.cantidad %>
                         </div>
-
                     <% }) %>
-
                 <% } %>
-
             </td>
 
             <!-- CLIENTE -->
@@ -105,55 +74,29 @@
 
             <!-- DETALLES -->
             <td>
-                <a 
-                    href="/sale/<%= sale._id %>"
-                    class="btn btn-info"
-                >
-                    Detalles
-                </a>
+                <a href="/sale/<%= sale._id %>"class="btn btn-info">Detalles</a>
             </td>
 
             <!-- EDITAR -->
-            <td>
-                <a 
-                    href="/update-sale?id=<%= sale._id %>"
-                    class="btn btn-success"
-                >
-                    Editar
-                </a>
-            </td>
+            <!-- <td>
+                <a href="/update-sale?id=<%= sale._id %>"class="btn btn-success">Editar</a>
+            </td> -->
 
             <!-- ELIMINAR -->
-            <td>
-                <a 
-                    href="/api/sales/<%= sale._id %>"
-                    class="btn btn-danger delete"
-                >
-                    Eliminar
-                </a>
-            </td>
-
+            <!-- <td>
+                <a href="/api/sales/<%= sale._id %>"class="btn btn-danger delete">Eliminar</a>
+            </td> -->
         </tr>
 
         <% }); %>
 
         <tr>
             <td colspan="10">
-
-                <a 
-                    href="/create-ventas-form"
-                    class="btn btn-primary"
-                >
-                    Crear Nueva Venta
-                </a>
-
+                <a href="/create-ventas-form"class="btn btn-primary">Crear Nueva Venta</a>
             </td>
         </tr>
-
     </tbody>
-
 </table>
-
 </main>
 
 
