@@ -1,80 +1,68 @@
 const axios = require('axios');
 
 
-// ==================== PAGOS ============================
+exports.create_payment_method_form = async (req, res) => {
+    try {
+        res.render('admin/payment/create_payment');
+    } catch (err) {
+        console.error("ERROR CREATE PAYMENT FORM:", err);
+        res.status(500).send(err.message);
+    }
+};
 
+exports.renderCreatePayment = async (req, res) => {
+    try {
+        const response = await axios.post("http://localhost:3000/api/payments", req.body);
 
-// ======================================
-// FORMULARIO CREAR PAGO
-// ======================================
-exports.create_payment_form = async (req, res) => {
+        const payment = response.data.data;
+
+        res.render("admin\payment\read_payments", {
+            message: response.data.message,
+        });
+
+    } catch (error) {
+        console.error("ERROR CREATE PAYMENT:", error);
+        res.send(error.message);
+    }
+};
+
+exports.read_payments = async (req, res) => {
 
     try {
 
-        const [ordersRes, usersRes] = await Promise.all([
+        const response = await axios.get(
+            'http://localhost:3000/api/payments'
+        );
 
-            axios.get('http://localhost:3000/api/orders'),
-
-            axios.get('http://localhost:3000/api/users')
-        ]);
-
-        res.render('admin/payments/create_payment', {
-
-            orders: ordersRes.data,
-
-            users: usersRes.data
-        });
+        res.render(
+            'admin/payment/read_payments',
+            {
+                payments: response.data.data
+            }
+        );
 
     } catch (err) {
-
-        console.error("ERROR CREATE PAYMENT FORM:", err);
 
         res.send(err.message);
     }
 };
 
 
-// ======================================
-// LISTAR PAGOS
-// ======================================
-exports.read_payments = (req, res) => {
-
-    axios.get('http://localhost:3000/api/payments')
-
-        .then(response => {
-
-            res.render('admin/payment/read_payments', {
-
-                payments: response.data
-            });
-        })
-
-        .catch(err => {
-
-            console.error("ERROR READ PAYMENTS:", err);
-
-            res.send(err.message);
-        });
-};
-
-
-// ======================================
-// FORMULARIO EDITAR PAGO
-// ======================================
 exports.update_payment = async (req, res) => {
 
     try {
 
         const id = req.query.id;
 
-        const response = await axios.get(
+        const 
+            paymentRes= await axios.get(`http://localhost:3000/api/payments/${id}`);
 
-            `http://localhost:3000/api/payments?id=${id}`
-        );
+        
 
-        res.render('admin/payments/update_payment', {
+        res.render('admin/payment/update_payment', {
 
-            payment: response.data
+            payment: paymentRes.data.data,
+
         });
 
     } catch (err) {
@@ -86,58 +74,39 @@ exports.update_payment = async (req, res) => {
 };
 
 
-// ======================================
-// CREAR PAGO
-// ======================================
-exports.create_payment = (req, res) => {
+exports.update_payment_data = async (req, res) => {
 
-    console.log("BODY PAYMENT:", req.body);
+    try {
 
-    axios.post(
+        await axios.put(
 
-        'http://localhost:3000/api/payments',
+            `http://localhost:3000/api/payments/${req.params.id}`,
 
-        req.body
-    )
-
-    .then(() => {
+            req.body
+        );
 
         res.redirect('/read-payment');
-    })
 
-    .catch(err => {
+    } catch (err) {
 
-        console.error(
-
-            err.response?.data || err.message
-        );
-
-        res.send(
-
-            err.response?.data || err.message
-        );
-    });
+        res.send(err.message);
+    }
 };
 
 
-// ======================================
-// ACTUALIZAR PAGO
-// ======================================
-exports.update_payment_data = (req, res) => {
 
-    axios.put(
+exports.delete_payment = async (req, res) => {
 
-        `http://localhost:3000/api/payments/${req.params.id}`,
+    try {
 
-        req.body
-    )
+        await axios.delete(
 
-    .then(() => {
+            `http://localhost:3000/api/payments/${req.params.id}`
+        );
 
         res.redirect('/read-payment');
-    })
 
-    .catch(err => {
+    } catch (err) {
 
         console.error(
 
@@ -148,35 +117,5 @@ exports.update_payment_data = (req, res) => {
 
             err.response?.data || err.message
         );
-    });
-};
-
-
-// ======================================
-// ELIMINAR PAGO
-// ======================================
-exports.delete_payment = (req, res) => {
-
-    axios.delete(
-
-        `http://localhost:3000/api/payments/${req.params.id}`
-    )
-
-    .then(() => {
-
-        res.redirect('/read-payment');
-    })
-
-    .catch(err => {
-
-        console.error(
-
-            err.response?.data || err.message
-        );
-
-        res.send(
-
-            err.response?.data || err.message
-        );
-    });
+    }
 };

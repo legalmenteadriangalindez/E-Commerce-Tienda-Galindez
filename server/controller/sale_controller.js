@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Saledb = require('../model/sales');
 const SaleDetaildb = require('../model/saleDetails');
 const Productdb = require('../model/product');
-
+const Paymentdb = require('../model/payment');
 
 
 // CREATE (CON TRANSACCIÓN REAL)
@@ -209,7 +209,6 @@ exports.findOne = async (req, res) => {
 
         const { id } = req.params;
 
-        // VALIDAR OBJECTID
         if (!mongoose.Types.ObjectId.isValid(id)) {
 
             return res.status(400).send({
@@ -217,9 +216,10 @@ exports.findOne = async (req, res) => {
             });
         }
 
-        // OBTENER VENTA
+        // VENTA + CLIENTE + PAGO
         const venta = await Saledb.findById(id)
             .populate("cliente")
+            .populate("pago")
             .lean();
 
         if (!venta) {
@@ -229,23 +229,16 @@ exports.findOne = async (req, res) => {
             });
         }
 
-        // OBTENER DETALLES
+        // DETALLES + PRODUCTOS
         const detalles = await SaleDetaildb.find({
             venta: id
         })
         .populate("producto")
-        .populate({
-            path: "venta",
-            populate: {
-                path: "cliente"
-            }
-        })
         .lean();
 
-        // AGREGAR DETALLES A LA VENTA
+        // AGREGAR DETALLES
         venta.detalles = detalles;
 
-        // RESPUESTA API
         return res.status(200).json(venta);
 
     } catch (error) {
@@ -265,7 +258,7 @@ exports.finalizarVenta = async (req, res) => {
     try {
 
         const cart = req.session.cart;
-
+        const metodoPago = cart.metodoPago;
         if(!cart || !cart.items.length){
 
             return res.status(400).json({
@@ -329,6 +322,24 @@ exports.finalizarVenta = async (req, res) => {
             total
         });
 
+        const pago = await Paymentdb.create({
+
+            venta: venta._id,
+
+            usuario: cliente,
+
+            metodo: metodoPago,
+
+            estado: 'APROBADO',
+
+            monto: total
+
+        });
+
+        venta.pago = pago._id;
+
+        await venta.save();
+
         for(const d of detalles){
 
             await SaleDetaildb.create({
@@ -339,7 +350,8 @@ exports.finalizarVenta = async (req, res) => {
 
         req.session.cart = {
             items: [],
-            total: 0
+            total: 0,
+            metodoPago: null
         };
 
         return res.json({

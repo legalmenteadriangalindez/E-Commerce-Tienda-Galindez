@@ -89,12 +89,14 @@ exports.finalizarVenta = async (req, res) => {
 
     try {
 
-        const carrito = req.body.carrito;
+        const {carrito,metodoPago} = req.body;
 
         // 🔥 guardar en sesión
         req.session.cart = {
             items: carrito,
-            total: carrito.reduce((acc, item) => acc + item.subtotal, 0)
+            total: carrito.reduce((acc, item) => acc + item.subtotal, 0),
+
+            metodoPago
         };
 
         res.json({ ok: true });

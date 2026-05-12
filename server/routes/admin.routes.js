@@ -15,6 +15,7 @@ const servicesRenderAdminAnalytics = require('../services/renderAdminAnalytics')
 const servicesRenderBrand = require('../services/renderBrands');
 const servicesRenderOrders = require('../services/renderOrders');
 const servicesRenderPayments = require('../services/paymentRender');
+// const servicesRenderPaymentsMethods = require('../services/paymentMethodRender');
 const brandController = require('../controller/brand_controller');
 const saleController = require('../controller/sale_controller');
 const cartController = require('../controller/cart_controller');
@@ -47,17 +48,30 @@ router.post('/update-order/:id',isAdmin,servicesRenderOrders.update_order_data);
 router.get('/delete-order/:id',isAdmin,servicesRenderOrders.delete_order);
 
 // ==================== PAYMENTS ====================
-router.get('/create-payment',isAdmin,servicesRenderPayments.create_payment_form);
-router.post('/create-payment',isAdmin,servicesRenderPayments.create_payment);
+router.get('/create-payment',isAdmin,servicesRenderPayments.create_payment_method_form);
+router.post('/create-payment',isAdmin,servicesRenderPayments.renderCreatePayment);
 router.get('/read-payment',isAdmin,servicesRenderPayments.read_payments);
 router.post('/read-payment',isAdmin,servicesRenderPayments.read_payments);
-router.get('/update-payment',isAdmin,servicesRenderPayments.update_payment);
-router.post('/update-payment/:id',isAdmin,servicesRenderPayments.update_payment_data);
-router.get('/delete-payment/:id',isAdmin,servicesRenderPayments.delete_payment);
+// router.get('/update-payment',isAdmin,servicesRenderPayments.update_payment);
+// router.post('/update-payment/:id',isAdmin,servicesRenderPayments.update_payment_data);
+// router.get('/delete-payment/:id',isAdmin,servicesRenderPayments.delete_payment);
+
+
+
+// ==================== PAYMENT METHODS ====================
+// router.get('/create-payment-method',isAdmin,servicesRenderPaymentsMethods.create_payment_method_form);
+// router.post('/create-payment-method',isAdmin,servicesRenderPaymentsMethods.create_payment_method);
+// router.get('/read-payment-method',isAdmin,servicesRenderPaymentsMethods.read_payment_methods);
+// router.post('/read-payment-method',isAdmin,servicesRenderPaymentsMethods.read_payment_methods);
+// router.get('/update-payment-method',isAdmin,servicesRenderPaymentsMethods.update_payment_method_form);
+// router.post('/update-payment-method/:id',isAdmin,servicesRenderPaymentsMethods.update_payment_method);
+// router.get('/delete-payment-method/:id',isAdmin,servicesRenderPaymentsMethods.delete_payment_method);
+
 
 router.get('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
 router.post('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
 router.get('/admin-analytics', isAdmin, servicesRenderAdminAnalytics.renderAdminAnalytics);
+
 
 router.get('/create-marca', isAdmin, servicesRenderBrand.create_brand_form);
 router.post('/create-marca', isAdmin, servicesRenderBrand.create_brand);
@@ -65,6 +79,7 @@ router.get('/read-marca', isAdmin, servicesRenderBrand.read_brands);
 router.get('/update-marca', isAdmin, brandController.getBrandForEdit);
 router.post('/update-marca/:id',isAdmin, upload.single('foto'), brandController.update); // guarda cambios
 router.get('/delete-marca/:id', isAdmin, servicesRenderBrand.delete_brand);
+
 
 router.get('/create-proveedor', isAdmin, servicesRenderProvider.create_provider_form);
 router.post('/create-proveedor', isAdmin, servicesRenderProvider.create_provider);
@@ -96,14 +111,15 @@ router.post('/update-user', isAdmin, servicesRenderUser.update_user);
 router.get('/update-user', isAdmin, servicesRenderUser.update_user);
 router.get('/delete-user/:id', isAdmin, servicesRenderUser.delete_user);
 
+
 router.get('/read-sales',isAdmin,servicesRenderSales.sales);
 router.get('/read-sale-details',isAdmin,servicesRenderSales.saleDetailView);
 router.get('/sale/:id', servicesRenderSales.saleDetailView);
 router.get('/read-total-profit',isAdmin,servicesRenderSales.total_profit);
 router.get('/read-profit-margins',isAdmin,servicesRenderSales.profit_margins);
 
+
 router.post("/admin/finalizar-venta", saleController.finalizarVenta);
 router.get("/admin/confirmacion", saleController.confirmacion);
-
 
 module.exports = router;

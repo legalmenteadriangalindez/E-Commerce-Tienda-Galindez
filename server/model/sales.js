@@ -14,8 +14,11 @@ var schema = new mongoose.Schema({
     total: {
         type: Number,
         required: true
+    },
+    pago: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'paymentdb'
     }
-
 })
 
 const Salesdb = mongoose.model('saledb', schema);

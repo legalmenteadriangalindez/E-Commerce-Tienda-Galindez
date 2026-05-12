@@ -1,332 +1,188 @@
 const Paymentdb = require('../model/payment');
-const Orderdb = require('../model/order');
 
-
-// ======================================
-// CREAR PAGO
-// ======================================
+// Crear método de pago
 exports.create = async (req, res) => {
-
     try {
-
-        const {
-            orden,
-            usuario,
-            metodo,
-            monto,
-            moneda,
-            referencia,
-            transactionId,
-            comprobante,
-            proveedorPago,
-            detalles
-        } = req.body;
-
-        // ======================================
-        // VALIDACIONES
-        // ======================================
-
-        if (!orden) {
-
-            return res.status(400).send({
-                message: "La orden es requerida"
-            });
-        }
-
-        if (!usuario) {
-
-            return res.status(400).send({
-                message: "El usuario es requerido"
-            });
-        }
-
-        if (!metodo) {
-
-            return res.status(400).send({
-                message: "Método de pago requerido"
-            });
-        }
-
-        if (!monto || isNaN(monto)) {
-
-            return res.status(400).send({
-                message: "Monto inválido"
-            });
-        }
-
-        // ======================================
-        // VALIDAR ORDEN
-        // ======================================
-
-        const ordenDB = await Orderdb.findById(orden);
-
-        if (!ordenDB) {
-
-            return res.status(404).send({
-                message: "Orden no encontrada"
-            });
-        }
-
-        // ======================================
-        // VALIDAR DUPLICADO
-        // ======================================
-
-        if (transactionId) {
-
-            const existe = await Paymentdb.findOne({
-                transactionId
-            });
-
-            if (existe) {
-
-                return res.status(400).send({
-                    message: "La transacción ya existe"
-                });
-            }
-        }
-
-        // ======================================
-        // CREAR PAGO
-        // ======================================
-
         const payment = new Paymentdb({
-
-            orden,
-
-            usuario,
-
-            metodo,
-
-            monto: Number(monto),
-
-            moneda: moneda || 'COP',
-
-            referencia: referencia || null,
-
-            transactionId: transactionId || null,
-
-            comprobante: comprobante || null,
-
-            proveedorPago: proveedorPago || 'MANUAL',
-
-            detalles: detalles || {}
+            nombre: req.body.nombre,
+            codigo: req.body.codigo,
+            tipo: req.body.tipo,
+            descripcion: req.body.descripcion,
+            logo: req.body.logo,
+            activo: req.body.activo,
+            permite_reembolso: req.body.permite_reembolso,
+            requiere_verificacion: req.body.requiere_verificacion,
+            comision: req.body.comision,
+            configuracion: {
+                api_key: req.body.configuracion?.api_key,
+                secret_key: req.body.configuracion?.secret_key,
+                merchant_id: req.body.configuracion?.merchant_id,
+                numero_cuenta: req.body.configuracion?.numero_cuenta,
+                titular: req.body.configuracion?.titular
+            },
+            monedas: req.body.monedas
         });
 
-        const savedPayment = await payment.save();
+        const data = await payment.save();
+        res.status(201).json({
+            success: true,
+            message: 'Método de pago creado correctamente',
+            data
+        });
 
-        // ======================================
-        // ACTUALIZAR ORDEN
-        // ======================================
+    } catch (error) {
 
-        ordenDB.estado = 'PAGADA';
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
 
-        await ordenDB.save();
+    }
+};
 
-        res.status(201).send(savedPayment);
 
-    } catch (err) {
+// Obtener todos los métodos de pago
+exports.find = async (req, res) => {
+    try {
+        const payments = await Paymentdb.find()
+            .sort({ fecha_creacion: -1 });
 
-        console.error("ERROR CREATE PAYMENT:", err);
-
-        res.status(500).send({
-            message: err.message
+        res.status(200).json({
+            success: true,
+            total: payments.length,
+            data: payments
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
         });
     }
 };
 
 
-// ======================================
-// OBTENER PAGOS
-// ======================================
-exports.find = async (req, res) => {
+// Obtener un método de pago por ID
+exports.findOne = async (req, res) => {
 
     try {
 
-        // ======================================
-        // UN SOLO PAGO
-        // ======================================
+        const id = req.params.id;
 
-        if (req.query.id) {
+        const payment = await Paymentdb.findById(id);
 
-            const payment = await Paymentdb.findById(req.query.id)
-
-                .populate('orden')
-
-                .populate('usuario');
-
-            if (!payment) {
-
-                return res.status(404).send({
-                    message: "Pago no encontrado"
-                });
-            }
-
-            return res.send(payment);
+        if (!payment) {
+            return res.status(404).json({
+                success: false,
+                message: 'Método de pago no encontrado'
+            });
         }
 
-        // ======================================
-        // TODOS LOS PAGOS
-        // ======================================
-
-        const payments = await Paymentdb.find()
-
-            .populate('orden')
-
-            .populate('usuario')
-
-            .sort({ createdAt: -1 });
-
-        res.send(payments);
-
-    } catch (err) {
-
-        console.error("ERROR FIND PAYMENT:", err);
-
-        res.status(500).send({
-            message: err.message
+        res.status(200).json({
+            success: true,
+            data: payment
         });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
     }
+
 };
 
 
-// ======================================
-// ACTUALIZAR PAGO
-// ======================================
+// Actualizar método de pago
 exports.update = async (req, res) => {
 
     try {
 
         const id = req.params.id;
 
-        const {
-            estado,
-            referencia,
-            transactionId,
-            comprobante,
-            detalles
-        } = req.body;
+        const payment = await Paymentdb.findByIdAndUpdate(
+            id,
+            {
+                nombre: req.body.nombre,
+                codigo: req.body.codigo,
+                tipo: req.body.tipo,
+                descripcion: req.body.descripcion,
+                logo: req.body.logo,
+                activo: req.body.activo,
+                permite_reembolso: req.body.permite_reembolso,
+                requiere_verificacion: req.body.requiere_verificacion,
+                comision: req.body.comision,
 
-        const payment = await Paymentdb.findById(id);
+                configuracion: {
+                    api_key: req.body.configuracion?.api_key,
+                    secret_key: req.body.configuracion?.secret_key,
+                    merchant_id: req.body.configuracion?.merchant_id,
+                    numero_cuenta: req.body.configuracion?.numero_cuenta,
+                    titular: req.body.configuracion?.titular
+                },
+
+                monedas: req.body.monedas
+            },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
 
         if (!payment) {
-
-            return res.status(404).send({
-                message: "Pago no encontrado"
+            return res.status(404).json({
+                success: false,
+                message: 'Método de pago no encontrado'
             });
         }
 
-        // ======================================
-        // VALIDAR DUPLICADO
-        // ======================================
-
-        if (
-            transactionId &&
-            transactionId !== payment.transactionId
-        ) {
-
-            const existe = await Paymentdb.findOne({
-                transactionId
-            });
-
-            if (existe) {
-
-                return res.status(400).send({
-                    message: "Transaction ID duplicado"
-                });
-            }
-        }
-
-        // ======================================
-        // ACTUALIZAR DATOS
-        // ======================================
-
-        payment.estado = estado || payment.estado;
-
-        payment.referencia = referencia || payment.referencia;
-
-        payment.transactionId =
-            transactionId || payment.transactionId;
-
-        payment.comprobante =
-            comprobante || payment.comprobante;
-
-        payment.detalles =
-            detalles || payment.detalles;
-
-        const updatedPayment = await payment.save();
-
-        // ======================================
-        // ACTUALIZAR ESTADO ORDEN
-        // ======================================
-
-        const orden = await Orderdb.findById(payment.orden);
-
-        if (orden) {
-
-            if (estado === 'APROBADO') {
-
-                orden.estado = 'PAGADA';
-            }
-
-            if (
-                estado === 'RECHAZADO' ||
-                estado === 'EXPIRADO'
-            ) {
-
-                orden.estado = 'PENDIENTE';
-            }
-
-            if (estado === 'REEMBOLSADO') {
-
-                orden.estado = 'CANCELADA';
-            }
-
-            await orden.save();
-        }
-
-        res.send(updatedPayment);
-
-    } catch (err) {
-
-        console.error("ERROR UPDATE PAYMENT:", err);
-
-        res.status(500).send({
-            message: err.message
+        res.status(200).json({
+            success: true,
+            message: 'Método de pago actualizado correctamente',
+            data: payment
         });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
     }
+
 };
 
 
-// ======================================
-// ELIMINAR PAGO
-// ======================================
+// Eliminar método de pago
 exports.delete = async (req, res) => {
 
     try {
 
         const id = req.params.id;
 
-        const payment = await Paymentdb.findById(id);
+        const payment = await Paymentdb.findByIdAndDelete(id);
 
         if (!payment) {
-
-            return res.status(404).send({
-                message: "Pago no encontrado"
+            return res.status(404).json({
+                success: false,
+                message: 'Método de pago no encontrado'
             });
         }
 
-        await Paymentdb.findByIdAndDelete(id);
-
-        res.send({
-            message: "Pago eliminado correctamente"
+        res.status(200).json({
+            success: true,
+            message: 'Método de pago eliminado correctamente'
         });
 
-    } catch (err) {
+    } catch (error) {
 
-        console.error("ERROR DELETE PAYMENT:", err);
-
-        res.status(500).send({
-            message: err.message
+        res.status(500).json({
+            success: false,
+            message: error.message
         });
+
     }
+
 };

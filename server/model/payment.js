@@ -1,94 +1,79 @@
 const mongoose = require('mongoose');
 
-const paymentSchema = new mongoose.Schema({
+const schema = new mongoose.Schema({
 
-    orden: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'orderdb',
-        required: true
+    nombre: {
+        type: String,
+        required: true,
+        unique: true
     },
 
-    usuario: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'userdb',
-        required: true
+    codigo: {
+        type: String,
+        required: true,
+        unique: true
     },
 
-    metodo: {
+    tipo: {
         type: String,
         enum: [
-            'EFECTIVO',
-            'TARJETA',
-            'TRANSFERENCIA',
-            'NEQUI',
-            'DAVIPLATA'
+            'efectivo',
+            'transferencia',
+            'tarjeta',
+            'billetera_digital',
+            'pasarela'
         ],
         required: true
     },
 
-    estado: {
-        type: String,
-        enum: [
-            'PENDIENTE',
-            'APROBADO',
-            'RECHAZADO',
-            'EXPIRADO',
-            'REEMBOLSADO'
-        ],
-        default: 'PENDIENTE'
+    descripcion: {
+        type: String
     },
 
-    monto: {
+    logo: {
+        type: String
+    },
+
+    activo: {
+        type: Boolean,
+        default: true
+    },
+
+    permite_reembolso: {
+        type: Boolean,
+        default: false
+    },
+
+    requiere_verificacion: {
+        type: Boolean,
+        default: false
+    },
+
+    comision: {
         type: Number,
-        required: true
+        default: 0
     },
 
-    moneda: {
+    configuracion: {
+        api_key: String,
+        secret_key: String,
+        merchant_id: String,
+        numero_cuenta: String,
+        titular: String
+    },
+
+    monedas: [{
         type: String,
         default: 'COP'
-    },
+    }],
 
-    referencia: {
-        type: String
-    },
-
-    transactionId: {
-        type: String
-    },
-
-    comprobante: {
-        type: String
-    },
-
-    proveedorPago: {
-        type: String,
-        enum: [
-            'MANUAL',
-            'WOMPI',
-            'PAYU',
-            'MERCADOPAGO',
-            'STRIPE'
-        ],
-        default: 'MANUAL'
-    },
-
-    detalles: {
-        type: Object
-    },
-
-    fechaPago: {
+    fecha_creacion: {
         type: Date,
         default: Date.now
     }
 
-}, {
-    timestamps: true
 });
 
-// Índices
-paymentSchema.index({ orden: 1 });
-paymentSchema.index({ usuario: 1 });
-paymentSchema.index({ estado: 1 });
-paymentSchema.index({ transactionId: 1 });
+const Paymentdb = mongoose.model('paymentdb', schema);
 
-module.exports = mongoose.model('paymentdb', paymentSchema);
+module.exports = Paymentdb;
