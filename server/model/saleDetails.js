@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-var schema = new mongoose.Schema({
+const saleDetailSchema = new mongoose.Schema({
 
     venta: {
         type: mongoose.Schema.Types.ObjectId,
@@ -23,12 +23,17 @@ var schema = new mongoose.Schema({
         type: Number,
         required: true
     },
+
     subtotal: {
-    type: Number,
-    required: true
+        type: Number,
+        required: true
     }
-})
 
-const SaleDetaildb = mongoose.model('SaleDetaildb', schema);
+}, {
+    timestamps: true
+});
 
-module.exports = SaleDetaildb;
+module.exports = mongoose.model(
+    'SaleDetaildb',
+    saleDetailSchema
+);
