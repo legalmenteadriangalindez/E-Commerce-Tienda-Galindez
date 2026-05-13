@@ -1,6 +1,6 @@
-const PaymentTransaction = require('../model/paymentTransactionModel');
-const PaymentMethod = require('../model/paymentMethodModel');
-const Sale = require('../model/saleModel');
+const PaymentTransaction = require('../model/paymentTransaction');
+const PaymentMethod = require('../model/paymentMethod');
+const Sale = require('../model/sales');
 
 // ==========================================
 // CREAR TRANSACCIÓN DE PAGO
