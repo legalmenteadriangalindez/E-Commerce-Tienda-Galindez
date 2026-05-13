@@ -1,26 +1,57 @@
 const mongoose = require('mongoose');
 
-var schema = new mongoose.Schema({
+const saleSchema = new mongoose.Schema({
+
     cliente: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'userdb',
         required: true
     },
-    fecha: {
-        type: Date,
-        default: Date.now
+
+    order: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'orderdb',
+        required: true
+    },
+
+    subtotal: {
+        type: Number,
+        required: true
+    },
+
+    impuestos: {
+        type: Number,
+        default: 0
+    },
+
+    costoEnvio: {
+        type: Number,
+        default: 0
+    },
+
+    descuento: {
+        type: Number,
+        default: 0
     },
 
     total: {
         type: Number,
         required: true
     },
-    pago: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'paymentdb'
+
+    estadoPago: {
+        type: String,
+        enum: [
+            'PENDIENTE',
+            'PAGADO',
+            'FALLIDO',
+            'REEMBOLSADO'
+        ],
+        default: 'PENDIENTE'
     }
-})
 
-const Salesdb = mongoose.model('saledb', schema);
+}, {
+    timestamps: true
+});
 
-module.exports = Salesdb;
+module.exports = mongoose.model('saledb', saleSchema);
