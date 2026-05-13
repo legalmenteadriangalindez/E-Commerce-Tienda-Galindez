@@ -1,4 +1,4 @@
-const PaymentMethod = require('../model/paymentMethodModel');
+const PaymentMethod = require('../model/paymentMethod');
 
 // ==========================================
 // CREAR MÉTODO DE PAGO
