@@ -266,8 +266,7 @@ exports.deletePaymentTransaction = async (req, res) => {
 // ==========================================
 // CAMBIAR ESTADO DE TRANSACCIÓN
 // ==========================================
-exports.updateTransactionStatus =
-    async (req, res) => {
+exports.updateTransactionStatus = async (req, res) => {
 
         try {
 
@@ -344,8 +343,7 @@ exports.updateTransactionStatus =
 // ==========================================
 // OBTENER TRANSACCIONES POR USUARIO
 // ==========================================
-exports.getTransactionsByUser =
-    async (req, res) => {
+exports.getTransactionsByUser = async (req, res) => {
 
         try {
 
@@ -387,9 +385,7 @@ exports.getTransactionsByUser =
 // ==========================================
 // OBTENER TRANSACCIONES POR VENTA
 // ==========================================
-exports.getTransactionsBySale =
-    async (req, res) => {
-
+exports.getTransactionsBySale = async (req, res) => {
         try {
 
             const { saleId } = req.params;
