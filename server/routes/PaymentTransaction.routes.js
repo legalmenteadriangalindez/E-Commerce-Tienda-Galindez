@@ -1,11 +1,13 @@
-const express = requiere('express');
+const express = require('express');
 
 const router = express.Router();
 
-const paymentTransaction = requiere('../controller/PaymentTransaction');
+const paymentTransactionController = require('../controller/PaymentTransaction_controller');
 
-router.post('/',paymentTransaction.createPaymentTransaction);
-router.get('/',paymentTransaction.getAllPaymentTransactions);
-router.get('/:id',paymentTransaction.getPaymentTransactionById);
-router.update('/:id',paymentTransaction.updatePaymentTransaction);
-router.delete('/:id',paymentTransaction.deletePaymentTransaction);
+
+router.get('/',paymentTransactionController.getAllPaymentTransactions);
+router.post('/',paymentTransactionController.createPaymentTransaction);
+router.put('/:id',paymentTransactionController.updatePaymentTransaction);
+router.delete('/:id',paymentTransactionController.deletePaymentTransaction);
+
+module.exports = router;

@@ -14,8 +14,9 @@ const servicesRenderPaymentPoint = require('../services/RenderPaymentPoint');
 const servicesRenderAdminAnalytics = require('../services/renderAdminAnalytics');
 const servicesRenderBrand = require('../services/renderBrands');
 const servicesRenderOrders = require('../services/renderOrders');
-const servicesRenderPayments = require('../services/paymentRender');
-// const servicesRenderPaymentsMethods = require('../services/paymentMethodRender');
+const servicesRenderPaymentsMethods = require('../services/paymentMethodRender');
+const servicesRenderPaymentsTransactions = require('../services/paymentTransactionRender');
+
 const brandController = require('../controller/brand_controller');
 const saleController = require('../controller/sale_controller');
 const cartController = require('../controller/cart_controller');
@@ -47,25 +48,23 @@ router.get('/update-order',isAdmin,servicesRenderOrders.update_order);
 router.post('/update-order/:id',isAdmin,servicesRenderOrders.update_order_data);
 router.get('/delete-order/:id',isAdmin,servicesRenderOrders.delete_order);
 
-// ==================== PAYMENTS ====================
-router.get('/create-payment',isAdmin,servicesRenderPayments.create_payment_method_form);
-router.post('/create-payment',isAdmin,servicesRenderPayments.renderCreatePayment);
-router.get('/read-payment',isAdmin,servicesRenderPayments.read_payments);
-router.post('/read-payment',isAdmin,servicesRenderPayments.read_payments);
-// router.get('/update-payment',isAdmin,servicesRenderPayments.update_payment);
-// router.post('/update-payment/:id',isAdmin,servicesRenderPayments.update_payment_data);
-// router.get('/delete-payment/:id',isAdmin,servicesRenderPayments.delete_payment);
-
-
-
 // ==================== PAYMENT METHODS ====================
-// router.get('/create-payment-method',isAdmin,servicesRenderPaymentsMethods.create_payment_method_form);
-// router.post('/create-payment-method',isAdmin,servicesRenderPaymentsMethods.create_payment_method);
-// router.get('/read-payment-method',isAdmin,servicesRenderPaymentsMethods.read_payment_methods);
-// router.post('/read-payment-method',isAdmin,servicesRenderPaymentsMethods.read_payment_methods);
-// router.get('/update-payment-method',isAdmin,servicesRenderPaymentsMethods.update_payment_method_form);
-// router.post('/update-payment-method/:id',isAdmin,servicesRenderPaymentsMethods.update_payment_method);
-// router.get('/delete-payment-method/:id',isAdmin,servicesRenderPaymentsMethods.delete_payment_method);
+router.get('/create-payment-method',isAdmin,servicesRenderPaymentsMethods.create_payment_method_form);
+router.post('/create-payment-method',isAdmin,servicesRenderPaymentsMethods.create_payment_method);
+router.get('/read-payment-method',isAdmin,servicesRenderPaymentsMethods.read_payment_methods);
+router.get('/update-payment-method',isAdmin,servicesRenderPaymentsMethods.update_payment_method_form);
+router.post('/update-payment-method/:id',isAdmin,servicesRenderPaymentsMethods.update_payment_method);
+router.get('/delete-payment-method/:id',isAdmin,servicesRenderPaymentsMethods.delete_payment_method);
+
+
+
+// ==================== PAYMENT TRANSCTIONS ====================
+// router.get('/create-payment',isAdmin,servicesRenderPaymentsTransactions.create_payment_method_form);
+// router.post('/create-payment',isAdmin,servicesRenderPaymentsTransactions.create_payment_method);
+// router.get('/read-payment',isAdmin,servicesRenderPaymentsTransactions.read_payment_methods);
+// router.get('/update-payment',isAdmin,servicesRenderPaymentsTransactions.update_payment_method_form);
+// router.post('/update-payment/:id',isAdmin,servicesRenderPaymentsTransactions.update_payment_method);
+// router.delete('/delete-payment/:id',isAdmin,servicesRenderPaymentsTransactions.delete_payment);
 
 
 router.get('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);

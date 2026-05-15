@@ -1,31 +1,23 @@
 const axios = require('axios');
 
-const API = 'http://localhost:3000/api/payment-methods';
+const API = 'http://localhost:3000/api/paymentsMethods';
 
 
-// ======================================
 // FORM CREAR MÉTODO DE PAGO
-// ======================================
 exports.create_payment_method_form = (req, res) => {
 
     res.render(
-        'admin/paymentMethod/create_paymentMethod',
-        {
-            user: req.session.user
-        }
+        'admin/paymentMethod/create_payment_Method'
     );
 };
 
 
-// ======================================
 // CREAR MÉTODO DE PAGO
-// ======================================
 exports.create_payment_method = async (req, res) => {
 
     try {
 
-        await axios.post(
-            API,
+        await axios.post('http://localhost:3000/api/paymentsMethods',
             req.body
         );
 
@@ -47,19 +39,17 @@ exports.create_payment_method = async (req, res) => {
 };
 
 
-// ======================================
 // LISTAR MÉTODOS DE PAGO
-// ======================================
 exports.read_payment_methods = async (req, res) => {
 
     try {
 
-        const response = await axios.get(API);
-
+        const response = await axios.get('http://localhost:3000/api/paymentsMethods');
+        console.log("==================PAYMENT METHODS:==================", response.data);
         res.render(
             'admin/paymentMethod/read_paymentMethods',
             {
-                paymentMethods: response.data
+                paymentMethods: response.data.data
             }
         );
 
@@ -77,17 +67,16 @@ exports.read_payment_methods = async (req, res) => {
 };
 
 
-// ======================================
+
 // FORM EDITAR MÉTODO
-// ======================================
 exports.update_payment_method_form = async (req, res) => {
 
     try {
 
-        const response = await axios.get(API);
+        const response = await axios.get('http://localhost:3000/api/paymentsMethods');
 
         const method =
-            response.data.find(
+            response.data.data.find(
 
                 m => m._id === req.query.id
             );
@@ -120,17 +109,12 @@ exports.update_payment_method_form = async (req, res) => {
 };
 
 
-// ======================================
 // ACTUALIZAR MÉTODO
-// ======================================
 exports.update_payment_method = async (req, res) => {
 
     try {
 
-        await axios.put(
-
-            `${API}/${req.params.id}`,
-
+        await axios.put(`http://localhost:3000/api/paymentsMethods/${req.params.id}`,
             req.body
         );
 
@@ -152,20 +136,14 @@ exports.update_payment_method = async (req, res) => {
 };
 
 
-// ======================================
 // ELIMINAR MÉTODO
-// ======================================
 exports.delete_payment_method = async (req, res) => {
-
     try {
 
-        await axios.delete(
-
-            `${API}/${req.params.id}`
-        );
+        await axios.delete(`http://localhost:3000/api/paymentsMethods/${req.params.id}`);
 
         res.redirect(
-            '/read-payment-method'
+            '/read-payment'
         );
 
     } catch (err) {

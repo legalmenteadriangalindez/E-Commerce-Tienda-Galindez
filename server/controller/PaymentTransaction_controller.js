@@ -130,8 +130,7 @@ exports.getAllPaymentTransactions = async (req, res) => {
 // ==========================================
 // OBTENER TRANSACCIÓN POR ID
 // ==========================================
-exports.getPaymentTransactionById =
-    async (req, res) => {
+exports.getPaymentTransactionById = async (req, res) => {
 
         try {
 
@@ -181,8 +180,7 @@ exports.getPaymentTransactionById =
 // ==========================================
 // ACTUALIZAR TRANSACCIÓN
 // ==========================================
-exports.updatePaymentTransaction =
-    async (req, res) => {
+exports.updatePaymentTransaction = async (req, res) => {
 
         try {
 
@@ -229,8 +227,7 @@ exports.updatePaymentTransaction =
 // ==========================================
 // ELIMINAR TRANSACCIÓN
 // ==========================================
-exports.deletePaymentTransaction =
-    async (req, res) => {
+exports.deletePaymentTransaction = async (req, res) => {
 
         try {
 

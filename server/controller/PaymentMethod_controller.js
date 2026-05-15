@@ -58,7 +58,7 @@ exports.createPaymentMethod = async (req, res) => {
 // ==========================================
 // OBTENER TODOS LOS MÉTODOS
 // ==========================================
-exports.getAllPaymentMethods = async (req, res) => {
+exports.read_payment_methods = async (req, res) => {
 
     try {
 

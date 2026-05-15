@@ -14,9 +14,59 @@ const orderSchema = new mongoose.Schema({
         required: true
     },
 
-    venta: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'saledb',
+    productos: [
+        {
+            producto: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'productdb',
+                required: true
+            },
+
+            nombre: {
+                type: String,
+                required: true
+            },
+
+            cantidad: {
+                type: Number,
+                required: true,
+                min: 1
+            },
+
+            precioUnitario: {
+                type: Number,
+                required: true
+            },
+
+            subtotal: {
+                type: Number,
+                required: true
+            }
+        }
+    ],
+
+    subtotal: {
+        type: Number,
+        required: true
+    },
+
+    impuestos: {
+        type: Number,
+        default: 0
+    },
+
+    costoEnvio: {
+        type: Number,
+        default: 0
+    },
+
+    descuento: {
+        type: Number,
+        default: 0
+    },
+
+    total: {
+        type: Number,
         required: true
     },
 
@@ -35,17 +85,29 @@ const orderSchema = new mongoose.Schema({
 
     direccionEnvio: {
 
-        nombreRecibe: String,
+        nombreRecibe: {
+            type: String
+        },
 
-        telefono: String,
+        telefono: {
+            type: String
+        },
 
-        departamento: String,
+        departamento: {
+            type: String
+        },
 
-        ciudad: String,
+        ciudad: {
+            type: String
+        },
 
-        direccion: String,
+        direccion: {
+            type: String
+        },
 
-        referencia: String
+        referencia: {
+            type: String
+        }
     },
 
     notasCliente: {
@@ -61,6 +123,7 @@ const orderSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Índices
 orderSchema.index({ usuario: 1 });
 orderSchema.index({ estado: 1 });
 orderSchema.index({ fechaOrden: -1 });

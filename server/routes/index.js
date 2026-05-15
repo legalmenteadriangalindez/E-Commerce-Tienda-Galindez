@@ -15,7 +15,8 @@ router.use('/api/reviews', require('./review.routes'));
 router.use('/api/unidades', require('./units.routes'));
 router.use('/api/roles', require('./roles.routes'));
 router.use('/carrito', require('./cart.routes'));
-router.use('/api/payments', require('./payment.routes'));
+router.use('/api/paymentsMethods', require('./paymentMethod.routes'));
+router.use('/api/paymentTransactions', require('./PaymentTransaction.routes'));
 router.use('/', require('./admin.routes'));
                           
 module.exports = router;
