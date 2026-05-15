@@ -40,7 +40,7 @@ exports.create_payment_method = async (req, res) => {
 
 
 // LISTAR MÉTODOS DE PAGO
-exports.read_payment_methods = async (req, res) => {
+exports.read_payment_transactions = async (req, res) => {
 
     try {
 
