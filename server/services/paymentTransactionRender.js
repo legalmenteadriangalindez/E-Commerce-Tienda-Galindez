@@ -11,14 +11,14 @@ exports.read_payment_transactions = async (req, res) => {
         res.render(
             'admin/paymentMethod/read_payment',
             {
-                paymentMethods: response.data.data
+                paymentTransactions: response.data.data
             }
         );
 
     } catch (err) {
 
         console.error(
-            "ERROR READ PAYMENT METHODS:",
+            "ERROR READ PAYMENT TRANSACTIONS:",
             err.response?.data || err.message
         );
 
