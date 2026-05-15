@@ -61,7 +61,7 @@ router.get('/delete-payment-method/:id',isAdmin,servicesRenderPaymentsMethods.de
 // ==================== PAYMENT TRANSCTIONS ====================
 // router.get('/create-payment',isAdmin,servicesRenderPaymentsTransactions.create_payment_method_form);
 // router.post('/create-payment',isAdmin,servicesRenderPaymentsTransactions.create_payment_method);
-// router.get('/read-payment',isAdmin,servicesRenderPaymentsTransactions.read_payment_methods);
+router.get('/read-payment-transactions',isAdmin,servicesRenderPaymentsTransactions.read_payment_transactions);
 // router.get('/update-payment',isAdmin,servicesRenderPaymentsTransactions.update_payment_method_form);
 // router.post('/update-payment/:id',isAdmin,servicesRenderPaymentsTransactions.update_payment_method);
 // router.delete('/delete-payment/:id',isAdmin,servicesRenderPaymentsTransactions.delete_payment);
