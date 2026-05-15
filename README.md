@@ -50,3 +50,4 @@ Clona el proyecto:
 git clone https://github.com/legalmenteadriangalindez/E-Commerce-Tienda-Gal-ndez.git
 cd E-Commerce-Tienda-Gal-ndez
 npm install
+node server.js
