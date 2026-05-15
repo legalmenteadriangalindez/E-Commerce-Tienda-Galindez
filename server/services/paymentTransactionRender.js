@@ -7,7 +7,7 @@ const API = 'http://localhost:3000/api/paymentTransactions';
 exports.create_payment_method_form = (req, res) => {
 
     res.render(
-        'admin/paymentMethod/create_payment_Method'
+        'admin/paymentTransactions/read_paymentTransactions'
     );
 };
 
