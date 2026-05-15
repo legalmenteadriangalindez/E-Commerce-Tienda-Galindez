@@ -47,6 +47,6 @@ En **Tienda Galindez** creemos que cada interacción debe sentirse así:
 Clona el proyecto:
 
 ```bash
-git clone <tu-repo>
-cd <tu-repo>
+git clone https://github.com/legalmenteadriangalindez/E-Commerce-Tienda-Gal-ndez.git
+cd E-Commerce-Tienda-Gal-ndez
 npm install
