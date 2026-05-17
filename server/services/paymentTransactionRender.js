@@ -7,7 +7,6 @@ exports.read_payment_transactions = async (req, res) => {
     try {
 
         const response = await axios.get('http://localhost:3000/api/paymentTransactions');
-        console.log("==================PAYMENT TRANSACTIONS:==================", response.data);
         res.render(
             'admin/paymentMethod/read_payment',
             {

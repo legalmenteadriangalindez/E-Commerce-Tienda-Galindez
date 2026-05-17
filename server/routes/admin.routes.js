@@ -16,6 +16,8 @@ const servicesRenderBrand = require('../services/renderBrands');
 const servicesRenderOrders = require('../services/renderOrders');
 const servicesRenderPaymentsMethods = require('../services/paymentMethodRender');
 const servicesRenderPaymentsTransactions = require('../services/paymentTransactionRender');
+const servicesRenderProfile = require('../services/renderProfile');
+
 
 const brandController = require('../controller/brand_controller');
 const saleController = require('../controller/sale_controller');
@@ -120,5 +122,9 @@ router.get('/read-profit-margins',isAdmin,servicesRenderSales.profit_margins);
 
 router.post("/admin/finalizar-venta", saleController.finalizarVenta);
 router.get("/admin/confirmacion", saleController.confirmacion);
+
+router.get('/admin/perfil', servicesRenderProfile.profile);
+router.get('/admin/perfil/editar/:id', servicesRenderProfile.update_profile_form_admin);
+router.post('/admin/perfil/editar/:id', servicesRenderProfile.update_profile_admin);
 
 module.exports = router;

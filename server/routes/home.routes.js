@@ -20,7 +20,9 @@ router.get('/Detalles/:id',  servicesRenderProduct.product_detail);
 
 // perfil
 router.get('/perfil', servicesRenderProfile.profile);
-router.get('/admin/perfil', servicesRenderProfile.profile);
+router.get('/perfil/editar/:id', servicesRenderProfile.update_profile_form);
+router.post('/perfil/editar/:id', servicesRenderProfile.update_profile);
+
 
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const { getUserProfile } = require('../controller/user_controller');
+const axios = require('axios');
 
 exports.profile = async (req, res) => {
     try {
@@ -26,5 +27,76 @@ exports.profile = async (req, res) => {
     } catch (err) {
         console.error("Error perfil:", err);
         return res.status(500).send("Error cargando perfil");
+    }
+};
+
+exports.update_profile_form = async (req, res) => {
+    try {
+        const response = await axios.get(`http://localhost:3000/api/users/${req.params.id}`);
+        res.render('client/profile/edit_profile', { user: response.data });
+    } catch (err) { res.send(err); }
+}; 
+
+exports.update_profile = async (req, res) => {
+
+    try {
+
+        const id = req.params.id;
+
+        const body = {
+            nombre: req.body.nombre,
+            telefono: req.body.telefono,
+            direccion: req.body.direccion,
+            genero: req.body.genero,
+            barrio: req.body.barrio,
+            ciudad: req.body.ciudad,
+            puntoReferencia: req.body.puntoReferencia
+        };
+
+        await axios.put(`http://localhost:3000/api/users/${id}`, body);
+
+        res.redirect('/perfil');
+
+    } catch (err) {
+
+        console.error("ERROR UPDATE USER:", err.message);
+        res.send(err.message);
+
+    }
+};
+
+
+exports.update_profile_form_admin = async (req, res) => {
+    try {
+        const response = await axios.get(`http://localhost:3000/api/users/${req.params.id}`);
+        res.render('admin/profile/edit_profile', { user: response.data });
+    } catch (err) { res.send(err); }
+}; 
+
+exports.update_profile_admin = async (req, res) => {
+
+    try {
+
+        const id = req.params.id;
+
+        const body = {
+            nombre: req.body.nombre,
+            telefono: req.body.telefono,
+            direccion: req.body.direccion,
+            genero: req.body.genero,
+            barrio: req.body.barrio,
+            ciudad: req.body.ciudad,
+            puntoReferencia: req.body.puntoReferencia
+        };
+
+        await axios.put(`http://localhost:3000/api/users/${id}`, body);
+
+        res.redirect('/perfil');
+
+    } catch (err) {
+
+        console.error("ERROR UPDATE USER:", err.message);
+        res.send(err.message);
+
     }
 };

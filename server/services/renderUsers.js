@@ -63,6 +63,8 @@ exports.update_user_data = async (req, res) => {
     }
 };
 
+
+
 exports.delete_user = (req, res) => {
     axios.delete(`http://localhost:3000/api/users/${req.params.id}`)
         .then(response => {
