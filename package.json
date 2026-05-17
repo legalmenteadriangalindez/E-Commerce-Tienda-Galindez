@@ -20,7 +20,7 @@
     "connect-mongo": "^5.1.0",
     "dotenv": "^8.6.0",
     "ejs": "^3.1.5",
-    "express": "^4.22.1",
+    "express": "^4.22.2",
     "express-session": "^1.19.0",
     "form-data": "^4.0.5",
     "method-override": "^3.0.0",
