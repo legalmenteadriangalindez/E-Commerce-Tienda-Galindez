@@ -1,86 +1,125 @@
 <%- include('../../include/_header') %>
 
+<div class="profile-container">
 
-<div class="container mt-4">
+    <div class="profile-card">
 
-    <div class="row">
+        <!-- HEADER -->
+        <div class="profile-header text-center">
 
+            <i class="bi bi-person-circle profile-avatar"></i>
 
-        <!-- CONTENIDO -->
-        <div class="col-md-9">
+            <h3>
+                <%= user.nombre %>
+            </h3>
 
-            <div class="profile-card">
+            <span class="badge bg-secondary">
+                Cliente
+            </span>
 
-                <!-- HEADER -->
-                <div class="profile-header text-center">
-                    <i class="bi bi-person-circle profile-avatar"></i>
-                    <h3><%= user.nombre %></h3>
-                    <span class="badge bg-secondary">Cliente</span>
-                </div>
+        </div>
 
-                <!-- BOTÓN EDITAR -->
-                <div class="text-end mb-3">
-                    <button id="editBtn" class="btn btn-dark btn-sm">
-                        <i class="bi bi-pencil"></i> Editar
-                    </button>
-                </div>
+        <!-- BOTÓN EDITAR -->
+        <div class="text-end mb-3">
 
-                <!-- FORM -->
-                <form action="/api/users/<%= user._id %>" method="POST">
+            <a
+                href="/perfil/editar/<%= user._id %>"
+                class="btn btn-dark btn-sm"
+            >
+                <i class="bi bi-pencil"></i>
+                Editar
+            </a>
 
-                    <!-- Si usas method-override -->
-                    <!-- <input type="hidden" name="_method" value="PUT"> -->
+        </div>
 
-                    <div class="profile-info">
+        <!-- INFO -->
+        <div class="profile-info">
 
-                        <div class="info-item">
-                            <span>Nombre</span>
-                            <p class="view"><%= user.nombre %></p>
-                            <input class="form-control edit d-none" name="nombre" value="<%= user.nombre %>">
-                        </div>
+            <!-- NOMBRE -->
+            <div class="info-item">
 
-                        <div class="info-item">
-                            <span>Email</span>
-                            <p><%= user.email %></p>
-                        </div>
+                <span>Nombre</span>
 
-                        <div class="info-item">
-                            <span>Teléfono</span>
-                            <p class="view"><%= user.telefono %></p>
-                            <input class="form-control edit d-none" name="telefono" value="<%= user.telefono %>">
-                        </div>
+                <p>
+                    <%= user.nombre %>
+                </p>
 
-                        <div class="info-item">
-                            <span>Dirección</span>
-                            <p class="view"><%= user.direccion %></p>
-                            <input class="form-control edit d-none" name="direccion" value="<%= user.direccion %>">
-                        </div>
+            </div>
 
-                        <div class="info-item">
-                            <span>Ciudad</span>
-                            <p class="view"><%= user.ciudad %></p>
-                            <input class="form-control edit d-none" name="ciudad" value="<%= user.ciudad %>">
-                        </div>
+            <!-- EMAIL -->
+            <div class="info-item">
 
-                        <div class="info-item">
-                            <span>Barrio</span>
-                            <p class="view"><%= user.barrio %></p>
-                            <input class="form-control edit d-none" name="barrio" value="<%= user.barrio %>">
-                        </div>
+                <span>Email</span>
 
-                    </div>
+                <p>
+                    <%= user.email %>
+                </p>
 
-                    <!-- BOTONES -->
-                    <div class="text-end mt-3 d-none" id="saveSection">
-                        <button type="submit" class="btn btn-success btn-sm">
-                            Guardar cambios
-                        </button>
-                        <button type="button" id="cancelBtn" class="btn btn-secondary btn-sm">
-                            Cancelar
-                        </button>
-                    </div>
+            </div>
 
-                </form>
+            <!-- TELÉFONO -->
+            <div class="info-item">
+
+                <span>Teléfono</span>
+
+                <p>
+                    <%= user.telefono %>
+                </p>
+
+            </div>
+
+            <!-- DIRECCIÓN -->
+            <div class="info-item">
+
+                <span>Dirección</span>
+
+                <p>
+                    <%= user.direccion %>
+                </p>
+
+            </div>
+
+            <!-- CIUDAD -->
+            <div class="info-item">
+
+                <span>Ciudad</span>
+
+                <p>
+                    <%= user.ciudad %>
+                </p>
+
+            </div>
+
+            <!-- BARRIO -->
+            <div class="info-item">
+
+                <span>Barrio</span>
+
+                <p>
+                    <%= user.barrio %>
+                </p>
+
+            </div>
+
+            <!-- GÉNERO -->
+            <div class="info-item">
+
+                <span>Género</span>
+
+                <p>
+                    <%= user.genero %>
+                </p>
+
+            </div>
+
+            <!-- PUNTO REFERENCIA -->
+            <div class="info-item">
+
+                <span>Punto de referencia</span>
+
+                <p>
+                    <%= user.puntoReferencia %>
+                </p>
 
             </div>
 
@@ -89,27 +128,5 @@
     </div>
 
 </div>
-
-<script>
-    const editBtn = document.getElementById('editBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const edits = document.querySelectorAll('.edit');
-    const views = document.querySelectorAll('.view');
-    const saveSection = document.getElementById('saveSection');
-
-    editBtn.addEventListener('click', () => {
-        edits.forEach(e => e.classList.remove('d-none'));
-        views.forEach(v => v.classList.add('d-none'));
-        saveSection.classList.remove('d-none');
-        editBtn.classList.add('d-none');
-    });
-
-    cancelBtn.addEventListener('click', () => {
-        edits.forEach(e => e.classList.add('d-none'));
-        views.forEach(v => v.classList.remove('d-none'));
-        saveSection.classList.add('d-none');
-        editBtn.classList.remove('d-none');
-    });
-</script>
 
 <%- include('../../include/_footer') %>
