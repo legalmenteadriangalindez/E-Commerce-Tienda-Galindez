@@ -8,7 +8,7 @@ const servicesRenderBrand = require('../services/renderBrands');
 const servicesRenderProfile = require('../services/renderProfile');
 const servicesRenderCategory = require('../services/renderCategories');
 const servicesRenderProduct = require('../services/renderProducts');
-const renderCart = require('../services/renderCart');
+const servicesRenderCart = require('../services/renderCart');
 
 router.get('/', servicesRenderHomeRutes.homeRoutes);
 router.get('/search', servicesRenderHomeRutes.search);
@@ -23,6 +23,8 @@ router.get('/perfil', servicesRenderProfile.profile);
 router.get('/perfil/editar/:id', servicesRenderProfile.update_profile_form);
 router.post('/perfil/editar/:id', servicesRenderProfile.update_profile);
 
-
+router.get('/checkout', servicesRenderCart.checkout);
+router.get('/view_cart', isLogged, servicesRenderCart.car);
+// router.post('/carrito_add', isLogged, servicesRenderCart.add_to_carrito);
 
 module.exports = router;

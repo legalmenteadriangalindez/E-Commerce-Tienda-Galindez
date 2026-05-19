@@ -2,13 +2,12 @@ const mongoose = require('mongoose');
 const Saledb = require('../model/sales');
 const SaleDetaildb = require('../model/saleDetails');
 const Productdb = require('../model/product');
-const Paymentdb = require('../model/payment');
+const Paymentdb = require('../model/paymentMethod');
 
 
 // CREATE (CON TRANSACCIÓN REAL)
 exports.create = async (req, res) => {
     const session = await mongoose.startSession();
-
     try {
         session.startTransaction();
 
@@ -101,9 +100,7 @@ exports.create = async (req, res) => {
 
 
 
-// ===============================
 // FIND (SIN N+1 - OPTIMIZADO)
-// ===============================
 exports.find = async (req, res) => {
     try {
 
@@ -143,9 +140,7 @@ exports.find = async (req, res) => {
 
 
 
-// ===============================
 // DELETE (CON TRANSACCIÓN)
-// ===============================
 exports.delete = async (req, res) => {
 
     const session = await mongoose.startSession();
@@ -173,7 +168,7 @@ exports.delete = async (req, res) => {
 
         const detalles = await SaleDetaildb.find({ venta: id }).session(session);
 
-        // 🔄 DEVOLVER STOCK (ATÓMICO)
+        // DEVOLVER STOCK (ATÓMICO)
         for (let d of detalles) {
             await Productdb.updateOne(
                 { _id: d.producto },
@@ -259,7 +254,7 @@ exports.finalizarVenta = async (req, res) => {
 
         const cart = req.session.cart;
         const metodoPago = cart.metodoPago;
-        if(!cart || !cart.items.length){
+        if(!cart || !cart.length){
 
             return res.status(400).json({
                 ok:false,
@@ -281,7 +276,7 @@ exports.finalizarVenta = async (req, res) => {
 
         const detalles = [];
 
-        for(const item of cart.items){
+        for(const item of cart){
 
             const producto = await Productdb.findById(item.productoId);
 
@@ -348,11 +343,7 @@ exports.finalizarVenta = async (req, res) => {
             });
         }
 
-        req.session.cart = {
-            items: [],
-            total: 0,
-            metodoPago: null
-        };
+        req.session.cart = [];
 
         return res.json({
             ok:true,

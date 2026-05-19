@@ -1,67 +1,34 @@
 const axios = require('axios');
 
-// ======================================================
-// CONFIG
-// ======================================================
 
-const API_URL = 'http://localhost:3000/carrito';
-
-// ======================================================
-// HELPER
-// ======================================================
-
-function getConfig(req) {
-
-    return {
-        headers: {
-            Cookie: req.headers.cookie || ''
-        }
-    };
-}
-
-// ======================================================
 // RENDER CART
-// ======================================================
-
 exports.car = async (req, res) => {
-
     try {
-
-        const response = await axios.get(
-            `${API_URL}/data`,
-            getConfig(req)
+        console.log("CART SESSION:", req.session.cart);
+        console.log("IS ARRAY:", Array.isArray(req.session.cart));
+        const cart = req.session.cart || [];
+           const subtotal = cart.reduce(
+            (acc, item) => acc + (item.precio * item.cantidad),
+            0
         );
-
-        const cart = response.data.cart;
-
         return res.render('client/cart/cart', {
-            productosCarrito: cart.items,
-            subtotal: cart.total,
-            user: req.session.user
+            productosCarrito: cart,
+            subtotal
         });
-
     } catch (err) {
-
-        console.error("❌ render cart:", err.message);
 
         return res.status(500).send(err.message);
     }
 };
 
-// ======================================================
 // RENDER PAYMENT POINT
-// ======================================================
-
 exports.payment_point = async (req, res) => {
 
     try {
 
-        const response = await axios.get(
-            `${API_URL}/data`,
-            getConfig(req)
-        );
+        const response = await axios.get(`http://localhost:3000/api/payment`,);
 
-        const cart = response.data.cart;
+        const cart = response.data;
 
         return res.render('client/payment/payment_point', {
             user: req.session.user,
@@ -76,10 +43,7 @@ exports.payment_point = async (req, res) => {
     }
 };
 
-// ======================================================
 // RENDER BILLING POINT
-// ======================================================
-
 exports.billing_point = async (req, res) => {
 
     try {
@@ -104,10 +68,7 @@ exports.billing_point = async (req, res) => {
     }
 };
 
-// ======================================================
 // RENDER CONFIRMACION
-// ======================================================
-
 exports.confirmacion = async (req, res) => {
 
     try {
@@ -135,27 +96,19 @@ exports.confirmacion = async (req, res) => {
     }
 };
 
-// ======================================================
 // API CONSUMERS (SERVER TO SERVER)
-// ======================================================
-
-// 🔹 agregar producto
+// agregar producto
 exports.add_to_carrito = async (req, res) => {
-
     try {
 
         const response = await axios.post(
-            `${API_URL}/add`,
+            `http://localhost:3000/carrito/add`,
             req.body,
-            getConfig(req)
         );
 
         return res.json(response.data);
 
     } catch (err) {
-
-        console.error("❌ add_to_carrito:", err.message);
-
         return res.status(
             err.response?.status || 500
         ).json({
@@ -165,7 +118,7 @@ exports.add_to_carrito = async (req, res) => {
     }
 };
 
-// 🔹 eliminar producto
+// eliminar producto
 exports.remove_from_carrito = async (req, res) => {
 
     try {
@@ -191,7 +144,7 @@ exports.remove_from_carrito = async (req, res) => {
     }
 };
 
-// 🔹 actualizar carrito
+// actualizar carrito
 exports.update_carrito = async (req, res) => {
 
     try {
@@ -217,7 +170,7 @@ exports.update_carrito = async (req, res) => {
     }
 };
 
-// 🔹 checkout
+// checkout
 exports.checkout = async (req, res) => {
 
     try {
@@ -232,7 +185,7 @@ exports.checkout = async (req, res) => {
 
     } catch (err) {
 
-        console.error("❌ checkout:", err.message);
+        console.error("checkout:", err.message);
 
         return res.status(
             err.response?.status || 500
@@ -243,10 +196,7 @@ exports.checkout = async (req, res) => {
     }
 };
 
-// ======================================================
 // RENDER SALE SUCCESS
-// ======================================================
-
 exports.sale_success = async (req, res) => {
 
     try{

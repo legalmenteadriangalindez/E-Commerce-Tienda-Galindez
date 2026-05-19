@@ -1,9 +1,6 @@
 exports.payment_point = (req, res) => {
 
-    const cart = req.session.cart || {
-        items: [],
-        total: 0
-    };
+    req.session.cart = [];
 
     res.render('client/payment/payment_point', {
         user: req.session.user,

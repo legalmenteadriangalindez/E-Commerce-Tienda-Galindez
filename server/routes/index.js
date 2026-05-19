@@ -18,5 +18,14 @@ router.use('/carrito', require('./cart.routes'));
 router.use('/api/paymentsMethods', require('./paymentMethod.routes'));
 router.use('/api/paymentTransactions', require('./PaymentTransaction.routes'));
 router.use('/', require('./admin.routes'));
-                          
+                   
+
+router.get('/reset-cart', (req, res) => {
+
+    req.session.cart = [];
+
+    res.send('Carrito reseteado');
+
+});
+
 module.exports = router;

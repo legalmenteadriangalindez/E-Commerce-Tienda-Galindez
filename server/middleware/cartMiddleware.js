@@ -1,6 +1,6 @@
 module.exports = (req, res, next) => {
     if (!req.session.cart) {
-        req.session.cart = { items: [], total: 0 };
+        req.session.cart = [];
     }
 
     res.locals.cart = req.session.cart;

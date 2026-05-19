@@ -1,283 +1,119 @@
 const Salesdb = require('../model/sales');
 const SaleDetaildb = require('../model/saleDetails');
 const Productdb = require('../model/product');
+const Ordendb = require('../model/order');
 
 
-
-// ======================================================
-// HELPERS
-// ======================================================
-
-function getCart(req) {
-
-    console.log("🟡 [getCart] SESSION ID:", req.sessionID);
-    console.log("🟡 [getCart] CART ANTES:", req.session.cart);
-
-    if (!req.session.cart) {
-        req.session.cart = {
-            items: [],
-            total: 0
-        };
-    }
-
-    // seguridad básica
-    if (!Array.isArray(req.session.cart.items)) {
-        req.session.cart.items = [];
-    }
-
-    if (typeof req.session.cart.total !== "number") {
-        req.session.cart.total = 0;
-    }
-
-    console.log("🟢 [getCart] CART FINAL:", req.session.cart);
-
-    return req.session.cart;
-}
-
-function calculateCart(cart) {
-
-    cart.total = cart.items.reduce((acc, item) => {
-        return acc + (Number(item.subtotal) || 0);
-    }, 0);
-
-    return cart;
-}
-
-// ======================================================
-// GET CART DATA (API)
-// ======================================================
-
-exports.get_cart = async (req, res) => {
-    try {
-        const cart = getCart(req);
-        return res.json({
-            success: true,
-            cart
-        });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: err.message
-        });
-    }
-};
-
-// ======================================================
 // ADD TO CART (API)
-// ======================================================
-
 exports.add_to_carrito = async (req, res) => {
-
     try {
-        console.log("🍪 COOKIE HEADER:", req.headers.cookie);
-        console.log("🍪 SESSION ID:", req.sessionID);
-        console.log("🟣 [ADD CART] SESSION:", req.session);
-        const userId = req.session.user?._id;
-
-        if (!userId) {
-            return res.status(401).json({
-                success: false,
-                message: "No autenticado"
-            });
-        }
         const { productoId, cantidad } = req.body;
-        if (!productoId) {
-            return res.status(400).json({
-                success: false,
-                message: "productoId requerido"
-            });
+        const produto = await Productdb.findById(productoId)
+        .populate('categoria');
+
+        if (!produto) {
+            return res.status(404).json({message: "Producto no encontrado"});
         }
-        const producto = await Productdb.findById(productoId);
-        console.log("🧪 PRODUCTO:", producto);
-        if (!producto) {
-            return res.status(404).json({
-                success: false,
-                message: "Producto no encontrado"
-            });
-        }
-        const cart = getCart(req);
-        const cant = Math.max(1, parseInt(cantidad) || 1);
-        const item = cart.items.find(i =>
-            i.productoId.toString() === productoId.toString()
-        );
-        if (item) {
-            item.cantidad += cant;
-            item.subtotal = item.cantidad * item.precio;
-        } else {
-            cart.items.push({
-                productoId: producto._id.toString(),
-                nombre: producto.nombre,
-                precio: producto.precioBase,
-                cantidad: cant,
-                subtotal: producto.precioBase * cant,
-                foto: producto.fotos?.[0] || null
-            });
+        
+        if(!req.session.cart){
+            req.session.cart =  [];
         }
 
-        calculateCart(cart);
-        req.session.cart = cart;
-        req.session.save(err => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({
-                    success: false,
-                    message: "Error guardando sesión"
-                });
-            }
-            return res.json({
+        const exist = req.session.cart.find(i => i.productoId === productoId);
+        
+        if (exist) {
+            exist.cantidad = cantidad;
+        }else{
+            req.session.cart.push({
+                _id: produto._id.toString(),
+                productoId: produto._id.toString(),
+                nombre: produto.nombre,
+                precio: produto.precioBase,
+                cantidad: Number(cantidad),
+                foto: produto.fotos?.[0] || '/assets/img/default.jpg',
+                categoria: produto.categoria.nombre
+            });
+            
+        }
+        req.session.save();
+        return res.json({
                 success: true,
-                message: "Producto agregado",
-                cart,
-                totalItems: cart.items.reduce(
-                    (acc, item) => acc + item.cantidad,
-                    0
-                )
-            });
+                message: "se agrego el producto al carrito",
+                cart: req.session.cart
         });
-    } catch (err) {
-
-        console.error(err);
-
+    } catch (error) {
+        console.error(error);
         return res.status(500).json({
             success: false,
-            message: err.message
+            message: error.message
         });
-    }
+    }    
 };
 
-// ======================================================
-// REMOVE ITEM (API)
-// ======================================================
 
+// REMOVE ITEM (API)
 exports.remove_from_carrito = async (req, res) => {
 
     try {
 
         const { productoId } = req.body;
 
-        const cart = getCart(req);
-
-        cart.items = cart.items.filter(i =>
-            i.productoId.toString() !== productoId.toString()
+        req.session.cart = req.session.cart.filter(
+            i => i.productoId.toString() !== productoId.toString()
         );
 
-        calculateCart(cart);
+        return res.redirect('/view_cart');
 
-        req.session.cart = cart;
-
-        req.session.save(err => {
-
-            if (err) {
-                console.error(err);
-
-                return res.status(500).json({
-                    success: false,
-                    message: "Error guardando sesión"
-                });
-            }
-
-            return res.json({
-                success: true,
-                message: "Producto eliminado",
-                cart
-            });
-        });
-
-    } catch (err) {
-
-        console.error(err);
+    } catch (error) {
 
         return res.status(500).json({
             success: false,
-            message: err.message
+            message: error.message
         });
     }
 };
 
-// ======================================================
-// UPDATE CART (API)
-// ======================================================
 
-exports.update_carrito = async (req, res) => {
+
+exports.update_cantidad_carrito = async (req, res) => {
+
     try {
-        const { productoId, cantidad } = req.body;
-        const cart = getCart(req);
-        const item = cart.items.find(i =>
-            i.productoId.toString() === productoId.toString()
-        );
-        if (!item) {
-            return res.status(404).json({
-                success: false,
-                message: "Producto no encontrado en carrito"
-            });
-        }
 
-        const cant = Math.max(1, parseInt(cantidad) || 1);
-        const producto = await Productdb.findById(item.productoId);
-        if (!producto) {
+        const { productoId, cantidad } = req.body;
+        const produto = req.session.cart.find(
+            i => i.productoId === productoId
+        );
+
+        if (!produto) {
+
             return res.status(404).json({
-                success: false,
                 message: "Producto no encontrado"
             });
         }
-        item.cantidad = cant;
-        item.subtotal = producto.precioBase * cant;
-        calculateCart(cart);
-        req.session.cart = cart;
-        req.session.save(err => {
-            if (err) {
-                console.error(err);
+        produto.cantidad = Number(cantidad);
 
-                return res.status(500).json({
-                    success: false,
-                    message: "Error guardando sesión"
-                });
-            }
-            return res.json({
-                success: true,
-                message: "Carrito actualizado",
-                cart
-            });
-        });
+        return res.redirect('/view_cart');
 
-    } catch (err) {
-        console.error(err);
+    } catch (error) {
+
+        console.error(error);
+
         return res.status(500).json({
             success: false,
-            message: err.message
+            message: error.message
         });
     }
 };
 
-// ======================================================
+
 // CHECKOUT (API)
-// ======================================================
-
 exports.checkout = async (req, res) => {
-
     try {
-        console.log("🔴 [CHECKOUT] SESSION ID:", req.sessionID);
-        console.log("🔴 [CHECKOUT] CART:", req.session.cart);
-        const userId = req.session.user?._id;
-        if (!userId) {
-            return res.status(401).json({
-                success: false,
-                message: "No autenticado"
-            });
-        }
-        const cart = getCart(req);
-        if (!cart.items.length) {
-            console.log("❌ [CHECKOUT] CARRITO VACÍO");
-            return res.status(400).json({
-                success: false,
-                message: "Carrito vacío"
-            });
-        }
 
-        let total = 0;
-        const detalles = [];
-        for (const item of cart.items) {
+        const cart = req.session.cart;
+        let subtotal = 0;
+    
+        for (const item of cart) {
             const productoDB = await Productdb.findById(item.productoId);
             if (!productoDB) {
                 return res.status(404).json({
@@ -285,68 +121,53 @@ exports.checkout = async (req, res) => {
                     message: "Producto no encontrado"
                 });
             }
-            const cantidad = Number(item.cantidad);
-            if (productoDB.stock < cantidad) {
+            subtotal += productoDB.precioBase * item.cantidad;
+            
+            if (productoDB.stock < item.cantidad) {
                 return res.status(400).json({
                     success: false,
                     message: `Stock insuficiente para ${productoDB.nombre}`
                 });
             }
-            const subtotal = productoDB.precioBase * cantidad;
-            total += subtotal;
-            detalles.push({
-                producto: productoDB._id,
-                cantidad,
-                precioUnitario: productoDB.precioBase,
-                subtotal
-            });
-            productoDB.stock -= cantidad;
-            console.log("🧪 PRODUCTO CHECKOUT:", productoDB);
-            console.log("🧪 unidadBase:", productoDB.unidadBase);
-            await productoDB.save();
         }
-        const venta = await Salesdb.create({
-            cliente: userId,
-            total
-        });
-        for (const d of detalles) {
-            await SaleDetaildb.create({
-                venta: venta._id,
-                ...d
-            });
-        }
-        req.session.cart = {
-            items: [],
-            total: 0
-        };
+            const impuesto = subtotal * 0.19; 
+            const total = subtotal + impuesto;
 
-        req.session.save(err => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({
-                    success: false,
-                    message: "Error limpiando carrito"
+            const orden = await Ordendb.create({
+                cliente: req.session.user._id,
+                productos: cart.map(item => ({
+                    producto: item.productoId,
+                    cantidad: item.cantidad,
+                    subtotal : item.precio * item.cantidad
+                })),
+                metodoPago: req.body.metodoPago,
+                estadoPago: "Pendiente",
+                subtotal: subtotal,
+                impuesto: impuesto,
+                total: total
+            });
+            for (const item of cart) {
+                await Productdb.findByIdAndUpdate(item.productoId, {
+                    $inc: { stock: -item.cantidad }
                 });
             }
-            return res.json({
+            req.session.cart = [];
+            return res.status(200).json({
                 success: true,
-                message: "Venta realizada",
-                ventaId: venta._id
+                message: "Compra realizada",
+                ordenId: orden._id
             });
-        });
-    } catch (err) {
-        console.error("CHECKOUT ERROR:", err);
+    }catch (error) {
+        console.error(error);
         return res.status(500).json({
             success: false,
-            message: err.message
+            message: error.message
         });
     }
+            
 };
 
-// ======================================================
 // CONFIRMACIÓN API
-// ======================================================
-
 exports.get_confirmacion = async (req, res) => {
     try {
         const ventaId = req.params.id;
