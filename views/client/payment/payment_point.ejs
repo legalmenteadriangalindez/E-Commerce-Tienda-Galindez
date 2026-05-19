@@ -170,7 +170,7 @@
             </div>
             <div class="summary-line total text-sumary"><span>Total a pagar</span><span id="totalAmount">$<%= (cart.total || 0).toFixed(2) %></span></div>
 
-            <form action="/checkout" method="POST">
+            <form action="/carrito/checkout" method="POST">
                 <input type="hidden" name="cliente" value="<%= user._id %>">
                 <button class="pay-btn">
                     <i class="fas fa-lock"></i> Confirmar pago · $<%= totalFinal.toFixed(2) %>

@@ -73,12 +73,12 @@
 
         <li class="nav-item"><a class="nav-link" href="/promociones"><i class="bi bi-tag"></i> Promociones</a></li>
         <li class="nav-item"><a class="nav-link" href="/marcas"><i class="bi bi-bookmark"></i> Marcas</a></li>
-        <li class="nav-item"><a class="nav-link position-relative" href="/carrito">
+        <li class="nav-item"><a class="nav-link position-relative" href="/view_cart">
     <i class="bi bi-cart"></i> Carrito
 <span id="cart-count" class="cart-badge">
-    <%= (typeof cart !== 'undefined' && cart.items) 
-        ? cart.items.reduce((acc, i) => acc + i.cantidad, 0) 
-        : 0 %>
+    <%= Array.isArray(cart)
+         ? cart.reduce((acc, i) => acc + i.cantidad, 0)
+         : 0 %>
 </span>
 </a></li>
 
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                credentials: 'same-origin',
+                credentials: 'include',
                 body: JSON.stringify({ productoId, cantidad: 1 })
             });
 
@@ -145,15 +145,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             console.log("🟢 DATA:", data);
 
-            if (data.totalItems !== undefined) {
-                const cartCount = document.getElementById('cart-count');
+            const cartCount = document.getElementById('cart-count');
 
-                if (cartCount) {
-                    cartCount.textContent = data.totalItems;
-                    console.log("✅ CONTADOR ACTUALIZADO:", data.totalItems);
-                } else {
-                    console.log("❌ NO EXISTE #cart-count");
-                }
+            if (cartCount && Array.isArray(data.cart)) {
+            
+                const total = data.cart.reduce(
+                    (acc, item) => acc + item.cantidad,
+                    0
+                );
+            
+                cartCount.textContent = total;
+            
+                console.log("✅ CONTADOR ACTUALIZADO:", total);
             }
 
         } catch (err) {

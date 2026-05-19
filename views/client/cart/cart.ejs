@@ -42,29 +42,33 @@
             <h3><%= producto.nombre %></h3>
 
             <p class="category">
-              <%= producto.categoria?.nombre || 'Sin categoría' %>
+              <%= producto.categoria || 'Sin categoría' %>
             </p>
           </div>
 
           <!-- Control de cantidad -->
          <div class="quantity-picker">
          
-           <!-- Disminuir -->
-           <form action="/carrito/actualizar" method="POST">
-             <input type="hidden" name="productoId" value="<%= producto._id %>">
-             <input type="hidden" name="cantidad" value="<%= producto.cantidad - 1 %>">
-             <button type="submit">-</button>
-           </form>
-         
-           <!-- Cantidad -->
-           <span class="cantidad"><%= producto.cantidad %></span>
-         
-           <!-- Aumentar -->
-           <form action="/carrito/actualizar" method="POST">
-             <input type="hidden" name="productoId" value="<%= producto._id %>">
-             <input type="hidden" name="cantidad" value="<%= producto.cantidad + 1 %>">
-             <button type="submit">+</button>
-           </form>
+            <form action="/carrito/actualizar" method="POST">
+
+                <input 
+                    type="hidden"
+                    name="productoId"
+                    value="<%= producto.productoId %>"
+                >
+
+                <input
+                    type="number"
+                    name="cantidad"
+                    value="<%= producto.cantidad %>"
+                    min="1"
+                >
+
+                <button type="submit">
+                    Actualizar
+                </button>
+
+            </form>
          
          </div>
 
@@ -75,7 +79,7 @@
 
           <!-- Eliminar producto -->
           <form action="/carrito/eliminar" method="POST">
-            <input type="hidden" name="productoId" value="<%= producto._id %>">
+            <input type="hidden" name="productoId" value="<%= producto.productoId %>">
             <button class="remove-btn">✕</button>
           </form>
 
