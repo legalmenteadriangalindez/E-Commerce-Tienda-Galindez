@@ -1,5 +1,5 @@
 const axios = require('axios');
-
+const Ordendb = require('../model/order');
 
 // RENDER CART
 exports.car = async (req, res) => {
@@ -13,6 +13,7 @@ exports.car = async (req, res) => {
         );
         return res.render('client/cart/cart', {
             productosCarrito: cart,
+            user: req.session.user,
             subtotal
         });
     } catch (err) {
@@ -25,76 +26,33 @@ exports.car = async (req, res) => {
 exports.payment_point = async (req, res) => {
 
     try {
+        const cart = req.session.cart || [];
 
-        const response = await axios.get(`http://localhost:3000/api/payment`,);
+        let subtotal = 0;
 
-        const cart = response.data;
-
-        return res.render('client/payment/payment_point', {
-            user: req.session.user,
-            cart
+        cart.forEach(item => {
+            subtotal += item.precio * item.cantidad;
         });
-
-    } catch (err) {
-
-        console.error("❌ render payment point:", err.message);
-
-        return res.status(500).send(err.message);
-    }
-};
-
-// RENDER BILLING POINT
-exports.billing_point = async (req, res) => {
-
-    try {
-
-        const response = await axios.get(
-            `${API_URL}/data`,
-            getConfig(req)
-        );
-
-        const cart = response.data.cart;
-
-        return res.render('admin/home/Billing_point', {
-            user: req.session.user,
-            cart
-        });
-
-    } catch (err) {
-
-        console.error("❌ render billing point:", err.message);
-
-        return res.status(500).send(err.message);
-    }
-};
-
-// RENDER CONFIRMACION
-exports.confirmacion = async (req, res) => {
-
-    try {
-
-        const response = await axios.get(
-            `${API_URL}/data`,
-            getConfig(req)
-        );
-
-        const cart = response.data.cart;
 
         return res.render(
-            'admin/payment/checkout_confirmation',
+            'client/payment/payment_point',
             {
                 user: req.session.user,
-                cart
+                productosCarrito: cart,
+                subtotal
             }
         );
 
     } catch (err) {
-
         console.error(err);
-
         return res.status(500).send(err.message);
+
     }
 };
+
+
+
+
 
 // API CONSUMERS (SERVER TO SERVER)
 // agregar producto
@@ -133,7 +91,7 @@ exports.remove_from_carrito = async (req, res) => {
 
     } catch (err) {
 
-        console.error("❌ remove_from_carrito:", err.message);
+        console.error("remove_from_carrito:", err.message);
 
         return res.status(
             err.response?.status || 500
@@ -143,6 +101,10 @@ exports.remove_from_carrito = async (req, res) => {
         });
     }
 };
+
+
+
+
 
 // actualizar carrito
 exports.update_carrito = async (req, res) => {
@@ -159,8 +121,6 @@ exports.update_carrito = async (req, res) => {
 
     } catch (err) {
 
-        console.error("❌ update_carrito:", err.message);
-
         return res.status(
             err.response?.status || 500
         ).json({
@@ -170,61 +130,61 @@ exports.update_carrito = async (req, res) => {
     }
 };
 
-// checkout
-exports.checkout = async (req, res) => {
+// RENDER BILLING POINT
+exports.billing_point = async (req, res) => {
 
     try {
 
-        const response = await axios.post(
-            `${API_URL}/checkout`,
-            req.body,
+        const response = await axios.get(
+            `${API_URL}/data`,
             getConfig(req)
         );
 
-        return res.json(response.data);
+        const cart = response.data.cart;
+
+        return res.render('admin/home/Billing_point', {
+            user: req.session.user,
+            cart
+        });
 
     } catch (err) {
 
-        console.error("checkout:", err.message);
-
-        return res.status(
-            err.response?.status || 500
-        ).json({
-            success: false,
-            message: err.response?.data?.message || err.message
-        });
+        return res.status(500).send(err.message);
     }
 };
 
 // RENDER SALE SUCCESS
-exports.sale_success = async (req, res) => {
+exports.order_success = async (req, res) => {
 
-    try{
+    try {
 
-        const ventaId = req.params.id;
-
-        const response = await axios.get(
-            `${API_URL}/confirmacion/${ventaId}`,
-            getConfig(req)
+        const orden = await Ordendb.findById(
+            req.params.id
         );
 
-        const venta = response.data.venta;
+        if (!orden) {
 
-        const detalles = response.data.detalles;
+            return res.status(404).send(
+                'Orden no encontrada'
+            );
+
+        }
 
         return res.render(
-            'admin/payment/sale_success',
+            'client/payment/checkout_confirmation',
             {
                 user: req.session.user,
-                venta,
-                detalles
+                orden
             }
         );
 
-    }catch(err){
+    } catch (error) {
 
-        console.error(err);
+        console.error(error);
 
-        return res.status(500).send(err.message);
+        return res.status(500)
+            .send(error.message);
+
     }
+
 };

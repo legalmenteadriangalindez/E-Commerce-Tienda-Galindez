@@ -10,15 +10,13 @@ const cartController = require('../controller/cart_controller');
 // agregar producto
 router.post('/add', cartController.add_to_carrito);
 router.post('/remove', isLogged, cartController.remove_from_carrito);
-router.post('/actualizar', isLogged, cartController.update_cantidad_carrito);
+// router.post('/actualizar', isLogged, cartController.update_cantidad_carrito);
 router.post('/checkout', isLogged, cartController.checkout);
-router.get('/confirmacion/:id', isLogged, cartController.get_confirmacion);
-
+// router.get('/confirmacion/:id', isLogged, cartController.get_confirmacion);
+router.post('/payment_point', isLogged, cartController.payment_point);
 
 // carrito
-// router.get('/payment-point', isLogged, renderCart.payment_point);
 // router.get('/billing-point', isLogged, isAdmin, renderCart.billing_point);
 // router.get('/checkout/confirmacion', isLogged, renderCart.confirmacion);
-// router.get('/venta-finalizada/:id', isLogged, renderCart.sale_success);
 
 module.exports = router;

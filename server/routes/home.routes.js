@@ -23,8 +23,10 @@ router.get('/perfil', servicesRenderProfile.profile);
 router.get('/perfil/editar/:id', servicesRenderProfile.update_profile_form);
 router.post('/perfil/editar/:id', servicesRenderProfile.update_profile);
 
-router.get('/checkout', servicesRenderCart.checkout);
+// router.get('/checkout', servicesRenderCart.checkout);
 router.get('/view_cart', isLogged, servicesRenderCart.car);
+router.get('/payment-point', isLogged, servicesRenderCart.payment_point);
+router.get('/venta-finalizada/:id', isLogged, servicesRenderCart.order_success);
 // router.post('/carrito_add', isLogged, servicesRenderCart.add_to_carrito);
 
 module.exports = router;
