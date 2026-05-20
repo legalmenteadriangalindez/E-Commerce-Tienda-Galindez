@@ -110,17 +110,12 @@
             </div>
 
             <!-- FORM FINAL -->
-            <form action="/carrito/checkout" method="POST">
-
-                <input type="hidden" name="cliente" value="<%= user._id %>">
-                <input type="hidden" name="total" value="<%= totalFinal %>">
-
-                <button class="pay-btn">
-                    <i class="fas fa-lock"></i>
-                    Confirmar pago · $<%= totalFinal %>
-                </button>
-
-            </form>
+            <a href="/">
+                <div class="pay-btn" style="text-align:center;">
+                    <i class="fas fa-check-circle"></i>
+                    Pago realizado correctamente
+                </div>
+            </a>
 
         </div>
     </div>

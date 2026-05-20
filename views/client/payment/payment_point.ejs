@@ -17,33 +17,33 @@
             </div>
                 <div class="input-group">
                     <label>Nombre completo</label>
-                    <input type="text" id="fullName" value="<%= user.nombre %>">
+                    <input type="text" id="fullName" value="<%= locals.user?.nombre || '' %>">
                 </div>
                 
                 <div class="input-row">
                 
                     <div class="input-group">
                         <label>Correo electrónico</label>
-                        <input type="email" id="email" value="<%= user.email %>">
+                        <input type="email" id="email" value="<%= locals.user?.email || '' %>">
                     </div>
                 
                     <div class="input-group">
                         <label>Teléfono</label>
-                        <input type="tel" id="phone" value="<%= user.telefono %>">
+                        <input type="tel" id="phone" value="<%= locals.user?.telefono || '' %>">
                     </div>
                 
                 </div>
                 
                 <div class="input-group">
                     <label>Dirección</label>
-                    <input type="text" id="address" value="<%= user.direccion %>">
+                    <input type="text" id="address" value="<%= locals.user?.direccion || '' %>">
                 </div>
                 
                 <div class="input-row">
                 
                     <div class="input-group">
                         <label>Ciudad</label>
-                        <input type="text" id="city" value="<%= user.ciudad %>">
+                        <input type="text" id="city" value="<%= locals.user?.ciudad || '' %>">
                     </div>
                 
                     <div class="input-group">
@@ -119,7 +119,7 @@
 
             <div class="order-items-list" class="text-sumary">
                 
-                <% cart.items.forEach(item => { %>
+                <% productosCarrito.forEach(item => { %>
                 
                 <div class="order-item">
                 
@@ -156,24 +156,26 @@
             <div class="divider"></div>
             <div class="summary-line text-sumary">
                <span>Subtotal</span>
-               <span id="totalAmount"><%= cart.total %> $</span>
+               <span id="totalAmount"><%= subtotal.toFixed(2) %> $</span>
             </div>
 
             <div class="summary-line text-sumary"><span>Envío</span><span>$5000</span></div>
             <div class="summary-line text-sumary"><span>Impuestos (estimado)</span><span>$300</span></div>
             <% let envio = 5000; %>
             <% let impuestos = 300; %>
-            <% let totalFinal = (cart.total || 0) + envio + impuestos; %>
+            <% let totalFinal = subtotal + envio + impuestos; %>
             <div class="promo-code">
                 <input type="text" id="promoInput" placeholder="Código de descuento">
                 <button class="btn-outline" id="applyPromoBtn">Aplicar</button>
             </div>
-            <div class="summary-line total text-sumary"><span>Total a pagar</span><span id="totalAmount">$<%= (cart.total || 0).toFixed(2) %></span></div>
+            <div class="summary-line total text-sumary"><span>Total a pagar</span><span id="totalAmount">$<%= totalFinal.toFixed(2) %></span></div>
 
             <form action="/carrito/checkout" method="POST">
                 <input type="hidden" name="cliente" value="<%= user._id %>">
-                <button class="pay-btn">
-                    <i class="fas fa-lock"></i> Confirmar pago · $<%= totalFinal.toFixed(2) %>
+
+                <button type="submit" class="pay-btn">
+                    <i class="fas fa-lock"></i>
+                    Confirmar pago · $<%= totalFinal.toFixed(2) %>
                 </button>
             </form>
 
