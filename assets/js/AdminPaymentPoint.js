@@ -1,6 +1,6 @@
 let timeout = null;
 
-// 🔎 BUSCADOR
+// BUSCADOR
 document.getElementById("buscarProducto")
 .addEventListener("keyup", function(){
 
@@ -40,10 +40,7 @@ document.getElementById("buscarProducto")
 });
 
 
-// ======================================================
-// 🎯 RENDER RESULTADOS
-// ======================================================
-
+// RENDER RESULTADOS
 function renderResultados(productos){
 
     const contenedor =
@@ -76,10 +73,7 @@ function renderResultados(productos){
 }
 
 
-// ======================================================
-// ✅ SELECCIONAR PRODUCTO
-// ======================================================
-
+// SELECCIONAR PRODUCTO
 function seleccionarProducto(producto){
 
     document.getElementById("productoId").value =
@@ -97,10 +91,7 @@ function seleccionarProducto(producto){
 }
 
 
-// ======================================================
-// 🗑 ELIMINAR PRODUCTO
-// ======================================================
-
+// ELIMINAR PRODUCTO
 async function eliminarProductoBackend(productoId){
 
     try{
@@ -119,7 +110,7 @@ async function eliminarProductoBackend(productoId){
         });
 
         const data = await res.json();
-
+        
         if(data.success){
 
             // 🔥 refresca carrito
@@ -137,10 +128,7 @@ async function eliminarProductoBackend(productoId){
 }
 
 
-// ======================================================
-// ❌ CERRAR RESULTADOS
-// ======================================================
-
+// CERRAR RESULTADOS
 document.addEventListener("click", function(e){
 
     if(!e.target.closest("#buscarProducto")){
@@ -152,10 +140,7 @@ document.addEventListener("click", function(e){
 });
 
 
-// ======================================================
 // 💳 FINALIZAR VENTA
-// ======================================================
-
 function finalizarVenta(){
 
     window.location.href ="/carrito/checkout/confirmacion";
@@ -167,10 +152,7 @@ function finalizarVenta(){
 }
 
 
-// ======================================================
-// 🧹 LIMPIAR FORMULARIO
-// ======================================================
-
+// LIMPIAR FORMULARIO
 function limpiarFormulario(){
 
     document.getElementById("productoId").value = "";
@@ -183,10 +165,7 @@ function limpiarFormulario(){
 }
 
 
-// ======================================================
-// ❌ CANCELAR VENTA
-// ======================================================
-
+// CANCELAR VENTA
 function cancelarVenta(){
 
     if(!confirm("¿Seguro que deseas cancelar la venta?")){
@@ -206,10 +185,7 @@ function cancelarVenta(){
 }
 
 
-// ======================================================
 // ➕ AGREGAR PRODUCTO
-// ======================================================
-
 async function agregarProducto(){
 
     const productoId =
@@ -266,17 +242,21 @@ async function agregarProducto(){
 }
 
 
-// ======================================================
-// 💰 CALCULAR TOTALES
-// ======================================================
+// CALCULAR TOTALES
 
 function calcularTotalesBackend(items){
 
     let subtotal = 0;
 
-    items.forEach(i => {
+    items.forEach(item => {
 
-        subtotal += Number(i.subtotal || 0);
+        const precio =
+            Number(item.precio || 0);
+
+        const cantidad =
+            Number(item.cantidad || 0);
+
+        subtotal += precio * cantidad;
     });
 
     const iva = subtotal * 0.19;
@@ -284,15 +264,14 @@ function calcularTotalesBackend(items){
     const total = subtotal + iva;
 
     document.getElementById("subtotal").innerText =
-        "$" + subtotal.toLocaleString();
+        "$" + subtotal.toLocaleString('es-CO');
 
     document.getElementById("iva").innerText =
-        "$" + iva.toLocaleString();
+        "$" + iva.toLocaleString('es-CO');
 
     document.getElementById("total").innerText =
-        "$" + total.toLocaleString();
+        "$" + total.toLocaleString('es-CO');
 }
-
 
 // 🔄 CARGAR CARRITO
 
@@ -303,7 +282,7 @@ async function cargarCarrito(){
         const res = await fetch("/carrito/get_carrito");
 
         const data = await res.json();
-
+        console.log(data);
         if(data.success){
 
             renderCarritoDesdeBackend(
@@ -322,10 +301,7 @@ async function cargarCarrito(){
 }
 
 
-// ======================================================
-// 🛒 RENDER CARRITO
-// ======================================================
-
+// RENDER CARRITO
 function renderCarritoDesdeBackend(items){
 
     const lista =
@@ -333,33 +309,85 @@ function renderCarritoDesdeBackend(items){
 
     lista.innerHTML = "";
 
+    if(items.length === 0){
+
+        lista.innerHTML = `
+
+            <div class="empty-cart">
+
+                <i class="fas fa-cart-shopping"></i>
+
+                <p>No hay productos agregados</p>
+
+            </div>
+
+        `;
+
+        calcularTotalesBackend([]);
+
+        return;
+    }
+
     items.forEach((item) => {
+
+        const subtotal =
+            Number(item.precio || 0) *
+            Number(item.cantidad || 0);
 
         lista.innerHTML += `
         
         <div class="order-item">
 
-            <div>${item.nombre}</div>
+            <!-- FOTO -->
+            <div class="order-item-image">
 
-            <div>
-                Cant: ${item.cantidad}
+                <img
+                    src="${item.foto || '/img/default.png'}"
+                    alt="${item.nombre}"
+                >
+
             </div>
 
-            <div>
-                $${Number(
-                    item.subtotal || 0
-                ).toLocaleString()}
+            <!-- INFO -->
+            <div class="order-item-info">
+
+                <h4>
+                    ${item.nombre}
+                </h4>
+
+                <p>
+                    Cantidad:
+                    <strong>${item.cantidad}</strong>
+                </p>
+
+                <span class="category-badge">
+                    ${item.categoria || 'Producto'}
+                </span>
+
             </div>
 
+            <!-- PRECIO -->
+            <div class="order-item-price">
+
+                <h3>
+                    $${subtotal.toLocaleString('es-CO')}
+                </h3>
+
+                <small>
+                    $${Number(item.precio).toLocaleString('es-CO')}
+                    c/u
+                </small>
+
+            </div>
+
+            <!-- ELIMINAR -->
             <button
+                class="delete-item-btn"
                 onclick="eliminarProductoBackend('${item.productoId}')"
-                style="
-                    margin-left:10px;
-                    background:red;
-                    color:white;
-                "
             >
-                X
+
+                <i class="fas fa-trash"></i>
+
             </button>
 
         </div>
@@ -370,10 +398,7 @@ function renderCarritoDesdeBackend(items){
 }
 
 
-// ======================================================
-// 🚀 INIT
-// ======================================================
-
+// INIT
 window.onload = () => {
 
     cargarCarrito();
