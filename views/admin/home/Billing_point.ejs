@@ -1,13 +1,26 @@
 <!-- include header -->
 <%- include('../../include/_headerAdmin') %>
 
+<form
+    id="billingForm"
+    action="/carrito/payment_point"
+    method="POST"
+>
+
 <div class="checkout-wrapper">
 
     <div class="checkout-header">
-        <h1><i class="fas fa-cash-register"></i> Punto de Facturación</h1>
+
+        <h1>
+            <i class="fas fa-cash-register"></i>
+            Punto de Facturación
+        </h1>
+
         <div class="badge-secure">
-            <i class="fas fa-store"></i> Modo cajero · Venta directa
+            <i class="fas fa-store"></i>
+            Modo cajero · Venta directa
         </div>
+
     </div>
 
     <div class="checkout-grid">
@@ -22,47 +35,106 @@
 
             <!-- BUSCADOR -->
             <div class="input-group" style="position: relative;">
-                <label>Buscar producto</label>
-                <input type="text" id="buscarProducto" placeholder="escribir nombre">
 
-                <!-- 🔥 CONTENEDOR RESULTADOS -->
-                <div id="resultadosBusqueda" class="search-results"></div>
+                <label>Buscar producto</label>
+
+                <input
+                    type="text"
+                    id="buscarProducto"
+                    placeholder="Escribir nombre"
+                >
+
+                <!-- RESULTADOS -->
+                <div
+                    id="resultadosBusqueda"
+                    class="search-results"
+                ></div>
+
             </div>
 
             <!-- DATOS PRODUCTO -->
             <div class="input-row">
+
                 <div class="input-group">
+
                     <label>Producto</label>
-                    <input type="text" id="productoNombre" placeholder="Arroz Florecita">
-                    <input type="hidden" id="productoId">
+
+                    <input
+                        type="text"
+                        id="productoNombre"
+                        placeholder="Nombre producto"
+                        readonly
+                    >
+
+                    <input
+                        type="hidden"
+                        id="productoId"
+                    >
+
                 </div>
 
                 <div class="input-group">
+
                     <label>Cantidad</label>
-                    <input id="cantidad" type="number" value="1">
+
+                    <input
+                        id="cantidad"
+                        type="number"
+                        value="1"
+                        min="1"
+                    >
+
                 </div>
+
             </div>
 
             <div class="input-row">
+
                 <div class="input-group">
+
                     <label>Precio</label>
-                    <input id="precio" type="number" value="45000">
+
+                    <input
+                        id="precio"
+                        type="number"
+                        readonly
+                    >
+
                 </div>
+
             </div>
 
-            <button class="pay-btn" style="margin-top:10px" onclick="agregarProducto()" >
-                <i class="fas fa-plus"></i> Agregar a la venta
+            <!-- BOTON AGREGAR -->
+            <button
+                type="button"
+                class="pay-btn"
+                style="margin-top:10px"
+                onclick="agregarProducto()"
+            >
+
+                <i class="fas fa-plus"></i>
+                Agregar a la venta
+
             </button>
 
             <div class="divider"></div>
 
-            <!-- LISTA PRODUCTOS VENTA -->
+            <!-- PRODUCTOS -->
             <div class="section-title">
+
                 <i class="fas fa-cart-shopping"></i>
                 <span>Productos en la venta</span>
+
             </div>
 
-            <div class="order-items-list" id="listaProductos"></div>
+            <!-- LISTA VISUAL -->
+            <div
+                class="order-items-list"
+                id="listaProductos"
+            ></div>
+
+            <!-- INPUTS HIDDEN -->
+            <div id="productosHidden"></div>
 
         </div>
 
@@ -70,83 +142,67 @@
         <div class="summary-card">
 
             <div class="section-title">
+
                 <i class="fas fa-file-invoice-dollar"></i>
                 <span>Resumen de factura</span>
+
             </div>
 
             <div class="summary-line">
+
                 <span>Subtotal</span>
-                <span id="subtotal">$134.990</span>
+
+                <span id="subtotal">
+                    $0
+                </span>
+
             </div>
 
             <div class="summary-line">
-                <span>IVA</span>
-                <span id="iva">$25.648</span>
+
+                <span>IVA (19%)</span>
+
+                <span id="iva">
+                    $0
+                </span>
+
             </div>
 
             <div class="summary-line total">
+
                 <span>Total</span>
-                <span id="total">$160.638</span>
-            </div>
 
-            <div class="divider"></div>
-
-            <!-- METODO DE PAGO -->
-            <div class="section-title" style="font-size:1.2rem;">
-                <i class="fas fa-credit-card"></i>
-                <span>Método de pago</span>
-            </div>
-
-            <div class="methods-group">
-
-                <div class="method-option">
-                    <input 
-                        type="radio"
-                        name="metodoPago"
-                        value="EFECTIVO"
-                        checked
-                    >
-                    <label>
-                        <i class="fas fa-money-bill-wave"></i>
-                        Efectivo
-                    </label>
-                </div>
-
-                <div class="method-option">
-                    <input 
-                        type="radio"
-                        name="metodoPago"
-                        value="TARJETA"
-                    >
-                    <label>
-                        <i class="fas fa-credit-card"></i>
-                        Tarjeta
-                    </label>
-                </div>
-
-                <div class="method-option">
-                    <input 
-                        type="radio"
-                        name="metodoPago"
-                        value="TRANSFERENCIA"
-                    >
-                    <label>
-                        <i class="fas fa-mobile-alt"></i>
-                        Transferencia
-                    </label>
-                </div>
+                <span id="total">
+                    $0
+                </span>
 
             </div>
 
             <div class="divider"></div>
 
-            <!-- ACCIONES -->
-            <button class="pay-btn" onclick="finalizarVenta()">
-                <i class="fas fa-check"></i> Finalizar venta
+            <!-- FINALIZAR -->
+            <button
+                type="submit"
+                form="billingForm"
+                class="pay-btn"
+            >
+
+                <i class="fas fa-check"></i>
+                Finalizar venta
+
             </button>
 
-            <button class="btn-outline" style="width:100%; margin-top:10px;" onclick="cancelarVenta()">
-                <i class="fas fa-trash"></i> Cancelar venta
+            <!-- CANCELAR -->
+            <button
+                type="button"
+                class="btn-outline"
+                style="width:100%; margin-top:10px;"
+                onclick="cancelarVenta()"
+            >
+
+                <i class="fas fa-trash"></i>
+                Cancelar venta
+
             </button>
 
         </div>
@@ -155,8 +211,136 @@
 
 </div>
 
+</form>
+
+<!-- SCRIPT -->
+<script>
+
+let index = 0;
+
+let subtotal = 0;
+
+function agregarProducto() {
+
+    const productoId = document.getElementById('productoId').value;
+
+    const nombre = document.getElementById('productoNombre').value;
+
+    const cantidad = parseInt(
+        document.getElementById('cantidad').value
+    );
+
+    const precio = parseFloat(
+        document.getElementById('precio').value
+    );
+
+    // VALIDACIONES
+    if (!productoId || !nombre) {
+
+        alert('Selecciona un producto');
+
+        return;
+    }
+
+    if (cantidad <= 0) {
+
+        alert('Cantidad inválida');
+
+        return;
+    }
+
+    // CALCULO
+    const totalProducto = precio * cantidad;
+
+    // AGREGAR VISUAL
+    document.getElementById('listaProductos').innerHTML += `
+
+        <div class="order-item">
+
+            <div>
+
+                <strong>${nombre}</strong>
+
+                <p>
+                    Cantidad: ${cantidad}
+                </p>
+
+            </div>
+
+            <span>
+                $${totalProducto.toLocaleString('es-CO')}
+            </span>
+
+        </div>
+
+    `;
+
+    // INPUTS HIDDEN
+    document.getElementById('productosHidden').innerHTML += `
+
+        <input
+            type="hidden"
+            name="productos[${index}][productoId]"
+            value="${productoId}"
+        >
+
+        <input
+            type="hidden"
+            name="productos[${index}][cantidad]"
+            value="${cantidad}"
+        >
+
+    `;
+
+    index++;
+
+    // TOTALES
+    subtotal += totalProducto;
+
+    const iva = subtotal * 0.19;
+
+    const total = subtotal + iva;
+
+    document.getElementById('subtotal').innerText =
+        '$' + subtotal.toLocaleString('es-CO');
+
+    document.getElementById('iva').innerText =
+        '$' + iva.toLocaleString('es-CO');
+
+    document.getElementById('total').innerText =
+        '$' + total.toLocaleString('es-CO');
+
+    // LIMPIAR
+    document.getElementById('productoId').value = '';
+
+    document.getElementById('productoNombre').value = '';
+
+    document.getElementById('cantidad').value = 1;
+
+    document.getElementById('precio').value = '';
+}
+
+function cancelarVenta() {
+
+    document.getElementById('listaProductos').innerHTML = '';
+
+    document.getElementById('productosHidden').innerHTML = '';
+
+    subtotal = 0;
+
+    index = 0;
+
+    document.getElementById('subtotal').innerText = '$0';
+
+    document.getElementById('iva').innerText = '$0';
+
+    document.getElementById('total').innerText = '$0';
+}
+
+</script>
+
 <br>
 <br>
+
 <!-- include footer -->
 <%- include('../../include/_footerAdmin') %>
-
