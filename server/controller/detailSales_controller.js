@@ -4,9 +4,7 @@ const Saledb = require('../model/sales');
 const Productdb = require('../model/product');
 
 
-// ===============================
-// ❌ CREATE (DESHABILITADO)
-// ===============================
+// CREATE (DESHABILITADO)
 exports.create = async (req, res) => {
     return res.status(403).send({
         message: "No permitido. Los detalles se crean junto con la venta."
@@ -14,9 +12,7 @@ exports.create = async (req, res) => {
 };
 
 
-// ===============================
 // FIND (OPTIMIZADO)
-// ===============================
 exports.find = async (req, res) => {
 
     try {
@@ -44,9 +40,7 @@ exports.find = async (req, res) => {
 };
 
 
-// ===============================
-// ❌ UPDATE (DESHABILITADO)
-// ===============================
+// UPDATE (DESHABILITADO)
 exports.update = async (req, res) => {
     return res.status(403).send({
         message: "No permitido. Modificar detalles rompe la integridad de la venta."
@@ -54,9 +48,7 @@ exports.update = async (req, res) => {
 };
 
 
-// ===============================
 // DELETE (CON TRANSACCIÓN)
-// ===============================
 exports.delete = async (req, res) => {
 
     const session = await mongoose.startSession();

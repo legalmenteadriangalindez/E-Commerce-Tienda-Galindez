@@ -2,9 +2,7 @@ const Orderdb = require('../model/order');
 const Productdb = require('../model/product');
 
 
-// ===============================
 // CREAR ORDEN
-// ===============================
 exports.create = async (req, res) => {
 
     try {
@@ -19,9 +17,7 @@ exports.create = async (req, res) => {
             notasCliente
         } = req.body;
 
-        // ===============================
         // VALIDACIONES
-        // ===============================
 
         if (!usuario) {
             return res.status(400).send({
@@ -39,9 +35,7 @@ exports.create = async (req, res) => {
 
         const productosOrden = [];
 
-        // ===============================
         // VALIDAR PRODUCTOS
-        // ===============================
 
         for (const item of productos) {
 
@@ -73,18 +67,14 @@ exports.create = async (req, res) => {
                 subtotal: subtotalProducto
             });
 
-            // ===============================
             // DESCONTAR STOCK
-            // ===============================
 
             productoDB.stock -= item.cantidad;
 
             await productoDB.save();
         }
 
-        // ===============================
         // TOTAL
-        // ===============================
 
         const total =
             subtotal +
@@ -92,17 +82,13 @@ exports.create = async (req, res) => {
             (Number(costoEnvio) || 0) -
             (Number(descuento) || 0);
 
-        // ===============================
         // NÚMERO DE ORDEN
-        // ===============================
 
         const numeroOrden =
             'ORD-' +
             Date.now();
 
-        // ===============================
         // CREAR ORDEN
-        // ===============================
 
         const nuevaOrden = new Orderdb({
 
@@ -142,9 +128,7 @@ exports.create = async (req, res) => {
 };
 
 
-// ===============================
 // OBTENER TODAS LAS ÓRDENES
-// ===============================
 exports.find = async (req, res) => {
 
     try {
@@ -187,9 +171,7 @@ exports.find = async (req, res) => {
     }
 };
 
-// ===============================
 // OBTENER DETALLE DE ORDEN POR ID
-// ===============================
 exports.findOne = async (req, res) => {
 
     try {
@@ -240,9 +222,7 @@ exports.findOne = async (req, res) => {
     }
 };
 
-// ===============================
 // ACTUALIZAR ESTADO
-// ===============================
 exports.update = async (req, res) => {
 
     try {
@@ -277,9 +257,7 @@ exports.update = async (req, res) => {
 };
 
 
-// ===============================
 // ELIMINAR ORDEN
-// ===============================
 exports.delete = async (req, res) => {
 
     try {
@@ -295,9 +273,7 @@ exports.delete = async (req, res) => {
             });
         }
 
-        // ===============================
         // RESTAURAR STOCK
-        // ===============================
 
         for (const item of orden.productos) {
 

@@ -2,9 +2,7 @@ const PaymentTransaction = require('../model/paymentTransaction');
 const PaymentMethod = require('../model/paymentMethod');
 const Sale = require('../model/sales');
 
-// ==========================================
 // CREAR TRANSACCIÓN DE PAGO
-// ==========================================
 exports.createPaymentTransaction = async (req, res) => {
 
     try {
@@ -87,9 +85,7 @@ exports.createPaymentTransaction = async (req, res) => {
 
 };
 
-// ==========================================
 // OBTENER TODAS LAS TRANSACCIONES
-// ==========================================
 exports.getAllPaymentTransactions = async (req, res) => {
 
     try {
@@ -127,9 +123,7 @@ exports.getAllPaymentTransactions = async (req, res) => {
 
 };
 
-// ==========================================
 // OBTENER TRANSACCIÓN POR ID
-// ==========================================
 exports.getPaymentTransactionById = async (req, res) => {
 
         try {
@@ -177,9 +171,7 @@ exports.getPaymentTransactionById = async (req, res) => {
 
     };
 
-// ==========================================
 // ACTUALIZAR TRANSACCIÓN
-// ==========================================
 exports.updatePaymentTransaction = async (req, res) => {
 
         try {
@@ -224,9 +216,7 @@ exports.updatePaymentTransaction = async (req, res) => {
 
     };
 
-// ==========================================
 // ELIMINAR TRANSACCIÓN
-// ==========================================
 exports.deletePaymentTransaction = async (req, res) => {
 
         try {
@@ -263,9 +253,7 @@ exports.deletePaymentTransaction = async (req, res) => {
 
     };
 
-// ==========================================
 // CAMBIAR ESTADO DE TRANSACCIÓN
-// ==========================================
 exports.updateTransactionStatus = async (req, res) => {
 
         try {
@@ -340,9 +328,7 @@ exports.updateTransactionStatus = async (req, res) => {
 
     };
 
-// ==========================================
 // OBTENER TRANSACCIONES POR USUARIO
-// ==========================================
 exports.getTransactionsByUser = async (req, res) => {
 
         try {
@@ -382,9 +368,7 @@ exports.getTransactionsByUser = async (req, res) => {
 
     };
 
-// ==========================================
 // OBTENER TRANSACCIONES POR VENTA
-// ==========================================
 exports.getTransactionsBySale = async (req, res) => {
         try {
 
