@@ -70,7 +70,6 @@ router.get('/read-payment-transactions',isAdmin,servicesRenderPaymentsTransactio
 
 
 router.get('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
-router.post('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
 router.get('/admin-analytics', isAdmin, servicesRenderAdminAnalytics.renderAdminAnalytics);
 
 

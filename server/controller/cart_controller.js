@@ -50,6 +50,32 @@ exports.add_to_carrito = async (req, res) => {
     }    
 };
 
+// GET CART PRODUCTS (API)
+exports.get_carrito = async (req, res) => {
+
+    try {
+
+        const cart = req.session.cart || [];
+
+        return res.status(200).json({
+            success: true,
+            totalItems: cart.length,
+            cart
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+
+};
+
 
 // REMOVE ITEM (API)
 exports.remove_from_carrito = async (req, res) => {
@@ -282,5 +308,7 @@ exports.payment_point = async (req, res) => {
 
     }
 };
+
+
 
 

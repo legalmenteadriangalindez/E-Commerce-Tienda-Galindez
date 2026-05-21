@@ -15,7 +15,8 @@ router.post('/checkout', isLogged, cartController.checkout);
 // router.get('/confirmacion/:id', isLogged, cartController.get_confirmacion);
 router.post('/payment_point', isLogged, cartController.payment_point);
 
-// carrito
+router.get('/get_carrito', cartController.get_carrito)
+
 // router.get('/billing-point', isLogged, isAdmin, renderCart.billing_point);
 // router.get('/checkout/confirmacion', isLogged, renderCart.confirmacion);
 

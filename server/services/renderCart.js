@@ -23,6 +23,33 @@ exports.car = async (req, res) => {
 };
 
 // RENDER PAYMENT POINT
+exports.billing_point = async (req, res) => {
+
+    try {
+        const cart = req.session.cart || [];
+
+        let subtotal = 0;
+
+        cart.forEach(item => {
+            subtotal += item.precio * item.cantidad;
+        });
+
+        return res.render(
+            'admin/payment/checkout_confirmation',
+            {
+                user: req.session.user,
+                productosCarrito: cart,
+                subtotal
+            }
+        );
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send(err.message);
+
+    }
+};
+
 exports.payment_point = async (req, res) => {
 
     try {
@@ -52,8 +79,6 @@ exports.payment_point = async (req, res) => {
 
 
 
-
-
 // API CONSUMERS (SERVER TO SERVER)
 // agregar producto
 exports.add_to_carrito = async (req, res) => {
@@ -76,31 +101,7 @@ exports.add_to_carrito = async (req, res) => {
     }
 };
 
-// eliminar producto
-exports.remove_from_carrito = async (req, res) => {
 
-    try {
-
-        const response = await axios.post(
-            `${API_URL}/remove`,
-            req.body,
-            getConfig(req)
-        );
-
-        return res.json(response.data);
-
-    } catch (err) {
-
-        console.error("remove_from_carrito:", err.message);
-
-        return res.status(
-            err.response?.status || 500
-        ).json({
-            success: false,
-            message: err.response?.data?.message || err.message
-        });
-    }
-};
 
 
 
@@ -130,28 +131,7 @@ exports.update_carrito = async (req, res) => {
     }
 };
 
-// RENDER BILLING POINT
-exports.billing_point = async (req, res) => {
 
-    try {
-
-        const response = await axios.get(
-            `${API_URL}/data`,
-            getConfig(req)
-        );
-
-        const cart = response.data.cart;
-
-        return res.render('admin/home/Billing_point', {
-            user: req.session.user,
-            cart
-        });
-
-    } catch (err) {
-
-        return res.status(500).send(err.message);
-    }
-};
 
 // RENDER SALE SUCCESS
 exports.order_success = async (req, res) => {

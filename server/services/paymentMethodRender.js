@@ -45,7 +45,7 @@ exports.read_payment_methods = async (req, res) => {
     try {
 
         const response = await axios.get('http://localhost:3000/api/paymentsMethods');
-        console.log("==================PAYMENT METHODS:==================", response.data);
+        
         res.render(
             'admin/paymentMethod/read_paymentMethods',
             {
