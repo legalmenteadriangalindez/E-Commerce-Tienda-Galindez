@@ -1,8 +1,6 @@
 const PaymentMethod = require('../model/paymentMethod');
 
-// ==========================================
 // CREAR MÉTODO DE PAGO
-// ==========================================
 exports.createPaymentMethod = async (req, res) => {
 
     try {
@@ -55,9 +53,8 @@ exports.createPaymentMethod = async (req, res) => {
 
 };
 
-// ==========================================
+
 // OBTENER TODOS LOS MÉTODOS
-// ==========================================
 exports.read_payment_methods = async (req, res) => {
 
     try {
@@ -83,9 +80,8 @@ exports.read_payment_methods = async (req, res) => {
 
 };
 
-// ==========================================
+
 // OBTENER UN MÉTODO POR ID
-// ==========================================
 exports.getPaymentMethodById = async (req, res) => {
 
     try {
@@ -118,9 +114,8 @@ exports.getPaymentMethodById = async (req, res) => {
 
 };
 
-// ==========================================
+
 // ACTUALIZAR MÉTODO DE PAGO
-// ==========================================
 exports.updatePaymentMethod = async (req, res) => {
 
     try {
@@ -191,9 +186,7 @@ exports.updatePaymentMethod = async (req, res) => {
 
 };
 
-// ==========================================
 // ELIMINAR MÉTODO DE PAGO
-// ==========================================
 exports.deletePaymentMethod = async (req, res) => {
 
     try {

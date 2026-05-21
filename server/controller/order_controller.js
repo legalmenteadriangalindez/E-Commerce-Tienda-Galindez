@@ -187,6 +187,58 @@ exports.find = async (req, res) => {
     }
 };
 
+// ===============================
+// OBTENER DETALLE DE ORDEN POR ID
+// ===============================
+exports.findOne = async (req, res) => {
+
+    try {
+
+        const id = req.params.id;
+
+        // Validar ID
+        if (!id) {
+            return res.status(400).send({
+                message: "ID de orden requerido"
+            });
+        }
+
+        // Buscar orden
+        const orden = await Orderdb.findById(id)
+
+            .populate({
+                path: 'usuario',
+                select: '-password'
+            })
+
+            .populate({
+                path: 'productos.producto'
+            });
+
+        // Validar existencia
+        if (!orden) {
+
+            return res.status(404).send({
+                message: "Orden no encontrada"
+            });
+        }
+
+        // Respuesta
+        res.status(200).send({
+            success: true,
+            data: orden
+        });
+
+    } catch (err) {
+
+        console.error("ERROR FIND ONE ORDER:", err);
+
+        res.status(500).send({
+            success: false,
+            message: err.message
+        });
+    }
+};
 
 // ===============================
 // ACTUALIZAR ESTADO

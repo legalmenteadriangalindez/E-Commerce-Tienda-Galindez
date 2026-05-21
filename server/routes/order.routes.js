@@ -8,23 +8,9 @@ const orderController = require('../controller/order_controller');
 // ======================================
 
 router.get('/', orderController.find);
-
-// ======================================
-// CREAR ORDEN
-// ======================================
-
+router.get('/:id', orderController.findOne);
 router.post('/', orderController.create);
-
-// ======================================
-// ACTUALIZAR ORDEN
-// ======================================
-
 router.put('/:id', orderController.update);
-
-// ======================================
-// ELIMINAR ORDEN
-// ======================================
-
 router.delete('/:id', orderController.delete);
 
 module.exports = router;

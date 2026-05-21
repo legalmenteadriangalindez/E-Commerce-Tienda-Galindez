@@ -270,7 +270,8 @@ exports.payment_point = async (req, res) => {
 
     try {
 
-        const productos = req.body.productos;
+        const productos = req.body.productos || [];
+        console.log(req.body);
 
         req.session.cart = req.session.cart.map(item => {
 

@@ -180,3 +180,30 @@ exports.delete_order = (req, res) => {
         );
     });
 };
+
+
+exports.detail_order = (req, res) => {
+
+    axios.get(`http://localhost:3000/api/orders/${req.params.id}`)
+
+    .then(response => {
+
+        res.render('admin/orders/detail_orders', {
+
+            order: response.data.data
+        });
+    })
+
+    .catch(err => {
+
+        console.error(
+
+            err.response?.data || err.message
+        );
+
+        res.send(
+
+            err.response?.data || err.message
+        );
+    });
+};

@@ -46,6 +46,7 @@ router.get('/create-order',isAdmin,servicesRenderOrders.create_order_form);
 router.post('/create-order',isAdmin,servicesRenderOrders.create_order);
 router.get('/read-order',isAdmin,servicesRenderOrders.read_orders);
 router.post('/read-order',isAdmin,servicesRenderOrders.read_orders);
+router.get('/order/:id',isAdmin,servicesRenderOrders.detail_order);
 router.get('/update-order',isAdmin,servicesRenderOrders.update_order);
 router.post('/update-order/:id',isAdmin,servicesRenderOrders.update_order_data);
 router.get('/delete-order/:id',isAdmin,servicesRenderOrders.delete_order);
