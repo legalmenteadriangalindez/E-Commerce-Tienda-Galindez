@@ -31,6 +31,8 @@
 
             <th scope="col">Eliminar</th>
 
+            <th scope="col">Detalle</th>
+
         </tr>
 
     </thead>
@@ -125,6 +127,17 @@
                     class="btn btn-danger delete"
                 >
                     Eliminar
+                </a>
+
+            </td>
+
+            <td>
+
+                <a 
+                    href="/order/<%= order._id %>"
+                    class="btn btn-info"
+                >
+                    Detalle
                 </a>
 
             </td>
