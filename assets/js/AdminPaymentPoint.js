@@ -294,22 +294,20 @@ function calcularTotalesBackend(items){
 }
 
 
-// ======================================================
 // 🔄 CARGAR CARRITO
-// ======================================================
 
 async function cargarCarrito(){
 
     try{
 
-        const res = await fetch("/carrito/data");
+        const res = await fetch("/carrito/get_carrito");
 
         const data = await res.json();
 
         if(data.success){
 
             renderCarritoDesdeBackend(
-                data.cart.items
+                data.cart
             );
 
         }else{
