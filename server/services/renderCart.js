@@ -77,9 +77,33 @@ exports.payment_point = async (req, res) => {
     }
 };
 
+exports.payment_point_admin = async (req, res) => {
 
+    try {
+        const cart = req.session.cart || [];
 
-// API CONSUMERS (SERVER TO SERVER)
+        let subtotal = 0;
+
+        cart.forEach(item => {
+            subtotal += item.precio * item.cantidad;
+        });
+
+        return res.render(
+            'admin/payment/payment_point',
+            {
+                user: req.session.user,
+                productosCarrito: cart,
+                subtotal
+            }
+        );
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send(err.message);
+
+    }
+};
+
 // agregar producto
 exports.add_to_carrito = async (req, res) => {
     try {
@@ -154,6 +178,41 @@ exports.order_success = async (req, res) => {
             'client/payment/checkout_confirmation',
             {
                 user: req.session.user,
+                orden
+            }
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        return res.status(500)
+            .send(error.message);
+
+    }
+
+};
+
+
+exports.order_success_admin = async (req, res) => {
+
+    try {
+
+        const orden = await Ordendb.findById(
+            req.params.id
+        );
+
+        if (!orden) {
+
+            return res.status(404).send(
+                'Orden no encontrada'
+            );
+
+        }
+
+        return res.render(
+            'admin/payment/checkout_confirmation',
+            {
                 orden
             }
         );

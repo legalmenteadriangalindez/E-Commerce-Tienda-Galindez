@@ -264,7 +264,217 @@ exports.checkout = async (req, res) => {
 
 };
 
+exports.checkout_admin = async (req, res) => {
 
+    try {
+
+        const cart = req.session.cart || [];
+
+        if (cart.length === 0) {
+
+            return res.status(400).send(
+                "El carrito está vacío"
+            );
+
+        }
+
+        // DATOS DEL FORMULARIO
+        const {
+            fullName,
+            email,
+            phone,
+            address,
+            city,
+            zip,
+            department,
+            reference,
+            notes
+        } = req.body;
+
+        let subtotal = 0;
+
+        // VALIDAR PRODUCTOS Y STOCK
+        for (const item of cart) {
+
+            const productoDB =
+                await Productdb.findById(
+                    item.productoId
+                );
+
+            if (!productoDB) {
+
+                return res.status(404).send(
+                    `Producto no encontrado`
+                );
+
+            }
+
+            if (
+                productoDB.stock < item.cantidad
+            ) {
+
+                return res.status(400).send(
+                    `Stock insuficiente para ${productoDB.nombre}`
+                );
+
+            }
+
+            subtotal += (
+                productoDB.precioBase *
+                item.cantidad
+            );
+
+        }
+
+        // CÁLCULOS
+        const impuestos =
+            subtotal * 0.19;
+
+        const costoEnvio = 5000;
+
+        const descuento = 0;
+
+        const total =
+            subtotal +
+            impuestos +
+            costoEnvio -
+            descuento;
+
+        // CREAR ORDEN
+        const orden =
+            await Ordendb.create({
+
+                numeroOrden:
+                    `ORD-${Date.now()}`,
+
+                // USUARIO ADMINISTRADOR
+                usuario:
+                    req.session.user._id,
+
+                // DATOS DEL CLIENTE
+                cliente: {
+
+                    nombre:
+                        fullName,
+
+                    email:
+                        email,
+
+                    telefono:
+                        phone
+
+                },
+
+                // PRODUCTOS
+                productos:
+                    cart.map(item => ({
+
+                        producto:
+                            item.productoId,
+
+                        nombre:
+                            item.nombre,
+
+                        cantidad:
+                            item.cantidad,
+
+                        precioUnitario:
+                            item.precio,
+
+                        subtotal:
+                            item.precio *
+                            item.cantidad
+
+                    })),
+
+                // TOTALES
+                subtotal,
+
+                impuestos,
+
+                costoEnvio,
+
+                descuento,
+
+                total,
+
+                // ESTADO
+                estado: 'PENDIENTE',
+
+                // DIRECCIÓN
+                direccionEnvio: {
+
+                    nombreRecibe:
+                        fullName,
+
+                    telefono:
+                        phone,
+
+                    departamento:
+                        department,
+
+                    ciudad:
+                        city,
+
+                    direccion:
+                        address,
+
+                    referencia:
+                        reference,
+
+                    codigoPostal:
+                        zip
+
+                },
+
+                // NOTAS
+                notasCliente:
+                    notes
+
+            });
+
+        // DESCONTAR STOCK
+        for (const item of cart) {
+
+            await Productdb.findByIdAndUpdate(
+                item.productoId,
+                {
+                    $inc: {
+                        stock: -item.cantidad
+                    }
+                }
+            );
+
+        }
+
+        // LIMPIAR CARRITO
+        req.session.cart = [];
+
+        req.session.save(err => {
+
+            if (err) {
+
+                return res.status(500)
+                    .send(err.message);
+
+            }
+
+            return res.redirect(
+                `/venta-finalizada-admin/${orden._id}`
+            );
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        return res.status(500)
+            .send(error.message);
+
+    }
+
+};
 
 exports.payment_point = async (req, res) => {
 

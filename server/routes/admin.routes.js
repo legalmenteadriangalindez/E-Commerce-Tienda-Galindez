@@ -17,7 +17,7 @@ const servicesRenderOrders = require('../services/renderOrders');
 const servicesRenderPaymentsMethods = require('../services/paymentMethodRender');
 const servicesRenderPaymentsTransactions = require('../services/paymentTransactionRender');
 const servicesRenderProfile = require('../services/renderProfile');
-
+const servicesRenderCart = require('../services/renderCart');
 
 const brandController = require('../controller/brand_controller');
 const saleController = require('../controller/sale_controller');
@@ -71,6 +71,8 @@ router.get('/read-payment-transactions',isAdmin,servicesRenderPaymentsTransactio
 
 
 router.get('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
+router.post('/payment_point', isAdmin, servicesRenderCart.payment_point_admin);
+router.get('/venta-finalizada-admin/:id', isAdmin, servicesRenderCart.order_success_admin);
 router.get('/admin-analytics', isAdmin, servicesRenderAdminAnalytics.renderAdminAnalytics);
 
 
@@ -101,6 +103,7 @@ router.post('/update-rol', isAdmin, servicesRenderRol.update_rol);
 router.get('/update-rol', isAdmin, servicesRenderRol.update_rol);
 router.get('/delete-rol/:id', isAdmin, servicesRenderRol.delete_rol);
 
+
 router.get('/update-user/:id', servicesRenderUser.update_user);
 router.post('/update-user/:id', servicesRenderUser.update_user_data);
 router.get('/add-user-form', isAdmin, servicesRenderUser.create_user_form);
@@ -120,8 +123,8 @@ router.get('/read-total-profit',isAdmin,servicesRenderSales.total_profit);
 router.get('/read-profit-margins',isAdmin,servicesRenderSales.profit_margins);
 
 
-router.post("/admin/finalizar-venta", saleController.finalizarVenta);
-router.get("/admin/confirmacion", saleController.confirmacion);
+// router.post("/admin/finalizar-venta", saleController.finalizarVenta);
+// router.get("/admin/confirmacion", saleController.confirmacion);
 
 router.get('/admin/perfil', servicesRenderProfile.profile);
 router.get('/admin/perfil/editar/:id', servicesRenderProfile.update_profile_form_admin);

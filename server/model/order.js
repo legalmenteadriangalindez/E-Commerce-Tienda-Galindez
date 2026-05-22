@@ -14,6 +14,27 @@ const orderSchema = new mongoose.Schema({
         required: true
     },
 
+    // DATOS DEL CLIENTE
+    cliente: {
+
+        nombre: {
+            type: String,
+            required: true
+        },
+
+        email: {
+            type: String,
+            required: true
+        },
+
+        telefono: {
+            type: String,
+            required: true
+        }
+
+    },
+
+    // PRODUCTOS DE LA ORDEN
     productos: [
         {
             producto: {
@@ -45,6 +66,7 @@ const orderSchema = new mongoose.Schema({
         }
     ],
 
+    // TOTALES
     subtotal: {
         type: Number,
         required: true
@@ -70,6 +92,7 @@ const orderSchema = new mongoose.Schema({
         required: true
     },
 
+    // ESTADO DE LA ORDEN
     estado: {
         type: String,
         enum: [
@@ -83,6 +106,7 @@ const orderSchema = new mongoose.Schema({
         default: 'PENDIENTE'
     },
 
+    // DIRECCIÓN DE ENVÍO
     direccionEnvio: {
 
         nombreRecibe: {
@@ -107,13 +131,21 @@ const orderSchema = new mongoose.Schema({
 
         referencia: {
             type: String
+        },
+
+        codigoPostal: {
+            type: String
         }
+
     },
 
+    // NOTAS DEL CLIENTE
     notasCliente: {
-        type: String
+        type: String,
+        default: ''
     },
 
+    // FECHA PERSONALIZADA
     fechaOrden: {
         type: Date,
         default: Date.now
@@ -123,9 +155,9 @@ const orderSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Índices
+// ÍNDICES
 orderSchema.index({ usuario: 1 });
 orderSchema.index({ estado: 1 });
 orderSchema.index({ fechaOrden: -1 });
 
-module.exports = mongoose.model('orderdb', orderSchema);
+module.exports = mongoose.model('orderdb',orderSchema);
