@@ -1,21 +1,24 @@
 <%- include('../../include/_headerAdmin') %>
 
-
 <div class="checkout-wrapper">
 
     <div class="checkout-header">
+
         <h1>
-            <i class="fas fa-store"></i> Confirmación de Compra
+            <i class="fas fa-store"></i>
+            Confirmación de Compra
         </h1>
 
         <div class="badge-secure">
-            <i class="fas fa-lock"></i> Pago seguro y encriptado
+            <i class="fas fa-lock"></i>
+            Pago seguro y encriptado
         </div>
+
     </div>
 
     <div class="checkout-grid">
 
-        <!-- FORM CLIENTE -->
+        <!-- DATOS CLIENTE -->
         <div class="form-card">
 
             <div class="section-title">
@@ -23,59 +26,95 @@
                 <span>Datos del cliente</span>
             </div>
 
-            <!-- 🔎 BUSCADOR -->
-            <div class="input-group" style="position: relative;">
-                <label>Buscar cliente</label>
-                <input type="text" id="buscarCliente" placeholder="Nombre o email">
-                <div id="resultadosClientes" class="search-results"></div>
-            </div>
-
-            <!-- ID oculto -->
-            <input type="hidden" id="clienteId" name="clienteId">
-
+            <!-- NOMBRE -->
             <div class="input-group">
+
                 <label>Nombre</label>
+
                 <input
                     type="text"
-                    id="clienteNombre"
-                    name="nombre"
+                    value="<%= orden?.cliente?.nombre || '' %>"
+                    readonly
                 >
+
             </div>
 
             <div class="input-row">
 
+                <!-- EMAIL -->
                 <div class="input-group">
+
                     <label>Email</label>
+
                     <input
                         type="email"
-                        id="clienteEmail"
-                        name="email"
+                        value="<%= orden?.cliente?.email || '' %>"
+                        readonly
                     >
+
                 </div>
 
+                <!-- TELÉFONO -->
                 <div class="input-group">
+
                     <label>Teléfono</label>
+
                     <input
                         type="text"
-                        id="clienteTelefono"
-                        name="telefono"
+                        value="<%= orden?.cliente?.telefono || '' %>"
+                        readonly
                     >
+
                 </div>
 
             </div>
 
+            <!-- DIRECCIÓN -->
             <div class="input-group">
+
                 <label>Dirección</label>
+
                 <input
                     type="text"
-                    id="clienteDireccion"
-                    name="direccion"
+                    value="<%= orden?.direccionEnvio?.direccion || '' %>"
+                    readonly
                 >
+
+            </div>
+
+            <div class="input-row">
+
+                <!-- CIUDAD -->
+                <div class="input-group">
+
+                    <label>Ciudad</label>
+
+                    <input
+                        type="text"
+                        value="<%= orden?.direccionEnvio?.ciudad || '' %>"
+                        readonly
+                    >
+
+                </div>
+
+                <!-- ZIP -->
+                <div class="input-group">
+
+                    <label>Código postal</label>
+
+                    <input
+                        type="text"
+                        value="<%= orden?.direccionEnvio?.codigoPostal || '' %>"
+                        readonly
+                    >
+
+                </div>
+
             </div>
 
         </div>
 
-        <!-- SUMMARY -->
+        <!-- RESUMEN -->
         <div class="summary-card">
 
             <div class="section-title">
@@ -85,40 +124,40 @@
 
             <div class="order-items-list">
 
-                <% let subtotal = cart?.total || 0; %>
-                <% let envio = 5000; %>
-                <% let impuestos = 300; %>
-                <% let totalFinal = subtotal + envio + impuestos; %>
+                <% let subtotal = orden?.subtotal || 0; %>
+                <% let envio = orden?.costoEnvio || 0; %>
+                <% let impuestos = orden?.impuestos || 0; %>
+                <% let totalFinal = orden?.total || 0; %>
 
-                <% cart?.items?.forEach(item => { %>
+                <% orden?.productos?.forEach(item => { %>
 
-                <div class="order-item">
+                    <div class="order-item">
 
-                    <div class="item-icon">
-                        <i class="fas fa-box"></i>
-                    </div>
-
-                    <div class="item-details">
-
-                        <div class="item-title">
-                            <%= item.nombre %>
+                        <div class="item-icon">
+                            <i class="fas fa-box"></i>
                         </div>
 
-                        <div class="item-price">
-                            $<%= item.precio %>
+                        <div class="item-details">
+
+                            <div class="item-title">
+                                <%= item.nombre %>
+                            </div>
+
+                            <div class="item-price">
+                                $<%= item.precioUnitario %>
+                            </div>
+
+                            <div class="item-quantity">
+                                Cantidad: <%= item.cantidad %>
+                            </div>
+
                         </div>
 
-                        <div class="item-quantity">
-                            Cantidad: <%= item.cantidad %>
+                        <div class="item-line-price">
+                            $<%= item.subtotal %>
                         </div>
 
                     </div>
-
-                    <div class="item-line-price">
-                        $<%= item.subtotal %>
-                    </div>
-
-                </div>
 
                 <% }) %>
 
@@ -146,160 +185,23 @@
                 <span>$<%= totalFinal %></span>
             </div>
 
-            <!-- FORM FINAL -->
-            <form>
+            <!-- BOTÓN -->
+            <a href="/billing-point">
 
-                <input
-                    type="hidden"
-                    name="clienteId"
-                    id="clienteIdHidden"
-                >
-
-                <input
-                    type="hidden"
-                    name="total"
-                    value="<%= totalFinal %>"
-                >
-
-                <button
-                    type="button"
+                <div
                     class="pay-btn"
-                    onclick="confirmarPago()"
+                    style="text-align:center;"
                 >
-                    <i class="fas fa-lock"></i>
-                    Confirmar pago · $<%= totalFinal %>
-                </button>
+                    <i class="fas fa-check-circle"></i>
+                    Pago realizado correctamente
+                </div>
 
-            </form>
+            </a>
 
         </div>
+
     </div>
+
 </div>
-
-<!-- SCRIPT -->
-<script>
-let timeoutCliente = null;
-
-// 🔎 BUSCAR CLIENTES
-document.getElementById("buscarCliente").addEventListener("keyup", function(){
-
-    clearTimeout(timeoutCliente);
-    const texto = this.value;
-
-    if(texto.length < 2){
-        document.getElementById("resultadosClientes").innerHTML = "";
-        return;
-    }
-
-    timeoutCliente = setTimeout(async () => {
-
-        try{
-            const res = await fetch(`/api/users/search?search=${texto}`);
-            const clientes = await res.json();
-            renderClientes(clientes);
-        }catch(err){
-            console.error(err);
-        }
-
-    }, 300);
-
-});
-
-// 🎯 RENDER CLIENTES
-function renderClientes(clientes){
-
-    const contenedor = document.getElementById("resultadosClientes");
-    contenedor.innerHTML = "";
-
-    if(!clientes || clientes.length === 0){
-        contenedor.innerHTML = "<div class='search-item'>No hay resultados</div>";
-        return;
-    }
-
-    clientes.forEach(c => {
-        contenedor.innerHTML += `
-            <div class="search-item" onclick='seleccionarCliente(${JSON.stringify(c).replace(/'/g, "\\'")})''>
-                ${c.nombre} - ${c.email}
-            </div>
-        `;
-    });
-}
-
-// ✅ SELECCIONAR CLIENTE
-function seleccionarCliente(cliente){
-
-    document.getElementById("clienteId").value = cliente._id;
-    document.getElementById("clienteIdHidden").value = cliente._id;
-
-    document.getElementById("clienteNombre").value = cliente.nombre;
-    document.getElementById("clienteEmail").value = cliente.email;
-    document.getElementById("clienteTelefono").value = cliente.telefono || "";
-    document.getElementById("clienteDireccion").value = cliente.direccion || "";
-
-    document.getElementById("resultadosClientes").innerHTML = "";
-}
-
-// ❌ CERRAR RESULTADOS
-document.addEventListener("click", function(e){
-    if(!e.target.closest("#buscarCliente")){
-        document.getElementById("resultadosClientes").innerHTML = "";
-    }
-});
-
-async function confirmarPago(){
-
-    const clienteId =
-        document.getElementById("clienteIdHidden").value;
-
-    const total = "<%= totalFinal %>";
-
-    if(!clienteId){
-
-        alert("Debes seleccionar un cliente");
-
-        return;
-    }
-
-    try{
-
-        // 🔥 AQUÍ SE CREA LA VENTA REAL
-        const res = await fetch("/admin/finalizar-venta", {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                cliente: clienteId,
-                total: total
-            })
-        });
-
-        const data = await res.json();
-
-        // ✅ VENTA CREADA
-        if(data.ok){
-
-            alert("✔ Venta registrada correctamente");
-
-            // 🔥 REDIRECCIÓN FINAL
-            window.location.href =`/carrito/venta-finalizada/${data.ventaId}`;
-
-        }else{
-
-            alert(data.msg || "Error al registrar venta");
-        }
-
-    }catch(err){
-
-        console.error(err);
-
-        alert("Error de servidor");
-    }
-}
-
-</script>
 
 <%- include('../../include/_footerAdmin') %>

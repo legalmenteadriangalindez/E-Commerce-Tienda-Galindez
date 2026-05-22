@@ -54,6 +54,14 @@
 
                     <% } %>
 
+                    <% if(order.estado === 'PREPARANDO') { %>
+
+                        <span class="badge bg-secondary">
+                            <%= order.estado %>
+                        </span>
+
+                    <% } %>
+
                     <% if(order.estado === 'ENVIADA') { %>
 
                         <span class="badge bg-info">
@@ -82,7 +90,7 @@
 
                 <div class="col-md-6 mb-3">
 
-                    <h5>Usuario</h5>
+                    <h5>Usuario Administrador</h5>
 
                     <p>
                         <%= order.usuario?.nombre || 'Sin usuario' %>
@@ -96,6 +104,55 @@
 
                     <p>
                         <%= new Date(order.createdAt).toLocaleDateString() %>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DATOS DEL CLIENTE -->
+
+    <div class="card order-card">
+
+        <div class="card-header">
+            Datos del Cliente
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+
+                    <h5>Nombre</h5>
+
+                    <p>
+                        <%= order.cliente?.nombre || 'No definido' %>
+                    </p>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <h5>Email</h5>
+
+                    <p>
+                        <%= order.cliente?.email || 'No definido' %>
+                    </p>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <h5>Teléfono</h5>
+
+                    <p>
+                        <%= order.cliente?.telefono || 'No definido' %>
                     </p>
 
                 </div>
@@ -222,6 +279,16 @@
 
                 </div>
 
+                <div class="col-md-6 mb-3">
+
+                    <h5>Código Postal</h5>
+
+                    <p>
+                        <%= order.direccionEnvio?.codigoPostal || 'No definido' %>
+                    </p>
+
+                </div>
+
                 <div class="col-md-12 mb-3">
 
                     <h5>Dirección</h5>
@@ -243,6 +310,25 @@
                 </div>
 
             </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- NOTAS -->
+
+    <div class="card order-card">
+
+        <div class="card-header">
+            Notas del Cliente
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                <%= order.notasCliente || 'Sin notas adicionales' %>
+            </p>
 
         </div>
 
