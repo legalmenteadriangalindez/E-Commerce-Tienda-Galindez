@@ -2,6 +2,7 @@ const Salesdb = require('../model/sales');
 const SaleDetaildb = require('../model/saleDetails');
 const Productdb = require('../model/product');
 const Ordendb = require('../model/order');
+const Saledb = require('../model/sales');
 
 
 // ADD TO CART (API)
@@ -173,6 +174,11 @@ exports.checkout = async (req, res) => {
 
                 usuario:
                     req.session.user._id,
+                cliente: {
+                    nombre: req.session.user.nombre,
+                    email: req.session.user.email,
+                    telefono: req.session.user.telefono
+                },
 
                 productos:
                     cart.map(item => ({
@@ -224,7 +230,28 @@ exports.checkout = async (req, res) => {
                 }
 
             });
+        await Saledb.create({
 
+            cliente:
+                req.session.user._id,
+
+            order:
+                orden._id,
+
+            subtotal,
+
+            impuestos,
+
+            costoEnvio,
+
+            descuento,
+
+            total,
+
+            estadoPago:
+                'PENDIENTE'
+
+        });
         // DESCONTAR STOCK
         for (const item of cart) {
 
@@ -263,6 +290,8 @@ exports.checkout = async (req, res) => {
     }
 
 };
+
+
 
 exports.checkout_admin = async (req, res) => {
 
@@ -432,7 +461,28 @@ exports.checkout_admin = async (req, res) => {
                     notes
 
             });
+        await Saledb.create({
 
+            cliente:
+                req.session.user._id,
+
+            order:
+                orden._id,
+
+            subtotal,
+
+            impuestos,
+
+            costoEnvio,
+
+            descuento,
+
+            total,
+
+            estadoPago:
+                'PENDIENTE'
+
+        });
         // DESCONTAR STOCK
         for (const item of cart) {
 
