@@ -18,8 +18,7 @@
             <th>Método Pago</th>
             <th>Total</th>
             <th>Detalles</th>
-            <!-- <th>Editar</th>
-            <th>Eliminar</th> -->
+
         </tr>
     </thead>
 
@@ -30,10 +29,15 @@
             <th hidden>
                 <%= sale._id %>
             </th>
+
             <!-- FECHA -->
             <td>
-                <%= new Date(sale.fecha).toLocaleDateString() %>
+                <%= sale.fechaOrden
+                    ? new Date(sale.fechaOrden).toLocaleDateString()
+                    : 'Sin fecha'
+                %>
             </td>
+
             <!-- PRODUCTO -->
             <td>
                 <% if(sale.detalles && sale.detalles.length > 0){ %>
@@ -46,6 +50,7 @@
                     Sin productos
                 <% } %>
             </td>
+
             <!-- CANTIDAD -->
             <td>
                 <% if(sale.detalles && sale.detalles.length > 0){ %>
@@ -74,25 +79,16 @@
 
             <!-- DETALLES -->
             <td>
-                <a href="/sale/<%= sale._id %>"class="btn btn-info">Detalles</a>
+                <a href="/sale/<%= sale._id %>" class="btn btn-info">Detalles</a>
             </td>
 
-            <!-- EDITAR -->
-            <!-- <td>
-                <a href="/update-sale?id=<%= sale._id %>"class="btn btn-success">Editar</a>
-            </td> -->
-
-            <!-- ELIMINAR -->
-            <!-- <td>
-                <a href="/api/sales/<%= sale._id %>"class="btn btn-danger delete">Eliminar</a>
-            </td> -->
         </tr>
 
         <% }); %>
 
         <tr>
             <td colspan="10">
-                <a href="/create-ventas-form"class="btn btn-primary">Crear Nueva Venta</a>
+                <a href="/create-ventas-form" class="btn btn-primary">Crear Nueva Venta</a>
             </td>
         </tr>
     </tbody>
