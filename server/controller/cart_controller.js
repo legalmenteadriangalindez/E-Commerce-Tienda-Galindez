@@ -164,7 +164,8 @@ exports.checkout = async (req, res) => {
             impuestos +
             costoEnvio -
             descuento;
-
+        
+        console.log(req.session.user);
         // CREAR ORDEN
         const orden =
             await Ordendb.create({

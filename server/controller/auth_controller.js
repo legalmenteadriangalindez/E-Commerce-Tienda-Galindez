@@ -96,6 +96,10 @@ exports.register = async (req, res) => {
         req.session.user = {
             _id: nuevoUsuario._id,
             nombre: nuevoUsuario.nombre,
+            email: nuevoUsuario.email,
+            telefono: nuevoUsuario.telefono,
+            direccion: nuevoUsuario.direccion,
+            ciudad: nuevoUsuario.ciudad,
             rol: {
                 nombre: "Cliente"
             }

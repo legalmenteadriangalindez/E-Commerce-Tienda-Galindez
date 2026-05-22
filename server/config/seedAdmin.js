@@ -28,10 +28,10 @@ const seedAdmin = async () => {
             nombre: "Administrador",
             email: "admin@admin.com",
             password: hashedPassword,
-            telefono: "000000000",
+            telefono: "3104966144",
             genero: "Masculino",
             direccion: "Oficina",
-            barrio: "Centro",
+            barrio: "San Judas",
             ciudad: "Timbio",
             rol: adminRole._id,
             estado: "Activo"
