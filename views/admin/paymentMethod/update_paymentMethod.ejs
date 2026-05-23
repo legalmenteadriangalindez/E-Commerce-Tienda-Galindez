@@ -1,0 +1,250 @@
+<%- include('../../include/_headerAdmin') %>
+
+<div class="page-wrapper">
+
+    <div class="page-header">
+
+        <h1>Editar Método de Pago</h1>
+
+        <p>
+            Actualiza la configuración del método de pago
+        </p>
+
+    </div>
+
+    <div class="form-card">
+
+        <% if (locals.error) { %>
+
+            <div class="alert error">
+                <%= error %>
+            </div>
+
+        <% } %>
+
+        <% if (locals.success) { %>
+
+            <div class="alert success">
+                <%= success %>
+            </div>
+
+        <% } %>
+
+        <form 
+            action="/update-payment-method/<%= paymentMethod._id %>" 
+            method="POST"
+            class="category-form"
+        >
+
+            <!-- NAME -->
+            <div class="form-group">
+
+                <label>
+                    Nombre
+                </label>
+
+                <input 
+                    type="text"
+                    name="name"
+                    value="<%= paymentMethod.name %>"
+                    placeholder="Ej: Nequi"
+                    required
+                    autofocus
+                >
+
+            </div>
+
+            <!-- CODE -->
+            <div class="form-group">
+
+                <label>
+                    Código
+                </label>
+
+                <input 
+                    type="text"
+                    name="code"
+                    value="<%= paymentMethod.code %>"
+                    placeholder="Ej: nequi"
+                    required
+                >
+
+                <small>
+                    Debe ser único y en minúsculas
+                </small>
+
+            </div>
+
+            <!-- TYPE -->
+            <div class="form-group">
+
+                <label>
+                    Tipo
+                </label>
+
+                <select name="type" required>
+
+                    <option value="">
+                        Selecciona un tipo
+                    </option>
+
+                    <option 
+                        value="wallet"
+                        <%= paymentMethod.type === 'wallet' ? 'selected' : '' %>
+                    >
+                        Wallet
+                    </option>
+
+                    <option 
+                        value="card"
+                        <%= paymentMethod.type === 'card' ? 'selected' : '' %>
+                    >
+                        Tarjeta
+                    </option>
+
+                    <option 
+                        value="bank_transfer"
+                        <%= paymentMethod.type === 'bank_transfer' ? 'selected' : '' %>
+                    >
+                        Transferencia bancaria
+                    </option>
+
+                    <option 
+                        value="cash"
+                        <%= paymentMethod.type === 'cash' ? 'selected' : '' %>
+                    >
+                        Efectivo
+                    </option>
+
+                    <option 
+                        value="gateway"
+                        <%= paymentMethod.type === 'gateway' ? 'selected' : '' %>
+                    >
+                        Pasarela de pago
+                    </option>
+
+                </select>
+
+            </div>
+
+            <!-- API KEY -->
+            <div class="form-group">
+
+                <label>
+                    API Key
+                </label>
+
+                <input 
+                    type="text"
+                    name="config[apiKey]"
+                    value="<%= paymentMethod.config?.apiKey || '' %>"
+                    placeholder="API KEY"
+                >
+
+            </div>
+
+            <!-- SECRET KEY -->
+            <div class="form-group">
+
+                <label>
+                    Secret Key
+                </label>
+
+                <input 
+                    type="text"
+                    name="config[secretKey]"
+                    value="<%= paymentMethod.config?.secretKey || '' %>"
+                    placeholder="SECRET KEY"
+                >
+
+            </div>
+
+            <!-- ACCOUNT NUMBER -->
+            <div class="form-group">
+
+                <label>
+                    Número de cuenta
+                </label>
+
+                <input 
+                    type="text"
+                    name="config[accountNumber]"
+                    value="<%= paymentMethod.config?.accountNumber || '' %>"
+                    placeholder="3001234567"
+                >
+
+            </div>
+
+            <!-- ACTIVE -->
+            <div class="form-group checkbox-group">
+
+                <label>
+
+                    <input 
+                        type="checkbox"
+                        name="isActive"
+                        value="true"
+                        <%= paymentMethod.isActive ? 'checked' : '' %>
+                    >
+
+                    Método activo
+
+                </label>
+
+            </div>
+
+            <!-- CREATED -->
+            <div class="form-group">
+
+                <label>
+                    Fecha de creación
+                </label>
+
+                <input 
+                    type="text"
+                    value="<%= new Date(paymentMethod.createdAt).toLocaleString() %>"
+                    disabled
+                >
+
+            </div>
+
+            <!-- UPDATED -->
+            <div class="form-group">
+
+                <label>
+                    Última actualización
+                </label>
+
+                <input 
+                    type="text"
+                    value="<%= new Date(paymentMethod.updatedAt).toLocaleString() %>"
+                    disabled
+                >
+
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="form-actions">
+
+                <button type="submit">
+
+                    Actualizar método de pago
+
+                </button>
+
+                <a 
+                    href="/read-payment-method"
+                    class="btn btn-secondary"
+                >
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<%- include('../../include/_footerAdmin') %>

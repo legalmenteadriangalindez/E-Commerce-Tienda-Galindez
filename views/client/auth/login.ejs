@@ -1,0 +1,81 @@
+<!-- <form action="/login" method="POST">
+
+    <input type="email" name="email" placeholder="Email" required>
+
+    <input type="password" name="password" placeholder="Contraseña" required>
+
+    <button type="submit">
+        Iniciar sesión
+    </button>
+
+</form>
+
+<p>¿No tienes una cuenta? <a href="/register">Regístrate aquí</a></p> -->
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- LADO IZQUIERDO -->
+    <div class="left">
+        <div class="form-box">
+
+            <p class="description">
+                Bienvenido a la Tienda Galindez,<br>
+                aquí puedes iniciar sesión para acceder a tu cuenta y disfrutar de una experiencia de compra personalizada.
+            </p>
+
+            <h3>Iniciar Sesión</h3>
+
+            <form action="/login" method="POST">
+
+                <div class="input-group">
+                    <span class="icon">👤</span>
+                    <input type="email" name="email" placeholder="Tu Correo Electrónico" required>
+                </div>
+
+                <div class="input-group">
+                    <span class="icon">🔒</span>
+                    <input type="password" name="password" placeholder="Tu Contraseña" required>
+                </div>
+
+                <div class="options">
+                    <label>
+                        <input type="checkbox"> Recordarme
+                    </label>
+                    <a href="#">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="btn">Iniciar Sesión</button>
+            </form>
+
+            <p class="register">
+                ¿No tienes una cuenta?
+                <a href="/register">Regístrate aquí</a>
+            </p>
+
+        </div>
+    </div>
+
+    <!-- LADO DERECHO -->
+    <div class="right">
+        <h1>TIENDA<br>GALINDEZ</h1>
+
+        <div class="illustration">
+            <img src="assets/img/store.png" alt="store">
+        </div>
+    </div>
+
+</div>
+
+<script src="/js/login.js"></script>
+</body>
+</html>

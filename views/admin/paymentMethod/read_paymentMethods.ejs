@@ -1,0 +1,162 @@
+<%- include('../../include/_headerAdmin') %>
+
+<main>
+
+<div>
+    <h1>Métodos de Pago</h1>
+</div>
+
+<table class="table">
+
+    <thead>
+
+        <tr>
+            <th hidden>ID</th>
+            <th>Nombre</th>
+            <th>Código</th>
+            <th>Tipo</th>
+            <th>Activo</th>
+            <th>Configuración</th>
+            <th>Fecha</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        <% if(paymentMethods.length > 0) { %>
+
+            <% paymentMethods.forEach(function(payment) { %>
+
+            <tr>
+
+                <!-- ID -->
+                <td hidden>
+                    <%= payment._id %>
+                </td>
+
+                <!-- NAME -->
+                <td>
+                    <%= payment.name %>
+                </td>
+
+                <!-- CODE -->
+                <td>
+                    <%= payment.code %>
+                </td>
+
+                <!-- TYPE -->
+                <td>
+                    <%= payment.type %>
+                </td>
+
+                <!-- ACTIVE -->
+                <td>
+
+                    <% if(payment.isActive) { %>
+
+                        <span class="badge bg-success">
+                            Activo
+                        </span>
+
+                    <% } else { %>
+
+                        <span class="badge bg-danger">
+                            Inactivo
+                        </span>
+
+                    <% } %>
+
+                </td>
+
+                <!-- CONFIG -->
+                <td>
+
+                    <% if(payment.config) { %>
+
+                        <pre>
+<%= JSON.stringify(payment.config, null, 2) %>
+                        </pre>
+
+                    <% } else { %>
+
+                        Sin configuración
+
+                    <% } %>
+
+                </td>
+
+                <!-- CREATED -->
+                <td>
+
+                    <%= new Date(payment.createdAt).toLocaleDateString() %>
+
+                </td>
+
+                <!-- EDIT -->
+                <td>
+
+                    <a 
+                        href="/update-payment-method/?id=<%= payment._id %>"
+                        class="btn btn-success"
+                    >
+                        Editar
+                    </a>
+
+                </td>
+
+                <!-- DELETE -->
+                <td>
+
+                    <a 
+                        href="/delete-payment-method/<%= payment._id %>"
+                        class="btn btn-danger delete"
+                    >
+                        Eliminar
+                    </a>
+
+                </td>
+
+            </tr>
+
+            <% }); %>
+
+        <% } else { %>
+
+            <tr>
+
+                <td colspan="9">
+
+                    No hay métodos de pago registrados
+
+                </td>
+
+            </tr>
+
+        <% } %>
+
+        <!-- CREATE -->
+        <tr>
+
+            <td colspan="9">
+
+                <a 
+                    href="/create-payment-method"
+                    class="btn btn-primary"
+                >
+                    Crear nuevo método de pago
+                </a>
+
+            </td>
+
+        </tr>
+
+    </tbody>
+
+</table>
+
+</main>
+
+<%- include('../../include/_footerAdmin') %>

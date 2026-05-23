@@ -1,0 +1,189 @@
+<%- include('../../include/_headerAdmin') %>
+
+<div class="checkout-wrapper">
+
+    <!-- HEADER -->
+    <div class="checkout-header">
+
+        <h1>
+            <i class="fas fa-circle-check" style="color: #28a745;"></i>
+            Venta realizada correctamente
+        </h1>
+
+        <div class="badge-secure">
+            <i class="fas fa-receipt"></i>
+            Factura generada
+        </div>
+
+    </div>
+
+    <div class="checkout-grid">
+
+        <!-- CLIENTE -->
+        <div class="form-card">
+
+            <div class="section-title">
+                <i class="fas fa-user"></i>
+                <span>Información del cliente</span>
+            </div>
+
+            <div class="input-group">
+                <label>Cliente</label>
+
+                <input
+                    type="text"
+                    readonly
+                    value="<%= venta?.cliente?.nombre || 'Consumidor final' %>"
+                >
+            </div>
+
+            <div class="input-group">
+                <label>Email</label>
+
+                <input
+                    type="text"
+                    readonly
+                    value="<%= venta?.cliente?.email || 'No registrado' %>"
+                >
+            </div>
+
+            <div class="input-row">
+
+                <div class="input-group">
+                    <label>Teléfono</label>
+
+                    <input
+                        type="text"
+                        readonly
+                        value="<%= venta?.cliente?.telefono || 'No registrado' %>"
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label>Fecha</label>
+
+                    <input
+                        type="text"
+                        readonly
+                        value="<%= new Date(venta.createdAt).toLocaleString() %>"
+                    >
+                </div>
+
+            </div>
+
+            <div class="input-group">
+                <label>ID Venta</label>
+
+                <input
+                    type="text"
+                    readonly
+                    value="<%= venta._id %>"
+                >
+            </div>
+
+        </div>
+
+        <!-- RESUMEN -->
+        <div class="summary-card">
+
+            <div class="section-title">
+                <i class="fas fa-basket-shopping"></i>
+                <span>Productos vendidos</span>
+            </div>
+
+            <div class="order-items-list">
+
+                <% detalles.forEach(item => { %>
+
+                    <div class="order-item">
+
+                        <div class="item-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+
+                        <div class="item-details">
+
+                            <div class="item-title">
+                                <%= item.producto?.nombre %>
+                            </div>
+
+                            <div class="item-price">
+                                $<%= Number(item.precioUnitario).toLocaleString() %>
+                            </div>
+
+                            <div class="item-quantity">
+                                Cantidad: <%= item.cantidad %>
+                            </div>
+
+                        </div>
+
+                        <div class="item-line-price">
+                            $<%= Number(item.subtotal).toLocaleString() %>
+                        </div>
+
+                    </div>
+
+                <% }) %>
+
+            </div>
+
+            <div class="divider"></div>
+
+            <% let subtotal = venta.total || 0; %>
+            <% let envio = 5000; %>
+            <% let impuestos = 300; %>
+            <% let totalFinal = subtotal + envio + impuestos; %>
+
+            <div class="summary-line">
+                <span>Subtotal</span>
+                <span>$<%= Number(subtotal).toLocaleString() %></span>
+            </div>
+
+            <div class="summary-line">
+                <span>Envío</span>
+                <span>$<%= Number(envio).toLocaleString() %></span>
+            </div>
+
+            <div class="summary-line">
+                <span>Impuestos</span>
+                <span>$<%= Number(impuestos).toLocaleString() %></span>
+            </div>
+
+            <div class="summary-line total">
+                <span>Total pagado</span>
+                <span>$<%= Number(totalFinal).toLocaleString() %></span>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- ACCIONES -->
+            <a
+                href="/carrito/billing-point"
+                class="pay-btn"
+                style="
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    text-decoration:none;
+                "
+            >
+                <i class="fas fa-cash-register"></i>
+                Nueva venta
+            </a>
+
+            <button
+                onclick="window.print()"
+                class="btn-outline"
+                style="width:100%; margin-top:10px;"
+            >
+                <i class="fas fa-print"></i>
+                Imprimir factura
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<%- include('../../include/_footerAdmin') %>

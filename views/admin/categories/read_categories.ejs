@@ -1,0 +1,48 @@
+<!-- include header -->
+<%- include('../../include/_headerAdmin') %>
+<!-- /include header -->
+
+
+<main>
+<div>
+<h1>Gestionar Categorías</h1>
+</div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col" hidden>#</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Editar</th>
+        <th scope="col">Eliminar</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% categories.forEach(function(category) { %>
+      <tr>
+        <th scope="row" hidden><%= category._id %></th>
+        <td><%= category.nombre %></td>
+
+        <td>
+          <a href="/update-categoria?id=<%= category._id %>" class="btn btn-success">Editar</a>
+        </td>
+
+        <td>
+          <a href="/delete-categoria/<%= category._id %>" class="btn btn-danger delete">Eliminar</a>
+        </td>
+      </tr>
+      <% }); %>
+      <tr>
+        <td colspan="4" >
+          <a href="/create-categoria" class="btn btn-primary">Crear Nueva Categoría</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</main>
+
+
+
+<!-- include footer -->
+<%- include('../../include/_footerAdmin') %>
+<!-- /include footer -->
