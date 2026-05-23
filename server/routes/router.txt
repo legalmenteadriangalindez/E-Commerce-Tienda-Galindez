@@ -1,0 +1,227 @@
+const express = require('express');
+const route = express.Router()
+// const services = require('../services/render');
+const upload = require('../middleware/upload'); 
+const { isLogged } = require('../middleware/auth');
+
+// services para renderizar vistas
+const servicesRenderUser = require('../services/renderUsers');
+const servicesRenderProvider = require('../services/renderProviders');
+const servicesRenderBrand = require('../services/renderBrands');
+const servicesRenderCategory = require('../services/renderCategories');
+const servicesRenderRol = require('../services/renderRoles');
+const servicesRenderProduct = require('../services/renderProducts');
+const servicesRenderSales = require('../services/renderSales');
+const servicesRenderCart = require('../services/renderCart');
+const servicesLoginLogout = require('../services/renderLoginLogout');
+const servicesRenderHomeRutes = require('../services/renderHomeRoutes');
+const servicesRenderPromotions = require('../services/renderPromotions');
+const servicesRenderPaymentPoint = require('../services/RenderPaymentPoint');
+const servicesRenderAdminAnalytics = require('../services/renderAdminAnalytics');
+const servicesRenderProfile = require('../services/renderProfile');
+
+
+// controladores de la aplicación
+const userController = require('../controller/user_controller');
+const productController = require('../controller/product_controller');
+const categoryController = require('../controller/category_controller');
+const brandController = require('../controller/brand_controller');
+const cartController = require('../controller/cart_controller');
+const saleController = require('../controller/sale_controller');
+const providerController = require('../controller/provider_controller');
+const rolController = require('../controller/rol_controller');
+const detailSalesController = require('../controller/detailSales_controller');
+const reviewController = require('../controller/reviewController');
+const authController = require('../controller/auth_controller');
+const { isAdmin } = require('../middleware/auth');
+const unitController = require('../controller/unitsController');
+
+
+//unidades
+route.get('/api/unidades', unitController.find);
+
+// rutas del cliente
+//=======================API USERS====================
+route.post('/api/users', userController.create);
+route.get('/api/users', userController.find);
+route.get("/api/users/search", userController.search);
+route.get('/api/users/:id', userController.find);
+route.put('/api/users/:id', userController.update);
+route.delete('/api/users/:id', userController.delete);
+route.get('/update-user/:id', servicesRenderUser.update_user);
+route.post('/update-user/:id', servicesRenderUser.update_user_data);
+
+// ========================API AUTH====================
+route.post('/login', authController.login);
+route.get('/login', servicesLoginLogout.login);
+route.get('/logout', authController.logout);
+
+// ======================== RENDER PERFIL =====================
+route.get('/perfil', servicesRenderProfile.profile);
+route.get('/admin/perfil', servicesRenderProfile.profile);
+
+// ======================== REGISTER =====================
+route.get('/register', (req, res) => res.render('client/auth/register'));
+route.post('/register', authController.register);
+
+//========================API PRODUCTOS=================
+route.post('/api/productos', upload.array('fotos', 4), productController.create);
+route.get('/api/productos', productController.find);
+route.get('/api/productos/search', productController.searchApi);
+route.put('/api/productos/:id', upload.array('fotos', 4), productController.update);
+route.delete('/api/productos/:id', productController.delete);
+
+//========================API CATEGORIAS=================
+route.post('/api/categorias', categoryController.create);
+route.get('/api/categorias', categoryController.find);
+route.get('/api/categorias/:id', categoryController.find);
+route.put('/api/categorias/:id', categoryController.update);
+route.delete('/api/categorias/:id', categoryController.delete);
+route.post('/update-categoria/:id', servicesRenderCategory.update_category_data);
+
+//========================API MARCAS=================
+route.post('/api/marcas', upload.single('foto'), brandController.create);
+route.get('/api/marcas', brandController.find);
+route.put('/api/marcas/:id', upload.single('foto'), brandController.update);
+route.delete('/api/marcas/:id', brandController.delete);
+
+
+//========================API PROVEEDOR=================
+route.post('/api/proveedores', providerController.create);
+route.get('/api/proveedores', providerController.find);
+route.put('/api/proveedores/:id', providerController.update);
+route.delete('/api/proveedores/:id', providerController.delete);
+
+
+//========================API VENTA=================
+console.log("saleController:", saleController);
+route.post('/api/ventas', saleController.create);
+route.get('/api/ventas', saleController.find);
+route.get('/api/ventas/:id', saleController.findOne);
+route.delete('/api/ventas/:id', saleController.delete);
+route.post("/admin/finalizar-venta", saleController.finalizarVenta);
+route.get("/admin/confirmacion", saleController.confirmacion);
+
+
+
+//========================API ROLES=================
+route.post('/api/roles', rolController.create);
+route.get('/api/roles', rolController.find);
+route.put('/api/roles/:id', rolController.update);
+route.delete('/api/roles/:id', rolController.delete);
+
+
+// ======================== API DETALLE VENTAS =====================
+route.get('/api/detalle-ventas', detailSalesController.find);
+route.delete('/api/detalle-ventas/:id', detailSalesController.delete);
+
+//=========================API REVIEWS=================
+route.post('/api/reviews', upload.fields([
+ { name: 'fotos', maxCount: 5 },
+ { name: 'video', maxCount: 1 }
+]), reviewController.create);
+
+
+// ========================== API REVIEWS =====================
+route.get('/api/reviews', reviewController.find);
+route.put('/api/reviews/:id', reviewController.update);
+route.delete('/api/reviews/:id', reviewController.delete);
+
+
+// rutas para consumir las apis desde el cliente
+route.get('/', servicesRenderHomeRutes.homeRoutes);
+route.get('/search', servicesRenderHomeRutes.search);
+route.get('/promociones', servicesRenderPromotions.promotions);
+route.get('/marcas', servicesRenderBrand.brands);
+
+//==========================CARRITO Y CHECKOUT=================
+route.post('/checkout',isLogged, cartController.checkout);
+route.get('/checkout/confirmacion/:id',isLogged, cartController.confirmacion);
+route.get('/carrito',isLogged, cartController.car);
+route.post('/carrito',isLogged, cartController.car);
+route.post('/carrito/actualizar',isLogged, cartController.update_carrito);
+route.post('/carrito/eliminar',isLogged, cartController.remove_from_carrito);
+route.post('/add-to-carrito',isLogged, cartController.add_to_carrito);
+route.post('/remove-from-carrito',isLogged, cartController.remove_from_carrito);
+
+//========================Rutas del admin=================
+route.get('/categoria/:nombre', servicesRenderCategory.category); // ruta de catergorias dinamica 
+route.get('/create-categoria',isAdmin, servicesRenderCategory.create_category_form);
+route.post('/create-categoria',isAdmin, servicesRenderCategory.create_category);
+route.get('/read-categoria',isAdmin, servicesRenderCategory.read_categories);
+route.post('/read-categoria',isAdmin, servicesRenderCategory.read_categories);
+route.get('/update-categoria',isAdmin, servicesRenderCategory.update_category);
+route.post('/update-categoria',isAdmin, servicesRenderCategory.update_category);
+route.get('/delete-categoria/:id', isAdmin, servicesRenderCategory.delete_category);
+route.get('/brand/:marca', servicesRenderBrand.Productbrands);
+
+//=======================MARCAS========================
+route.get('/create-marca', isAdmin, servicesRenderBrand.create_brand_form);
+route.post('/create-marca', isAdmin, servicesRenderBrand.create_brand);
+route.get('/read-marca', isAdmin, servicesRenderBrand.read_brands);
+route.get('/update-marca', isAdmin, brandController.getBrandForEdit);
+route.post('/update-marca/:id',isAdmin, upload.single('foto'), brandController.update); // guarda cambios
+route.get('/delete-marca/:id', isAdmin, servicesRenderBrand.delete_brand);
+
+//=======================PRODUCTOS========================
+route.post('/create-producto',isAdmin, servicesRenderProduct.create_product);
+route.get('/read-producto', isAdmin, servicesRenderProduct.read_products);
+route.post('/read-producto', isAdmin, servicesRenderProduct.read_products);
+route.get('/update-producto', isAdmin, servicesRenderProduct.update_products);
+route.post('/update-producto', isAdmin, servicesRenderProduct.update_products);
+route.get('/create-producto', isAdmin, servicesRenderProduct.create_product_form);
+route.get('/delete-producto/:id', isAdmin, servicesRenderProduct.delete_product);
+route.get('/Detalles/:id',  servicesRenderProduct.product_detail);
+
+
+// Mostrar formulario de creación
+route.get('/create-proveedor', isAdmin, servicesRenderProvider.create_provider_form);
+route.post('/create-proveedor', isAdmin, servicesRenderProvider.create_provider);
+route.get('/read-proveedor', isAdmin, servicesRenderProvider.read_providers);
+route.post('/read-proveedor', isAdmin, servicesRenderProvider.read_providers);
+route.get('/update-proveedor', isAdmin, servicesRenderProvider.update_provider);
+route.post('/update-proveedor', isAdmin, servicesRenderProvider.update_provider);
+route.get('/update-proveedor', isAdmin, servicesRenderProvider.edit_provider_form);
+route.post('/update-proveedor/:id', isAdmin, servicesRenderProvider.update_provider_data);
+route.get('/delete-proveedor/:id', isAdmin, servicesRenderProvider.delete_provider);
+
+//=======================ROLES========================
+route.post('/create-rol', isAdmin, servicesRenderRol.create_rol);
+route.get('/create-rol', isAdmin, servicesRenderRol.create_rol_form);
+route.post('/read-rol', isAdmin, servicesRenderRol.read_roles);
+route.get('/read-rol', isAdmin, servicesRenderRol.read_roles);
+route.post('/update-rol', isAdmin, servicesRenderRol.update_rol);
+route.get('/update-rol', isAdmin, servicesRenderRol.update_rol);
+route.get('/delete-rol/:id', isAdmin, servicesRenderRol.delete_rol);
+
+
+//=======================VENTAS========================
+route.get('/ventas', isAdmin, servicesRenderSales.sales);
+route.get('/ventas/create', isAdmin, servicesRenderSales.create_sale_form);
+route.get('/ventas/view', isAdmin, servicesRenderSales.view_sale);
+route.get('/ventas/detalles', isAdmin, servicesRenderSales.read_sale_details);
+
+//=======================USUARIOS========================
+route.get('/add-user-form', isAdmin, servicesRenderUser.create_user_form);
+route.get('/add-user', isAdmin, servicesRenderUser.add_user);
+route.post('/add-user', isAdmin, servicesRenderUser.add_user);
+route.post('/read-user', isAdmin, servicesRenderUser.read_users);
+route.get('/read-user', isAdmin, servicesRenderUser.read_users);
+route.post('/update-user', isAdmin, servicesRenderUser.update_user);
+route.get('/update-user', isAdmin, servicesRenderUser.update_user);
+route.get('/delete-user/:id', isAdmin, servicesRenderUser.delete_user);
+
+
+// ======================== Billing Point =====================
+route.get('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
+route.post('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
+
+
+// ======================== ADMIN ANALYTICS =====================
+route.get('/admin-analytics', isAdmin, servicesRenderAdminAnalytics.renderAdminAnalytics);
+module.exports = route;
+
+
+//=======================PAYMENT POINT========================
+route.get('/payment-point', isLogged, servicesRenderPaymentPoint.payment_point);
+route.post('/payment-point', isLogged, servicesRenderPaymentPoint.payment_point);
