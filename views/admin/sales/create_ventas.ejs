@@ -1,6 +1,6 @@
 
 <!-- include header -->
-    <%- include('../../include/_header') %>
+    <%- include('../../include/_headerAdmin') %>
 <!-- /include header -->
 
 
@@ -9,7 +9,7 @@
     <h1 class="mb-4">Formulario de Ventas</h1>
     <div class="container mt-5">
 
-        <form action="/create-ventas" method="POST">
+        <form action="/create-ventas" method="post">
             <div class="mb-3">
                 <label for="fecha" class="form-label">Fecha</label>
                 <input type="date" class="form-control" id="fecha" name="fecha" value="<%= new Date().toISOString().split('T')[0] %>">
@@ -29,5 +29,5 @@
 
 
 <!-- include footer -->
-<%- include('../../include/_footer') %>
+<%- include('../../include/_footerAdmin') %>
 <!-- /include footer -->
