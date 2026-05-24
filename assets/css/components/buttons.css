@@ -1,0 +1,79 @@
+/* ================= BUTTONS ================= */
+
+.btn-cart {
+    background-color: var(--accent-orange);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: 0.3s ease;
+}
+
+.btn-cart:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* ================= BUTTON SYSTEM ================= */
+
+.btn-primary-action {
+    background-color: var(--accent-orange);
+    color: white;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* hover global */
+.btn-primary-action:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    color: white;
+}
+
+/* versión secundaria (links tipo detalle) */
+.btn-secondary-action {
+    background: transparent;
+    border: 1px solid var(--accent-orange);
+    color: var(--accent-orange);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-secondary-action:hover {
+    background: var(--accent-orange);
+    color: white;
+}
+
+
+/* ===== FIX PARA BOTONES EN CARDS ===== */
+
+/* .card .btn-primary-action,
+.card .btn-secondary-action {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+} */
+
+/* evita que el form rompa layout */
+/* .card form {
+    flex: 1;
+} */
+
+/* asegura alineación en fila */
+/* .card-body.d-flex {
+    align-items: stretch;
+} */
