@@ -1,0 +1,30 @@
+<!-- include header -->
+<%- include('../../include/_header') %>
+
+<div class="container product-detail-container mt-5">
+
+    <div class="row">
+
+        <!-- CAROUSEL -->
+        <div class="col-md-6">
+            <%- include('./partials/product-carousel', { product }) %>
+        </div>
+
+        <!-- INFO -->
+        <div class="col-md-6">
+            <%- include('./partials/product-info', { product }) %>
+        </div>
+
+    </div>
+
+</div>
+
+<hr>
+
+<!-- REVIEWS -->
+<div class="container">
+    <%- include('./partials/product-reviews', { reviews }) %>
+</div>
+
+<!-- include footer -->
+<%- include('../../include/_footer') %>

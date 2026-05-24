@@ -1,0 +1,21 @@
+<section class="kpi-container">
+
+    <div class="kpi-card">
+        <h3>💰 Ventas Totales</h3>
+        <p>$<%= kpi?.ventasTotales ? kpi.ventasTotales.toLocaleString() : 0 %></p>
+        <span>Total acumulado</span>
+    </div>
+
+    <div class="kpi-card">
+        <h3>📦 Productos Vendidos</h3>
+        <p><%= kpi?.productosVendidos ? kpi.productosVendidos : 0 %></p>
+        <span>Unidades vendidas</span>
+    </div>
+
+    <div class="kpi-card">
+        <h3>🧾 Órdenes</h3>
+        <p><%= kpi?.ordenes ? kpi.ordenes : 0 %></p>
+        <span>Total de ventas</span>
+    </div>
+
+</section>

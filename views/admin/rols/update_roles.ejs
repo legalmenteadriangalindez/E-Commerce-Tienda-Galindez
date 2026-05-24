@@ -1,0 +1,37 @@
+<%- include('../../include/_headerAdmin') %>
+
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <h1>Editar Rol</h1>
+    <p>Actualiza el nombre del rol del sistema</p>
+  </div>
+
+  <div class="form-card small-card">
+
+    <form action="/update-rol/<%= rol._id %>" method="POST" class="role-form">
+
+      <div class="form-group">
+        <label>Nombre del rol</label>
+
+        <input
+          type="text"
+          name="nombre"
+          value="<%= rol.nombre %>"
+          required
+          autofocus
+        >
+
+        <small>Este nombre define el nivel de acceso</small>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit">Actualizar rol</button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<%- include('../../include/_footerAdmin') %>

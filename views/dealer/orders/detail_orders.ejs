@@ -1,0 +1,372 @@
+<!-- include header -->
+<%- include('../../include/_headerDealer') %>
+<!-- /include header -->
+
+<link rel="stylesheet" href="/css/admin/detail_order.css">
+
+<main class="detail-order-container">
+
+    <div class="title-container">
+
+        <h1>Detalle de Orden</h1>
+
+    </div>
+
+    <!-- INFORMACIÓN GENERAL -->
+
+    <div class="card order-card">
+
+        <div class="card-header">
+            Información General
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <h5>Número de Orden</h5>
+
+                    <p>
+                        <%= order.numeroOrden %>
+                    </p>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <h5>Estado</h5>
+
+                    <% if(order.estado === 'PENDIENTE') { %>
+
+                        <span class="badge bg-warning text-dark">
+                            <%= order.estado %>
+                        </span>
+
+                    <% } %>
+
+                    <% if(order.estado === 'PAGADA') { %>
+
+                        <span class="badge bg-success">
+                            <%= order.estado %>
+                        </span>
+
+                    <% } %>
+
+                    <% if(order.estado === 'PREPARANDO') { %>
+
+                        <span class="badge bg-secondary">
+                            <%= order.estado %>
+                        </span>
+
+                    <% } %>
+
+                    <% if(order.estado === 'ENVIADA') { %>
+
+                        <span class="badge bg-info">
+                            <%= order.estado %>
+                        </span>
+
+                    <% } %>
+
+                    <% if(order.estado === 'ENTREGADA') { %>
+
+                        <span class="badge bg-primary">
+                            <%= order.estado %>
+                        </span>
+
+                    <% } %>
+
+                    <% if(order.estado === 'CANCELADA') { %>
+
+                        <span class="badge bg-danger">
+                            <%= order.estado %>
+                        </span>
+
+                    <% } %>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <h5>Usuario </h5>
+
+                    <p>
+                        <%= order.usuario?.nombre || 'Sin usuario' %>
+                    </p>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <h5>Fecha</h5>
+
+                    <p>
+                        <%= new Date(order.createdAt).toLocaleDateString() %>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DATOS DEL CLIENTE -->
+
+    <div class="card order-card">
+
+        <div class="card-header">
+            Datos del Cliente
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+
+                    <h5>Nombre</h5>
+
+                    <p>
+                        <%= order.cliente?.nombre || 'No definido' %>
+                    </p>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <h5>Email</h5>
+
+                    <p>
+                        <%= order.cliente?.email || 'No definido' %>
+                    </p>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <h5>Teléfono</h5>
+
+                    <p>
+                        <%= order.cliente?.telefono || 'No definido' %>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PRODUCTOS -->
+
+    <div class="table-responsive">
+
+    <table class="table table-bordered product-table">
+
+        <thead>
+
+            <tr>
+
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Subtotal</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <% order.productos.forEach(function(item) { %>
+
+            <tr>
+
+                <td data-label="Producto">
+                    <%= item.nombre %>
+                </td>
+
+                <td data-label="Cantidad">
+                    <%= item.cantidad %>
+                </td>
+
+                <td data-label="Precio">
+                    $ <%= item.precioUnitario.toLocaleString() %>
+                </td>
+
+                <td data-label="Subtotal">
+                    $ <%= item.subtotal.toLocaleString() %>
+                </td>
+
+            </tr>
+
+            <% }) %>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+    <!-- DIRECCIÓN -->
+
+    <div class="card order-card">
+
+        <div class="card-header">
+            Dirección de Envío
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <h5>Nombre</h5>
+
+                    <p>
+                        <%= order.direccionEnvio?.nombreRecibe || 'No definido' %>
+                    </p>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <h5>Teléfono</h5>
+
+                    <p>
+                        <%= order.direccionEnvio?.telefono || 'No definido' %>
+                    </p>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <h5>Departamento</h5>
+
+                    <p>
+                        <%= order.direccionEnvio?.departamento || 'No definido' %>
+                    </p>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <h5>Ciudad</h5>
+
+                    <p>
+                        <%= order.direccionEnvio?.ciudad || 'No definido' %>
+                    </p>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <h5>Código Postal</h5>
+
+                    <p>
+                        <%= order.direccionEnvio?.codigoPostal || 'No definido' %>
+                    </p>
+
+                </div>
+
+                <div class="col-md-12 mb-3">
+
+                    <h5>Dirección</h5>
+
+                    <p>
+                        <%= order.direccionEnvio?.direccion || 'No definido' %>
+                    </p>
+
+                </div>
+
+                <div class="col-md-12 mb-3">
+
+                    <h5>Referencia</h5>
+
+                    <p>
+                        <%= order.direccionEnvio?.referencia || 'Sin referencia' %>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- NOTAS -->
+
+    <div class="card order-card">
+
+        <div class="card-header">
+            Notas del Cliente
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                <%= order.notasCliente || 'Sin notas adicionales' %>
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- RESUMEN -->
+
+    <div class="card order-card total-card">
+
+        <div class="card-header">
+            Resumen Financiero
+        </div>
+
+        <div class="card-body">
+
+            <div class="summary-item">
+                <span>Subtotal:</span>
+                <strong>$ <%= order.subtotal.toLocaleString() %></strong>
+            </div>
+
+            <div class="summary-item">
+                <span>Impuestos:</span>
+                <strong>$ <%= order.impuestos.toLocaleString() %></strong>
+            </div>
+
+            <div class="summary-item">
+                <span>Envío:</span>
+                <strong>$ <%= order.costoEnvio.toLocaleString() %></strong>
+            </div>
+
+            <div class="summary-item">
+                <span>Descuento:</span>
+                <strong>$ <%= order.descuento.toLocaleString() %></strong>
+            </div>
+
+            <hr>
+
+            <div class="summary-item total">
+                <span>Total:</span>
+                <strong>$ <%= order.total.toLocaleString() %></strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<!-- include footer -->
+<%- include('../../include/_footerAdmin') %>
+<!-- /include footer -->

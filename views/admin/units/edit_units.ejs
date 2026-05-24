@@ -1,0 +1,60 @@
+<%- include('../../include/_headerAdmin') %>
+
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <h1>Editar Unidad</h1>
+    <p>Actualiza la información de la unidad registrada</p>
+  </div>
+
+  <div class="form-card">
+
+    <form action="/update-unidad/<%= unit._id %>" method="POST" class="unit-form">
+
+      <div class="form-grid">
+
+        <!-- Nombre -->
+        <div class="form-group full">
+          <label>Nombre de la unidad</label>
+          <input
+            type="text"
+            name="nombre"
+            value="<%= unit.nombre %>"
+            required
+          >
+        </div>
+
+                <!-- Nombre -->
+        <div class="form-group full">
+          <label>abreviatura de la unidad</label>
+          <input
+            type="text"
+            name="abreviatura"
+            value="<%= unit.abreviatura %>"
+            required
+          >
+        </div>
+
+        <div class="form-group full">
+          <label>factor de la unidad</label>
+          <input
+            type="number"
+            name="factor"
+            value="<%= unit.factor %>"
+            required
+          >
+        </div>
+
+
+      </div>
+
+      <div class="form-actions">
+        <button type="submit">Actualizar unidad</button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<%- include('../../include/_footerAdmin') %>
