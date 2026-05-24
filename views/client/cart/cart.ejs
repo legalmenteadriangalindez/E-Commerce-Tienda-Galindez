@@ -1,0 +1,196 @@
+<!-- include header -->
+<%- include('../../include/_header') %>
+<!-- /include header -->
+
+<div class="container">
+    <h1>Carrito de Compras</h1>
+</div>
+
+<p>
+    Revisa los productos que has agregado a tu carrito
+    de compras y realiza el checkout cuando estés listo.
+</p>
+
+<main class="main-cart">
+
+  <div class="cart-wrapper">
+
+    <!-- Productos -->
+    <section class="items-section">
+
+      <header class="cart-header">
+
+        <h1>Tu Despensa</h1>
+
+        <span class="badge">
+          <%= productosCarrito.length %> Articulo(s)
+        </span>
+
+      </header>
+
+      <!-- FORMULARIO -->
+      <form
+        id="cartForm"
+        action="/carrito/payment_point"
+        method="POST"
+      >
+
+        <div class="product-list">
+
+          <% if(productosCarrito.length === 0){ %>
+
+              <p>Tu carrito está vacío.</p>
+
+          <% } %>
+
+          <% productosCarrito.forEach((producto, index) => { %>
+
+          <article class="product-card">
+
+            <!-- Imagen -->
+            <div class="img-container">
+
+              <img 
+                src="<%= producto.foto || '/assets/img/default.jpg' %>" 
+                alt="<%= producto.nombre %>"
+              >
+
+            </div>
+
+            <!-- Info -->
+            <div class="product-info">
+
+              <h3><%= producto.nombre %></h3>
+
+              <p class="category">
+                <%= producto.categoria || 'Sin categoría' %>
+              </p>
+
+            </div>
+
+            <!-- Producto ID -->
+            <input
+              type="hidden"
+              name="productos[<%= index %>][productoId]"
+              value="<%= producto.productoId %>"
+            >
+
+            <!-- Cantidad -->
+            <!-- <div class="quantity-picker">
+
+              <input
+                type="number"
+                name="productos[<%= index %>][cantidad]"
+                value="<%= producto.cantidad %>"
+                min="1"
+                class="quantity-input"
+              >
+
+            </div> -->
+<div class="quantity-picker">
+
+  <input
+    type="number"
+    name="productos[<%= index %>][cantidad]"
+    value="<%= producto.cantidad %>"
+    min="1"
+    max="99"
+    class="form-control text-center fw-bold"
+    style="
+      width: 90px;
+      height: 48px;
+      border-radius: 14px;
+      font-size: 1.1rem;
+    "
+  >
+
+</div>
+            <!-- Precio -->
+            <p class="price">
+
+              $<%= (producto.precio * producto.cantidad).toFixed(2) %>
+
+            </p>
+
+          </article>
+
+          <% }) %>
+
+        </div>
+
+      </form>
+
+    </section>
+
+    <!-- Resumen -->
+    <aside class="summary-section">
+
+      <div class="summary-card">
+
+        <h2 class="text-sumary">
+          Resumen
+        </h2>
+
+        <div class="divider"></div>
+
+        <div class="summary-line">
+
+          <span class="text-sumary">
+            Subtotal
+          </span>
+
+          <span class="text-sumary">
+            $<%= subtotal.toFixed(2) %>
+          </span>
+
+        </div>
+
+        <div class="summary-line">
+
+          <span class="text-sumary">
+            Envío
+          </span>
+
+          <span class="text-sumary free">
+            Gratis
+          </span>
+
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="summary-line total">
+
+          <span class="text-sumary">
+            Total
+          </span>
+
+          <span class="text-sumary total-amount">
+            $<%= subtotal.toFixed(2) %>
+          </span>
+
+        </div>
+
+        <!-- BOTÓN -->
+        <button
+          type="submit"
+          form="cartForm"
+          class="pay-btn"
+        >
+
+          <i class="fas fa-lock"></i>
+          Proceder al pago
+
+        </button>
+
+      </div>
+
+    </aside>
+
+  </div>
+
+</main>
+
+<!-- include footer -->
+<%- include('../../include/_footer') %>
+<!-- /include footer -->

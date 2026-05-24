@@ -1,0 +1,95 @@
+<%- include('../../include/_headerAdmin') %>
+
+<main>
+
+<div>
+    <h1>Métodos de Pago</h1>
+</div>
+
+<table class="table">
+
+    <thead>
+
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Código</th>
+            <th>Tipo</th>
+            <th>Descripción</th>
+            <th>Comisión</th>
+            <th>Activo</th>
+            <th>Monedas</th>
+            <th>Fecha</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        <% payments.forEach(function(payment) { %>
+
+        <tr>
+
+            <td><%= payment._id %></td>
+
+            <td><%= payment.nombre %></td>
+
+            <td><%= payment.codigo %></td>
+
+            <td><%= payment.tipo %></td>
+
+            <td><%= payment.descripcion || 'Sin descripción' %></td>
+
+            <td><%= payment.comision %> %</td>
+
+            <td>
+
+                <% if(payment.activo) { %>
+                    <span class="badge bg-success">Activo</span>
+                <% } else { %>
+                    <span class="badge bg-danger">Inactivo</span>
+                <% } %>
+
+            </td>
+
+            <td>
+                <%= payment.monedas?.join(', ') || 'COP' %>
+            </td>
+
+            <td>
+                <%= new Date(payment.fecha_creacion).toLocaleDateString() %>
+            </td>
+
+            <td>
+                <a href="/update-payment-method/?id=<%= payment._id %>" class="btn btn-success">
+                    Editar
+                </a>
+            </td>
+
+            <td>
+                <a href="/delete-payment/<%= payment._id %>" class="btn btn-danger delete">
+                    Eliminar
+                </a>
+            </td>
+
+        </tr>
+
+        <% }); %>
+
+        <tr>
+            <td colspan="11">
+                <a href="/create-payment" class="btn btn-primary">
+                    Crear nuevo método de pago
+                </a>
+            </td>
+        </tr>
+
+    </tbody>
+
+</table>
+
+</main>
+
+<%- include('../../include/_footerAdmin') %>

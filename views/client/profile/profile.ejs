@@ -1,0 +1,132 @@
+<%- include('../../include/_header') %>
+
+<div class="profile-container">
+
+    <div class="profile-card">
+
+        <!-- HEADER -->
+        <div class="profile-header text-center">
+
+            <i class="bi bi-person-circle profile-avatar"></i>
+
+            <h3>
+                <%= user.nombre %>
+            </h3>
+
+            <span class="badge bg-secondary">
+                Cliente
+            </span>
+
+        </div>
+
+        <!-- BOTÓN EDITAR -->
+        <div class="text-end mb-3">
+
+            <a
+                href="/perfil/editar/<%= user._id %>"
+                class="btn btn-dark btn-sm"
+            >
+                <i class="bi bi-pencil"></i>
+                Editar
+            </a>
+
+        </div>
+
+        <!-- INFO -->
+        <div class="profile-info">
+
+            <!-- NOMBRE -->
+            <div class="info-item">
+
+                <span>Nombre</span>
+
+                <p>
+                    <%= user.nombre %>
+                </p>
+
+            </div>
+
+            <!-- EMAIL -->
+            <div class="info-item">
+
+                <span>Email</span>
+
+                <p>
+                    <%= user.email %>
+                </p>
+
+            </div>
+
+            <!-- TELÉFONO -->
+            <div class="info-item">
+
+                <span>Teléfono</span>
+
+                <p>
+                    <%= user.telefono %>
+                </p>
+
+            </div>
+
+            <!-- DIRECCIÓN -->
+            <div class="info-item">
+
+                <span>Dirección</span>
+
+                <p>
+                    <%= user.direccion %>
+                </p>
+
+            </div>
+
+            <!-- CIUDAD -->
+            <div class="info-item">
+
+                <span>Ciudad</span>
+
+                <p>
+                    <%= user.ciudad %>
+                </p>
+
+            </div>
+
+            <!-- BARRIO -->
+            <div class="info-item">
+
+                <span>Barrio</span>
+
+                <p>
+                    <%= user.barrio %>
+                </p>
+
+            </div>
+
+            <!-- GÉNERO -->
+            <div class="info-item">
+
+                <span>Género</span>
+
+                <p>
+                    <%= user.genero %>
+                </p>
+
+            </div>
+
+            <!-- PUNTO REFERENCIA -->
+            <div class="info-item">
+
+                <span>Punto de referencia</span>
+
+                <p>
+                    <%= user.puntoReferencia %>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<%- include('../../include/_footer') %>

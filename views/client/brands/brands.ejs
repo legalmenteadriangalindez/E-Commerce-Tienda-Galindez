@@ -1,0 +1,26 @@
+
+<!-- include header -->
+    <%- include('../../include/_header') %>
+<!-- /include header -->
+
+
+<main id="site-main">
+
+<h1 class="mb-3">Marcas</h1>
+
+<p class="mb-4">Tus marcas favoritas.</p>
+
+<div class="container-cards">
+
+    <% brands.forEach(brand => { %>
+        <%- include('../../include/brand_card', { brand }) %>
+    <% }) %>
+    
+</div>
+
+</main>
+
+
+<!-- include footer -->
+<%- include('../../include/_footer') %>
+<!-- /include footer -->

@@ -1,0 +1,173 @@
+<!-- include header -->
+<%- include('../../include/_headerAdmin') %>
+<!-- /include header -->
+
+
+<main>
+
+<div>
+    <h1>Gestionar Órdenes</h1>
+</div>
+
+<table class="table">
+
+    <thead>
+
+        <tr>
+
+            <th scope="col" hidden>#</th>
+
+            <th scope="col">Orden</th>
+
+            <th scope="col">Usuario</th>
+
+            <th scope="col">Total</th>
+
+            <th scope="col">Estado</th>
+
+            <th scope="col">Fecha</th>
+
+            <th scope="col">Editar</th>
+
+            <th scope="col">Eliminar</th>
+
+            <th scope="col">Detalle</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        <% orders.forEach(function(order) { %>
+
+        <tr>
+
+            <th scope="row" hidden>
+                <%= order._id %>
+            </th>
+
+            <td>
+                <%= order.numeroOrden %>
+            </td>
+
+            <td>
+                <%= order.usuario?.nombre || 'Sin usuario' %>
+            </td>
+
+            <td>
+                $ <%= order.total?.toLocaleString() %>
+            </td>
+
+            <td>
+
+                <% if(order.estado === 'PENDIENTE') { %>
+
+                    <span class="badge bg-warning text-dark">
+                        <%= order.estado %>
+                    </span>
+
+                <% } %>
+
+                <% if(order.estado === 'PAGADA') { %>
+
+                    <span class="badge bg-success">
+                        <%= order.estado %>
+                    </span>
+
+                <% } %>
+
+                <% if(order.estado === 'ENVIADA') { %>
+
+                    <span class="badge bg-info">
+                        <%= order.estado %>
+                    </span>
+
+                <% } %>
+
+                <% if(order.estado === 'ENTREGADA') { %>
+
+                    <span class="badge bg-primary">
+                        <%= order.estado %>
+                    </span>
+
+                <% } %>
+
+                <% if(order.estado === 'CANCELADA') { %>
+
+                    <span class="badge bg-danger">
+                        <%= order.estado %>
+                    </span>
+
+                <% } %>
+
+            </td>
+
+            <td>
+
+                <%= new Date(order.createdAt).toLocaleDateString() %>
+
+            </td>
+
+            <td>
+
+                <a 
+                    href="/update-order?id=<%= order._id %>"
+                    class="btn btn-success"
+                >
+                    Editar
+                </a>
+
+            </td>
+
+            <td>
+
+                <a 
+                    href="/delete-order/<%= order._id %>"
+                    class="btn btn-danger delete"
+                >
+                    Eliminar
+                </a>
+
+            </td>
+
+            <td>
+
+                <a 
+                    href="/order/<%= order._id %>"
+                    class="btn btn-info"
+                >
+                    Detalle
+                </a>
+
+            </td>
+
+        </tr>
+
+        <% }); %>
+
+        <tr>
+
+            <td colspan="8">
+
+                <a 
+                    href="/create-order"
+                    class="btn btn-primary"
+                >
+                    Crear Nueva Orden
+                </a>
+
+            </td>
+
+        </tr>
+
+    </tbody>
+
+</table>
+
+</main>
+
+
+<!-- include footer -->
+<%- include('../../include/_footerAdmin') %>
+<!-- /include footer -->

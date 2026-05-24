@@ -1,0 +1,23 @@
+<div class="card" style="width: 18rem;">
+
+    <img 
+        class="card-img-top"
+        src="<%= brand.foto ? brand.foto : '/assets/img/default.jpg' %>" 
+        alt="marca">
+
+    <div class="card-body">
+        <h5 class="card-title"><%= brand.nombre %></h5>
+        <p class="card-text">
+            Marca registrada en el sistema
+        </p>
+    </div>
+
+    <div class="card-body d-flex justify-content-center">
+
+        <a href="/brand/<%= brand.nombre %>" class="btn-secondary-action">
+            Ver productos
+        </a>
+
+    </div>
+
+</div>
