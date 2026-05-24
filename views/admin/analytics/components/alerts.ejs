@@ -1,0 +1,21 @@
+<section class="analytics-section">
+
+    <h2>⚠️ Bajo Stock</h2>
+
+    <% if (lowStock.length === 0) { %>
+
+        <div class="alert-card">
+            ✅ Todo el inventario está en buen estado
+        </div>
+
+    <% } else { %>
+
+        <% lowStock.forEach(producto => { %>
+            <div class="alert-card">
+                <strong><%= producto.nombre %></strong> → <%= producto.stock %> unidades
+            </div>
+        <% }) %>
+
+    <% } %>
+
+</section>

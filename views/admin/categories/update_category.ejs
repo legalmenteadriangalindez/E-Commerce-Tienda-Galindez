@@ -1,0 +1,38 @@
+<%- include('../../include/_headerAdmin') %>
+
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <h1>Editar Categoría</h1>
+    <p>Modifica el nombre de la categoría seleccionada</p>
+  </div>
+
+  <div class="form-card small-card">
+
+    <form action="/update-categoria/<%= category._id %>" method="POST" class="category-form">
+
+      <div class="form-group">
+        <label>Nombre de la categoría</label>
+
+        <input
+          type="text"
+          name="nombre"
+          value="<%= category.nombre %>"
+          required
+          autofocus
+        >
+
+        <small>El nombre debe ser único en el sistema</small>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit">Actualizar categoría</button>
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+<%- include('../../include/_footerAdmin') %>

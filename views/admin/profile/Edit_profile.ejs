@@ -1,0 +1,136 @@
+<%- include('../../include/_headerAdmin') %>
+
+<link rel="stylesheet" href="/css/client/profile/Edit_profile.css">
+
+<div class="edit-profile-container">
+
+    <div class="edit-profile-card">
+
+        <!-- HEADER -->
+        <div class="edit-profile-header">
+
+            <div class="avatar-wrapper">
+                <i class="bi bi-person-circle"></i>
+            </div>
+
+            <h2>Editar Perfil</h2>
+
+            <p>
+                Actualiza tu información personal
+            </p>
+
+        </div>
+
+        <!-- FORM -->
+        <form
+            action="/api/users/<%= user._id %>?_method=PUT"
+            method="POST"
+            class="edit-profile-form"
+        >
+
+            <!-- NOMBRE -->
+            <div class="form-group">
+
+                <label>Nombre completo</label>
+
+                <input
+                    type="text"
+                    name="nombre"
+                    value="<%= user.nombre %>"
+                    required
+                >
+
+            </div>
+
+            <!-- EMAIL -->
+            <div class="form-group">
+
+                <label>Correo electrónico</label>
+
+                <input
+                    type="email"
+                    value="<%= user.email %>"
+                    disabled
+                >
+
+            </div>
+
+            <!-- TELÉFONO -->
+            <div class="form-group">
+
+                <label>Teléfono</label>
+
+                <input
+                    type="text"
+                    name="telefono"
+                    value="<%= user.telefono %>"
+                >
+
+            </div>
+
+            <!-- DIRECCIÓN -->
+            <div class="form-group">
+
+                <label>Dirección</label>
+
+                <input
+                    type="text"
+                    name="direccion"
+                    value="<%= user.direccion %>"
+                >
+
+            </div>
+
+            <!-- CIUDAD -->
+            <div class="form-group">
+
+                <label>Ciudad</label>
+
+                <input
+                    type="text"
+                    name="ciudad"
+                    value="<%= user.ciudad %>"
+                >
+
+            </div>
+
+            <!-- BARRIO -->
+            <div class="form-group">
+
+                <label>Barrio</label>
+
+                <input
+                    type="text"
+                    name="barrio"
+                    value="<%= user.barrio %>"
+                >
+
+            </div>
+
+            <!-- BOTONES -->
+            <div class="form-actions">
+
+                <a
+                    href="/profile"
+                    class="btn-cancel"
+                >
+                    Cancelar
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn-save"
+                >
+                    <i class="bi bi-check-circle"></i>
+                    Guardar cambios
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<%- include('../../include/_footerAdmin') %>

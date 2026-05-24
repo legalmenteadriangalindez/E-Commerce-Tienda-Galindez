@@ -1,0 +1,315 @@
+<%- include('../../include/_headerAdmin') %>
+
+<style>
+
+    :root {
+        --primary-dark: #311b14;
+        --accent-orange: #d85c32;
+        --warm-tan: #d58d51;
+        --light: #ffffff;
+        --soft-bg: #f7f4f2;
+    }
+
+    body{
+        background: var(--soft-bg);
+    }
+
+    .stock-container{
+        padding: 2rem;
+    }
+
+    .stock-title{
+        color: var(--primary-dark);
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .stock-summary{
+        background: linear-gradient(
+            135deg,
+            var(--accent-orange),
+            var(--warm-tan)
+        );
+
+        border-radius: 18px;
+        padding: 1.5rem;
+        color: var(--light);
+        margin-bottom: 2rem;
+
+        box-shadow: 0 8px 25px rgba(0,0,0,.12);
+    }
+
+    .stock-summary h2{
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .stock-summary p{
+        margin: 0;
+        opacity: .9;
+    }
+
+    .table-card{
+        background: white;
+        border-radius: 18px;
+        overflow: hidden;
+
+        box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+    .table-custom{
+        margin: 0;
+    }
+
+    .table-custom thead{
+        background: var(--primary-dark);
+        color: white;
+    }
+
+    .table-custom th{
+        padding: 1rem;
+        border: none;
+        font-size: .95rem;
+        letter-spacing: .5px;
+    }
+
+    .table-custom td{
+        vertical-align: middle;
+        padding: 1rem;
+    }
+
+    .product-name{
+        font-weight: 600;
+        color: var(--primary-dark);
+    }
+
+    .stock-badge{
+        padding: .5rem .9rem;
+        border-radius: 50px;
+        font-size: .8rem;
+        font-weight: 600;
+    }
+
+    .badge-critical{
+        background: #dc3545;
+        color: white;
+    }
+
+    .badge-low{
+        background: #ffc107;
+        color: #000;
+    }
+
+    .stock-icon{
+        width: 45px;
+        height: 45px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 12px;
+
+        background: rgba(216, 92, 50, .15);
+
+        color: var(--accent-orange);
+
+        font-size: 1.2rem;
+    }
+
+    .empty-state{
+        padding: 3rem;
+        text-align: center;
+    }
+
+    .empty-state i{
+        font-size: 4rem;
+        color: var(--warm-tan);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h4{
+        color: var(--primary-dark);
+    }
+
+    @media(max-width: 768px){
+
+        .stock-container{
+            padding: 1rem;
+        }
+
+        .stock-summary{
+            text-align: center;
+        }
+
+        .table-responsive{
+            border-radius: 18px;
+        }
+
+        .table-custom th,
+        .table-custom td{
+            white-space: nowrap;
+        }
+
+    }
+
+</style>
+
+<div class="container-fluid stock-container">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+        <div>
+            <h1 class="stock-title">
+                <i class="bi bi-box-seam"></i>
+                Control de Stock
+            </h1>
+
+            <p class="text-muted">
+                Productos con stock bajo o crítico
+            </p>
+        </div>
+
+    </div>
+
+    <!-- RESUMEN -->
+
+    <div class="stock-summary">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-8">
+
+                <p>Total de alertas</p>
+
+                <h2>
+                    <%= totalAlertas %>
+                </h2>
+
+            </div>
+
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+
+                <i class="bi bi-exclamation-triangle-fill"
+                   style="font-size:4rem; opacity:.3;">
+                </i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TABLA -->
+
+    <div class="table-card">
+
+        <% if(stockAlerts.length > 0){ %>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover table-custom">
+
+                    <thead>
+
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <% stockAlerts.forEach(producto => { %>
+
+                            <tr>
+
+                                <td>
+
+                                    <div class="d-flex align-items-center gap-3">
+
+                                        <div class="stock-icon">
+                                            <i class="bi bi-box"></i>
+                                        </div>
+
+                                        <div>
+
+                                            <div class="product-name">
+                                                <%= producto.nombre %>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+                                <td>
+                                    <%= producto.categoria %>
+                                </td>
+
+                                <td>
+
+                                    <strong>
+                                        <%= producto.stock %>
+                                    </strong>
+
+                                </td>
+
+                                <td>
+
+                                    <% if(producto.estado === 'CRITICO'){ %>
+
+                                        <span class="stock-badge badge-critical">
+                                            <i class="bi bi-exclamation-octagon-fill"></i>
+                                            CRÍTICO
+                                        </span>
+
+                                    <% } else { %>
+
+                                        <span class="stock-badge badge-low">
+                                            <i class="bi bi-exclamation-circle-fill"></i>
+                                            BAJO
+                                        </span>
+
+                                    <% } %>
+
+                                </td>
+
+                            </tr>
+
+                        <% }) %>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        <% } else { %>
+
+            <div class="empty-state">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+                <h4>
+                    Todo el stock está correcto
+                </h4>
+
+                <p class="text-muted">
+                    No existen productos con alertas actualmente.
+                </p>
+
+            </div>
+
+        <% } %>
+
+    </div>
+
+</div>
+
+<%- include('../../include/_footerAdmin') %>
