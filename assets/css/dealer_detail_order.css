@@ -1,0 +1,200 @@
+/* =========================
+   CONTAINER
+========================= */
+
+.detail-order-container{
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* =========================
+   TITLE
+========================= */
+
+.title-container{
+    margin-bottom: 20px;
+}
+
+.title-container h1{
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.order-card{
+    margin-bottom: 25px;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.card-header{
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 14px 18px;
+}
+
+.card-body{
+    padding: 20px;
+}
+
+/* =========================
+   TEXT
+========================= */
+
+h5{
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+p{
+    margin-bottom: 0;
+    word-break: break-word;
+}
+
+/* =========================
+   SUMMARY
+========================= */
+
+.summary-item{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+.summary-item.total{
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* =========================
+   TABLE
+========================= */
+
+.product-table{
+    margin-bottom: 0;
+}
+
+.product-table td,
+.product-table th{
+    vertical-align: middle;
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 992px){
+
+    .detail-order-container{
+        padding: 15px;
+    }
+
+    .title-container h1{
+        font-size: 1.7rem;
+    }
+
+    .card-body{
+        padding: 16px;
+    }
+
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px){
+
+    .detail-order-container{
+        padding: 10px;
+    }
+
+    .title-container{
+        text-align: center;
+    }
+
+    .title-container h1{
+        font-size: 1.5rem;
+    }
+
+    .card-header{
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .card-body{
+        padding: 14px;
+    }
+
+    h5{
+        font-size: 0.95rem;
+    }
+
+    p{
+        font-size: 0.92rem;
+    }
+
+    .summary-item{
+        font-size: 0.95rem;
+    }
+
+    .summary-item.total{
+        font-size: 1.05rem;
+    }
+
+    /* =========================
+       RESPONSIVE TABLE
+    ========================= */
+
+    .product-table thead{
+        display: none;
+    }
+
+    .product-table,
+    .product-table tbody,
+    .product-table tr,
+    .product-table td{
+        display: block;
+        width: 100%;
+    }
+
+    .product-table tr{
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 10px;
+        background: #fff;
+    }
+
+    .product-table td{
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+        border: none;
+        border-bottom: 1px solid #eee;
+        min-height: 45px;
+    }
+
+    .product-table td:last-child{
+        border-bottom: none;
+    }
+
+    .product-table td::before{
+        content: attr(data-label);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        font-weight: bold;
+        text-align: left;
+    }
+
+}

@@ -1,0 +1,171 @@
+/* LISTA */
+.order-items-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+
+    margin-top:20px;
+}
+
+/* ITEM */
+.order-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    background:#fff;
+
+    border-radius:16px;
+
+    padding:15px;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.06);
+
+    transition:.2s ease;
+}
+
+.order-item:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 6px 18px rgba(0,0,0,0.1);
+}
+
+/* FOTO */
+.order-item-image img{
+
+    width:70px;
+
+    height:70px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+
+    border:1px solid #eee;
+}
+
+/* INFO */
+.order-item-info{
+
+    flex:1;
+}
+
+.order-item-info h4{
+
+    margin:0;
+
+    font-size:16px;
+
+    font-weight:700;
+
+    color:#222;
+}
+
+.order-item-info p{
+
+    margin:6px 0;
+
+    color:#777;
+
+    font-size:14px;
+}
+
+/* BADGE */
+.category-badge{
+
+    display:inline-block;
+
+    background:#f1f3f5;
+
+    color:#555;
+
+    padding:4px 10px;
+
+    border-radius:30px;
+
+    font-size:12px;
+
+    font-weight:600;
+}
+
+/* PRECIO */
+.order-item-price{
+
+    text-align:right;
+}
+
+.order-item-price h3{
+
+    margin:0;
+
+    font-size:20px;
+
+    color:#111;
+
+    font-weight:800;
+}
+
+.order-item-price small{
+
+    color:#777;
+}
+
+/* DELETE */
+.delete-item-btn{
+
+    width:40px;
+
+    height:40px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#ff4d4f;
+
+    color:white;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.delete-item-btn:hover{
+
+    background:#d9363e;
+
+    transform:scale(1.05);
+}
+
+/* EMPTY */
+.empty-cart{
+
+    background:#fff;
+
+    border-radius:16px;
+
+    padding:40px;
+
+    text-align:center;
+
+    color:#999;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.06);
+}
+
+.empty-cart i{
+
+    font-size:40px;
+
+    margin-bottom:10px;
+}

@@ -1,0 +1,187 @@
+/*============================== CARDS ============================*/
+
+.container-cards {
+    /* display: flex; */
+    justify-content: center;
+    padding: 20px 0;
+    background-color: var(--light-bg);
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* CARD MEJORADA SIN ROMPER BOOTSTRAP */
+.card {
+    border: 1px solid var(--warm-tan);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* hover más limpio */
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(49, 27, 20, 0.2);
+}
+
+.card-title {
+    color: var(--primary-dark);
+    font-weight: bold;
+}
+
+/* links */
+.card-link {
+    color: var(--accent-orange);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.card-link:hover {
+    color: var(--primary-dark);
+}
+
+/* imagen cards (si aplica en otro CSS puedes ignorarlo) */
+.card-img-top {
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/*============================== TABLAS ============================*/
+
+.thead-dark th {
+    background-color: var(--primary-dark) !important;
+    color: var(--warm-tan) !important;
+}
+
+/*============================== UTILIDADES ============================*/
+
+.text-gradient {
+    color: var(--accent-orange);
+    font-weight: bold;
+}
+
+.container-cards {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+    align-items: stretch;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+
+/* ================= CARD MODERNA ================= */
+ .card {
+    width: 100%;
+    max-width: 230px;
+    min-width: 180px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Hover más limpio y moderno */
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+.card-body {
+    padding: 10px 10px;
+}
+
+
+
+.card-img-top {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+/* zoom suave en hover */
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/* Efecto hover tipo e-commerce */
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0,0,0,0.15);
+}
+
+
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+.card-text {
+    font-size: 0.875rem;
+    color: #666;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+
+@media (max-width: 1400px) {
+    .container-cards {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (max-width: 1200px) {
+    .container-cards {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .container-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .container-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .container-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+.add-to-cart-btn {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.add-to-cart-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* estado activo */
+.added {
+    background-color: #28a745 !important;
+    color: white;
+}
