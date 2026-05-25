@@ -10,7 +10,7 @@
         Categoría: <strong><%= product.categoria?.nombre || 'N/A' %></strong>
     </p>
 
-    <h3 class="product-price">$ <%= product.precio %></h3>
+    <h3 class="product-price">$ <%= product.precioBase %></h3>
 
     <p>
         <%= product.descripcion || 'Sin descripción disponible' %>
@@ -33,3 +33,5 @@
     </div>
 
 </div>
+
+<script src="/assets/js/Add_to_cart_client_nav.js"></script>
