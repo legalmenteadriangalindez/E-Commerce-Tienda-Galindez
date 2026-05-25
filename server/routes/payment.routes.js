@@ -9,11 +9,8 @@ router.get('/payment-point', isLogged, servicesRenderPaymentPoint.payment_point)
 router.post('/payment-point', isLogged, servicesRenderPaymentPoint.payment_point);
 
 
-
-
 const paymentController = require('../controller/payment_controller');
 
-// CRUD API
 router.get('/', paymentController.find);
 router.get('/:id', paymentController.findOne);
 router.post('/', paymentController.create);

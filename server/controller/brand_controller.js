@@ -31,7 +31,7 @@ exports.findOne = async (req, res) => {
 
         const nombre = req.params.nombre;
 
-        const brand = await Brand_db.findOne({ nombre }).populate('productos');
+        const brand = await Brand_db.findOne({ nombre });
 
         if (!brand) {
             return res.status(404).send({

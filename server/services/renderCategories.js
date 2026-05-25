@@ -11,11 +11,10 @@ exports.category = (req, res) => {
                 p.categoria?.nombre === req.params.nombre
             );
 
-            // Obtener el primero (para título)
-            const categoria = productos.length > 0 
-                ? productos[0].categoria 
-                : null;
 
+            const categoria = {
+                nombre: req.params.nombre
+            };
             res.render('client/categories/categories', { productos, categoria });
 
         })
@@ -25,7 +24,7 @@ exports.category = (req, res) => {
 // ==================== CATEGORÍAS =======================
 
 exports.create_category_form = (req, res) => {
-    res.render('admin/categories/create_categoria'); // formulario simple, solo nombre
+    res.render('admin/categories/create_categoria'); 
 };
 
 exports.create_category = (req, res) => {

@@ -89,7 +89,6 @@ exports.finalizarVenta = async (req, res) => {
 
         const {carrito,metodoPago} = req.body;
 
-        // 🔥 guardar en sesión
         req.session.cart = [];
 
         res.json({ ok: true });
@@ -100,10 +99,7 @@ exports.finalizarVenta = async (req, res) => {
 };
 
 
-// ==========================================
 // GANANCIAS TOTALES
-// ==========================================
-
 exports.total_profit = async (req, res) => {
 
     try {
@@ -135,10 +131,7 @@ exports.total_profit = async (req, res) => {
 
 
 
-// ==========================================
 // GANANCIAS POR PRODUCTO
-// ==========================================
-
 exports.profit_margins = async (req, res) => {
 
     try {

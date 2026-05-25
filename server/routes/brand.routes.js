@@ -4,7 +4,6 @@ const router = express.Router();
 const upload = require('../middleware/upload');
 const brandController = require('../controller/brand_controller');
 
-// ✅ API REST (SIN prefijo duplicado)
 router.post('/', upload.single('foto'), brandController.create);
 router.get('/', brandController.find);
 router.get('/:nombre', brandController.findOne);

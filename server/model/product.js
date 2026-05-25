@@ -32,7 +32,7 @@ var schema = new mongoose.Schema({
         ref: 'Unidaddbs',
         required: true
     },
-        // 🔹 Presentaciones del producto
+        // Presentaciones del producto
     presentaciones: [
         {
             unidad: {

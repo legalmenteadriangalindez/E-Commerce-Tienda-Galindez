@@ -1,12 +1,7 @@
 const axios = require('axios');
 
 
-// ==================== ORDENES ============================
-
-
-// ======================================
 // FORMULARIO CREAR ORDEN
-// ======================================
 exports.create_order_form = async (req, res) => {
 
     try {
@@ -32,9 +27,7 @@ exports.create_order_form = async (req, res) => {
 };
 
 
-// ======================================
 // LISTAR ORDENES
-// ======================================
 exports.read_orders = (req, res) => {
 
     axios.get('http://localhost:3000/api/orders')
@@ -53,9 +46,7 @@ exports.read_orders = (req, res) => {
 };
 
 
-// ======================================
 // FORMULARIO EDITAR ORDEN
-// ======================================
 exports.update_order = async (req, res) => {
 
     try {
@@ -79,9 +70,7 @@ exports.update_order = async (req, res) => {
 };
 
 
-// ======================================
 // CREAR ORDEN
-// ======================================
 exports.create_order = (req, res) => {
 
     axios.post(
@@ -103,9 +92,7 @@ exports.create_order = (req, res) => {
 };
 
 
-// ======================================
 // ACTUALIZAR ORDEN
-// ======================================
 exports.update_order_data = (req, res) => {
 
     axios.put(
@@ -127,9 +114,7 @@ exports.update_order_data = (req, res) => {
 };
 
 
-// ======================================
 // ELIMINAR ORDEN
-// ======================================
 exports.delete_order = (req, res) => {
 
     axios.delete(

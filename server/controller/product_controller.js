@@ -83,9 +83,9 @@ exports.find = (req, res) => {
                 path: 'proveedor',
                 match: { _id: { $exists: true } }
             })
-            .populate('unidadBase') // ✅ OK
-            .populate('presentaciones.unidad') // ✅ OK
-            .then(data => res.send(data)) // 🔥 FALTABA ESTO
+            .populate('unidadBase') 
+            .populate('presentaciones.unidad') 
+            .then(data => res.send(data)) 
             .catch(err => {
                 
                 res.status(500).send(err);
@@ -242,7 +242,7 @@ exports.searchApi = async (req, res) => {
         .limit(10)
         .lean();
 
-        // 🔥 AQUÍ ESTÁ LA MAGIA
+        
         res.send(productos.map(p => ({
             ...p,
             precio: p.precioBase

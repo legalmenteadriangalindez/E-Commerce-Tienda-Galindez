@@ -70,7 +70,6 @@ exports.update_user_data = async (req, res) => {
             rol: req.body.rol
         };
 
-        // Solo enviar password si viene
         if (req.body.password && req.body.password.trim() !== "") {
             body.password = req.body.password;
         }

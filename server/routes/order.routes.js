@@ -3,10 +3,6 @@ const router = express.Router();
 
 const orderController = require('../controller/order_controller');
 
-// ======================================
-// OBTENER ÓRDENES
-// ======================================
-
 router.get('/', orderController.find);
 router.get('/:id', orderController.findOne);
 router.post('/', orderController.create);

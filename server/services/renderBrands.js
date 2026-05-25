@@ -60,9 +60,8 @@ exports.Productbrands = (req, res) => {
 
             const data = response.data;
 
-            // 1️Filtrar productos
             const productos = data.filter(p => 
-                p.marca?.nombre === req.params.marca
+                p.marca?.nombre?.trim().toLowerCase() === req.params.marca.trim().toLowerCase()
             );
             res.render('client/products/Product_brands', { products : productos , marca: req.params.marca });
 
