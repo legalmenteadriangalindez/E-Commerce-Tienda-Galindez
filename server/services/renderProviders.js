@@ -1,12 +1,17 @@
 const axios = require('axios');
 
+const dotenv = require('dotenv');
+
+dotenv.config();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+
 // ==================== PROVEEDORES ======================
 exports.create_provider_form = (req, res) => {
     res.render('admin/providers/create_proveedor');
 };
 
 exports.create_provider = (req, res) => {
-    axios.post('http://localhost:3000/api/proveedores', req.body)
+    axios.post(`${BASE_URL}/api/proveedores`, req.body)
         .then(response => {
             
             res.redirect('/read-proveedor');
@@ -19,7 +24,7 @@ exports.create_provider = (req, res) => {
 
 
 exports.read_providers = (req, res) => {
-    axios.get('http://localhost:3000/api/proveedores')
+    axios.get(`${BASE_URL}/api/proveedores`)
         .then(response => {
             res.render('admin/providers/read_providers', { providers: response.data });
         })
@@ -30,7 +35,7 @@ exports.read_providers = (req, res) => {
 exports.edit_provider_form = async (req, res) => {
     try {
         const id = req.query.id; // ejemplo: /update-proveedor?id=123
-        const response = await axios.get(`http://localhost:3000/api/proveedores/${id}`);
+        const response = await axios.get(`${BASE_URL}/api/proveedores/${id}`);
         const provider = response.data;
         res.render('admin/providers/update_provider', { provider }); // renderiza el EJS con los datos
     } catch (err) {
@@ -49,7 +54,7 @@ exports.update_provider_data = async (req, res) => {
             direccion: req.body.direccion,
             descripcion: req.body.descripcion
         };
-        await axios.put(`http://localhost:3000/api/proveedores/${id}`, body);
+        await axios.put(`${BASE_URL}/api/proveedores/${id}`, body);
         res.redirect('/read-proveedor'); // redirige a la lista de proveedores
     } catch (err) {
         
@@ -57,7 +62,7 @@ exports.update_provider_data = async (req, res) => {
     }
 };
 exports.update_provider = (req, res) => {
-    axios.get('http://localhost:3000/api/proveedores', { params: { id: req.query.id }})
+    axios.get(`${BASE_URL}/api/proveedores`, { params: { id: req.query.id }})
         .then(response => {
             res.render('admin/providers/update_provider', { provider: response.data });
         })
@@ -65,7 +70,7 @@ exports.update_provider = (req, res) => {
 };
 
 exports.delete_provider = (req, res) => {
-    axios.delete(`http://localhost:3000/api/proveedores/${req.params.id}`)
+    axios.delete(`${BASE_URL}/api/proveedores/${req.params.id}`)
         .then(response => {
             res.redirect('/read-proveedor');
         })

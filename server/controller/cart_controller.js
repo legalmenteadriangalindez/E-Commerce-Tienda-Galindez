@@ -23,7 +23,7 @@ exports.add_to_carrito = async (req, res) => {
         const exist = req.session.cart.find(i => i.productoId === productoId);
         
         if (exist) {
-            exist.cantidad = cantidad;
+            exist.cantidad += Number(cantidad);
         }else{
             req.session.cart.push({
                 _id: produto._id.toString(),

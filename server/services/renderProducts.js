@@ -1,4 +1,8 @@
 const axios = require('axios');
+const dotenv = require('dotenv');
+
+dotenv.config();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 // Detalle de producto
 exports.product_detail = async (req, res) => {
@@ -7,11 +11,11 @@ exports.product_detail = async (req, res) => {
         const id = req.params.id;
         const [productRes, reviewsRes] = await Promise.all([
 
-            axios.get('http://localhost:3000/api/productos', {
+            axios.get(`${BASE_URL}/api/productos`, {
                 params: { id }
             }),
 
-            axios.get('http://localhost:3000/api/reviews', {
+            axios.get(`${BASE_URL}/api/reviews`, {
                 params: { producto: id }
             })
 
@@ -27,7 +31,7 @@ exports.product_detail = async (req, res) => {
 
 // ==================== PRODUCTOS ========================
 exports.create_product = (req, res) => {
-    axios.post('http://localhost:3000/api/productos', req.body)
+    axios.post(`${BASE_URL}/api/productos`, req.body)
         .then(response => {
             
             res.redirect('admin/products/create-producto');
@@ -42,10 +46,10 @@ exports.create_product = (req, res) => {
 exports.create_product_form = (req, res) => {
 
     Promise.all([
-        axios.get('http://localhost:3000/api/marcas'),
-        axios.get('http://localhost:3000/api/categorias'),
-        axios.get('http://localhost:3000/api/proveedores'),
-        axios.get('http://localhost:3000/api/unidades') // 🔥 IMPORTANTE
+        axios.get(`${BASE_URL}/api/marcas`),
+        axios.get(`${BASE_URL}/api/categorias`),
+        axios.get(`${BASE_URL}/api/proveedores`),
+        axios.get(`${BASE_URL}/api/unidades`) 
     ])
     .then(([marcasRes, categoriasRes, proveedoresRes, unidadesRes]) => {
 
@@ -53,7 +57,7 @@ exports.create_product_form = (req, res) => {
             marcas: marcasRes.data,
             categorias: categoriasRes.data,
             proveedores: proveedoresRes.data,
-            unidades: unidadesRes.data || [] // 🔥 ESTO SOLUCIONA TODO
+            unidades: unidadesRes.data || [] 
         });
 
     })
@@ -71,7 +75,7 @@ exports.create_product_form = (req, res) => {
 
 
 exports.read_products = (req, res) => {
-    axios.get('http://localhost:3000/api/productos')
+    axios.get(`${BASE_URL}/api/productos`)
         .then(response => {
             
             res.render('admin/products/read_products', { productos: response.data });
@@ -84,14 +88,14 @@ exports.read_products = (req, res) => {
 exports.update_products = async (req, res) => {
     try {
 
-        const id = req.params.id; // ✅ VIENE DE LA URL
+        const id = req.params.id; // 
 
         if (!id) {
             return res.status(400).send("ID no proporcionado");
         }
 
-        const response = await axios.get('http://localhost:3000/api/productos', {
-            params: { id } // ✅ SE ENVÍA COMO QUERY A LA API
+        const response = await axios.get(`${BASE_URL}/api/productos`, {
+            params: { id } 
         });
 
         const producto = response.data;
@@ -101,10 +105,10 @@ exports.update_products = async (req, res) => {
         }
 
         const [marcasRes, categoriasRes, proveedoresRes, unidadesRes] = await Promise.all([
-            axios.get('http://localhost:3000/api/marcas'),
-            axios.get('http://localhost:3000/api/categorias'),
-            axios.get('http://localhost:3000/api/proveedores'),
-            axios.get('http://localhost:3000/api/unidades')
+            axios.get(`${BASE_URL}/api/marcas`),
+            axios.get(`${BASE_URL}/api/categorias`),
+            axios.get(`${BASE_URL}/api/proveedores`),
+            axios.get(`${BASE_URL}/api/unidades`)
         ]);
 
         res.render('admin/products/update_products', {
@@ -122,7 +126,7 @@ exports.update_products = async (req, res) => {
 };
 
 exports.delete_product = (req, res) => {
-    axios.delete(`http://localhost:3000/api/productos/${req.params.id}`)
+    axios.delete(`${BASE_URL}/api/productos/${req.params.id}`)
         .then(response => {
              res.redirect('admin/products/read-producto');
         })
@@ -134,7 +138,7 @@ exports.read_stock = async (req, res) => {
 
     try {
 
-        const response = await axios.get('http://localhost:3000/api/productos/read-Stock');
+        const response = await axios.get(`${BASE_URL}/api/productos/read-Stock`);
 
         res.render('admin/analytics/stock', {
 

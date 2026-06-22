@@ -1,8 +1,13 @@
 const axios = require('axios');
+const dotenv = require('dotenv');
+
+dotenv.config();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+
 
 // Marcas (cliente)
 exports.brands = (req, res) => {
-    axios.get('http://localhost:3000/api/marcas')
+    axios.get(`${BASE_URL}/api/marcas`)
         .then(response => {
             res.render('client/brands/brands', { brands: response.data });
         })
@@ -12,7 +17,7 @@ exports.brands = (req, res) => {
 // ==================== MARCAS ===========================
 
 exports.create_brand = (req, res) => {
-    axios.post('http://localhost:3000/api/marcas', req.body)
+    axios.post(`${BASE_URL}/api/marcas`, req.body)
         .then(response => {
             
             res.redirect('/admin/brands/create-marca');
@@ -29,7 +34,7 @@ exports.create_brand_form = (req, res) => {
 
 
 exports.read_brands = (req, res) => {
-    axios.get('http://localhost:3000/api/marcas')
+    axios.get(`${BASE_URL}/api/marcas`)
         .then(response => {
             res.render('admin/brands/read_brands', { brands: response.data });
         })
@@ -38,7 +43,7 @@ exports.read_brands = (req, res) => {
 
 
 exports.update_brand = (req, res) => {
-    axios.get('http://localhost:3000/api/marcas', { params: { id: req.query.id }})
+    axios.get(`${BASE_URL}/api/marcas`, { params: { id: req.query.id }})
         .then(response => {
             res.render('admin/brands/update_brands', { brand: response.data });
         })
@@ -46,7 +51,7 @@ exports.update_brand = (req, res) => {
 };
 
 exports.delete_brand = (req, res) => {
-    axios.delete(`http://localhost:3000/api/marcas/${req.params.id}`)
+    axios.delete(`${BASE_URL}/api/marcas/${req.params.id}`)
         .then(response => {
             res.redirect('/admin/brands/read-brands'); // importante
         })
@@ -55,7 +60,7 @@ exports.delete_brand = (req, res) => {
 
 
 exports.Productbrands = (req, res) => {
-    axios.get('http://localhost:3000/api/productos')
+    axios.get(`${BASE_URL}/api/productos`)
         .then(response => {
 
             const data = response.data;

@@ -1,9 +1,14 @@
 const axios = require('axios');
+const dotenv = require('dotenv');
+
+dotenv.config();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+
 
 exports.car = async (req, res) => {
     try {
         const carrito = req.session.carrito || [];
-        const response = await axios.get('http://localhost:3000/api/productos');
+        const response = await axios.get(`${BASE_URL}/api/productos`);
         const productosTodos = response.data;
 
         const productosCarrito = carrito.map(item => {

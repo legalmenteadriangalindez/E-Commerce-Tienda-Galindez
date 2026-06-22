@@ -64,8 +64,19 @@ var schema = new mongoose.Schema({
     fechaRegistro: {
         type: Date,
         default: Date.now
+    },
+    verified: {
+        type: Boolean,
+        default: false
+    },
+    verificationCode:{
+        type: String,
+        default: true
+    },
+    verificationExpire: {
+        type: Date,
+        default: Date.now
     }
-
 });
 
 const Userdb = mongoose.model('userdb', schema);

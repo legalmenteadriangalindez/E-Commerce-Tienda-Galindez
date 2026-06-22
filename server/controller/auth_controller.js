@@ -1,6 +1,11 @@
 const Userdb = require('../model/user');
 const Roldb = require('../model/rol');
 const bcrypt = require('bcrypt');
+const sendEmail = require('../config/sendEmail');
+
+function generateCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString(); 
+}
 
 // LOGIN
 exports.login = async (req, res) => {
@@ -20,10 +25,8 @@ exports.login = async (req, res) => {
         if (!match) {
             return res.send("Contraseña incorrecta");
         }
-        // guardar sesión
         req.session.user = user;    
-        // redirección
-        // redirección por rol
+
         if (user.rol.nombre === "Admin") {
 
             return res.redirect('/billing-point');
@@ -73,7 +76,7 @@ exports.register = async (req, res) => {
         } = req.body;
 
         // Validar campos obligatorios
-        if (!nombre || !email || !password || !telefono || !direccion || !genero || !barrio || !ciudad || !puntoReferencia || !ubicacion) {
+        if (!nombre || !email || !password || !telefono || !direccion || !genero || !barrio || !ciudad || !puntoReferencia ) {
             return res.send("Campos obligatorios incompletos");
         }
 
@@ -82,17 +85,35 @@ exports.register = async (req, res) => {
         }
         // Verificar si ya existe
         const existe = await Userdb.findOne({ email });
+        console.log("Usuario encontrado:", existe);
         if (existe) {
-            return res.send("El email ya está registrado");
+            // await Userdb.deleteOne({email: "adriangalindez2419@gmail.com"});
+            if (!existe.verified) {
+                const code = generateCode();
+                const ExpirationTime = new Date(Date.now() + 10 * 60 * 1000);
+                existe.verificationCode = code;
+                existe.verificationExpire = ExpirationTime;
+                await existe.save();
+                await sendEmail(existe.email, code);
+                return res.redirect(`/verify-email?email=${email}`);
+            }else{
+                return res.redirect("/login");
+            }
         }
+        
+
         // Buscar rol CLIENTE
         const rolCliente = await Roldb.findOne({ nombre: "Cliente" });
         if (!rolCliente) {
             return res.send("Rol Cliente no existe en la base de datos");
         }
+
         // Encriptar contraseña
         const hashedPassword = await bcrypt.hash(password, 10);
         // Crear usuario
+
+        const code = generateCode();
+        const ExpirationTime = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos
         const nuevoUsuario = new Userdb({
             nombre,
             email,
@@ -104,9 +125,14 @@ exports.register = async (req, res) => {
             ciudad,
             puntoReferencia,
             ubicacion,
+            verified: false,
+            verificationCode: code,
+            verificationExpire: ExpirationTime,
             rol: rolCliente._id
         });
         await nuevoUsuario.save();
+        await sendEmail(nuevoUsuario.email, code);
+        
         // Opcional: iniciar sesión automáticamente
         req.session.user = {
             _id: nuevoUsuario._id,
@@ -120,7 +146,7 @@ exports.register = async (req, res) => {
                 nombre: "Cliente"
             }
         };
-        return res.redirect('/');
+        return res.redirect(`/verify-email?email=${email}`);
     } catch (err) {
         
         res.status(500).send("Error en registro");

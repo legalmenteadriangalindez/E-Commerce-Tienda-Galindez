@@ -1,14 +1,17 @@
 const axios = require('axios');
 
-const API = 'http://localhost:3000/api';
+const dotenv = require('dotenv');
+
+dotenv.config();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 
 // ==================== FORM CREAR ====================
 exports.create_sale_form = async (req, res) => {
     try {
         const [productos, users] = await Promise.all([
-            axios.get(`${API}/productos`),
-            axios.get(`${API}/users`)
+            axios.get(`${BASE_URL}/productos`),
+            axios.get(`${BASE_URL}/users`)
         ]);
 
         res.render('create_ventas', {
@@ -25,7 +28,7 @@ exports.create_sale_form = async (req, res) => {
 // ==================== LISTAR ====================
 exports.sales = async (req, res) => {
     try {
-        const response = await axios.get(`${API}/ventas`);
+        const response = await axios.get(`${BASE_URL}/ventas`);
 
         res.render('admin/sales/read_sales', {
            sales: response.data
@@ -40,7 +43,7 @@ exports.sales = async (req, res) => {
 // ==================== VER 1 ====================
 exports.view_sale = async (req, res) => {
     try {
-        const response = await axios.get(`${API}/ventas/${req.query.id}`);
+        const response = await axios.get(`${BASE_URL}/ventas/${req.query.id}`);
 
         res.render('admin/sales/view_sale', {
             sale: response.data
@@ -63,7 +66,7 @@ exports.saleDetailView = async (req, res) => {
 
         // CONSUMIR API
         const response = await axios.get(
-            `${API}/ventas/${id}`
+            `${BASE_URL}/ventas/${id}`
         );
 
         const venta = response.data;
@@ -104,7 +107,7 @@ exports.total_profit = async (req, res) => {
 
     try {
 
-        const response = await axios.get(`${API}/ventas/analytics/total-profit`);
+        const response = await axios.get(`${BASE_URL}/ventas/analytics/total-profit`);
 
         res.render(
             'admin/analytics/total_profit',
@@ -136,7 +139,7 @@ exports.profit_margins = async (req, res) => {
 
     try {
 
-        const response = await axios.get(`${API}/ventas/analytics/profit-products`)
+        const response = await axios.get(`${BASE_URL}/ventas/analytics/profit-products`)
 
         res.render(
             'admin/analytics/profit_margins',

@@ -1,6 +1,11 @@
 const axios = require('axios');
 const Ordendb = require('../model/order');
 
+const dotenv = require('dotenv');
+
+dotenv.config();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+
 // RENDER CART
 exports.car = async (req, res) => {
     try {
@@ -108,7 +113,7 @@ exports.add_to_carrito = async (req, res) => {
     try {
 
         const response = await axios.post(
-            `http://localhost:3000/carrito/add`,
+            `${BASE_URL}/carrito/add`,
             req.body,
         );
 
@@ -136,7 +141,7 @@ exports.update_carrito = async (req, res) => {
     try {
 
         const response = await axios.post(
-            `${API_URL}/actualizar`,
+            `${BASE_URL}/carrito/actualizar`,
             req.body,
             getConfig(req)
         );
@@ -156,39 +161,7 @@ exports.update_carrito = async (req, res) => {
 
 
 
-// RENDER SALE SUCCESS
-// exports.order_success = async (req, res) => {
 
-//     try {
-
-//         const orden = await Ordendb.findById(
-//             req.params.id
-//         );
-
-//         if (!orden) {
-
-//             return res.status(404).send(
-//                 'Orden no encontrada'
-//             );
-
-//         }
-
-//         return res.render(
-//             'client/payment/checkout_confirmation',
-//             {
-//                 user: req.session.user,
-//                 orden
-//             }
-//         );
-
-//     } catch (error) {
-
-//         return res.status(500)
-//             .send(error.message);
-
-//     }
-
-// };
 // RENDER SALE SUCCESS
 exports.order_success = async (req, res) => {
 

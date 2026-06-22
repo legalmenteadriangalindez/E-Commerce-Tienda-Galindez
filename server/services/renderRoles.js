@@ -1,5 +1,8 @@
 const axios = require('axios');
+const dotenv = require('dotenv');
 
+dotenv.config();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 // ==================== ROLES ============================
 exports.create_rol_form = (req, res) => {
     res.render('admin/rols/create_rol'); // formulario simple: nombre del rol
@@ -7,7 +10,7 @@ exports.create_rol_form = (req, res) => {
 
 
 exports.read_roles = (req, res) => {
-    axios.get('http://localhost:3000/api/roles')
+    axios.get(`${BASE_URL}/api/roles`)
         .then(response => {
             res.render('admin/rols/read_rols', { roles: response.data });
         })
@@ -16,7 +19,7 @@ exports.read_roles = (req, res) => {
 
 
 exports.update_rol = (req, res) => {
-    axios.get(`http://localhost:3000/api/roles?id=${req.query.id}`)
+    axios.get(`${BASE_URL}/api/roles?id=${req.query.id}`)
         .then(response => {
             res.render('admin/rols/update_roles', { rol: response.data });
         })
@@ -30,7 +33,7 @@ exports.create_rol = (req, res) => {
         return res.send("Formulario vacío");
     }
 
-    axios.post('http://localhost:3000/api/roles', req.body)
+    axios.post(`${BASE_URL}/api/roles`, req.body)
         .then(() => {
             res.redirect('/read-rol');
         })
@@ -41,7 +44,7 @@ exports.create_rol = (req, res) => {
 };
 
 exports.delete_rol = (req, res) => {
-    axios.delete(`http://localhost:3000/api/roles/${req.params.id}`)
+    axios.delete(`${BASE_URL}/api/roles/${req.params.id}`)
         .then(response => {
             res.redirect('/read-rol');
         })

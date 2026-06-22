@@ -1,6 +1,9 @@
 const axios = require('axios');
 
+const dotenv = require('dotenv');
 
+dotenv.config();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 
 // FORMULARIO CREAR ORDEN
@@ -10,9 +13,9 @@ exports.create_order_form = async (req, res) => {
 
         const [productosRes, usuariosRes] = await Promise.all([
 
-            axios.get('http://localhost:3000/api/productos'),
+            axios.get(`${BASE_URL}/api/productos`),
 
-            axios.get('http://localhost:3000/api/users')
+            axios.get(`${BASE_URL}/api/users`)
         ]);
 
         res.render('dealer/orders/create_order', {
@@ -32,7 +35,7 @@ exports.create_order_form = async (req, res) => {
 // LISTAR ORDENES
 exports.read_orders = (req, res) => {
 
-    axios.get('http://localhost:3000/api/orders')
+    axios.get(`${BASE_URL}/api/orders`)
 
         .then(response => {
 
@@ -57,7 +60,7 @@ exports.update_order = async (req, res) => {
 
         const response = await axios.get(
 
-            `http://localhost:3000/api/orders?id=${id}`
+            `${BASE_URL}/api/orders?id=${id}`
         );
 
         res.render('dealer/orders/update_order', {
@@ -77,7 +80,7 @@ exports.create_order = (req, res) => {
 
     axios.post(
 
-        'http://localhost:3000/api/orders',
+        `${BASE_URL}/api/orders`,
 
         req.body
     )
@@ -99,7 +102,7 @@ exports.update_order_data = (req, res) => {
 
     axios.put(
 
-        `http://localhost:3000/api/orders/${req.params.id}`,
+        `${BASE_URL}/api/orders/${req.params.id}`,
 
         req.body
     )
@@ -121,7 +124,7 @@ exports.delete_order = (req, res) => {
 
     axios.delete(
 
-        `http://localhost:3000/api/orders/${req.params.id}`
+        `${BASE_URL}/api/orders/${req.params.id}`
     )
 
     .then(() => {
@@ -138,7 +141,7 @@ exports.delete_order = (req, res) => {
 
 exports.detail_order = (req, res) => {
 
-    axios.get(`http://localhost:3000/api/orders/${req.params.id}`)
+    axios.get(`${BASE_URL}/api/orders/${req.params.id}`)
 
     .then(response => {
 
@@ -152,4 +155,40 @@ exports.detail_order = (req, res) => {
 
         res.send(err.response?.data || err.message);
     });
+};
+
+
+exports.update_profile_form_dealer = async (req, res) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/api/users/${req.params.id}`);
+        res.render('dealer/profile/edit_profile', { user: response.data });
+    } catch (err) { res.send(err); }
+}; 
+
+
+exports.update_profile_dealer = async (req, res) => {
+
+    try {
+
+        const id = req.params.id;
+
+        const body = {
+            nombre: req.body.nombre,
+            telefono: req.body.telefono,
+            direccion: req.body.direccion,
+            genero: req.body.genero,
+            barrio: req.body.barrio,
+            ciudad: req.body.ciudad,
+            puntoReferencia: req.body.puntoReferencia
+        };
+
+        await axios.put(`${BASE_URL}/api/users/${id}`, body);
+
+        res.redirect('/perfil');
+
+    } catch (err) {
+
+        res.send(err.message);
+
+    }
 };

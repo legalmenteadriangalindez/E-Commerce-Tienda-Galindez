@@ -1,6 +1,11 @@
 const { getUserProfile } = require('../controller/user_controller');
 const axios = require('axios');
 
+const dotenv = require('dotenv');
+
+dotenv.config();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+
 exports.profile = async (req, res) => {
     try {
         const userId = req.user?.id || req.session?.user?._id;
@@ -17,9 +22,12 @@ exports.profile = async (req, res) => {
 
         const role = user.rol?.nombre || "Cliente";
 
-        const view = role === "Admin"
-            ? "admin/profile/profile"
-            : "client/profile/profile";
+        const view =
+            role === "Admin"
+                ? "admin/profile/profile"
+                : role === "dealer"
+                    ? "dealer/profile/profile"
+                    : "client/profile/profile";
 
         return res.render(view, { user });
 
@@ -31,7 +39,7 @@ exports.profile = async (req, res) => {
 
 exports.update_profile_form = async (req, res) => {
     try {
-        const response = await axios.get(`http://localhost:3000/api/users/${req.params.id}`);
+        const response = await axios.get(`${BASE_URL}/api/users/${req.params.id}`);
         res.render('client/profile/edit_profile', { user: response.data });
     } catch (err) { res.send(err); }
 }; 
@@ -52,7 +60,7 @@ exports.update_profile = async (req, res) => {
             puntoReferencia: req.body.puntoReferencia
         };
 
-        await axios.put(`http://localhost:3000/api/users/${id}`, body);
+        await axios.put(`${BASE_URL}/api/users/${id}`, body);
 
         res.redirect('/perfil');
 
@@ -66,7 +74,7 @@ exports.update_profile = async (req, res) => {
 
 exports.update_profile_form_admin = async (req, res) => {
     try {
-        const response = await axios.get(`http://localhost:3000/api/users/${req.params.id}`);
+        const response = await axios.get(`${BASE_URL}/api/users/${req.params.id}`);
         res.render('admin/profile/edit_profile', { user: response.data });
     } catch (err) { res.send(err); }
 }; 
@@ -87,7 +95,7 @@ exports.update_profile_admin = async (req, res) => {
             puntoReferencia: req.body.puntoReferencia
         };
 
-        await axios.put(`http://localhost:3000/api/users/${id}`, body);
+        await axios.put(`${BASE_URL}/api/users/${id}`, body);
 
         res.redirect('/perfil');
 
@@ -97,3 +105,5 @@ exports.update_profile_admin = async (req, res) => {
 
     }
 };
+
+

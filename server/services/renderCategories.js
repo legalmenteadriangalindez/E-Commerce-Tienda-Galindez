@@ -1,7 +1,11 @@
 const axios = require('axios');
+const dotenv = require('dotenv');
 
+dotenv.config();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+// Categorías (cliente)
 exports.category = (req, res) => {
-    axios.get('http://localhost:3000/api/productos')
+    axios.get(`${BASE_URL}/api/productos`)
         .then(response => {
 
             const data = response.data;
@@ -29,7 +33,7 @@ exports.create_category_form = (req, res) => {
 
 exports.create_category = (req, res) => {
      
-    axios.post('http://localhost:3000/api/categorias', req.body)
+    axios.post(`${BASE_URL}/api/categorias`, req.body)
         .then(response => {
             
             res.redirect('/create-categoria');
@@ -42,7 +46,7 @@ exports.create_category = (req, res) => {
 
 
 exports.read_categories = (req, res) => {
-    axios.get('http://localhost:3000/api/categorias')
+    axios.get(`${BASE_URL}/api/categorias`)
         .then(response => {
             
             res.render('admin/categories/read_categories', { categories: response.data });
@@ -53,7 +57,7 @@ exports.read_categories = (req, res) => {
 
 exports.update_category = (req, res) => {
 
-    axios.get(`http://localhost:3000/api/categorias/${req.query.id}`)
+    axios.get(`${BASE_URL}/api/categorias/${req.query.id}`)
         .then(response => {
             
             const category = response.data;
@@ -66,7 +70,7 @@ exports.update_category = (req, res) => {
 };
 
 exports.delete_category = (req, res) => {
-    axios.delete(`http://localhost:3000/api/categorias/${req.params.id}`)
+    axios.delete(`${BASE_URL}/api/categorias/${req.params.id}`)
         .then(response => {
             res.redirect('/read-categoria');
         })
@@ -75,7 +79,7 @@ exports.delete_category = (req, res) => {
 
 exports.update_category_data = (req, res) => {
 
-    axios.put(`http://localhost:3000/api/categorias/${req.params.id}`, req.body)
+    axios.put(`${BASE_URL}/api/categorias/${req.params.id}`, req.body)
 
         .then(response => {
             res.redirect('/read-categoria');

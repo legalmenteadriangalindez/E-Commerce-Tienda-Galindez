@@ -1,12 +1,15 @@
 const axios = require('axios');
+const dotenv = require('dotenv');
 
+dotenv.config();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 // LISTAR MÉTODOS DE PAGO
 exports.read_payment_transactions = async (req, res) => {
 
     try {
 
-        const response = await axios.get('http://localhost:3000/api/paymentTransactions');
+        const response = await axios.get(`${BASE_URL}/api/paymentTransactions`);
         res.render(
             'admin/paymentMethod/read_payment',
             {

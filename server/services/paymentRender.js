@@ -1,5 +1,8 @@
 const axios = require('axios');
+const dotenv = require('dotenv');
 
+dotenv.config();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 exports.create_payment_method_form = async (req, res) => {
     try {
@@ -12,7 +15,7 @@ exports.create_payment_method_form = async (req, res) => {
 
 exports.renderCreatePayment = async (req, res) => {
     try {
-        const response = await axios.post("http://localhost:3000/api/payments", req.body);
+        const response = await axios.post(`${BASE_URL}/api/payments`, req.body);
 
         const payment = response.data.data;
 
@@ -31,7 +34,7 @@ exports.read_payments = async (req, res) => {
     try {
 
         const response = await axios.get(
-            'http://localhost:3000/api/payments'
+            `${BASE_URL}/api/payments`
         );
 
         res.render(
@@ -55,7 +58,7 @@ exports.update_payment = async (req, res) => {
         const id = req.query.id;
 
         const 
-            paymentRes= await axios.get(`http://localhost:3000/api/payments/${id}`);
+            paymentRes= await axios.get(`${BASE_URL}/api/payments/${id}`);
 
         
 
@@ -78,7 +81,7 @@ exports.update_payment_data = async (req, res) => {
 
         await axios.put(
 
-            `http://localhost:3000/api/payments/${req.params.id}`,
+            `${BASE_URL}/api/payments/${req.params.id}`,
 
             req.body
         );
@@ -99,7 +102,7 @@ exports.delete_payment = async (req, res) => {
 
         await axios.delete(
 
-            `http://localhost:3000/api/payments/${req.params.id}`
+            `${BASE_URL}/api/payments/${req.params.id}`
         );
 
         res.redirect('/read-payment');
