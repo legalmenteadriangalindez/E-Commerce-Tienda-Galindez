@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Código de Verificación</h1>
+    <p>Por favor, ingrese el código de verificación que ha recibido en su correo electrónico.</p>
+    <form action="/verify-email" method="POST">
+        <input type="hidden" name="email" value="<%= email %>">
+        <label for="code">Código de Verificación:</label>
+        <input type="text" id="code" name="code" required>
+        <button type="submit">Verificar</button>
+    </form>
+    <form action="/resend-verification-code" method="POST">
+        <input type="hidden" name="email" value="<%= email %>">
+        <button type="submit">Reenviar Código</button>
+    </form>
+</body>
+</html>
