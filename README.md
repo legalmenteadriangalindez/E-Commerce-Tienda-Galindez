@@ -48,6 +48,6 @@ Clona el proyecto:
 
 ```bash
 git clone https://github.com/legalmenteadriangalindez/E-Commerce-Tienda-Galindez.git
-cd E-Commerce-Tienda-Galindez
+cd E-Commerce-Tienda-Gal-ndez
 npm install
 node server.js
