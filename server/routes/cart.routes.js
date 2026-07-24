@@ -14,6 +14,6 @@ router.post('/checkout', isLogged, cartController.checkout);
 router.post('/checkout_admin', isLogged, cartController.checkout_admin);
 router.post('/payment_point', isLogged, cartController.payment_point);
 router.get('/get_carrito', cartController.get_carrito)
-
+router.post('/get_wompi_webhook', cartController.wompiWebhook)
 
 module.exports = router;

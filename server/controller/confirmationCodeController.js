@@ -6,8 +6,7 @@ exports.verificationCode = async (req, res) => {
     try {
         const email = req.body.email?.trim();
         const code  = req.body.code?.trim();
-        console.log("EMAIL:", `[${email}]`);
-        console.log("CODE:", `[${code}]`);
+
         const user = await Userdb.findOne({email});
         if (!user) {
             return res.status(404).send("Usuario no encontrado");

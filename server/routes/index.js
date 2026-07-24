@@ -20,6 +20,7 @@ router.use('/api/paymentTransactions', require('./PaymentTransaction.routes'));
 router.use('/', require('./admin.routes'));
 router.use('/api/units', require('./units.routes'));
 router.use('/dealer', require('./dealer.routes'));                   
+router.get('/clothes', require('./clothes.routes'));
 
 router.get('/reset-cart', (req, res) => {
 
