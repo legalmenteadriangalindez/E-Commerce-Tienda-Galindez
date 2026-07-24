@@ -1,0 +1,89 @@
+<div class="anime-product-card">
+
+    <div class="anime-product-image">
+
+        <img
+            src="<%= (p.fotos && p.fotos.length > 0)
+                ? p.fotos[0]
+                : '/assets/img/default.jpg' %>"
+            alt="<%= p.nombre %>">
+
+    </div>
+
+    <div class="anime-product-body">
+
+        <h3 class="anime-product-title">
+
+            <%= p.nombre %>
+
+        </h3>
+
+        <p class="anime-product-description">
+
+            <%= p.descripcion %>
+
+        </p>
+
+        <div class="anime-product-info">
+
+            <div class="info-item">
+
+                <span>Precio</span>
+
+                <strong class="price">
+
+                    $ <%= Number(p.precioBase).toLocaleString("es-CO") %>
+
+                </strong>
+
+            </div>
+
+            <div class="info-item">
+
+                <span>Estado</span>
+
+                <span class="stock-ok">
+
+                    Disponible
+
+                </span>
+
+            </div>
+
+            <div class="info-item">
+
+                <span>Stock</span>
+
+                <strong>
+
+                    <%= p.stock %> unidades
+
+                </strong>
+
+            </div>
+
+        </div>
+
+        <div class="anime-product-actions">
+
+            <a
+                href="/Detalles/<%= p._id %>"
+                class="btn-details">
+
+                Ver detalles
+
+            </a>
+
+            <button
+                class="btn-buy add-to-cart-btn"
+                data-id="<%= p._id %>">
+
+                🛒 Agregar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>

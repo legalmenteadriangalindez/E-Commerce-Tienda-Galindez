@@ -12,34 +12,56 @@
         </h1>
 
         <div class="badge-secure">
+
             <i class="fas fa-lock"></i>
-            Transacción 100% encriptada · Pago protegido
+
+            Pago seguro y protegido por Wompi
+
         </div>
 
     </div>
 
-    <!-- FORMULARIO PRINCIPAL -->
-    <form action="/carrito/checkout" method="POST">
 
-        <input type="hidden" name="cliente" value="<%= user._id %>">
+    <!-- FORMULARIO PRINCIPAL -->
+
+    <form
+        action="/carrito/checkout"
+        method="POST"
+    >
+
+        <input
+            type="hidden"
+            name="cliente"
+            value="<%= user._id %>"
+        >
+
 
         <div class="checkout-grid">
 
+
             <!-- COLUMNA IZQUIERDA -->
+
             <div class="form-card">
+
 
                 <div class="section-title">
 
                     <i class="fas fa-user-pen"></i>
 
-                    <span>Información de facturación</span>
+                    <span>
+                        Información de facturación
+                    </span>
 
                 </div>
 
+
                 <!-- NOMBRE -->
+
                 <div class="input-group">
 
-                    <label>Nombre completo</label>
+                    <label>
+                        Nombre completo
+                    </label>
 
                     <input
                         type="text"
@@ -51,12 +73,17 @@
 
                 </div>
 
+
                 <!-- EMAIL Y TELÉFONO -->
+
                 <div class="input-row">
+
 
                     <div class="input-group">
 
-                        <label>Correo electrónico</label>
+                        <label>
+                            Correo electrónico
+                        </label>
 
                         <input
                             type="email"
@@ -68,9 +95,12 @@
 
                     </div>
 
+
                     <div class="input-group">
 
-                        <label>Teléfono</label>
+                        <label>
+                            Teléfono
+                        </label>
 
                         <input
                             type="tel"
@@ -82,12 +112,17 @@
 
                     </div>
 
+
                 </div>
 
+
                 <!-- DIRECCIÓN -->
+
                 <div class="input-group">
 
-                    <label>Dirección</label>
+                    <label>
+                        Dirección
+                    </label>
 
                     <input
                         type="text"
@@ -99,25 +134,34 @@
 
                 </div>
 
+
                 <!-- DEPARTAMENTO Y CIUDAD -->
+
                 <div class="input-row">
+
 
                     <div class="input-group">
 
-                        <label>Departamento</label>
+                        <label>
+                            Departamento
+                        </label>
 
                         <input
                             type="text"
                             id="department"
                             name="department"
                             placeholder="Departamento"
+                            required
                         >
 
                     </div>
 
+
                     <div class="input-group">
 
-                        <label>Ciudad</label>
+                        <label>
+                            Ciudad
+                        </label>
 
                         <input
                             type="text"
@@ -129,27 +173,37 @@
 
                     </div>
 
+
                 </div>
 
+
                 <!-- ZIP Y REFERENCIA -->
+
                 <div class="input-row">
+
 
                     <div class="input-group">
 
-                        <label>Código postal</label>
+                        <label>
+                            Código postal
+                        </label>
 
                         <input
                             type="text"
                             id="zip"
                             name="zip"
                             placeholder="Código postal"
+                            required
                         >
 
                     </div>
 
+
                     <div class="input-group">
 
-                        <label>Referencia</label>
+                        <label>
+                            Referencia
+                        </label>
 
                         <input
                             type="text"
@@ -160,12 +214,17 @@
 
                     </div>
 
+
                 </div>
 
+
                 <!-- NOTAS -->
+
                 <div class="input-group">
 
-                    <label>Notas</label>
+                    <label>
+                        Notas
+                    </label>
 
                     <textarea
                         id="notes"
@@ -176,247 +235,135 @@
 
                 </div>
 
-                <!-- MÉTODOS DE PAGO -->
+
+                <!-- INFORMACIÓN DEL PAGO -->
+
                 <div class="payment-methods">
 
-                    <div class="section-title" style="margin-bottom: 1rem;">
+
+                    <div
+                        class="section-title"
+                        style="margin-bottom: 1rem;"
+                    >
 
                         <i class="fas fa-credit-card"></i>
 
-                        <span>Método de pago</span>
+                        <span>
+                            Método de pago
+                        </span>
 
                     </div>
 
-                    <div class="methods-group" id="paymentMethodsGroup">
 
-                        <div class="method-option" data-method="credit">
+                    <div
+                        class="payment-wompi-info"
+                        style="
+                            padding: 20px;
+                            border-radius: 12px;
+                            background: #f8fafc;
+                            text-align: center;
+                        "
+                    >
 
-                            <input
-                                type="radio"
-                                name="paymentMethod"
-                                id="creditCardRadio"
-                                value="credit"
-                                checked
-                            >
+                        <i
+                            class="fas fa-shield-halved"
+                            style="font-size: 2.5rem;"
+                        ></i>
 
-                            <label for="creditCardRadio">
 
-                                <i class="fab fa-cc-visa"></i>
+                        <h3>
+                            Pago seguro con Wompi
+                        </h3>
 
-                                <i class="fab fa-cc-mastercard"></i>
 
-                                Tarjeta
+                        <p>
 
-                            </label>
+                            Al confirmar tu pedido serás
+                            redirigido a la plataforma
+                            segura de Wompi para completar
+                            tu pago.
 
-                        </div>
+                        </p>
 
-                        <div class="method-option" data-method="paypal">
 
-                            <input
-                                type="radio"
-                                name="paymentMethod"
-                                id="paypalRadio"
-                                value="paypal"
-                            >
+                        <p>
 
-                            <label for="paypalRadio">
+                            Allí podrás seleccionar el
+                            método de pago disponible
+                            para tu compra.
 
-                                <i class="fab fa-paypal"></i>
-
-                                PayPal
-
-                            </label>
-
-                        </div>
-
-                        <div class="method-option" data-method="googlepay">
-
-                            <input
-                                type="radio"
-                                name="paymentMethod"
-                                id="googlePayRadio"
-                                value="googlepay"
-                            >
-
-                            <label for="googlePayRadio">
-
-                                <i class="fab fa-google-pay"></i>
-
-                                Google Pay
-
-                            </label>
-
-                        </div>
+                        </p>
 
                     </div>
+
 
                 </div>
 
-                <!-- DETALLES DE PAGO -->
-                <div id="paymentDetailsDynamic" class="payment-details-container">
 
-                    <!-- TARJETA -->
-                    <div id="creditCardFields">
-
-                        <div class="input-group">
-
-                            <label>Nombre en la tarjeta</label>
-
-                            <input
-                                type="text"
-                                id="cardName"
-                                name="cardName"
-                                placeholder="Como aparece en la tarjeta"
-                                value="ADRIAN GALINDEZ"
-                            >
-
-                        </div>
-
-                        <div class="input-group">
-
-                            <label>Número de tarjeta</label>
-
-                            <input
-                                type="text"
-                                id="cardNumber"
-                                name="cardNumber"
-                                placeholder="1234 5678 9012 3456"
-                                value="4242 4242 4242 4242"
-                            >
-
-                        </div>
-
-                        <div class="card-row">
-
-                            <div class="input-group">
-
-                                <label>Fecha expiración</label>
-
-                                <input
-                                    type="text"
-                                    id="expiry"
-                                    name="expiry"
-                                    placeholder="MM/AA"
-                                    value="12/28"
-                                >
-
-                            </div>
-
-                            <div class="input-group">
-
-                                <label>CVV</label>
-
-                                <input
-                                    type="text"
-                                    id="cvv"
-                                    name="cvv"
-                                    placeholder="123"
-                                    value="123"
-                                >
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- PAYPAL -->
-                    <div id="paypalFields" style="display: none;">
-
-                        <div style="text-align: center; padding: 1rem 0;">
-
-                            <i
-                                class="fab fa-paypal"
-                                style="font-size: 3rem; color: var(--accent-orange);"
-                            ></i>
-
-                            <p style="margin-top: 12px; font-weight: 500;">
-
-                                Serás redirigido a PayPal para completar el pago de forma segura.
-
-                            </p>
-
-                            <p style="font-size: 0.8rem; margin-top: 8px;">
-
-                                Conecta tu cuenta PayPal o paga con tarjeta sin registrarte.
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <!-- GOOGLE PAY -->
-                    <div id="googlepayFields" style="display: none;">
-
-                        <div style="text-align: center; padding: 1rem 0;">
-
-                            <i
-                                class="fab fa-google-pay"
-                                style="font-size: 3rem; color: var(--accent-orange);"
-                            ></i>
-
-                            <p style="margin-top: 12px; font-weight: 500;">
-
-                                Pago exprés con Google Pay
-
-                            </p>
-
-                            <div
-                                style="
-                                    background: #f1f5f9;
-                                    border-radius: 60px;
-                                    padding: 12px;
-                                    margin-top: 12px;
-                                    font-size: 0.85rem;
-                                "
-                            >
-
-                                <i class="fas fa-check-circle"></i>
-
-                                Configurado para pagar con tus tarjetas guardadas
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
+                <!-- SEGURIDAD -->
 
                 <div class="trust-badge">
 
-                    <span>
-                        <i class="fas fa-shield-alt"></i>
-                        Datos seguros
-                    </span>
 
                     <span>
-                        <i class="fas fa-clock"></i>
-                        Soporte 24/7
+
+                        <i class="fas fa-shield-alt"></i>
+
+                        Pago seguro
+
                     </span>
+
+
+                    <span>
+
+                        <i class="fas fa-lock"></i>
+
+                        Datos protegidos
+
+                    </span>
+
+
+                    <span>
+
+                        <i class="fas fa-check-circle"></i>
+
+                        Wompi
+
+                    </span>
+
 
                 </div>
 
+
             </div>
 
+
             <!-- COLUMNA DERECHA -->
+
             <div class="summary-card">
+
 
                 <div class="section-title">
 
                     <i class="fas fa-bag-shopping"></i>
 
-                    <span>Tu pedido</span>
+                    <span>
+                        Tu pedido
+                    </span>
 
                 </div>
 
+
+                <!-- PRODUCTOS -->
+
                 <div class="order-items-list text-sumary">
+
 
                     <% productosCarrito.forEach(item => { %>
 
+
                         <div class="order-item">
+
 
                             <div class="item-icon">
 
@@ -424,132 +371,212 @@
 
                             </div>
 
+
                             <div class="item-details">
 
+
                                 <div class="item-title">
+
                                     <%= item.nombre %>
+
                                 </div>
+
 
                                 <div class="item-price">
-                                    <%= item.precio %> $
+
+                                    $<%= Number(
+                                        item.precio
+                                    ).toLocaleString(
+                                        'es-CO'
+                                    ) %>
+
                                 </div>
+
 
                                 <div class="item-quantity">
-                                    Cantidad: <%= item.cantidad %>
+
+                                    Cantidad:
+                                    <%= item.cantidad %>
+
                                 </div>
 
+
                             </div>
 
+
                             <div class="item-line-price">
-                                <%= item.precio * item.cantidad %> $
+
+                                $<%= Number(
+                                    item.precio *
+                                    item.cantidad
+                                ).toLocaleString(
+                                    'es-CO'
+                                ) %>
+
                             </div>
+
 
                         </div>
 
+
                     <% }) %>
 
+
                 </div>
+
 
                 <div class="divider"></div>
 
+
+                <!-- SUBTOTAL -->
+
                 <div class="summary-line text-sumary">
 
-                    <span>Subtotal</span>
+                    <span>
+                        Subtotal
+                    </span>
 
                     <span>
-                        <%= subtotal.toFixed(2) %> $
+
+                        $<%= Number(
+                            subtotal
+                        ).toLocaleString(
+                            'es-CO'
+                        ) %>
+
                     </span>
 
                 </div>
 
-                <div class="summary-line text-sumary">
 
-                    <span>Envío</span>
-
-                    <span>$5000</span>
-
-                </div>
+                <!-- ENVÍO -->
 
                 <div class="summary-line text-sumary">
 
-                    <span>Impuestos (estimado)</span>
+                    <span>
+                        Envío
+                    </span>
 
-                    <span>$300</span>
+                    <span>
+
+                        $5.000
+
+                    </span>
+
+                </div>
+
+
+                <!-- IMPUESTOS -->
+
+                <div class="summary-line text-sumary">
+
+                    <span>
+                        Impuestos
+                    </span>
+
+                    <span>
+
+                        $<%= Number(
+                            subtotal * 0.19
+                        ).toLocaleString(
+                            'es-CO'
+                        ) %>
+
+                    </span>
 
                 </div>
 
-                <% let envio = 5000; %>
-                <% let impuestos = 300; %>
-                <% let totalFinal = subtotal + envio + impuestos; %>
 
-                <div class="promo-code">
-
-                    <input
-                        type="text"
-                        id="promoInput"
-                        name="promoCode"
-                        placeholder="Código de descuento"
-                    >
-
-                    <button
-                        type="button"
-                        class="btn-outline"
-                        id="applyPromoBtn"
-                    >
-                        Aplicar
-                    </button>
-
-                </div>
+                <!-- TOTAL -->
 
                 <div class="summary-line total text-sumary">
 
-                    <span>Total a pagar</span>
+                    <span>
+                        Total a pagar
+                    </span>
 
                     <span>
-                        $<%= totalFinal.toFixed(2) %>
+
+                        $<%= Number(
+                            subtotal +
+                            (subtotal * 0.19) +
+                            5000
+                        ).toLocaleString(
+                            'es-CO'
+                        ) %>
+
                     </span>
 
                 </div>
 
+
                 <!-- BOTÓN -->
-                <button type="submit" class="pay-btn">
+
+                <button
+                    type="submit"
+                    class="pay-btn"
+                >
 
                     <i class="fas fa-lock"></i>
 
-                    Confirmar pago · $<%= totalFinal.toFixed(2) %>
+                    Continuar al pago con Wompi
 
                 </button>
 
+
                 <div
                     class="trust-badge"
-                    style="justify-content: space-between; margin-top: 18px;"
+                    style="
+                        justify-content: space-between;
+                        margin-top: 18px;
+                    "
                 >
 
-                    <span>
-                        <i class="fab fa-cc-visa"></i>
-                        Visa
-                    </span>
 
                     <span>
-                        <i class="fab fa-cc-mastercard"></i>
-                        Mastercard
+
+                        <i class="fas fa-shield-alt"></i>
+
+                        Pago seguro
+
                     </span>
 
+
                     <span>
-                        <i class="fab fa-cc-amex"></i>
-                        Amex
+
+                        <i class="fas fa-lock"></i>
+
+                        Encriptado
+
                     </span>
+
+
+                    <span>
+
+                        <i class="fas fa-credit-card"></i>
+
+                        Wompi
+
+                    </span>
+
 
                 </div>
 
+
             </div>
+
 
         </div>
 
+
     </form>
+
 
 </div>
 
+
 <!-- include footer -->
+
 <%- include('../../include/_footer') %>
+
 <!-- /include footer -->
