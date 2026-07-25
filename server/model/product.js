@@ -27,27 +27,11 @@ var schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'providerdb'
     },
-        unidadBase: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Unidaddbs',
-        required: true
-    },
-        // Presentaciones del producto
-    presentaciones: [
-        {
-            unidad: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Unidaddbs'
-            },
-            precio: Number,
-            codigoBarras: String
-        }
-    ],
     precioCosto: {
     type: Number,
     required: true
     },
-    precioBase: {
+    precioVenta: {
         type: Number,
         required: true
     },

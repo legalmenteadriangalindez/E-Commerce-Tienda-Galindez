@@ -54,13 +54,13 @@ exports.create = async (req, res) => {
                 });
             }
 
-            const subtotal = producto.precioBase * item.cantidad;
+            const subtotal = producto.precioVenta * item.cantidad;
             total += subtotal;
 
             detalles.push({
                 producto: item.producto,
                 cantidad: item.cantidad,
-                precioUnitario: producto.precioBase,
+                precioUnitario: producto.precioVenta,
                 subtotal
             });
         }
@@ -298,14 +298,14 @@ exports.finalizarVenta = async (req, res) => {
 
             await producto.save();
 
-            const subtotal = item.cantidad * producto.precioBase;
+            const subtotal = item.cantidad * producto.precioVenta;
 
             total += subtotal;
 
             detalles.push({
                 producto: producto._id,
                 cantidad: item.cantidad,
-                precioUnitario: producto.precioBase,
+                precioUnitario: producto.precioVenta,
                 subtotal
             });
         }

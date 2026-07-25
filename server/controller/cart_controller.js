@@ -31,7 +31,7 @@ exports.add_to_carrito = async (req, res) => {
                 _id: produto._id.toString(),
                 productoId: produto._id.toString(),
                 nombre: produto.nombre,
-                precio: produto.precioBase,
+                precio: produto.precioVenta,
                 cantidad: Number(cantidad),
                 foto: produto.fotos?.[0] || '/assets/img/default.jpg',
                 categoria: produto.categoria.nombre
@@ -134,33 +134,39 @@ exports.checkout = async (req, res) => {
         const userSession = req.session.user;
 
         let subtotal = 0;
-
+        const productosOrden = [];
         // VALIDAR PRODUCTOS Y STOCK
         for (const item of cart) {
 
-            const productoDB =
-                await Productdb.findById(
-                    item.productoId
-                );
+            const productoDB = await Productdb.findById(
+                item.productoId
+            );
 
             if (!productoDB) {
-
                 return res.status(404).send(
-                    `Producto no encontrado`
+                    "Producto no encontrado"
                 );
-
             }
 
-            if (productoDB.stock < item.cantidad){
-
+            if (productoDB.stock < item.cantidad) {
                 return res.status(400).send(
                     `Stock insuficiente para ${productoDB.nombre}`
                 );
-
             }
 
-            subtotal += (productoDB.precioBase * item.cantidad );
+            const precioUnitario = Number(productoDB.precioVenta);
+            const cantidad = Number(item.cantidad);
+            const subtotalProducto = precioUnitario * cantidad;
 
+            subtotal += subtotalProducto;
+
+            productosOrden.push({
+                producto: productoDB._id,
+                nombre: productoDB.nombre,
+                cantidad,
+                precioUnitario,
+                subtotal: subtotalProducto
+            });
         }
 
         const impuestos = subtotal * 0.19;
@@ -182,16 +188,7 @@ exports.checkout = async (req, res) => {
                 },
 
                 // PRODUCTOS
-                productos:
-                    cart.map(item => ({
-
-                        producto: item.productoId,
-                        nombre: item.nombre,
-                        cantidad: item.cantidad,
-                        precioUnitario: item.precio,
-                        subtotal: item.precio * item.cantidad
-
-                    })),
+                productos:productosOrden,
                 // TOTALES
                 subtotal,
                 impuestos,
@@ -210,7 +207,7 @@ exports.checkout = async (req, res) => {
                     ciudad: userSession.ciudad || city,
                     direccion: userSession.direccion || address,
                     referencia: userSession.referencia || reference,
-                    codigoPostal: userSession.codigoPostal || zip
+                    // codigoPostal: userSession.codigoPostal || zip
                 },
                 notasCliente: notes || ''
             });
@@ -253,10 +250,10 @@ exports.checkout = async (req, res) => {
 
         checkoutUrl.searchParams.set("reference",referenceOrder);
 
-        checkoutUrl.searchParams.set("signature:integrity",signature);
+        // checkoutUrl.searchParams.set("signature:integrity",signature);
 
-        checkoutUrl.searchParams.set("redirect-url",`${BASE_URL}/venta-finalizada/${orden._id}`);
-
+        // checkoutUrl.searchParams.set("redirect-url",`${BASE_URL}/venta-finalizada/${orden._id}`);
+        console.log("CHECKOUT WOMPI:", checkoutUrl.toString());
         req.session.cart = [];
 
         req.session.save(err => {
@@ -394,7 +391,7 @@ exports.checkout_admin = async (req, res) => {
             }
 
             subtotal += (
-                productoDB.precioBase *
+                productoDB.precioVenta *
                 item.cantidad
             );
 
@@ -441,7 +438,7 @@ exports.checkout_admin = async (req, res) => {
                     ciudad:city,
                     direccion:address,
                     referencia:reference,
-                    codigoPostal:zip
+                    // codigoPostal:zip
 
                 },
                 // NOTAS
