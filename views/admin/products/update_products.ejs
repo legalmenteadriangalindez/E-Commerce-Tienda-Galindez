@@ -1,3 +1,4 @@
+
 <%- include('../../include/_headerAdmin') %>
 
 <div class="page-wrapper">
@@ -14,107 +15,145 @@
           enctype="multipart/form-data"
           class="product-form">
 
-      <!-- GRID INFO -->
       <div class="form-grid">
 
         <div class="form-group full">
           <label>Nombre</label>
-          <input type="text" name="nombre" value="<%= producto.nombre %>">
+          <input
+            type="text"
+            name="nombre"
+            value="<%= producto.nombre %>"
+            required
+          >
         </div>
 
         <div class="form-group full">
           <label>Descripción</label>
-          <textarea name="descripcion" rows="4"><%= producto.descripcion %></textarea>
+          <textarea
+            name="descripcion"
+            rows="4"
+          ><%= producto.descripcion || '' %></textarea>
         </div>
 
         <div class="form-group">
-          <label>Precio costo</label>
-          <input type="number" name="precioCosto" value="<%= producto.precioCosto || 0 %>">
+          <label>Precio de costo</label>
+          <input
+            type="number"
+            name="precioCosto"
+            value="<%= producto.precioCosto || 0 %>"
+            min="0"
+            step="0.01"
+            required
+          >
         </div>
 
         <div class="form-group">
-          <label>Precio base</label>
-          <input type="number" name="precioBase" value="<%= producto.precioBase || 0 %>">
+          <label>Precio de venta</label>
+          <input
+            type="number"
+            name="precioVenta"
+            value="<%= producto.precioVenta || 0 %>"
+            min="0"
+            step="0.01"
+            required
+          >
         </div>
 
         <div class="form-group">
           <label>Stock</label>
-          <input type="number" name="stock" value="<%= producto.stock || 0 %>">
+          <input
+            type="number"
+            name="stock"
+            value="<%= producto.stock || 0 %>"
+            min="0"
+            required
+          >
         </div>
 
-        <!-- 🔥 UNIDAD BASE -->
         <div class="form-group">
-          <label>Unidad base</label>
-          <select name="unidadBase" required>
-            <% unidades.forEach(u => { %>
-              <option value="<%= u._id %>" 
-                <%= producto.unidadBase && producto.unidadBase._id == u._id ? 'selected' : '' %>>
-                <%= u.nombre %>
+          <label>Categoría</label>
+          <select name="categoria" required>
+            <option value="">Seleccione una categoría</option>
+
+            <% categorias.forEach(c => { %>
+              <option
+                value="<%= c._id %>"
+                <%= producto.categoria && producto.categoria._id.toString() === c._id.toString() ? 'selected' : '' %>
+              >
+                <%= c.nombre %>
               </option>
             <% }) %>
+
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Marca</label>
+          <select name="marca" required>
+            <option value="">Seleccione una marca</option>
+
+            <% marcas.forEach(m => { %>
+              <option
+                value="<%= m._id %>"
+                <%= producto.marca && producto.marca._id.toString() === m._id.toString() ? 'selected' : '' %>
+              >
+                <%= m.nombre %>
+              </option>
+            <% }) %>
+
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Proveedor</label>
+          <select name="proveedor">
+            <option value="">Sin proveedor</option>
+
+            <% proveedores.forEach(p => { %>
+              <option
+                value="<%= p._id %>"
+                <%= producto.proveedor && producto.proveedor._id.toString() === p._id.toString() ? 'selected' : '' %>
+              >
+                <%= p.nombre %>
+              </option>
+            <% }) %>
+
           </select>
         </div>
 
       </div>
 
-      <!-- 🔥 PRESENTACIONES -->
-      <div class="form-group full">
-        <label>Presentaciones (precios por unidad)</label>
-
-        <div id="presentaciones-container">
-
-          <% if(producto.presentaciones && producto.presentaciones.length > 0){ %>
-
-            <% producto.presentaciones.forEach((p, i) => { %>
-              <div class="presentacion-item">
-
-                <select class="unidad-select">
-                  <% unidades.forEach(u => { %>
-                    <option value="<%= u._id %>"
-                      <%= p.unidad && p.unidad._id == u._id ? 'selected' : '' %>>
-                      <%= u.nombre %>
-                    </option>
-                  <% }) %>
-                </select>
-
-                <input type="number" class="precio-input" value="<%= p.precio %>" placeholder="Precio">
-
-                <button type="button" onclick="eliminarPresentacion(this)">X</button>
-
-              </div>
-            <% }) %>
-
-          <% } %>
-
-        </div>
-
-        <button type="button" onclick="agregarPresentacion()">+ Agregar presentación</button>
-
-        <input type="hidden" name="presentaciones" id="presentacionesInput">
-
-      </div>
-
-      <!-- IMÁGENES -->
       <div class="image-section">
 
         <h2>Imágenes actuales</h2>
 
         <div class="image-grid">
 
-          <% if(producto.fotos && producto.fotos.length > 0){ %>
+          <% if (producto.fotos && producto.fotos.length > 0) { %>
 
-            <% producto.fotos.forEach(function(foto, index){ %>
+            <% producto.fotos.forEach(function(foto, index) { %>
 
               <div class="image-card">
 
-                <img src="<%= foto %>" alt="producto">
+                <img
+                  src="<%= foto %>"
+                  alt="<%= producto.nombre %>"
+                >
 
                 <div class="image-actions">
 
-                  <input type="file" name="foto_<%= index %>">
+                  <input
+                    type="file"
+                    name="foto_<%= index %>"
+                    accept="image/*"
+                  >
 
                   <label class="delete-check">
-                    <input type="checkbox" name="eliminarFotos" value="<%= foto %>">
+                    <input
+                      type="checkbox"
+                      name="eliminarFotos"
+                      value="<%= foto %>"
+                    >
                     Eliminar
                   </label>
 
@@ -125,72 +164,43 @@
             <% }) %>
 
           <% } else { %>
-            <p class="empty">Sin imágenes registradas</p>
+
+            <p class="empty">
+              Sin imágenes registradas
+            </p>
+
           <% } %>
 
         </div>
 
         <div class="upload-new">
+
           <h3>Agregar nuevas imágenes</h3>
-          <input type="file" name="nuevasFotos" multiple>
+
+          <input
+            type="file"
+            name="nuevasFotos"
+            multiple
+            accept="image/*"
+          >
+
         </div>
 
       </div>
 
-      <!-- BOTÓN -->
       <div class="form-actions">
-        <button type="submit">Actualizar Producto</button>
+
+        <button type="submit">
+          Actualizar Producto
+        </button>
+
       </div>
 
     </form>
 
   </div>
+
 </div>
 
-<!-- 🔥 SCRIPT PRESENTACIONES -->
-<script>
-function agregarPresentacion() {
-  const container = document.getElementById('presentaciones-container');
-
-  const div = document.createElement('div');
-  div.classList.add('presentacion-item');
-
-  div.innerHTML = `
-    <select class="unidad-select">
-      <% unidades.forEach(u => { %>
-        <option value="<%= u._id %>"><%= u.nombre %></option>
-      <% }) %>
-    </select>
-
-    <input type="number" class="precio-input" placeholder="Precio">
-    <button type="button" onclick="eliminarPresentacion(this)">X</button>
-  `;
-
-  container.appendChild(div);
-}
-
-function eliminarPresentacion(btn) {
-  btn.parentElement.remove();
-}
-
-// 🔥 convertir a JSON antes de enviar
-document.querySelector('form').addEventListener('submit', function() {
-
-  const items = document.querySelectorAll('.presentacion-item');
-
-  const data = [];
-
-  items.forEach(item => {
-    const unidad = item.querySelector('.unidad-select').value;
-    const precio = item.querySelector('.precio-input').value;
-
-    if (unidad && precio) {
-      data.push({ unidad, precio });
-    }
-  });
-
-  document.getElementById('presentacionesInput').value = JSON.stringify(data);
-});
-</script>
-
 <%- include('../../include/_footerAdmin') %>
+
