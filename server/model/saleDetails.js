@@ -7,28 +7,23 @@ const saleDetailSchema = new mongoose.Schema({
         ref: 'saledb',
         required: true
     },
-
     producto: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'productdb',
         required: true
     },
-
     cantidad: {
         type: Number,
         required: true
     },
-
     precioUnitario: {
         type: Number,
         required: true
     },
-
     subtotal: {
         type: Number,
         required: true
     }
-
 }, {
     timestamps: true
 });

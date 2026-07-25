@@ -5,12 +5,11 @@ const saleController = require('../controller/sale_controller');
 
 router.get('/analytics/total-profit',saleController.getTotalProfit);
 router.get('/analytics/profit-products',saleController.getProfitByProduct);
+router.get('/analytics/best-selling-products',saleController.getBestSellingProducts);
 
 router.post('/', saleController.create);
 router.get('/', saleController.find);
 router.get('/:id', saleController.findOne);
 router.delete('/:id', saleController.delete);
-
-
 
 module.exports = router;

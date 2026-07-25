@@ -75,7 +75,7 @@ router.get('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
 router.post('/payment_point', isAdmin, servicesRenderCart.payment_point_admin);
 router.get('/venta-finalizada-admin/:id', isAdmin, servicesRenderCart.order_success_admin);
 router.get('/admin-analytics', isAdmin, servicesRenderAdminAnalytics.renderAdminAnalytics);
-
+router.get('/admin-best_selling_products',isAdmin,servicesRenderSales.best_selling_products)
 
 router.get('/create-marca', isAdmin, servicesRenderBrand.create_brand_form);
 router.post('/create-marca', isAdmin, servicesRenderBrand.create_brand);

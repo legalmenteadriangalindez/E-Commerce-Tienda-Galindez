@@ -28,7 +28,7 @@ exports.create_sale_form = async (req, res) => {
 // ==================== LISTAR ====================
 exports.sales = async (req, res) => {
     try {
-        const response = await axios.get(`${BASE_URL}/ventas`);
+        const response = await axios.get(`${BASE_URL}/api/ventas`);
 
         res.render('admin/sales/read_sales', {
            sales: response.data
@@ -66,7 +66,7 @@ exports.saleDetailView = async (req, res) => {
 
         // CONSUMIR API
         const response = await axios.get(
-            `${BASE_URL}/ventas/${id}`
+            `${BASE_URL}/api/ventas/${id}`
         );
 
         const venta = response.data;
@@ -107,7 +107,7 @@ exports.total_profit = async (req, res) => {
 
     try {
 
-        const response = await axios.get(`${BASE_URL}/ventas/analytics/total-profit`);
+        const response = await axios.get(`${BASE_URL}/api/ventas/analytics/total-profit`);
 
         res.render(
             'admin/analytics/total_profit',
@@ -157,4 +157,42 @@ exports.profit_margins = async (req, res) => {
             }
         );
     }
+};
+
+
+// ==========================================
+// PRODUCTOS MÁS VENDIDOS
+// ==========================================
+
+exports.best_selling_products = async (req, res) => {
+
+    try {
+
+        const response = await axios.get(
+            `${BASE_URL}/api/ventas/analytics/best-selling-products`
+        );
+
+        res.render(
+            'admin/analytics/best_selling_products',
+            {
+                products: response.data || []
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            'ERROR OBTENIENDO PRODUCTOS MÁS VENDIDOS:',
+            error.response?.data || error.message
+        );
+
+        res.render(
+            'admin/analytics/best_selling_products',
+            {
+                products: []
+            }
+        );
+
+    }
+
 };

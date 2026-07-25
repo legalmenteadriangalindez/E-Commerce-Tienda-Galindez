@@ -13,7 +13,6 @@ exports.create = async (req, res) => {
 
         const { cliente, productos } = req.body;
 
-        // 🔒 VALIDACIONES FUERTES
         if (!cliente || !Array.isArray(productos) || productos.length === 0) {
             await session.abortTransaction();
             return res.status(400).send({ message: "Datos inválidos" });
@@ -71,7 +70,7 @@ exports.create = async (req, res) => {
             total
         }], { session });
 
-        // 🧾 CREAR DETALLES EN BLOQUE (MÁS EFICIENTE)
+        // CREAR DETALLES EN BLOQUE (MÁS EFICIENTE)
         const detallesConVenta = detalles.map(d => ({
             ...d,
             venta: venta._id
@@ -114,7 +113,7 @@ exports.find = async (req, res) => {
             venta: { $in: ventasIds }
         }).populate("producto").lean();
 
-        // 🔗 MAPEO EFICIENTE
+        // MAPEO EFICIENTE
         const detallesMap = {};
 
         for (let d of detalles) {
@@ -214,7 +213,6 @@ exports.findOne = async (req, res) => {
         // VENTA + CLIENTE + PAGO
         const venta = await Saledb.findById(id)
             .populate("cliente")
-            .populate("pago")
             .lean();
 
         if (!venta) {
@@ -446,10 +444,8 @@ exports.getTotalProfit = async (req, res) => {
 
 
 // ganancias por producto 
-exports.getProfitByProduct = async (req, res) => {
-
+exports.getBestSellingProducts = async (req, res) => {
     try {
-
         const detalles = await SaleDetaildb.find()
             .populate('producto')
             .lean();
@@ -457,49 +453,83 @@ exports.getProfitByProduct = async (req, res) => {
         const productosMap = {};
 
         detalles.forEach(detalle => {
-
             if (!detalle.producto) return;
 
             const producto = detalle.producto;
+            const id = producto._id.toString();
 
+            if (!productosMap[id]) {
+                productosMap[id] = {
+                    productoId: id,
+                    nombre: producto.nombre,
+                    fotos: producto.fotos || [],
+                    unidadesVendidas: 0,
+                    ingresosGenerados: 0
+                };
+            }
+
+            productosMap[id].unidadesVendidas += detalle.cantidad;
+            productosMap[id].ingresosGenerados += detalle.subtotal;
+        });
+
+        const resultado = Object.values(productosMap)
+            .sort((a, b) => b.unidadesVendidas - a.unidadesVendidas)
+            .slice(0, 10);
+
+        return res.status(200).json(resultado);
+
+    } catch (error) {
+        console.error(
+            "ERROR OBTENIENDO PRODUCTOS MÁS VENDIDOS:",
+            error
+        );
+
+        return res.status(500).json({
+            ok: false,
+            message: "Error obteniendo productos más vendidos",
+            error: error.message
+        });
+    }
+};
+
+
+exports.getProfitByProduct = async (req, res) => {
+    try {
+        const detalles = await SaleDetaildb.find()
+            .populate('producto')
+            .lean();
+
+        const productosMap = {};
+
+        detalles.forEach(detalle => {
+            if (!detalle.producto) return;
+
+            const producto = detalle.producto;
             const id = producto._id.toString();
 
             const cantidad = detalle.cantidad;
-
             const precioVenta = detalle.precioUnitario;
-
-            const precioCosto = producto.precioCosto;
+            const precioCosto = producto.precioCosto || 0;
 
             const ingreso = precioVenta * cantidad;
-
             const costo = precioCosto * cantidad;
-
             const ganancia = ingreso - costo;
 
             if (!productosMap[id]) {
-
                 productosMap[id] = {
-
                     productoId: id,
-
                     nombre: producto.nombre,
-
+                    fotos: producto.fotos || [],
                     vendidos: 0,
-
                     ingresos: 0,
-
                     costos: 0,
-
                     ganancias: 0
                 };
             }
 
             productosMap[id].vendidos += cantidad;
-
             productosMap[id].ingresos += ingreso;
-
             productosMap[id].costos += costo;
-
             productosMap[id].ganancias += ganancia;
         });
 
@@ -508,10 +538,16 @@ exports.getProfitByProduct = async (req, res) => {
 
         return res.status(200).json(resultado);
 
-    } catch (err) {
+    } catch (error) {
+        console.error(
+            "ERROR CALCULANDO GANANCIAS POR PRODUCTO:",
+            error
+        );
 
         return res.status(500).json({
-            message: "Error calculando ganancias por producto"
+            ok: false,
+            message: "Error calculando ganancias por producto",
+            error: error.message
         });
     }
 };
