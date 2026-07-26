@@ -15,7 +15,6 @@
             <th>Producto</th>
             <th>Cantidad</th>
             <th>Cliente</th>
-            <th>Método Pago</th>
             <th>Total</th>
             <th>Detalles</th>
 
@@ -32,33 +31,49 @@
 
             <!-- FECHA -->
             <td>
-                <%= sale.fechaOrden
-                    ? new Date(sale.fechaOrden).toLocaleDateString()
-                    : 'Sin fecha'
+                <%= sale.createdAt
+                    ? new Date(sale.createdAt).toLocaleDateString('es-CO')
+                    : sale.fechaOrden
+                        ? new Date(sale.fechaOrden).toLocaleDateString('es-CO')
+                        : 'Sin fecha'
                 %>
             </td>
 
             <!-- PRODUCTO -->
             <td>
-                <% if(sale.detalles && sale.detalles.length > 0){ %>
-                    <% sale.detalles.forEach(function(detalle){ %>
+                <% if (sale.detalles && sale.detalles.length > 0) { %>
+
+                    <% sale.detalles.forEach(function(detalle) { %>
+
                         <div>
                             <%= detalle.producto ? detalle.producto.nombre : 'Sin producto' %>
                         </div>
-                    <% }) %>
+
+                    <% }); %>
+
                 <% } else { %>
+
                     Sin productos
+
                 <% } %>
             </td>
 
             <!-- CANTIDAD -->
             <td>
-                <% if(sale.detalles && sale.detalles.length > 0){ %>
-                    <% sale.detalles.forEach(function(detalle){ %>
+                <% if (sale.detalles && sale.detalles.length > 0) { %>
+
+                    <% sale.detalles.forEach(function(detalle) { %>
+
                         <div>
-                            <%= detalle.cantidad %>
+                            <%= detalle.cantidad || 0 %>
                         </div>
-                    <% }) %>
+
+                    <% }); %>
+
+                <% } else { %>
+
+                    0
+
                 <% } %>
             </td>
 
@@ -67,10 +82,6 @@
                 <%= sale.cliente?.nombre || 'Consumidor Final' %>
             </td>
 
-            <!-- MÉTODO PAGO -->
-            <td>
-                <%= sale.metodo_pago || 'No definido' %>
-            </td>
 
             <!-- TOTAL -->
             <td>
@@ -86,11 +97,6 @@
 
         <% }); %>
 
-        <tr>
-            <td colspan="10">
-                <a href="/create-ventas-form" class="btn btn-primary">Crear Nueva Venta</a>
-            </td>
-        </tr>
     </tbody>
 </table>
 </main>

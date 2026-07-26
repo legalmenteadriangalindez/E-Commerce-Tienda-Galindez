@@ -1,11 +1,7 @@
 <!-- include header -->
 <%- include('../../include/_headerAdmin') %>
 
-<form
-    id="billingForm"
-    action="/payment_point"
-    method="POST"
->
+<form id="billingForm" action="/payment_point" method="POST">
 
 <div class="checkout-wrapper">
 
@@ -161,7 +157,7 @@
 
             <div class="summary-line">
 
-                <span>IVA (19%)</span>
+                <span>IVA (0%)</span>
 
                 <span id="iva">
                     $0
@@ -215,7 +211,8 @@
 </form>
 
 <!-- SCRIPT -->
-<script src="assets/js/Billing_point.js"></script>
+<script src="/assets/js/Billing_point.js"></script>
+<script src="/assets/js/AdminPaymentPoint.js"></script>
 
 <br>
 <br>
