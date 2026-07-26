@@ -12,48 +12,26 @@ module.exports = (app) => {
         extended: true
     }));
 
-    // Directorio público
-    app.use(
-        express.static(
-            path.join(process.cwd(), 'public')
-        )
-    );
+    // Directorios
+    const rootPath = process.cwd();
+    const publicPath = path.join(rootPath, 'public');
+    const viewsPath = path.join(rootPath, 'views');
+    const assetsPath = path.join(rootPath, 'assets');
+
+    console.log('ROOT:', rootPath);
+    console.log('VIEWS:', viewsPath);
+    console.log('PUBLIC:', publicPath);
+    console.log('ASSETS:', assetsPath);
+
+    // Archivos públicos
+    app.use(express.static(publicPath));
 
     // EJS
-    const viewsPath = path.join(process.cwd(), 'views');
-
-    console.log('DIRECTORIO ACTUAL:', process.cwd());
-    console.log('DIRECTORIO VIEWS:', viewsPath);
-    
     app.set('view engine', 'ejs');
     app.set('views', viewsPath);
-    
-        app.set(
-            'views',
-            path.join(process.cwd(), 'views')
-        );
-
-    // CSS
-    app.use(
-        '/css',
-        express.static(
-            path.join(process.cwd(), 'assets', 'css')
-        )
-    );
 
     // Assets
-    app.use(
-        '/assets',
-        express.static(
-            path.join(process.cwd(), 'assets')
-        )
-    );
-
-    // JavaScript
-    app.use(
-        '/js',
-        express.static(
-            path.join(process.cwd(), 'assets', 'js')
-        )
-    );
+    app.use('/css', express.static(path.join(assetsPath, 'css')));
+    app.use('/assets', express.static(assetsPath));
+    app.use('/js', express.static(path.join(assetsPath, 'js')));
 };
