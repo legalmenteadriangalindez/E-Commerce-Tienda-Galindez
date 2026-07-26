@@ -15,8 +15,7 @@ function actualizarResumen() {
                 'input[type="number"]'
             );
 
-        const cantidad =
-            Number(inputCantidad.value);
+        const cantidad = Number(inputCantidad.value);
 
         // subtotal producto
         const subtotalProducto =

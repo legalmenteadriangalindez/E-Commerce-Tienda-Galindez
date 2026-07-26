@@ -2,6 +2,7 @@ let timeout = null;
 
 // BUSCADOR
 document.getElementById("buscarProducto")
+
 .addEventListener("keyup", function(){
 
     clearTimeout(timeout);
@@ -39,7 +40,6 @@ document.getElementById("buscarProducto")
 
 });
 
-
 // RENDER RESULTADOS
 function renderResultados(productos){
 
@@ -72,7 +72,6 @@ function renderResultados(productos){
     });
 }
 
-
 // SELECCIONAR PRODUCTO
 function seleccionarProducto(producto){
 
@@ -90,60 +89,7 @@ function seleccionarProducto(producto){
     ).innerHTML = "";
 }
 
-
-// ELIMINAR PRODUCTO
-// async function eliminarProductoBackend(productoId){
-
-//     try{
-//         console.log("eliminar producto backend-------------------------------")
-//             console.log(
-//         "PRODUCTO A ELIMINAR:",
-//         productoId
-//     );
-//         const res = await fetch("/carrito/remove", {
-
-//             method: "POST",
-
-//             headers: {
-//                 "Content-Type": "application/json"
-//             },
-
-//             body: JSON.stringify({
-//                 productoId
-//             })
-//         });
-
-//         const data = await res.json();
-        
-//         if(data.success){
-
-//             // refresca carrito
-//             await cargarCarrito();
-
-//         }else{
-
-//             alert(data.message || "Error eliminando");
-//         }
-    
-//     }catch(err){
-
-//         console.error(err);
-//     }
-// }
 async function eliminarProductoBackend(productoId) {
-
-    console.log(
-        "======================================"
-    );
-
-    console.log(
-        "PRODUCTO A ELIMINAR:",
-        productoId
-    );
-
-    console.log(
-        "======================================"
-    );
 
     try {
 
@@ -230,7 +176,6 @@ document.addEventListener("click", function(e){
     }
 });
 
-
 // FINALIZAR VENTA
 function finalizarVenta(){
 
@@ -241,7 +186,6 @@ function finalizarVenta(){
 
     console.log(metodoPago);
 }
-
 
 // LIMPIAR FORMULARIO
 function limpiarFormulario(){
@@ -254,7 +198,6 @@ function limpiarFormulario(){
 
     document.getElementById("cantidad").value = 1;
 }
-
 
 // CANCELAR VENTA
 function cancelarVenta(){
@@ -334,7 +277,6 @@ async function agregarProducto(){
 
 
 // CALCULAR TOTALES
-
 function calcularTotalesBackend(items){
 
     let subtotal = 0;
@@ -366,7 +308,6 @@ function calcularTotalesBackend(items){
 }
 
 // CARGAR CARRITO
-
 async function cargarCarrito(){
 
     try{
@@ -391,7 +332,6 @@ async function cargarCarrito(){
         console.error(err);
     }
 }
-
 
 // RENDER CARRITO
 function renderCarritoDesdeBackend(items){
@@ -489,7 +429,6 @@ function renderCarritoDesdeBackend(items){
 
     calcularTotalesBackend(items);
 }
-
 
 // INIT
 window.onload = () => {

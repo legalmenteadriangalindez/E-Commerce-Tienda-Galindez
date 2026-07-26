@@ -1,0 +1,220 @@
+    :root {
+        --primary-dark: #311b14;
+        --primary-dark-light: #43251c;
+        --accent-orange: #d85c32;
+        --warm-tan: #d58d51;
+        --light: #ffffff;
+        --text-light: #e0cfc7;
+        --input-bg: #f8f5f3;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background: linear-gradient(
+            135deg,
+            var(--primary-dark),
+            #1f0f0b
+        );
+    }
+
+    .verification-container {
+        width: 100%;
+        max-width: 480px;
+    }
+
+    .verification-card {
+        background: rgba(255, 255, 255, 0.97);
+        border-radius: 24px;
+        padding: 45px 40px;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+        animation: fadeIn 0.7s ease;
+    }
+
+    .icon-container {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        background: linear-gradient(
+            135deg,
+            var(--accent-orange),
+            var(--warm-tan)
+        );
+        color: var(--light);
+        font-size: 35px;
+        box-shadow: 0 10px 25px rgba(216, 92, 50, 0.3);
+    }
+
+    .verification-card h1 {
+        color: var(--primary-dark);
+        font-size: 30px;
+        margin-bottom: 15px;
+    }
+
+    .description {
+        color: #6f625d;
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    .email {
+        color: var(--accent-orange);
+        font-weight: 600;
+        word-break: break-word;
+    }
+
+    .input-label {
+        display: block;
+        text-align: left;
+        margin-bottom: 8px;
+        color: var(--primary-dark);
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .code-input {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #eadfd9;
+        border-radius: 14px;
+        background: var(--input-bg);
+        color: var(--primary-dark);
+        font-size: 24px;
+        font-weight: 600;
+        text-align: center;
+        letter-spacing: 8px;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    .code-input:focus {
+        border-color: var(--accent-orange);
+        box-shadow: 0 0 0 4px rgba(216, 92, 50, 0.12);
+    }
+
+    .verify-btn {
+        width: 100%;
+        margin-top: 20px;
+        padding: 14px;
+        border: none;
+        border-radius: 30px;
+        background: linear-gradient(
+            45deg,
+            var(--accent-orange),
+            var(--warm-tan)
+        );
+        color: var(--light);
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .verify-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(216, 92, 50, 0.35);
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 30px 0;
+        color: #a89a93;
+        font-size: 13px;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #e8ded9;
+    }
+
+    .resend-text {
+        color: #6f625d;
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+
+    .resend-btn {
+        width: 100%;
+        padding: 13px;
+        border: 2px solid var(--accent-orange);
+        border-radius: 30px;
+        background: transparent;
+        color: var(--accent-orange);
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .resend-btn:hover {
+        background: var(--accent-orange);
+        color: var(--light);
+    }
+
+    .security-message {
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #eee4df;
+        color: #8a7b74;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 500px) {
+        body {
+            padding: 15px;
+        }
+
+        .verification-card {
+            padding: 35px 25px;
+            border-radius: 20px;
+        }
+
+        .verification-card h1 {
+            font-size: 26px;
+        }
+
+        .icon-container {
+            width: 70px;
+            height: 70px;
+            font-size: 30px;
+        }
+
+        .code-input {
+            font-size: 20px;
+            letter-spacing: 5px;
+        }
+    }
