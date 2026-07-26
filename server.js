@@ -2,7 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 
-dotenv.config({ path: 'config.env' });
+dotenv.config();
 
 const connectDB = require('./server/database/connection');
 const seedAdmin = require('./server/config/seedAdmin');
