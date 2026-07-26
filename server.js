@@ -46,3 +46,5 @@ connectDB().then(() => {
 app.listen(PORT, () => {
     console.log(`Server corriendo en ${BASE_URL}:${PORT}`);
 });
+
+module.exports = app;
