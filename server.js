@@ -42,9 +42,13 @@ connectDB().then(() => {
     seedAdmin();
 });
 
-// START SERVER
-app.listen(PORT, () => {
-    console.log(`Server corriendo en ${BASE_URL}:${PORT}`);
-});
-
 module.exports = app;
+
+if (require.main === module) {
+    const PORT = process.env.PORT || 8080;
+
+    app.listen(PORT, () => {
+        console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    });
+}
+
