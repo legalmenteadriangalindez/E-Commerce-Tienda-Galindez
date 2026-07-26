@@ -7,7 +7,8 @@ dotenv.config({ path: 'config.env' });
 const connectDB = require('./server/database/connection');
 const seedAdmin = require('./server/config/seedAdmin');
 const sessionConfig = require('./server/config/session');
-
+const BASE_URL = process.env.BASE_URL
+const PORT = process.env.PORT || 8080;
 // MIDDLEWARES CUSTOM
 const cartMiddleware = require('./server/middleware/cartMiddleware');
 const sessionLogger = require('./server/middleware/sessionLogger');
@@ -33,7 +34,7 @@ app.use(categoriasMiddleware);
 // ROUTES
 // app.use('/', require('./server/routes/router'));
 app.use('/', require('./server/routes'))
-const PORT = process.env.PORT || 8080;
+
 
 // DB CONNECTION
 connectDB().then(() => {
@@ -43,5 +44,5 @@ connectDB().then(() => {
 
 // START SERVER
 app.listen(PORT, () => {
-    console.log(`Server corriendo en http://localhost:${PORT}`);
+    console.log(`Server corriendo en ${BASE_URL}:${PORT}`);
 });
