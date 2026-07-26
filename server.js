@@ -1,12 +1,19 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const fs = require('fs');
+const path = require('path');
 
-// Local: carga config.env
-// Vercel: las variables vienen desde Environment Variables
-dotenv.config({
-    path: './config.env'
-});
+dotenv.config();
+
+console.log('ROOT:', process.cwd());
+
+console.log(
+    'LOGIN EJS EXISTS:',
+    fs.existsSync(
+        path.join(process.cwd(), 'views', 'client', 'auth', 'login.ejs')
+    )
+);
 
 const connectDB = require('./server/database/connection');
 const seedAdmin = require('./server/config/seedAdmin');
@@ -20,38 +27,30 @@ const appConfig = require('./server/config/appConfig');
 
 const app = express();
 
-// Configuración
 app.use(sessionConfig);
 
 appConfig(app);
 
-// Logs
 app.use(morgan('tiny'));
 
-// Middlewares
 app.use(cartMiddleware);
 app.use(sessionLogger);
 app.use(categoriasMiddleware);
 
-// Rutas
 app.use('/', require('./server/routes'));
 
-// Conexión a MongoDB
 connectDB()
     .then(() => {
         console.log('MongoDB conectado');
+
         return seedAdmin();
     })
     .catch((error) => {
-        console.error('Error conectando a MongoDB:', error);
+        console.error('Error MongoDB:', error);
     });
 
-// Exportar para Vercel
 module.exports = app;
 
-// Solo iniciar servidor cuando ejecutas:
-// npm start
-// node server.js
 if (require.main === module) {
     const PORT = process.env.PORT || 8080;
 
