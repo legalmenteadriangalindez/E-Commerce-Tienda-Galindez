@@ -12,17 +12,11 @@ module.exports = (app) => {
         extended: true
     }));
 
-    // RUTA ABSOLUTA DE LA CARPETA DEL PROYECTO
-    const ROOT_DIR = process.cwd();
-
-    console.log('ROOT_DIR:', ROOT_DIR);
-    console.log('VIEWS_DIR:', path.join(ROOT_DIR, 'views'));
-    console.log('PUBLIC_DIR:', path.join(ROOT_DIR, 'public'));
-    console.log('ASSETS_DIR:', path.join(ROOT_DIR, 'assets'));
-
-    // Archivos públicos
+    // Directorio público
     app.use(
-        express.static(path.join(ROOT_DIR, 'public'))
+        express.static(
+            path.join(process.cwd(), 'public')
+        )
     );
 
     // EJS
@@ -30,14 +24,14 @@ module.exports = (app) => {
 
     app.set(
         'views',
-        path.join(ROOT_DIR, 'views')
+        path.join(process.cwd(), 'views')
     );
 
     // CSS
     app.use(
         '/css',
         express.static(
-            path.join(ROOT_DIR, 'assets', 'css')
+            path.join(process.cwd(), 'assets', 'css')
         )
     );
 
@@ -45,15 +39,15 @@ module.exports = (app) => {
     app.use(
         '/assets',
         express.static(
-            path.join(ROOT_DIR, 'assets')
+            path.join(process.cwd(), 'assets')
         )
     );
 
-    // JS
+    // JavaScript
     app.use(
         '/js',
         express.static(
-            path.join(ROOT_DIR, 'assets', 'js')
+            path.join(process.cwd(), 'assets', 'js')
         )
     );
 };
