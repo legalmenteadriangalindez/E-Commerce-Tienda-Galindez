@@ -1,71 +1,45 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
-const fs = require('fs');
-const path = require('path');
 
-dotenv.config();
-
-const root = process.cwd();
-
-console.log('=================================');
-console.log('ROOT:', root);
-
-console.log(
-    'LOGIN EJS EXISTS:',
-    fs.existsSync(
-        path.join(root, 'views', 'client', 'auth', 'login.ejs')
-    )
-);
-
-console.log(
-    'VIEWS DIRECTORY EXISTS:',
-    fs.existsSync(
-        path.join(root, 'views')
-    )
-);
-
-console.log(
-    'AUTH DIRECTORY EXISTS:',
-    fs.existsSync(
-        path.join(root, 'views', 'client', 'auth')
-    )
-);
-
-console.log('=================================');
+dotenv.config({ path: './config.env' });
 
 const connectDB = require('./server/database/connection');
 const seedAdmin = require('./server/config/seedAdmin');
 const sessionConfig = require('./server/config/session');
-
+const BASE_URL = process.env.BASE_URL
+const PORT = process.env.PORT || 8080;
+// MIDDLEWARES CUSTOM
 const cartMiddleware = require('./server/middleware/cartMiddleware');
 const sessionLogger = require('./server/middleware/sessionLogger');
 const categoriasMiddleware = require('./server/middleware/categoriasMiddleware');
 
+// CONFIG APP
 const appConfig = require('./server/config/appConfig');
 
 const app = express();
 
+// CONFIGURACIONES
 app.use(sessionConfig);
-
 appConfig(app);
 
+// LOGS
 app.use(morgan('tiny'));
 
+// MIDDLEWARES
 app.use(cartMiddleware);
 app.use(sessionLogger);
 app.use(categoriasMiddleware);
 
-app.use('/', require('./server/routes'));
 
-connectDB()
-    .then(() => {
-        console.log('MongoDB conectado');
-        return seedAdmin();
-    })
-    .catch((error) => {
-        console.error('Error MongoDB:', error);
-    });
+app.use('/', require('./server/routes'))
+
+
+// DB CONNECTION
+connectDB().then(() => {
+    console.log("MongoDB conectado");
+    seedAdmin();
+});
 
 module.exports = app;
 
@@ -76,3 +50,4 @@ if (require.main === module) {
         console.log(`Servidor corriendo en http://localhost:${PORT}`);
     });
 }
+
