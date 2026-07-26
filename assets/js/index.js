@@ -1,5 +1,9 @@
 
 
+const dotenv = require('dotenv');
+dotenv.config();
+
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 $("#add_user").submit(function(event){
     alert("Data Inserted Successfully!");
@@ -17,7 +21,7 @@ $("#update_user").submit(function(event){
 
 
     var request = {
-        "url" : `http://localhost:3000/api/users/${data.id}`,
+        "url" : `${BASE_URL}/api/users/${data.id}`,
         "method" : "PUT",
         "data" : data
     }
@@ -34,7 +38,7 @@ if(window.location.pathname == "/"){
         var id = $(this).attr("data-id")
 
         var request = {
-            "url" : `http://localhost:3000/api/users/${id}`,
+            "url" : `${BASE_URL}/api/users/${id}`,
             "method" : "DELETE"
         }
 

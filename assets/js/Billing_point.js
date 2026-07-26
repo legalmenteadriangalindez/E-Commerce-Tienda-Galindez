@@ -1,4 +1,5 @@
 
+
 let index = 0;
 
 let subtotal = 0;
@@ -80,7 +81,8 @@ function agregarProducto() {
     // TOTALES
     subtotal += totalProducto;
 
-    const iva = subtotal * 0.19;
+    // const iva = subtotal * 0.19;
+    const iva = 0;
 
     const total = subtotal + iva;
 
@@ -119,3 +121,4 @@ function cancelarVenta() {
 
     document.getElementById('total').innerText = '$0';
 }
+

@@ -65,7 +65,7 @@ function renderResultados(productos){
                 onclick='seleccionarProducto(${JSON.stringify(p)})'
             >
                 ${p.nombre} - $${Number(
-                    p.precioBase || 0
+                    p.precioVenta || 0
                 ).toLocaleString()}
             </div>
         `;
@@ -83,7 +83,7 @@ function seleccionarProducto(producto){
         producto.nombre;
 
     document.getElementById("precio").value =
-        producto.precioBase;
+        producto.precioVenta;
 
     document.getElementById(
         "resultadosBusqueda"
@@ -92,41 +92,132 @@ function seleccionarProducto(producto){
 
 
 // ELIMINAR PRODUCTO
-async function eliminarProductoBackend(productoId){
+// async function eliminarProductoBackend(productoId){
 
-    try{
+//     try{
+//         console.log("eliminar producto backend-------------------------------")
+//             console.log(
+//         "PRODUCTO A ELIMINAR:",
+//         productoId
+//     );
+//         const res = await fetch("/carrito/remove", {
 
-        const res = await fetch("/carrito/remove", {
+//             method: "POST",
 
-            method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+//             body: JSON.stringify({
+//                 productoId
+//             })
+//         });
 
-            body: JSON.stringify({
-                productoId
-            })
-        });
-
-        const data = await res.json();
+//         const data = await res.json();
         
-        if(data.success){
+//         if(data.success){
 
-            // refresca carrito
+//             // refresca carrito
+//             await cargarCarrito();
+
+//         }else{
+
+//             alert(data.message || "Error eliminando");
+//         }
+    
+//     }catch(err){
+
+//         console.error(err);
+//     }
+// }
+async function eliminarProductoBackend(productoId) {
+
+    console.log(
+        "======================================"
+    );
+
+    console.log(
+        "PRODUCTO A ELIMINAR:",
+        productoId
+    );
+
+    console.log(
+        "======================================"
+    );
+
+    try {
+
+        const res = await fetch(
+            "/carrito/remove",
+            {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    productoId: productoId
+                })
+
+            }
+        );
+
+
+        console.log(
+            "STATUS HTTP:",
+            res.status
+        );
+
+
+        const data =
+            await res.json();
+
+
+        console.log(
+            "RESPUESTA BACKEND:",
+            data
+        );
+
+
+        if (data.success) {
+
+            console.log(
+                "Producto eliminado correctamente"
+            );
+
+
             await cargarCarrito();
 
-        }else{
 
-            alert(data.message || "Error eliminando");
+        } else {
+
+            console.error(
+                "El backend respondió error:",
+                data.message
+            );
+
+
+            alert(
+                data.message ||
+                "Error eliminando producto"
+            );
+
         }
 
-    }catch(err){
 
-        console.error(err);
+    } catch (err) {
+
+        console.error(
+            "ERROR FETCH:",
+            err
+        );
+
     }
-}
 
+}
 
 // CERRAR RESULTADOS
 document.addEventListener("click", function(e){
@@ -259,7 +350,8 @@ function calcularTotalesBackend(items){
         subtotal += precio * cantidad;
     });
 
-    const iva = subtotal * 0.19;
+    // const iva = subtotal * 0.19;
+    const iva = 0;
 
     const total = subtotal + iva;
 
@@ -382,6 +474,7 @@ function renderCarritoDesdeBackend(items){
 
             <!-- ELIMINAR -->
             <button
+                type="button"
                 class="delete-item-btn"
                 onclick="eliminarProductoBackend('${item.productoId}')"
             >
