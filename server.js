@@ -6,14 +6,33 @@ const path = require('path');
 
 dotenv.config();
 
-console.log('ROOT:', process.cwd());
+const root = process.cwd();
+
+console.log('=================================');
+console.log('ROOT:', root);
 
 console.log(
     'LOGIN EJS EXISTS:',
     fs.existsSync(
-        path.join(process.cwd(), 'views', 'client', 'auth', 'login.ejs')
+        path.join(root, 'views', 'client', 'auth', 'login.ejs')
     )
 );
+
+console.log(
+    'VIEWS DIRECTORY EXISTS:',
+    fs.existsSync(
+        path.join(root, 'views')
+    )
+);
+
+console.log(
+    'AUTH DIRECTORY EXISTS:',
+    fs.existsSync(
+        path.join(root, 'views', 'client', 'auth')
+    )
+);
+
+console.log('=================================');
 
 const connectDB = require('./server/database/connection');
 const seedAdmin = require('./server/config/seedAdmin');
@@ -42,7 +61,6 @@ app.use('/', require('./server/routes'));
 connectDB()
     .then(() => {
         console.log('MongoDB conectado');
-
         return seedAdmin();
     })
     .catch((error) => {
