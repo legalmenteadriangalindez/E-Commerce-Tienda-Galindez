@@ -10,42 +10,57 @@ function generateCode() {
 // LOGIN
 exports.login = async (req, res) => {
     try {
+        console.log('POST /login recibido');
+
         const { email, password } = req.body;
+
+        console.log('Email recibido:', email);
+        console.log('Password recibido:', password ? 'SI' : 'NO');
+
         const user = await Userdb
             .findOne({ email })
             .populate('rol');
+
+        console.log('Usuario encontrado:', !!user);
+
         if (!user) {
-            return res.send("Usuario no encontrado");
+            return res.status(401).send("Usuario no encontrado");
         }
+
         if (user.estado !== "Activo") {
-            return res.send("Usuario desactivado");
+            return res.status(403).send("Usuario desactivado");
         }
+
         const match = await bcrypt.compare(password, user.password);
 
+        console.log('Password coincide:', match);
+
         if (!match) {
-            return res.send("Contraseña incorrecta");
+            return res.status(401).send("Contraseña incorrecta");
         }
-        req.session.user = user;    
 
-        if (user.rol.nombre === "Admin") {
+        req.session.user = user;
 
+        console.log('Sesión creada');
+
+        if (user.rol && user.rol.nombre === "Admin") {
             return res.redirect('/billing-point');
-
-        } else if (user.rol.nombre === "dealer") {
-
-            return res.redirect('/dealer/orders/read');
-
-        } else {
-
-            return res.redirect('/');
-
         }
+
+        if (user.rol && user.rol.nombre === "dealer") {
+            return res.redirect('/dealer/orders/read');
+        }
+
+        return res.redirect('/');
+
     } catch (err) {
-        
-        res.status(500).send("Error en login");
+        console.error('ERROR REAL EN LOGIN:', err);
+
+        return res.status(500).send(
+            'Error en login: ' + err.message
+        );
     }
 };
-
 // LOGOUT
 exports.logout = (req, res) => {
     req.session.destroy((err) => {
