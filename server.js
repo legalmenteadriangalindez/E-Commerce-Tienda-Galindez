@@ -2,13 +2,11 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 
-// Cargar config.env solamente en local
-if (process.env.NODE_ENV !== 'production') {
-    dotenv.config({ path: './config.env' });
-} else {
-    // En Vercel las variables vienen desde Project Settings > Environment Variables
-    dotenv.config();
-}
+// Local: carga config.env
+// Vercel: las variables vienen desde Environment Variables
+dotenv.config({
+    path: './config.env'
+});
 
 const connectDB = require('./server/database/connection');
 const seedAdmin = require('./server/config/seedAdmin');
@@ -22,22 +20,23 @@ const appConfig = require('./server/config/appConfig');
 
 const app = express();
 
-// CONFIGURACIONES
+// Configuración
 app.use(sessionConfig);
+
 appConfig(app);
 
-// LOGS
+// Logs
 app.use(morgan('tiny'));
 
-// MIDDLEWARES
+// Middlewares
 app.use(cartMiddleware);
 app.use(sessionLogger);
 app.use(categoriasMiddleware);
 
-// ROUTES
+// Rutas
 app.use('/', require('./server/routes'));
 
-// CONEXIÓN A MONGODB
+// Conexión a MongoDB
 connectDB()
     .then(() => {
         console.log('MongoDB conectado');
@@ -51,8 +50,8 @@ connectDB()
 module.exports = app;
 
 // Solo iniciar servidor cuando ejecutas:
-// npm start / node server.js
-// NO cuando Vercel importa api/index.js
+// npm start
+// node server.js
 if (require.main === module) {
     const PORT = process.env.PORT || 8080;
 
