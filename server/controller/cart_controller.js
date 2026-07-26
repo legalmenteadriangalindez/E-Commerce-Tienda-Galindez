@@ -172,6 +172,13 @@ exports.checkout = async (req, res) => {
 
             const precioUnitario = Number(productoDB.precioVenta);
             const cantidad = Number(item.cantidad);
+
+            if (!Number.isFinite(precioUnitario) || !Number.isFinite(cantidad)) {
+                return res.status(400).send(
+                    `Precio o cantidad inválida para ${productoDB.nombre}`
+                );
+            }
+
             const subtotalProducto = precioUnitario * cantidad;
 
             subtotal += subtotalProducto;
@@ -187,7 +194,7 @@ exports.checkout = async (req, res) => {
 
         // const impuestos = subtotal * 0.19;
         const impuestos = 0;
-        const costoEnvio = 5000;
+        const costoEnvio = subtotal >= 30000 ? 0 : 5000;
         const descuento = 0;
         const total = subtotal + impuestos + costoEnvio - descuento;
 

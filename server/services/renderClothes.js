@@ -1,52 +1,16 @@
+const axios = require("axios");
+
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+
+
 exports.renderClothes = async (req, res) => {
     try {
-const products = [
-    {
-        _id: 1,
+        const response = await axios.get(`${BASE_URL}/api/productos/ropa`);
 
-        nombre: "Camiseta Itachi",
-
-        descripcion:
-            "Diseño premium inspirado en Itachi Uchiha.",
-
-        precioBase: 89900,
-
-        stock: 25,
-
-        fotos: [
-            "/assets/img/faces/Itachi.jpg"
-        ]
-    },
-
-    {
-        _id: 2,
-
-        nombre: "Sudadera Goku",
-
-        descripcion:
-            "Edición especial Dragon Ball.",
-
-        precioBase: 129900,
-
-        stock: 12,
-
-        fotos: [
-            "/assets/img/faces/DragonBallz.jpg"
-        ]
-    }
-];
-
-        res.render("client/clothes/clothes", {
-            products
+        res.render('client/clothes/clothes', {
+            products: response.data
         });
-
-
     } catch (error) {
-
-        res.status(500).send(
-            "Error cargando la tienda"
-        );
-
+        res.status(500).send('Error loading products');
     }
-
 };

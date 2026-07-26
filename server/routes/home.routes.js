@@ -9,6 +9,9 @@ const servicesRenderProfile = require('../services/renderProfile');
 const servicesRenderCategory = require('../services/renderCategories');
 const servicesRenderProduct = require('../services/renderProducts');
 const servicesRenderCart = require('../services/renderCart');
+const clotehsService = require('../services/renderClothes');
+
+router.get('/clothes', clotehsService.renderClothes);
 
 router.get('/', servicesRenderHomeRutes.homeRoutes);
 router.get('/search', servicesRenderHomeRutes.search);

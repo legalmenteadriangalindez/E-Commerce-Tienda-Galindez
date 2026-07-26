@@ -18,7 +18,7 @@ router.use('/carrito', require('./cart.routes'));
 router.use('/', require('./admin.routes'));
 
 router.use('/dealer', require('./dealer.routes'));                   
-router.get('/clothes', require('./clothes.routes'));
+
 
 router.get('/reset-cart', (req, res) => {
 

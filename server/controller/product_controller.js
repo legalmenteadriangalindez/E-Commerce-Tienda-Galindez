@@ -1,10 +1,12 @@
 var Productdb = require('../model/product');
+
 const mongoose = require('mongoose');
+
 const path = require('path');
+
 const fs = require('fs'); 
 
 
-// Crear producto
 exports.create = async (req, res) => {
     try {
 
@@ -119,8 +121,6 @@ exports.create = async (req, res) => {
     }
 };
 
-
-// find
 exports.find = (req, res) => {
     if (req.query.id) {
         Productdb.findById(req.query.id)
@@ -142,7 +142,6 @@ exports.find = (req, res) => {
             .catch(err => res.status(500).send(err));
     }
 }
-
 
 exports.findOne = async (req, res) => {
 
@@ -176,7 +175,32 @@ exports.findOne = async (req, res) => {
     }
 };
 
-// update
+exports.findByCategoryRopa = async (req, res) => {
+    try {
+        const productos = await Productdb.find()
+            .populate({
+                path: 'categoria',
+                match: { nombre: /^ropa$/i }
+            })
+            .populate('marca')
+            .populate('proveedor')
+            .lean();
+
+        const productosRopa = productos.filter(
+            producto => producto.categoria !== null
+        );
+
+        return res.status(200).json(productosRopa);
+
+    } catch (error) {
+
+        return res.status(500).json({
+            message: 'Error buscando productos de Ropa',
+            error: error.message
+        });
+    }
+};
+
 exports.update = async (req, res) => {
     try {
         const product = await Productdb.findById(req.params.id);
@@ -350,9 +374,6 @@ exports.update = async (req, res) => {
     }
 };
 
-
-
-// delete
 exports.delete = async (req, res) => {
     try {
         const product = await Productdb.findById(req.params.id);
@@ -386,7 +407,6 @@ exports.delete = async (req, res) => {
     }
 };
 
-
 exports.searchApi = async (req, res) => {
     try {
         const search = req.query.search;
@@ -416,8 +436,6 @@ exports.searchApi = async (req, res) => {
         });
     }
 };
-
-
 
 // stock bajo 
 exports.getStockAlerts = async (req, res) => {
