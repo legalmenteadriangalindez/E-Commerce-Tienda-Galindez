@@ -7,6 +7,5 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const path = require('path');
 
 exports.login = (req, res) => {
-    res.send('LOGIN CONTROLLER FUNCIONA');
-
+    res.render('client/auth/login');
 };
