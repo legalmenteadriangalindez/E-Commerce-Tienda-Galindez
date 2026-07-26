@@ -2,19 +2,22 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 
-dotenv.config({ path: './config.env' });
+// Cargar config.env solamente en local
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config({ path: './config.env' });
+} else {
+    // En Vercel las variables vienen desde Project Settings > Environment Variables
+    dotenv.config();
+}
 
 const connectDB = require('./server/database/connection');
 const seedAdmin = require('./server/config/seedAdmin');
 const sessionConfig = require('./server/config/session');
-const BASE_URL = process.env.BASE_URL
-const PORT = process.env.PORT || 8080;
-// MIDDLEWARES CUSTOM
+
 const cartMiddleware = require('./server/middleware/cartMiddleware');
 const sessionLogger = require('./server/middleware/sessionLogger');
 const categoriasMiddleware = require('./server/middleware/categoriasMiddleware');
 
-// CONFIG APP
 const appConfig = require('./server/config/appConfig');
 
 const app = express();
@@ -32,18 +35,24 @@ app.use(sessionLogger);
 app.use(categoriasMiddleware);
 
 // ROUTES
-// app.use('/', require('./server/routes/router'));
-app.use('/', require('./server/routes'))
+app.use('/', require('./server/routes'));
 
+// CONEXIÓN A MONGODB
+connectDB()
+    .then(() => {
+        console.log('MongoDB conectado');
+        return seedAdmin();
+    })
+    .catch((error) => {
+        console.error('Error conectando a MongoDB:', error);
+    });
 
-// DB CONNECTION
-connectDB().then(() => {
-    console.log("MongoDB conectado");
-    seedAdmin();
-});
-
+// Exportar para Vercel
 module.exports = app;
 
+// Solo iniciar servidor cuando ejecutas:
+// npm start / node server.js
+// NO cuando Vercel importa api/index.js
 if (require.main === module) {
     const PORT = process.env.PORT || 8080;
 
@@ -51,4 +60,3 @@ if (require.main === module) {
         console.log(`Servidor corriendo en http://localhost:${PORT}`);
     });
 }
-
