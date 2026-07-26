@@ -12,7 +12,7 @@ module.exports = (app) => {
         extended: true
     }));
 
-    const root = process.cwd();
+    const root = path.resolve(__dirname, '../../');
 
     const publicPath = path.join(root, 'public');
     const viewsPath = path.join(root, 'views');
