@@ -1,68 +1,30 @@
-<!-- include header -->
 <%- include('../../include/_header') %>
-<!-- /include header -->
 
 <div class="checkout-wrapper">
-
     <div class="checkout-header">
-
         <h1>
             <i class="fas fa-store"></i>
             Punto de Pago Seguro
         </h1>
 
         <div class="badge-secure">
-
             <i class="fas fa-lock"></i>
-
             Pago seguro y protegido por Wompi
-
         </div>
-
     </div>
 
-
-    <!-- FORMULARIO PRINCIPAL -->
-
-    <form
-        action="/carrito/checkout"
-        method="POST"
-    >
-
-        <input
-            type="hidden"
-            name="cliente"
-            value="<%= user._id %>"
-        >
-
+    <form action="/carrito/checkout" method="POST">
+        <input type="hidden" name="cliente" value="<%= user._id %>">
 
         <div class="checkout-grid">
-
-
-            <!-- COLUMNA IZQUIERDA -->
-
             <div class="form-card">
-
-
                 <div class="section-title">
-
                     <i class="fas fa-user-pen"></i>
-
-                    <span>
-                        Información de facturación
-                    </span>
-
+                    <span>Información de facturación</span>
                 </div>
 
-
-                <!-- NOMBRE -->
-
                 <div class="input-group">
-
-                    <label>
-                        Nombre completo
-                    </label>
-
+                    <label>Nombre completo</label>
                     <input
                         type="text"
                         id="fullName"
@@ -70,21 +32,11 @@
                         value="<%= locals.user?.nombre || '' %>"
                         required
                     >
-
                 </div>
 
-
-                <!-- EMAIL Y TELÉFONO -->
-
                 <div class="input-row">
-
-
                     <div class="input-group">
-
-                        <label>
-                            Correo electrónico
-                        </label>
-
+                        <label>Correo electrónico</label>
                         <input
                             type="email"
                             id="email"
@@ -92,16 +44,10 @@
                             value="<%= locals.user?.email || '' %>"
                             required
                         >
-
                     </div>
 
-
                     <div class="input-group">
-
-                        <label>
-                            Teléfono
-                        </label>
-
+                        <label>Teléfono</label>
                         <input
                             type="tel"
                             id="phone"
@@ -109,21 +55,11 @@
                             value="<%= locals.user?.telefono || '' %>"
                             required
                         >
-
                     </div>
-
-
                 </div>
 
-
-                <!-- DIRECCIÓN -->
-
                 <div class="input-group">
-
-                    <label>
-                        Dirección
-                    </label>
-
+                    <label>Dirección</label>
                     <input
                         type="text"
                         id="address"
@@ -131,38 +67,23 @@
                         value="<%= locals.user?.direccion || '' %>"
                         required
                     >
-
                 </div>
 
-
-                <!-- DEPARTAMENTO Y CIUDAD -->
-
                 <div class="input-row">
-
-
                     <div class="input-group">
-
-                        <label>
-                            Departamento
-                        </label>
-
+                        <label>Departamento</label>
                         <input
                             type="text"
                             id="department"
                             name="department"
                             placeholder="Departamento"
+                            value="cauca"
                             required
                         >
-
                     </div>
 
-
                     <div class="input-group">
-
-                        <label>
-                            Ciudad
-                        </label>
-
+                        <label>Ciudad</label>
                         <input
                             type="text"
                             id="city"
@@ -170,413 +91,172 @@
                             value="<%= locals.user?.ciudad || '' %>"
                             required
                         >
-
                     </div>
-
-
                 </div>
 
-
-                <!-- ZIP Y REFERENCIA -->
-
                 <div class="input-row">
-
-
-                    <!-- <div class="input-group">
-
-                        <label>
-                            Código postal
-                        </label>
-
-                        <input
-                            type="text"
-                            id="zip"
-                            name="zip"
-                            placeholder="Código postal"
-                            required
-                        >
-
-                    </div> -->
-
-
                     <div class="input-group">
-
-                        <label>
-                            Referencia
-                        </label>
-
+                        <label>Referencia</label>
                         <input
                             type="text"
                             id="reference"
                             name="reference"
                             placeholder="Apartamento, torre, referencia..."
                         >
-
                     </div>
-
-
                 </div>
 
-
-                <!-- NOTAS -->
-
                 <div class="input-group">
-
-                    <label>
-                        Notas
-                    </label>
-
+                    <label>Notas</label>
                     <textarea
                         id="notes"
                         name="notes"
                         rows="4"
                         placeholder="Notas adicionales para la entrega..."
                     ></textarea>
-
                 </div>
 
-
-                <!-- INFORMACIÓN DEL PAGO -->
-
                 <div class="payment-methods">
-
-
-                    <div
-                        class="section-title"
-                        style="margin-bottom: 1rem;"
-                    >
-
+                    <div class="section-title" style="margin-bottom: 1rem;">
                         <i class="fas fa-credit-card"></i>
-
-                        <span>
-                            Método de pago
-                        </span>
-
+                        <span>Método de pago</span>
                     </div>
-
 
                     <div
                         class="payment-wompi-info"
-                        style="
-                            padding: 20px;
-                            border-radius: 12px;
-                            background: #f8fafc;
-                            text-align: center;
-                        "
+                        style="padding: 20px; border-radius: 12px; background: #f8fafc; text-align: center;"
                     >
+                        <i class="fas fa-shield-halved" style="font-size: 2.5rem;"></i>
 
-                        <i
-                            class="fas fa-shield-halved"
-                            style="font-size: 2.5rem;"
-                        ></i>
-
-
-                        <h3>
-                            Pago seguro con Wompi
-                        </h3>
-
+                        <h3>Pago seguro con Wompi</h3>
 
                         <p>
-
-                            Al confirmar tu pedido serás
-                            redirigido a la plataforma
-                            segura de Wompi para completar
-                            tu pago.
-
+                            Al confirmar tu pedido serás redirigido a la plataforma
+                            segura de Wompi para completar tu pago.
                         </p>
 
-
                         <p>
-
-                            Allí podrás seleccionar el
-                            método de pago disponible
+                            Allí podrás seleccionar el método de pago disponible
                             para tu compra.
-
                         </p>
-
                     </div>
-
-
                 </div>
-
-
-                <!-- SEGURIDAD -->
 
                 <div class="trust-badge">
-
-
                     <span>
-
                         <i class="fas fa-shield-alt"></i>
-
                         Pago seguro
-
                     </span>
 
-
                     <span>
-
                         <i class="fas fa-lock"></i>
-
                         Datos protegidos
-
                     </span>
-
 
                     <span>
-
                         <i class="fas fa-check-circle"></i>
-
                         Wompi
-
                     </span>
-
-
                 </div>
-
-
             </div>
 
-
-            <!-- COLUMNA DERECHA -->
-
             <div class="summary-card">
-
-
                 <div class="section-title">
-
                     <i class="fas fa-bag-shopping"></i>
-
-                    <span>
-                        Tu pedido
-                    </span>
-
+                    <span>Tu pedido</span>
                 </div>
-
-
-                <!-- PRODUCTOS -->
 
                 <div class="order-items-list text-sumary">
-
-
                     <% productosCarrito.forEach(item => { %>
-
-
                         <div class="order-item">
-
-
                             <div class="item-icon">
-
                                 <i class="fas fa-box"></i>
-
                             </div>
-
 
                             <div class="item-details">
-
-
                                 <div class="item-title">
-
                                     <%= item.nombre %>
-
                                 </div>
-
 
                                 <div class="item-price">
-
-                                    $<%= Number(
-                                        item.precio
-                                    ).toLocaleString(
-                                        'es-CO'
-                                    ) %>
-
+                                    $<%= Number(item.precio).toLocaleString('es-CO') %>
                                 </div>
-
 
                                 <div class="item-quantity">
-
-                                    Cantidad:
-                                    <%= item.cantidad %>
-
+                                    Cantidad: <%= item.cantidad %>
                                 </div>
-
-
                             </div>
-
 
                             <div class="item-line-price">
-
                                 $<%= Number(
-                                    item.precio *
-                                    item.cantidad
-                                ).toLocaleString(
-                                    'es-CO'
-                                ) %>
-
+                                    item.precio * item.cantidad
+                                ).toLocaleString('es-CO') %>
                             </div>
-
-
                         </div>
-
-
                     <% }) %>
-
-
                 </div>
-
 
                 <div class="divider"></div>
 
-
-                <!-- SUBTOTAL -->
-
                 <div class="summary-line text-sumary">
-
+                    <span>Subtotal</span>
                     <span>
-                        Subtotal
+                        $<%= Number(subtotal).toLocaleString('es-CO') %>
                     </span>
-
-                    <span>
-
-                        $<%= Number(
-                            subtotal
-                        ).toLocaleString(
-                            'es-CO'
-                        ) %>
-
-                    </span>
-
                 </div>
 
-
-                <!-- ENVÍO -->
-
                 <div class="summary-line text-sumary">
-
+                    <span>Envío</span>
                     <span>
-                        Envío
+                        $<%= (subtotal >= 30000 ? 0 : 5000).toLocaleString('es-CO') %>
                     </span>
-
-                    <span>
-
-                        $5.000
-
-                    </span>
-
                 </div>
 
-
-                <!-- IMPUESTOS -->
-
                 <div class="summary-line text-sumary">
-
+                    <span>Impuestos</span>
                     <span>
-                        Impuestos
+                        $<%= Number(subtotal).toLocaleString('es-CO') %>
                     </span>
-
-                    <span>
-
-                        $<%= Number(
-                            subtotal * 0.19
-                        ).toLocaleString(
-                            'es-CO'
-                        ) %>
-
-                    </span>
-
                 </div>
-
-
-                <!-- TOTAL -->
 
                 <div class="summary-line total text-sumary">
-
+                    <span>Total a pagar</span>
                     <span>
-                        Total a pagar
-                    </span>
-
-                    <span>
-
                         $<%= Number(
-                            subtotal +
-                            (subtotal * 0.19) +
-                            5000
-                        ).toLocaleString(
-                            'es-CO'
-                        ) %>
-
+                            subtotal >= 30000
+                                ? subtotal
+                                : subtotal + 5000
+                        ).toLocaleString('es-CO') %>
                     </span>
-
                 </div>
 
-
-                <!-- BOTÓN -->
-
-                <button
-                    type="submit"
-                    class="pay-btn"
-                >
-
+                <button type="submit" class="pay-btn">
                     <i class="fas fa-lock"></i>
-
                     Continuar al pago con Wompi
-
                 </button>
-
 
                 <div
                     class="trust-badge"
-                    style="
-                        justify-content: space-between;
-                        margin-top: 18px;
-                    "
+                    style="justify-content: space-between; margin-top: 18px;"
                 >
-
-
                     <span>
-
                         <i class="fas fa-shield-alt"></i>
-
                         Pago seguro
-
                     </span>
 
-
                     <span>
-
                         <i class="fas fa-lock"></i>
-
                         Encriptado
-
                     </span>
-
 
                     <span>
-
                         <i class="fas fa-credit-card"></i>
-
                         Wompi
-
                     </span>
-
-
                 </div>
-
-
             </div>
-
-
         </div>
-
-
     </form>
-
-
 </div>
 
-
-<!-- include footer -->
-
 <%- include('../../include/_footer') %>
-
-<!-- /include footer -->

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,5 +18,109 @@
         <input type="hidden" name="email" value="<%= email %>">
         <button type="submit">Reenviar Código</button>
     </form>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Verificación de correo</title>
+<link rel="stylesheet" href="../../assets/css/_verificationCode.css">
+</head>
+
+<body>
+
+<div class="verification-container">
+
+    <div class="verification-card">
+
+        <div class="icon-container">
+            ✉
+        </div>
+
+        <h1>
+            Verifica tu correo
+        </h1>
+
+        <p class="description">
+            Hemos enviado un código de verificación a tu correo electrónico.
+            Ingresa el código recibido para continuar.
+        </p>
+
+        <form action="/verify-email" method="POST">
+
+            <input
+                type="hidden"
+                name="email"
+                value="<%= email %>"
+            >
+
+            <label
+                class="input-label"
+                for="code"
+            >
+                Código de verificación
+            </label>
+
+            <input
+                type="text"
+                id="code"
+                name="code"
+                class="code-input"
+                placeholder="000000"
+                maxlength="6"
+                autocomplete="one-time-code"
+                required
+            >
+
+            <button
+                type="submit"
+                class="verify-btn"
+            >
+                Verificar código
+            </button>
+
+        </form>
+
+        <div class="divider">
+            ¿No recibiste el código?
+        </div>
+
+        <p class="resend-text">
+            Puedes solicitar un nuevo código de verificación.
+        </p>
+
+        <form
+            action="/resend-verification-code"
+            method="POST"
+        >
+
+            <input
+                type="hidden"
+                name="email"
+                value="<%= email %>"
+            >
+
+            <button
+                type="submit"
+                class="resend-btn"
+            >
+                Reenviar código
+            </button>
+
+        </form>
+
+        <div class="security-message">
+            Por seguridad, no compartas tu código de verificación
+            con otras personas.
+        </div>
+
+    </div>
+
+</div>
 </body>
 </html>
