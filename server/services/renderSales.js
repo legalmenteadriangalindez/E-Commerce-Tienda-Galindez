@@ -55,8 +55,6 @@ exports.view_sale = async (req, res) => {
 };
 
 
-
-
 // ==================== DETALLES ====================
 exports.saleDetailView = async (req, res) => {
 
@@ -133,7 +131,6 @@ exports.total_profit = async (req, res) => {
 };
 
 
-
 // GANANCIAS POR PRODUCTO
 exports.profit_margins = async (req, res) => {
 
@@ -160,10 +157,7 @@ exports.profit_margins = async (req, res) => {
 };
 
 
-// ==========================================
 // PRODUCTOS MÁS VENDIDOS
-// ==========================================
-
 exports.best_selling_products = async (req, res) => {
 
     try {

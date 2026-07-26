@@ -7,7 +7,6 @@ const crypto = require("crypto");
 // const wompi = require("../config/wompi");
 const BASE_URL = process.env.BASE_URL
 
-// ADD TO CART (API)
 exports.add_to_carrito = async (req, res) => {
     try {
         const { productoId, cantidad } = req.body;
@@ -53,7 +52,6 @@ exports.add_to_carrito = async (req, res) => {
     }    
 };
 
-// GET CART PRODUCTS (API)
 exports.get_carrito = async (req, res) => {
 
     try {
@@ -77,21 +75,42 @@ exports.get_carrito = async (req, res) => {
 
 };
 
-
-// REMOVE ITEM (API)
 exports.remove_from_carrito = async (req, res) => {
-
     try {
-
         const { productoId } = req.body;
 
+        console.log("Producto recibido:", productoId);
+
+        if (!req.session.cart) {
+            return res.status(404).json({
+                success: false,
+                message: "El carrito está vacío"
+            });
+        }
+
         req.session.cart = req.session.cart.filter(
-            i => i.productoId.toString() !== productoId.toString()
+            item => item.productoId.toString() !== productoId.toString()
         );
 
-        return res.redirect('/view_cart');
+        req.session.save(error => {
+            if (error) {
+                console.error("Error guardando sesión:", error);
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Error guardando el carrito"
+                });
+            }
+
+            return res.json({
+                success: true,
+                message: "Producto eliminado correctamente",
+                cart: req.session.cart
+            });
+        });
 
     } catch (error) {
+        console.error("Error eliminando producto:", error);
 
         return res.status(500).json({
             success: false,
@@ -99,9 +118,6 @@ exports.remove_from_carrito = async (req, res) => {
         });
     }
 };
-
-
-
 
 exports.checkout = async (req, res) => {
 
@@ -169,7 +185,8 @@ exports.checkout = async (req, res) => {
             });
         }
 
-        const impuestos = subtotal * 0.19;
+        // const impuestos = subtotal * 0.19;
+        const impuestos = 0;
         const costoEnvio = 5000;
         const descuento = 0;
         const total = subtotal + impuestos + costoEnvio - descuento;
@@ -278,7 +295,6 @@ exports.checkout = async (req, res) => {
 
 };
 
-
 exports.wompiWebhook = async (req, res) => {
 
     try {
@@ -334,22 +350,14 @@ exports.wompiWebhook = async (req, res) => {
     }
 };
 
-
 exports.checkout_admin = async (req, res) => {
-
     try {
-
         const cart = req.session.cart || [];
 
         if (cart.length === 0) {
-
-            return res.status(400).send(
-                "El carrito está vacío"
-            );
-
+            return res.status(400).send("El carrito está vacío");
         }
 
-        // DATOS DEL FORMULARIO
         const {
             fullName,
             email,
@@ -364,102 +372,82 @@ exports.checkout_admin = async (req, res) => {
 
         let subtotal = 0;
 
-        // VALIDAR PRODUCTOS Y STOCK
         for (const item of cart) {
-
-            const productoDB =
-                await Productdb.findById(
-                    item.productoId
-                );
+            const productoDB = await Productdb.findById(item.productoId);
 
             if (!productoDB) {
-
-                return res.status(404).send(
-                    `Producto no encontrado`
-                );
-
+                return res.status(404).send("Producto no encontrado");
             }
 
-            if (
-                productoDB.stock < item.cantidad
-            ) {
-
+            if (productoDB.stock < item.cantidad) {
                 return res.status(400).send(
                     `Stock insuficiente para ${productoDB.nombre}`
                 );
-
             }
 
-            subtotal += (
-                productoDB.precioVenta *
-                item.cantidad
-            );
-
+            subtotal += productoDB.precioVenta * item.cantidad;
         }
 
-        // CÁLCULOS
-        const impuestos = subtotal * 0.19;
-
+        // const impuestos = subtotal * 0.19;
+        const impuestos = 0;
         const costoEnvio = 5000;
         const descuento = 0;
         const total = subtotal + impuestos + costoEnvio - descuento;
 
-        const orden =
-            await Ordendb.create({
-                numeroOrden: `ORD-${Date.now()}`,
-                usuario: req.session.user._id,
-                // DATOS DEL CLIENTE
-                cliente: {
-                    nombre:fullName,
-                    email:email,
-                    telefono:phone
-                },
-                productos:
-                    cart.map(item => ({
-
-                        producto:item.productoId,
-                        nombre:item.nombre,
-                        cantidad:item.cantidad,
-                        precioUnitario:item.precio,
-                        subtotal:item.precio *item.cantidad
-
-                    })),
-                subtotal,
-                impuestos,
-                costoEnvio,
-                descuento,
-                total,
-                estado: 'PENDIENTE',
-                // DIRECCIÓN
-                direccionEnvio: {
-                    nombreRecibe:fullName,
-                    telefono:phone,
-                    departamento:department,
-                    ciudad:city,
-                    direccion:address,
-                    referencia:reference,
-                    // codigoPostal:zip
-
-                },
-                // NOTAS
-                notasCliente:notes
-
-            });
-        await Saledb.create({
-
-            cliente:req.session.user._id,
-
-            order:orden._id,
+        const orden = await Ordendb.create({
+            numeroOrden: `ORD-${Date.now()}`,
+            usuario: req.session.user._id,
+            cliente: {
+                nombre: fullName,
+                email,
+                telefono: phone
+            },
+            productos: cart.map(item => ({
+                producto: item.productoId,
+                nombre: item.nombre,
+                cantidad: item.cantidad,
+                precioUnitario: item.precio,
+                subtotal: item.precio * item.cantidad
+            })),
             subtotal,
             impuestos,
             costoEnvio,
             descuento,
             total,
-            estadoPago:'PENDIENTE'
+            estado: 'PENDIENTE',
+            direccionEnvio: {
+                nombreRecibe: fullName,
+                telefono: phone,
+                departamento: department,
+                ciudad: city,
+                direccion: address,
+                referencia: reference
+            },
+            notasCliente: notes
         });
-        // DESCONTAR STOCK
-        for (const item of cart) {
 
+        const venta = await Saledb.create({
+            cliente: req.session.user._id,
+            order: orden._id,
+            subtotal,
+            impuestos,
+            costoEnvio,
+            descuento,
+            total,
+            estadoPago: 'PENDIENTE'
+        });
+
+        const detallesVenta = cart.map(item => ({
+            venta: venta._id,
+            producto: item.productoId,
+            cantidad: Number(item.cantidad),
+            precioUnitario: Number(item.precio),
+            subtotal: Number(item.precio) * Number(item.cantidad)
+        }));
+
+        await SaleDetaildb.insertMany(detallesVenta);
+
+        for (const item of cart) {
             await Productdb.findByIdAndUpdate(
                 item.productoId,
                 {
@@ -468,34 +456,24 @@ exports.checkout_admin = async (req, res) => {
                     }
                 }
             );
-
         }
 
-        // LIMPIAR CARRITO
         req.session.cart = [];
 
         req.session.save(err => {
-
             if (err) {
-
-                return res.status(500)
-                    .send(err.message);
-
+                return res.status(500).send(err.message);
             }
 
             return res.redirect(
                 `/venta-finalizada-admin/${orden._id}`
             );
-
         });
 
     } catch (error) {
-
-        return res.status(500)
-            .send(error.message);
-
+        console.error("ERROR CREANDO VENTA:", error);
+        return res.status(500).send(error.message);
     }
-
 };
 
 exports.payment_point = async (req, res) => {

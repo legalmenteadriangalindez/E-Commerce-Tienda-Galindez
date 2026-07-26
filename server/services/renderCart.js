@@ -129,12 +129,6 @@ exports.add_to_carrito = async (req, res) => {
     }
 };
 
-
-
-
-
-
-
 // actualizar carrito
 exports.update_carrito = async (req, res) => {
 
@@ -158,9 +152,6 @@ exports.update_carrito = async (req, res) => {
         });
     }
 };
-
-
-
 
 // RENDER SALE SUCCESS
 exports.order_success = async (req, res) => {

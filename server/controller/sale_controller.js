@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 const Saledb = require('../model/sales');
 const SaleDetaildb = require('../model/saleDetails');
 const Productdb = require('../model/product');
-const Paymentdb = require('../model/paymentMethod');
-
 
 // CREATE (CON TRANSACCIÓN REAL)
 exports.create = async (req, res) => {
@@ -97,47 +95,49 @@ exports.create = async (req, res) => {
     }
 };
 
-
-
-// FIND (SIN N+1 - OPTIMIZADO)
 exports.find = async (req, res) => {
     try {
-
         const ventas = await Saledb.find()
             .populate("cliente")
+            .sort({ createdAt: -1 })
             .lean();
 
-        const ventasIds = ventas.map(v => v._id);
+        const ventasIds = ventas.map(venta => venta._id);
 
         const detalles = await SaleDetaildb.find({
             venta: { $in: ventasIds }
-        }).populate("producto").lean();
+        })
+        .populate("producto")
+        .lean();
 
-        // MAPEO EFICIENTE
         const detallesMap = {};
 
-        for (let d of detalles) {
-            if (!detallesMap[d.venta]) {
-                detallesMap[d.venta] = [];
+        for (const detalle of detalles) {
+            const ventaId = detalle.venta.toString();
+
+            if (!detallesMap[ventaId]) {
+                detallesMap[ventaId] = [];
             }
-            detallesMap[d.venta].push(d);
+
+            detallesMap[ventaId].push(detalle);
         }
 
-        for (let v of ventas) {
-            v.detalles = detallesMap[v._id] || [];
+        for (const venta of ventas) {
+            const ventaId = venta._id.toString();
+            venta.detalles = detallesMap[ventaId] || [];
         }
 
-        res.send(ventas);
+        return res.json(ventas);
 
     } catch (error) {
-        res.status(500).send({
+        console.error("ERROR OBTENIENDO VENTAS:", error);
+
+        return res.status(500).json({
             message: "Error obteniendo ventas",
             error: error.message
         });
     }
 };
-
-
 
 // DELETE (CON TRANSACCIÓN)
 exports.delete = async (req, res) => {
@@ -243,114 +243,149 @@ exports.findOne = async (req, res) => {
     }
 };
 
-
 exports.finalizarVenta = async (req, res) => {
-
     try {
-
         const cart = req.session.cart;
-        const metodoPago = cart.metodoPago;
-        if(!cart || !cart.length){
 
+        if (!cart || !cart.length) {
             return res.status(400).json({
-                ok:false,
-                msg:"Carrito vacío"
+                ok: false,
+                msg: "Carrito vacío"
             });
         }
 
         const { cliente } = req.body;
 
-        if(!cliente){
-
+        if (!cliente) {
             return res.status(400).json({
-                ok:false,
-                msg:"Cliente requerido"
+                ok: false,
+                msg: "Cliente requerido"
             });
         }
 
-        let total = 0;
+        const usuario = await Userdb.findById(cliente);
 
+        if (!usuario) {
+            return res.status(404).json({
+                ok: false,
+                msg: "Cliente no encontrado"
+            });
+        }
+
+        let subtotal = 0;
         const detalles = [];
+        const productosOrden = [];
 
-        for(const item of cart){
-
+        for (const item of cart) {
             const producto = await Productdb.findById(item.productoId);
 
-            if(!producto){
-
+            if (!producto) {
                 return res.status(404).json({
-                    ok:false,
-                    msg:`Producto no existe`
+                    ok: false,
+                    msg: "Producto no existe"
                 });
             }
 
-            if(producto.stock < item.cantidad){
-
+            if (producto.stock < item.cantidad) {
                 return res.status(400).json({
-                    ok:false,
-                    msg:`Stock insuficiente para ${producto.nombre}`
+                    ok: false,
+                    msg: `Stock insuficiente para ${producto.nombre}`
                 });
             }
 
-            producto.stock -= item.cantidad;
+            const subtotalProducto =
+                item.cantidad * producto.precioVenta;
 
-            await producto.save();
+            subtotal += subtotalProducto;
 
-            const subtotal = item.cantidad * producto.precioVenta;
-
-            total += subtotal;
+            productosOrden.push({
+                producto: producto._id,
+                nombre: producto.nombre,
+                cantidad: item.cantidad,
+                precioUnitario: producto.precioVenta,
+                subtotal: subtotalProducto
+            });
 
             detalles.push({
                 producto: producto._id,
                 cantidad: item.cantidad,
                 precioUnitario: producto.precioVenta,
-                subtotal
+                subtotal: subtotalProducto
             });
         }
 
-        const venta = await Saledb.create({
-            cliente,
-            total
-        });
+        const numeroOrden =
+            `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-        const pago = await Paymentdb.create({
-
-            venta: venta._id,
-
+        const orden = await Orderdb.create({
+            numeroOrden,
             usuario: cliente,
 
-            metodo: metodoPago,
+            cliente: {
+                nombre: usuario.nombre,
+                email: usuario.email,
+                telefono: usuario.telefono
+            },
 
-            estado: 'APROBADO',
+            productos: productosOrden,
 
-            monto: total
+            subtotal,
 
+            impuestos: 0,
+
+            costoEnvio: 0,
+
+            total: subtotal,
+
+            estado: "PENDIENTE"
         });
 
-        venta.pago = pago._id;
+        const venta = await Saledb.create({
+            cliente,
+            order: orden._id,
+            subtotal,
+            impuestos: 0,
+            costoEnvio: 0,
+            descuento: 0,
+            total: subtotal,
+            estadoPago: "PENDIENTE"
+        });
 
-        await venta.save();
+        const detallesVenta = detalles.map(detalle => ({
+            venta: venta._id,
+            ...detalle
+        }));
 
-        for(const d of detalles){
+        await SaleDetaildb.insertMany(detallesVenta);
 
-            await SaleDetaildb.create({
-                venta: venta._id,
-                ...d
-            });
+        for (const item of cart) {
+            await Productdb.findByIdAndUpdate(
+                item.productoId,
+                {
+                    $inc: {
+                        stock: -item.cantidad
+                    }
+                }
+            );
         }
 
         req.session.cart = [];
 
-        return res.json({
-            ok:true,
+        return res.status(201).json({
+            ok: true,
+            msg: "Orden y venta creadas correctamente",
+            ordenId: orden._id,
+            numeroOrden: orden.numeroOrden,
             ventaId: venta._id
         });
 
-    } catch(error){
+    } catch (error) {
+        console.error("Error al finalizar venta:", error);
 
         return res.status(500).json({
-            ok:false,
-            msg:"Error al registrar venta"
+            ok: false,
+            msg: "Error al registrar la venta",
+            error: error.message
         });
     }
 };

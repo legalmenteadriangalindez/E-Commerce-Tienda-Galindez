@@ -12,13 +12,11 @@ router.use('/api/proveedores', require('./provider.routes'));
 router.use('/api/ventas', require('./sales.routes'));
 router.use('/api/orders', require('./order.routes'));
 router.use('/api/reviews', require('./review.routes'));
-router.use('/api/unidades', require('./units.routes'));
+
 router.use('/api/roles', require('./roles.routes'));
 router.use('/carrito', require('./cart.routes'));
-router.use('/api/paymentsMethods', require('./paymentMethod.routes'));
-router.use('/api/paymentTransactions', require('./PaymentTransaction.routes'));
 router.use('/', require('./admin.routes'));
-router.use('/api/units', require('./units.routes'));
+
 router.use('/dealer', require('./dealer.routes'));                   
 router.get('/clothes', require('./clothes.routes'));
 

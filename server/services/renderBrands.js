@@ -58,7 +58,6 @@ exports.delete_brand = (req, res) => {
         .catch(err => res.send(err));
 };
 
-
 exports.Productbrands = (req, res) => {
     axios.get(`${BASE_URL}/api/productos`)
         .then(response => {

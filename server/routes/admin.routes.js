@@ -14,11 +14,8 @@ const servicesRenderPaymentPoint = require('../services/RenderPaymentPoint');
 const servicesRenderAdminAnalytics = require('../services/renderAdminAnalytics');
 const servicesRenderBrand = require('../services/renderBrands');
 const servicesRenderOrders = require('../services/renderOrders');
-const servicesRenderPaymentsMethods = require('../services/paymentMethodRender');
-const servicesRenderPaymentsTransactions = require('../services/paymentTransactionRender');
 const servicesRenderProfile = require('../services/renderProfile');
 const servicesRenderCart = require('../services/renderCart');
-const servicesRenderUnits = require('../services/renderUnits');
 
 const brandController = require('../controller/brand_controller');
 const saleController = require('../controller/sale_controller');
@@ -29,7 +26,9 @@ const upload = require('../middleware/upload');
 router.get('/read-categoria', isAdmin, servicesRenderCategory.read_categories);
 router.get('/create-categoria', isAdmin, servicesRenderCategory.create_category_form);
 router.get('/update-categoria', isAdmin, servicesRenderCategory.update_category);
+router.post('/update-categoria/:id',isAdmin,servicesRenderCategory.update_category_data);
 router.post('/create-categoria', isAdmin, servicesRenderCategory.create_category);
+router.get('/delete-categoria/:id',isAdmin,servicesRenderCategory.delete_category);
 
 router.post('/create-producto',isAdmin, servicesRenderProduct.create_product);
 router.get('/read-producto', isAdmin, servicesRenderProduct.read_products);
@@ -52,24 +51,6 @@ router.get('/update-order',isAdmin,servicesRenderOrders.update_order);
 router.post('/update-order/:id',isAdmin,servicesRenderOrders.update_order_data);
 router.get('/delete-order/:id',isAdmin,servicesRenderOrders.delete_order);
 
-// ==================== PAYMENT METHODS ====================
-router.get('/create-payment-method',isAdmin,servicesRenderPaymentsMethods.create_payment_method_form);
-router.post('/create-payment-method',isAdmin,servicesRenderPaymentsMethods.create_payment_method);
-router.get('/read-payment-method',isAdmin,servicesRenderPaymentsMethods.read_payment_methods);
-router.get('/update-payment-method',isAdmin,servicesRenderPaymentsMethods.update_payment_method_form);
-router.post('/update-payment-method/:id',isAdmin,servicesRenderPaymentsMethods.update_payment_method);
-router.get('/delete-payment-method/:id',isAdmin,servicesRenderPaymentsMethods.delete_payment_method);
-
-
-
-// ==================== PAYMENT TRANSCTIONS ====================
-// router.get('/create-payment',isAdmin,servicesRenderPaymentsTransactions.create_payment_method_form);
-// router.post('/create-payment',isAdmin,servicesRenderPaymentsTransactions.create_payment_method);
-router.get('/read-payment-transactions',isAdmin,servicesRenderPaymentsTransactions.read_payment_transactions);
-// router.get('/update-payment',isAdmin,servicesRenderPaymentsTransactions.update_payment_method_form);
-// router.post('/update-payment/:id',isAdmin,servicesRenderPaymentsTransactions.update_payment_method);
-// router.delete('/delete-payment/:id',isAdmin,servicesRenderPaymentsTransactions.delete_payment);
-
 
 router.get('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
 router.post('/payment_point', isAdmin, servicesRenderCart.payment_point_admin);
@@ -79,7 +60,7 @@ router.get('/admin-best_selling_products',isAdmin,servicesRenderSales.best_selli
 
 router.get('/create-marca', isAdmin, servicesRenderBrand.create_brand_form);
 router.post('/create-marca', isAdmin, servicesRenderBrand.create_brand);
-router.get('/read-marca', isAdmin, servicesRenderBrand.read_brands);
+router.get('/admin/brands/read-brands', isAdmin, servicesRenderBrand.read_brands);
 router.get('/update-marca', isAdmin, brandController.getBrandForEdit);
 router.post('/update-marca/:id',isAdmin, upload.single('foto'), brandController.update); // guarda cambios
 router.get('/delete-marca/:id', isAdmin, servicesRenderBrand.delete_brand);
@@ -123,11 +104,7 @@ router.get('/sale/:id', servicesRenderSales.saleDetailView);
 router.get('/read-total-profit',isAdmin,servicesRenderSales.total_profit);
 router.get('/read-profit-margins',isAdmin,servicesRenderSales.profit_margins);
 
-router.get('/read-units',isAdmin, servicesRenderUnits.readUnits);
-router.post('/create-units',isAdmin, servicesRenderUnits.createUnit);
-router.get('/update-units/:id',isAdmin, servicesRenderUnits.updateUnit);
-router.get('/delete-unit/:id',isAdmin, servicesRenderUnits.deleteUnit);
-router.get('/create-unit',isAdmin, servicesRenderUnits.create_unit_form);
+
 
 router.get('/admin/perfil', servicesRenderProfile.profile);
 router.get('/admin/perfil/editar/:id', servicesRenderProfile.update_profile_form_admin);

@@ -82,11 +82,6 @@ const orderSchema = new mongoose.Schema({
         default: 0
     },
 
-    descuento: {
-        type: Number,
-        default: 0
-    },
-
     total: {
         type: Number,
         required: true
@@ -132,11 +127,6 @@ const orderSchema = new mongoose.Schema({
         referencia: {
             type: String
         },
-
-        codigoPostal: {
-            type: String
-        }
-
     },
 
     // NOTAS DEL CLIENTE

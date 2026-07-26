@@ -9,5 +9,6 @@ router.post('/', upload.array('fotos', 4), productController.create);
 router.put('/:id', upload.array('fotos', 4), productController.update);
 router.delete('/:id', productController.delete);
 router.get('/search', productController.searchApi);
+router.get('/:id', productController.findOne);
 router.get('/read-Stock', productController.getStockAlerts);
 module.exports = router;

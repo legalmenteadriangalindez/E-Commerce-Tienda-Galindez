@@ -5,7 +5,6 @@ const dotenv = require('dotenv');
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
-// ==================== PROVEEDORES ======================
 exports.create_provider_form = (req, res) => {
     res.render('admin/providers/create_proveedor');
 };
@@ -61,6 +60,7 @@ exports.update_provider_data = async (req, res) => {
         res.send(err.message);
     }
 };
+
 exports.update_provider = (req, res) => {
     axios.get(`${BASE_URL}/api/proveedores`, { params: { id: req.query.id }})
         .then(response => {
