@@ -7,5 +7,5 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const path = require('path');
 
 exports.login = (req, res) => {
-    res.render('${BASE_URL}client/auth/login');
+    res.render(`${BASE_URL}client/auth/login`);
 };
