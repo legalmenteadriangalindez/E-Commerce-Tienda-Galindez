@@ -20,12 +20,18 @@ module.exports = (app) => {
     );
 
     // EJS
-    app.set('view engine', 'ejs');
+    const viewsPath = path.join(process.cwd(), 'views');
 
-    app.set(
-        'views',
-        path.join(process.cwd(), 'views')
-    );
+    console.log('DIRECTORIO ACTUAL:', process.cwd());
+    console.log('DIRECTORIO VIEWS:', viewsPath);
+    
+    app.set('view engine', 'ejs');
+    app.set('views', viewsPath);
+    
+        app.set(
+            'views',
+            path.join(process.cwd(), 'views')
+        );
 
     // CSS
     app.use(
