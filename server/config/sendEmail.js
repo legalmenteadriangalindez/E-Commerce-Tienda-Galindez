@@ -89,3 +89,5 @@ const sendEmail = async (to, code) => {
         );
 
         throw error;
+
+module.exports = sendEmail;
