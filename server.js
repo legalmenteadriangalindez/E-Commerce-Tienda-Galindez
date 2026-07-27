@@ -47,7 +47,7 @@ if (require.main === module) {
     const PORT = process.env.PORT || 8080;
 
     app.listen(PORT, () => {
-        console.log(`Servidor corriendo en http://localhost:${PORT}`);
+        console.log(`Servidor corriendo en ${BASE_URL}:${PORT}`);
     });
 }
 
