@@ -23,7 +23,7 @@ const sendEmail = async (to, code) => {
         const response = await axios.post(
             'https://api.resend.com/emails',
             {
-                from: process.env.EMAIL_FROM,
+                from: process.env.EMAIL_USER,
                 to: [to],
                 subject: process.env.EMAIL_SUBJECT || 'Código de verificación',
                 html: `
