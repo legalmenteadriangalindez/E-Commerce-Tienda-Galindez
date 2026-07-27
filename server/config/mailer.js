@@ -6,20 +6,13 @@ dns.setDefaultResultOrder('ipv4first');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
-    port: 587,
-
-    // STARTTLS
-    secure: false,
-    requireTLS: true,
-
-    // Forzar conexión mediante IPv4
-    family: 4,
 
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    }
-        // Configuración de conexión
+    },
+
+    // Configuración de conexión
     connectionTimeout: 30000,
     greetingTimeout: 30000,
     socketTimeout: 30000
