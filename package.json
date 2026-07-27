@@ -14,7 +14,7 @@
   "author": "akshay kashyap",
   "license": "ISC",
   "dependencies": {
-    "@getbrevo/brevo": "^2.0.0",
+    "@getbrevo/brevo": "^2.5.0",
     "@vercel/node": "^5.8.27",
     "axios": "^0.21.0",
     "bcrypt": "^6.0.0",
