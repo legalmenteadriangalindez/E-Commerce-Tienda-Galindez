@@ -96,6 +96,6 @@ module.exports = sendEmail;
 
 //         throw error;
 //     }
-};
+// };
 
 // module.exports = sendEmail;
