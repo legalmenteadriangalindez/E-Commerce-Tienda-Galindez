@@ -16,7 +16,24 @@
 
 // module.exports = sendEmail;
 
+console.log('===== RESEND DEBUG =====');
 
+console.log(
+    'RESEND_API_KEY existe:',
+    !!process.env.RESEND_API_KEY
+);
+
+console.log(
+    'RESEND_API_KEY empieza con re_:',
+    process.env.RESEND_API_KEY?.startsWith('re_')
+);
+
+console.log(
+    'RESEND_API_KEY longitud:',
+    process.env.RESEND_API_KEY?.length
+);
+
+console.log('========================');
 const axios = require('axios');
 
 const sendEmail = async (to, code) => {
