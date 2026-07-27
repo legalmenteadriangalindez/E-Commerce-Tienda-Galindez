@@ -7,8 +7,13 @@ dns.setDefaultResultOrder('ipv4first');
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
+
+    // STARTTLS
     secure: false,
     requireTLS: true,
+
+    // Forzar conexión mediante IPv4
+    family: 4,
 
     auth: {
         user: process.env.EMAIL_USER,
@@ -16,6 +21,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// Verificar conexión SMTP
 transporter.verify((error, success) => {
     if (error) {
         console.error('❌ Error conectando con Gmail SMTP');
@@ -28,6 +34,7 @@ transporter.verify((error, success) => {
     }
 });
 
+// Verificar variables de entorno
 console.log(
     '📧 EMAIL_USER configurado:',
     !!process.env.EMAIL_USER
