@@ -47,6 +47,11 @@ const sendEmail = async (to, code) => {
             htmlContent: `
                 <!DOCTYPE html>
                 <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Verificación de cuenta</title>
+                </head>
+
                 <body>
 
                     <h2>Verificación de cuenta</h2>
@@ -89,5 +94,7 @@ const sendEmail = async (to, code) => {
         );
 
         throw error;
+    }
+};
 
 module.exports = sendEmail;
