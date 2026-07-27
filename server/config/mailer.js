@@ -1,12 +1,14 @@
-const nodeMailer = require('nodemailer');
+const nodemailer = require('nodemailer');
+const dns = require('dns');
 
-const transporter = nodeMailer.createTransport({
+// Obligar a Node.js a preferir IPv4
+dns.setDefaultResultOrder('ipv4first');
+
+const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-
-    // Forzar IPv4
-    family: 4,
+    port: 587,
+    secure: false,
+    requireTLS: true,
 
     auth: {
         user: process.env.EMAIL_USER,
@@ -14,7 +16,6 @@ const transporter = nodeMailer.createTransport({
     }
 });
 
-// Verificar conexión con Gmail
 transporter.verify((error, success) => {
     if (error) {
         console.error('❌ Error conectando con Gmail SMTP');
