@@ -16,6 +16,7 @@
 
 // module.exports = sendEmail;
 
+
 const axios = require('axios');
 
 const sendEmail = async (to, code) => {
@@ -23,9 +24,9 @@ const sendEmail = async (to, code) => {
         const response = await axios.post(
             'https://api.resend.com/emails',
             {
-                from: process.env.EMAIL_USER,
+                from: 'onboarding@resend.dev',
                 to: [to],
-                subject: process.env.EMAIL_SUBJECT || 'Código de verificación',
+                subject: 'Código de verificación - Tienda Galindez',
                 html: `
                     <div style="font-family: Arial, sans-serif; padding: 20px;">
                         <h2>Verificación de cuenta</h2>
@@ -64,17 +65,16 @@ const sendEmail = async (to, code) => {
         return response.data;
 
     } catch (error) {
-
         console.error('❌ Error enviando correo con Resend');
 
         if (error.response) {
             console.error('Status:', error.response.status);
             console.error('Respuesta:', error.response.data);
         } else if (error.request) {
-            console.error('No se recibió respuesta de Resend');
+            console.error('❌ No se recibió respuesta de Resend');
             console.error('Mensaje:', error.message);
         } else {
-            console.error('Mensaje:', error.message);
+            console.error('❌ Error:', error.message);
         }
 
         throw error;
