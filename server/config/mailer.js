@@ -1,12 +1,11 @@
 const nodeMailer = require('nodemailer');
 
 const transporter = nodeMailer.createTransport({
-    service: 'gmail',
-
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
 
+    // Forzar IPv4
     family: 4,
 
     auth: {
@@ -28,7 +27,14 @@ transporter.verify((error, success) => {
     }
 });
 
-console.log('📧 EMAIL_USER configurado:', !!process.env.EMAIL_USER);
-console.log('🔑 EMAIL_PASS configurado:', !!process.env.EMAIL_PASS);
+console.log(
+    '📧 EMAIL_USER configurado:',
+    !!process.env.EMAIL_USER
+);
+
+console.log(
+    '🔑 EMAIL_PASS configurado:',
+    !!process.env.EMAIL_PASS
+);
 
 module.exports = transporter;
