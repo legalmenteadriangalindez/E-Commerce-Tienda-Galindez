@@ -274,9 +274,9 @@ exports.checkout = async (req, res) => {
 
         checkoutUrl.searchParams.set("reference",referenceOrder);
 
-        // checkoutUrl.searchParams.set("signature:integrity",signature);
+        checkoutUrl.searchParams.set("signature:integrity",signature);
 
-        // checkoutUrl.searchParams.set("redirect-url",`${BASE_URL}/venta-finalizada/${orden._id}`);
+        checkoutUrl.searchParams.set("redirect-url",`${BASE_URL}/venta-finalizada/${orden._id}`);
         console.log("CHECKOUT WOMPI:", checkoutUrl.toString());
         req.session.cart = [];
 
