@@ -544,3 +544,241 @@ body{
 }
 
 }
+
+
+
+
+
+
+
+/* =================== */
+/* ==================================================
+   RESPONSIVE - VISTA MÓVIL
+   No modifica el diseño de escritorio
+================================================== */
+
+@media (max-width: 600px) {
+
+    /* ==============================================
+       HOME
+    ============================================== */
+
+    .home {
+        width: 100%;
+        overflow: hidden;
+    }
+
+
+    /* ==============================================
+       CARAS ANIME
+    ============================================== */
+
+    .anime-face {
+        width: 80px;
+        opacity: 0.7;
+        z-index: 0;
+    }
+
+    .face-1 {
+        top: 90px;
+        left: -20px;
+    }
+
+    .face-2 {
+        top: 130px;
+        right: -20px;
+    }
+
+    .face-3 {
+        top: 350px;
+        right: -15px;
+    }
+
+
+    /* ==============================================
+       HERO
+    ============================================== */
+
+    .hero {
+        min-height: auto;
+        height: auto;
+
+        display: flex;
+        flex-direction: column;
+
+        justify-content: center;
+        align-items: center;
+
+        text-align: center;
+
+        gap: 30px;
+
+        padding: 70px 20px 40px;
+
+        margin-top: 30px;
+    }
+
+
+    /* CONTENIDO */
+
+    .hero-content {
+        width: 100%;
+        max-width: 100%;
+
+        position: relative;
+        z-index: 2;
+    }
+
+
+    /* TEXTO JAPONÉS */
+
+    .jp-text {
+        font-size: 0.8rem;
+        display: block;
+        margin-bottom: 15px;
+    }
+
+
+    /* TÍTULO */
+
+    .hero h1 {
+        font-size: 3rem;
+        line-height: 1.1;
+
+        margin: 0;
+    }
+
+
+    /* DESCRIPCIÓN */
+
+    .hero p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+
+        max-width: 300px;
+
+        margin: 15px auto 0;
+    }
+
+
+    /* ==============================================
+       IMAGEN HERO
+    ============================================== */
+
+    .hero-image {
+        width: 100%;
+
+        display: flex;
+        justify-content: center;
+
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-image img {
+        width: 100%;
+        max-width: 320px;
+        height: auto;
+
+        object-fit: contain;
+    }
+
+
+    /* ==============================================
+       BENEFICIOS
+    ============================================== */
+
+    .benefits {
+
+        display: grid;
+
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 10px;
+
+        padding: 30px 15px;
+    }
+
+
+    .benefit {
+
+        padding: 18px 10px;
+
+        min-height: 110px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        justify-content: center;
+    }
+
+
+    .benefit h3 {
+
+        font-size: 0.9rem;
+
+        margin-top: 8px;
+
+        margin-bottom: 0;
+    }
+
+
+    /* ==============================================
+       CATEGORÍAS
+    ============================================== */
+
+    .categories {
+
+        padding: 50px 15px;
+    }
+
+
+    .categories h2 {
+
+        font-size: 2rem;
+
+        text-align: center;
+
+        margin-bottom: 30px;
+    }
+
+
+    /* GRID DE CATEGORÍAS */
+
+    .category-grid {
+
+        display: grid;
+
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 10px;
+    }
+
+
+    /* TARJETAS */
+
+    .category-card {
+
+        height: 140px;
+
+        font-size: 0.9rem;
+
+        text-align: center;
+
+        padding: 15px;
+    }
+
+
+    /* ÚLTIMA CATEGORÍA OCUPA TODO EL ANCHO */
+
+    .category-card:last-child {
+
+        grid-column: 1 / -1;
+
+        height: 120px;
+    }
+
+}
