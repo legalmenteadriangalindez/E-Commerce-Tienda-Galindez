@@ -311,12 +311,11 @@ input:focus, select:focus {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
+    
     .summary-card {
         position: static;
     }
-    body {
-        
-    }
+
     .form-card, .summary-card {
         padding: 1.3rem;
     }
