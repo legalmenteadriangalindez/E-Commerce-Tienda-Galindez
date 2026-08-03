@@ -315,7 +315,7 @@ input:focus, select:focus {
         position: static;
     }
     body {
-        padding: 1rem;
+        
     }
     .form-card, .summary-card {
         padding: 1.3rem;
