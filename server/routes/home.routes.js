@@ -10,8 +10,12 @@ const servicesRenderCategory = require('../services/renderCategories');
 const servicesRenderProduct = require('../services/renderProducts');
 const servicesRenderCart = require('../services/renderCart');
 const clotehsService = require('../services/renderClothes');
+const servicesRenderSEO = require('../services/renderSEO');
 
 router.get('/clothes', clotehsService.renderClothes);
+
+router.get('/sitemap.xml', servicesRenderSEO.sitemap);
+router.get('/robots.txt', servicesRenderSEO.robots);
 
 router.get('/', servicesRenderHomeRutes.homeRoutes);
 router.get('/search', servicesRenderHomeRutes.search);
