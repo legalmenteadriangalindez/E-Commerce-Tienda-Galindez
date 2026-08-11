@@ -1,32 +1,97 @@
-<!-- include header -->
 <%- include('../../include/_header') %>
 
-<link rel="stylesheet" href="/css/detail_products.css">
 
-<div class="container product-detail-container mt-5">
+<!-- ========================================= -->
+<!-- CONTENIDO DEL PRODUCTO -->
+<!-- ========================================= -->
 
-    <div class="row">
+<div class="row">
 
-        <!-- CAROUSEL -->
-        <div class="col-md-6">
-            <%- include('./partials/product-carousel', { product }) %>
-        </div>
+    <!-- CAROUSEL -->
+    <div class="col-md-6">
 
-        <!-- INFO -->
-        <div class="col-md-6">
-            <%- include('./partials/product-info', { product }) %>
-        </div>
+        <%- include('./partials/product-carousel', { product }) %>
+
+    </div>
+
+
+    <!-- INFO -->
+    <div class="col-md-6">
+
+        <%- include('./partials/product-info', { product }) %>
 
     </div>
 
 </div>
 
-<hr>
 
-<!-- REVIEWS -->
-<div class="container">
-    <%- include('./partials/product-reviews', { reviews }) %>
-</div>
+<!-- ========================================= -->
+<!-- SEO: DATOS ESTRUCTURADOS DEL PRODUCTO -->
+<!-- ========================================= -->
 
-<!-- include footer -->
+<%
+    // Construir URL absoluta de la imagen
+    let productImage = '';
+
+    if (product.fotos && product.fotos.length > 0) {
+
+        productImage = product.fotos[0].startsWith('http')
+            ? product.fotos[0]
+            : `${siteUrl}${product.fotos[0]}`;
+
+    }
+
+
+    // Crear objeto Schema.org
+    const productSchema = {
+
+        "@context": "https://schema.org",
+
+        "@type": "Product",
+
+        "name": product.nombre,
+
+        "description": product.descripcion || "",
+
+        "image": productImage
+            ? [productImage]
+            : [],
+
+        "brand": product.marca
+            ? {
+                "@type": "Brand",
+                "name": product.marca.nombre
+            }
+            : undefined,
+
+        "category": product.categoria
+            ? product.categoria.nombre
+            : undefined,
+
+        "offers": {
+
+            "@type": "Offer",
+
+            "url": seoCanonical,
+
+            "priceCurrency": "COP",
+
+            "price": product.precioVenta,
+
+            "availability":
+                product.stock > 0
+                    ? "https://schema.org/InStock"
+                    : "https://schema.org/OutOfStock"
+
+        }
+
+    };
+%>
+
+
+<script type="application/ld+json">
+<%- JSON.stringify(productSchema, (key, value) => value === undefined ? undefined : value) %>
+</script>
+
+
 <%- include('../../include/_footer') %>
