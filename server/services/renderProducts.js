@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
-
+const siteUrl = BASE_URL.replace(/\/$/, '');
 // Detalle de producto
 // exports.product_detail = async (req, res) => {
 
@@ -28,11 +28,16 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 //     }
 // };
 
+// Detalle de producto
 exports.product_detail = async (req, res) => {
 
     try {
 
         const id = req.params.id;
+
+        // =========================================
+        // OBTENER PRODUCTO Y RESEÑAS
+        // =========================================
 
         const [productRes, reviewsRes] = await Promise.all([
 
@@ -49,9 +54,15 @@ exports.product_detail = async (req, res) => {
         const product = productRes.data;
         const reviews = reviewsRes.data;
 
-        // ==============================
+        // =========================================
+        // URL BASE DEL SITIO
+        // =========================================
+
+        const siteUrl = BASE_URL.replace(/\/$/, '');
+
+        // =========================================
         // SEO DEL PRODUCTO
-        // ==============================
+        // =========================================
 
         const seoTitle =
             `${product.nombre} | Tienda Galindez`;
@@ -60,25 +71,29 @@ exports.product_detail = async (req, res) => {
             ? product.descripcion.substring(0, 155)
             : `Compra ${product.nombre} en Tienda Galindez. Consulta precio y disponibilidad.`;
 
-        const seoCanonical =
-            `${BASE_URL.replace(/\/$/, '')}/Detalles/${id}`;
+        // =========================================
+        // URL CANÓNICA
+        // =========================================
 
-        // ==============================
+        const seoCanonical =
+            `${siteUrl}/Detalles/${id}`;
+
+        // =========================================
         // IMAGEN PRINCIPAL DEL PRODUCTO
-        // ==============================
+        // =========================================
 
         let seoImage = null;
 
         if (product.fotos && product.fotos.length > 0) {
 
             seoImage =
-                `${BASE_URL.replace(/\/$/, '')}${product.fotos[0]}`;
+                `${siteUrl}${product.fotos[0]}`;
 
         }
 
-        // ==============================
-        // RENDER
-        // ==============================
+        // =========================================
+        // RENDERIZAR VISTA
+        // =========================================
 
         res.render(
             'client/products/product_detail',
@@ -90,7 +105,10 @@ exports.product_detail = async (req, res) => {
                 seoTitle,
                 seoDescription,
                 seoCanonical,
-                seoImage
+                seoImage,
+
+                // URL del sitio
+                siteUrl
             }
         );
 
@@ -104,7 +122,9 @@ exports.product_detail = async (req, res) => {
         res.status(500).send(
             'Error cargando el producto'
         );
+
     }
+
 };
 
 exports.create_product = (req, res) => {
