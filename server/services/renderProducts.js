@@ -5,10 +5,35 @@ dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 // Detalle de producto
+// exports.product_detail = async (req, res) => {
+
+//     try {
+//         const id = req.params.id;
+//         const [productRes, reviewsRes] = await Promise.all([
+
+//             axios.get(`${BASE_URL}/api/productos`, {
+//                 params: { id }
+//             }),
+
+//             axios.get(`${BASE_URL}/api/reviews`, {
+//                 params: { producto: id }
+//             })
+
+//         ]);
+//         const product = productRes.data;
+//         const reviews = reviewsRes.data;
+//         res.render('client/products/product_detail', { product, reviews });
+//     } catch (err) {
+//         res.send(err);
+//     }
+// };
+
 exports.product_detail = async (req, res) => {
 
     try {
+
         const id = req.params.id;
+
         const [productRes, reviewsRes] = await Promise.all([
 
             axios.get(`${BASE_URL}/api/productos`, {
@@ -20,11 +45,65 @@ exports.product_detail = async (req, res) => {
             })
 
         ]);
+
         const product = productRes.data;
         const reviews = reviewsRes.data;
-        res.render('client/products/product_detail', { product, reviews });
+
+        // ==============================
+        // SEO DEL PRODUCTO
+        // ==============================
+
+        const seoTitle =
+            `${product.nombre} | Tienda Galindez`;
+
+        const seoDescription = product.descripcion
+            ? product.descripcion.substring(0, 155)
+            : `Compra ${product.nombre} en Tienda Galindez. Consulta precio y disponibilidad.`;
+
+        const seoCanonical =
+            `${BASE_URL.replace(/\/$/, '')}/Detalles/${id}`;
+
+        // ==============================
+        // IMAGEN PRINCIPAL DEL PRODUCTO
+        // ==============================
+
+        let seoImage = null;
+
+        if (product.fotos && product.fotos.length > 0) {
+
+            seoImage =
+                `${BASE_URL.replace(/\/$/, '')}${product.fotos[0]}`;
+
+        }
+
+        // ==============================
+        // RENDER
+        // ==============================
+
+        res.render(
+            'client/products/product_detail',
+            {
+                product,
+                reviews,
+
+                // SEO
+                seoTitle,
+                seoDescription,
+                seoCanonical,
+                seoImage
+            }
+        );
+
     } catch (err) {
-        res.send(err);
+
+        console.error(
+            'Error cargando detalle del producto:',
+            err.response?.data || err.message
+        );
+
+        res.status(500).send(
+            'Error cargando el producto'
+        );
     }
 };
 
