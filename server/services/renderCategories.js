@@ -25,8 +25,6 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 //         .catch(err => res.send(err));
 // };
 
-// ==================== CATEGORÍA CLIENTE ====================
-
 exports.category = async (req, res) => {
 
     try {
@@ -37,50 +35,55 @@ exports.category = async (req, res) => {
             `${BASE_URL}/api/productos`
         );
 
-        const data = Array.isArray(response.data)
-            ? response.data
-            : [];
+        const data = response.data;
 
         // Filtrar productos de la categoría
-        const productos = data.filter(producto =>
-            producto.categoria?.nombre === nombreCategoria
+        const productos = data.filter(p =>
+            p.categoria?.nombre === nombreCategoria
         );
 
         const categoria = {
             nombre: nombreCategoria
         };
 
-        // SEO dinámico
+        // =========================
+        // SEO
+        // =========================
+
         const seoTitle =
             `${nombreCategoria} | Tienda Galindez`;
 
         const seoDescription =
             `Encuentra productos de ${nombreCategoria} en Tienda Galindez. Consulta nuestros productos, precios y disponibilidad.`;
 
-        res.status(200).render(
+        const seoCanonical =
+            `${BASE_URL.replace(/\/$/, '')}/categoria/${encodeURIComponent(nombreCategoria)}`;
+
+        return res.render(
             'client/categories/categories',
             {
                 productos,
                 categoria,
+
+                // SEO
                 seoTitle,
-                seoDescription
+                seoDescription,
+                seoCanonical
             }
         );
 
     } catch (err) {
 
         console.error(
-            'ERROR CARGANDO CATEGORÍA:',
-            err.response?.status,
+            'Error cargando categoría:',
             err.response?.data || err.message
         );
 
         return res.status(500).send(
-            'Error interno al cargar la categoría'
+            'Error cargando la categoría'
         );
     }
 };
-// ==================== CATEGORÍAS =======================
 
 exports.create_category_form = (req, res) => {
     res.render('admin/categories/create_categoria'); 
