@@ -132,7 +132,8 @@ exports.sitemap = async (req, res) => {
         res.status(200);
 
         // res.set('Content-Type', 'application/xml');
-        res.set('application/xml');
+        // res.set('application/xml');
+        res.type('application/xml');
 
         res.send(xml);
 
