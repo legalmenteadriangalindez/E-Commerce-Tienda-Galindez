@@ -1,0 +1,287 @@
+/* =========================================================
+   GESTIÓN DE USUARIOS
+   TIENDA GALINDEZ
+   ========================================================= */
+
+:root {
+    --primary-dark: #311b14;
+    --accent-orange: #d85c32;
+    --warm-tan: #d58d51;
+    --light-bg: #f6f1ec;
+    --white: #ffffff;
+}
+
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
+main {
+    width: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+    overflow-x: auto;
+}
+
+
+/* =========================================================
+   TÍTULO
+   ========================================================= */
+
+main > div h1 {
+    color: var(--primary-dark);
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+main .table {
+    width: 100%;
+    min-width: 1500px;
+    margin-bottom: 0;
+    background-color: var(--white);
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #e4d9d2;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
+}
+
+
+/* =========================================================
+   CABECERA
+   ========================================================= */
+
+main .table thead th {
+    background-color: var(--primary-dark);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 14px 12px;
+    border: none;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   CELDAS
+   ========================================================= */
+
+main .table tbody td,
+main .table tbody th {
+    padding: 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid #eee5df;
+    color: #4a3b35;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   FILAS
+   ========================================================= */
+
+main .table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+main .table tbody tr:hover {
+    background-color: #fdf7f2;
+}
+
+
+/* =========================================================
+   ÚLTIMA FILA
+   ========================================================= */
+
+main .table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   DATOS DE UBICACIÓN
+   ========================================================= */
+
+main .table td:nth-child(11) {
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+
+main .table td:nth-child(12) {
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   FECHA DE REGISTRO
+   ========================================================= */
+
+main .table td:nth-child(13) {
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+main .table .btn {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+
+/* =========================================================
+   BOTÓN EDITAR
+   ========================================================= */
+
+main .table .btn-warning {
+    background-color: var(--warm-tan);
+    border-color: var(--warm-tan);
+    color: var(--white);
+}
+
+main .table .btn-warning:hover {
+    background-color: var(--accent-orange);
+    border-color: var(--accent-orange);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(216, 92, 50, 0.25);
+}
+
+
+/* =========================================================
+   BOTÓN ELIMINAR
+   ========================================================= */
+
+main .table .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: var(--white);
+}
+
+main .table .btn-danger:hover {
+    background-color: #bb2d3b;
+    border-color: #bb2d3b;
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.25);
+}
+
+
+/* =========================================================
+   BOTÓN CREAR USUARIO
+   ========================================================= */
+
+main .table .btn-primary {
+    background-color: var(--accent-orange);
+    border-color: var(--accent-orange);
+    color: var(--white);
+    padding: 10px 18px;
+}
+
+main .table .btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(49, 27, 20, 0.2);
+}
+
+
+/* =========================================================
+   CELDA DEL BOTÓN CREAR
+   ========================================================= */
+
+main .table tbody tr:last-child td {
+    padding: 18px;
+    background-color: #fffaf7;
+}
+
+
+/* =========================================================
+   SCROLL HORIZONTAL
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+    main {
+        padding: 25px 20px;
+    }
+
+    main .table {
+        min-width: 1400px;
+    }
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    main {
+        padding: 20px 15px;
+    }
+
+    main > div h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    main .table {
+        min-width: 1300px;
+    }
+
+    main .table thead th,
+    main .table tbody td {
+        padding: 10px;
+        font-size: 13px;
+    }
+}
+
+
+/* =========================================================
+   MÓVIL
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    main {
+        padding: 15px 10px;
+    }
+
+    main > div h1 {
+        font-size: 21px;
+    }
+
+    main .table {
+        min-width: 1200px;
+    }
+
+    main .table .btn {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+}
