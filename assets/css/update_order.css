@@ -1,0 +1,325 @@
+/* =========================================================
+   UPDATE ORDER
+   TIENDA GALINDEZ
+   ========================================================= */
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+:root {
+    --primary-dark: #311b14;
+    --accent-orange: #d85c32;
+    --warm-tan: #d58d51;
+    --light: #ffffff;
+    --background: #f6f1ec;
+    --border: #e0d6cf;
+    --text-muted: #6b5b55;
+}
+
+
+/* =========================================================
+   PAGINA
+   ========================================================= */
+
+.page-wrapper {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    color: var(--primary-dark);
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.page-header p {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+
+/* =========================================================
+   CARD PRINCIPAL
+   ========================================================= */
+
+.form-card {
+    background: var(--light);
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
+    border: 1px solid rgba(213, 141, 81, 0.2);
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   SECCIONES
+   ========================================================= */
+
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #eee5df;
+}
+
+.form-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.form-section h3 {
+    color: var(--primary-dark);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+
+/* =========================================================
+   GRUPOS
+   ========================================================= */
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   LABELS
+   ========================================================= */
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    background: #ffffff;
+    box-sizing: border-box;
+    transition: 0.2s ease;
+}
+
+
+/* =========================================================
+   INPUTS DESHABILITADOS
+   ========================================================= */
+
+.form-group input:disabled {
+    background-color: #f7f4f1;
+    color: #555;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   SELECT ESTADO
+   ========================================================= */
+
+.form-group select {
+    cursor: pointer;
+}
+
+.form-group select:focus {
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 3px rgba(216, 92, 50, 0.15);
+}
+
+
+/* =========================================================
+   TABLA DE PRODUCTOS
+   ========================================================= */
+
+.table-orders {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   ENCABEZADO TABLA
+   ========================================================= */
+
+.table-orders thead th {
+    background-color: var(--primary-dark);
+    color: #ffffff;
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CELDAS TABLA
+   ========================================================= */
+
+.table-orders tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #eee5df;
+    text-align: center;
+    color: #444;
+}
+
+
+/* =========================================================
+   HOVER TABLA
+   ========================================================= */
+
+.table-orders tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table-orders tbody tr:hover {
+    background-color: #faf6f2;
+}
+
+
+/* =========================================================
+   TOTAL
+   ========================================================= */
+
+.form-section:nth-last-of-type(2) .form-group:last-child input {
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+
+/* =========================================================
+   ACCIONES
+   ========================================================= */
+
+.form-actions {
+    margin-top: 25px;
+    text-align: right;
+}
+
+.form-actions button {
+    background: var(--accent-orange);
+    color: #ffffff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.form-actions button:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .page-wrapper {
+        margin: 25px auto;
+        padding: 0 15px;
+    }
+
+    .form-card {
+        padding: 18px;
+    }
+
+    .page-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .form-section h3 {
+        font-size: 1.05rem;
+    }
+
+    .table-orders {
+        min-width: 650px;
+    }
+
+    .form-section:has(.table-orders) {
+        overflow-x: auto;
+    }
+
+    .form-actions {
+        text-align: center;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .page-wrapper {
+        padding: 0 10px;
+    }
+
+    .form-card {
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .page-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .page-header p {
+        font-size: 0.85rem;
+    }
+
+    .form-section {
+        margin-bottom: 22px;
+        padding-bottom: 18px;
+    }
+
+    .form-section h3 {
+        font-size: 1rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 9px 10px;
+    }
+
+    .table-orders {
+        font-size: 0.85rem;
+    }
+
+    .table-orders thead th,
+    .table-orders tbody td {
+        padding: 9px;
+    }
+}
