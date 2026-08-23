@@ -1,0 +1,231 @@
+/* =========================================================
+   ROLES - READ
+   TIENDA GALINDEZ
+   ========================================================= */
+
+:root {
+    --primary-dark: #311b14;
+    --accent-orange: #d85c32;
+    --warm-tan: #d58d51;
+    --light-bg: #f6f1ec;
+    --white: #ffffff;
+    --text-dark: #332923;
+    --text-muted: #6b5b55;
+}
+
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
+main {
+    width: 100%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TITULO
+   ========================================================= */
+
+main h1 {
+    color: var(--primary-dark);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+main .table {
+    width: 100%;
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
+    border: 1px solid rgba(213, 141, 81, 0.25);
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+main .table thead th {
+    background-color: var(--primary-dark);
+    color: var(--warm-tan);
+    border: none;
+    padding: 14px 12px;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+
+/* =========================================================
+   CELDAS
+   ========================================================= */
+
+main .table tbody td {
+    padding: 12px;
+    color: var(--text-dark);
+    vertical-align: middle;
+    border-color: #eee5df;
+}
+
+
+/* =========================================================
+   FILAS
+   ========================================================= */
+
+main .table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+main .table tbody tr:hover {
+    background-color: #fcf7f3;
+}
+
+
+/* =========================================================
+   DESCRIPCIÓN
+   ========================================================= */
+
+main .table tbody td:nth-child(3) {
+    color: var(--text-muted);
+}
+
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+main .table .btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 7px 14px;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   BOTÓN EDITAR
+   ========================================================= */
+
+main .table .btn-success {
+    background-color: var(--accent-orange);
+    border-color: var(--accent-orange);
+}
+
+main .table .btn-success:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(49, 27, 20, 0.15);
+}
+
+
+/* =========================================================
+   BOTÓN ELIMINAR
+   ========================================================= */
+
+main .table .btn-danger {
+    background-color: #b94a48;
+    border-color: #b94a48;
+}
+
+main .table .btn-danger:hover {
+    background-color: #8f3432;
+    border-color: #8f3432;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(185, 74, 72, 0.2);
+}
+
+
+/* =========================================================
+   CREAR NUEVO ROL
+   ========================================================= */
+
+main .table tbody tr:last-child td {
+    background-color: #fcfaf8;
+    padding: 18px 12px;
+}
+
+main .table .btn-primary {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 9px 16px;
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+main .table .btn-primary:hover {
+    background-color: var(--accent-orange);
+    border-color: var(--accent-orange);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(49, 27, 20, 0.15);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    main {
+        margin: 25px auto;
+        padding: 0 10px;
+    }
+
+    main h1 {
+        font-size: 1.6rem;
+        margin-bottom: 18px;
+    }
+
+    main .table {
+        font-size: 0.85rem;
+    }
+
+    main .table thead th,
+    main .table tbody td {
+        padding: 9px 7px;
+    }
+
+    main .table .btn {
+        font-size: 0.75rem;
+        padding: 6px 9px;
+    }
+}
+
+
+/* =========================================================
+   MÓVILES
+   ========================================================= */
+
+@media (max-width: 576px) {
+
+    main {
+        overflow-x: auto;
+    }
+
+    main .table {
+        min-width: 650px;
+    }
+
+    main h1 {
+        font-size: 1.4rem;
+    }
+}
