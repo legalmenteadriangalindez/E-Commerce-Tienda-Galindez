@@ -1,0 +1,244 @@
+/* =========================================================
+   READ SALES
+   GESTIÓN DE VENTAS
+   TIENDA GALINDEZ
+   ========================================================= */
+
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
+main {
+    width: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TITULO
+   ========================================================= */
+
+main > div:first-child {
+    margin-bottom: 25px;
+}
+
+main > div:first-child h1 {
+    margin: 0;
+    color: #311b14;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+main .table {
+    width: 100%;
+    margin-bottom: 0;
+    background-color: #ffffff;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+main .table thead {
+    background-color: #311b14;
+    color: #ffffff;
+}
+
+main .table thead th {
+    padding: 14px 12px;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   CUERPO
+   ========================================================= */
+
+main .table tbody td,
+main .table tbody th {
+    padding: 13px 12px;
+    border-top: 1px solid #eee5df;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   FILAS
+   ========================================================= */
+
+main .table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+main .table tbody tr:hover {
+    background-color: #faf6f2;
+}
+
+
+/* =========================================================
+   PRODUCTOS
+   ========================================================= */
+
+main .table tbody td:nth-child(3) div {
+    margin-bottom: 4px;
+}
+
+main .table tbody td:nth-child(3) div:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   CANTIDADES
+   ========================================================= */
+
+main .table tbody td:nth-child(4) div {
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+main .table tbody td:nth-child(4) div:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   CLIENTE
+   ========================================================= */
+
+main .table tbody td:nth-child(5) {
+    font-weight: 600;
+    color: #311b14;
+}
+
+
+/* =========================================================
+   TOTAL
+   ========================================================= */
+
+main .table tbody td:nth-child(6) {
+    font-weight: 700;
+    color: #198754;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   BOTÓN DETALLES
+   ========================================================= */
+
+main .table .btn-info {
+    display: inline-block;
+    padding: 7px 14px;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+main .table .btn-info:hover {
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   TABLETS
+   --------------------------------------------------------- */
+
+@media (max-width: 992px) {
+
+    main {
+        padding: 25px 20px;
+    }
+
+    main .table {
+        font-size: 13px;
+    }
+
+    main .table thead th,
+    main .table tbody td {
+        padding: 10px 8px;
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   TABLETS PEQUEÑAS
+   --------------------------------------------------------- */
+
+@media (max-width: 768px) {
+
+    main {
+        padding: 20px 15px;
+    }
+
+    main > div:first-child h1 {
+        font-size: 24px;
+    }
+
+    /*
+       Permite desplazamiento horizontal de la tabla
+       sin romper el diseño.
+    */
+
+    main {
+        overflow-x: auto;
+    }
+
+    main .table {
+        min-width: 750px;
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   MÓVILES
+   --------------------------------------------------------- */
+
+@media (max-width: 576px) {
+
+    main {
+        padding: 15px 10px;
+    }
+
+    main > div:first-child {
+        margin-bottom: 18px;
+    }
+
+    main > div:first-child h1 {
+        font-size: 21px;
+    }
+
+    main .table {
+        min-width: 700px;
+    }
+
+}
