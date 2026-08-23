@@ -1,36 +1,37 @@
- <link rel="stylesheet" href="/css/cards.css">
+<link rel="stylesheet" href="/assets/css/cards.css">
 
-<div class="card" > 
+<div class="product-card">
+    <img
+        src="<%= (p.fotos && p.fotos.length > 0) ? p.fotos[0] : '/assets/img/default.jpg' %>"
+        class="product-card-img"
+        alt="<%= p.nombre %>"
+    >
 
-    <img 
-        src="<%= (p.fotos && p.fotos.length > 0) 
-            ? p.fotos[0] 
-            : '/assets/img/default.jpg' %>" 
-        class="card-img-top" 
-        alt="...">
-
-    <div class="card-body">
-        <h5 class="card-title"><%= p.nombre %></h5>
-        <p class="card-text"><%= p.descripcion %></p>
+    <div class="product-card-body">
+        <h5 class="product-card-title"><%= p.nombre %></h5>
+        <p class="product-card-text"><%= p.descripcion %></p>
     </div>
 
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item">$ <%= p.precioVenta %></li>
-        <li class="list-group-item">Disponible</li>
-        <li class="list-group-item">Cantidad en Stock: <%= p.stock %></li>
+    <ul class="list-group list-group-flush product-list">
+        <li class="list-group-item product-list-item product-price">
+            $ <%= p.precioVenta %>
+        </li>
+        <li class="list-group-item product-list-item">Disponible</li>
+        <li class="list-group-item product-list-item">
+            Cantidad en Stock: <%= p.stock %>
+        </li>
     </ul>
 
-<div class="card-body d-flex gap-2">
+    <div class="product-actions">
+        <a href="/Detalles/<%= p._id %>" class="btn-secondary-action">
+            Ver Detalles
+        </a>
 
-    <a href="/Detalles/<%= p._id %>" class="btn-secondary-action">
-        Ver Detalles
-    </a>
-
-    <button 
-        class="btn-primary-action add-to-cart-btn"
-        data-id="<%= p._id %>">
-        🛒 Agregar
-    </button>
+        <button
+            class="btn-primary-action add-to-cart-btn"
+            data-id="<%= p._id %>"
+        >
+            🛒 Agregar
+        </button>
+    </div>
 </div>
-</div>
-
