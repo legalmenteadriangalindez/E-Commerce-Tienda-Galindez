@@ -1,0 +1,249 @@
+/* =========================================================
+   CREATE BRANDS
+   GESTIÓN DE MARCAS
+   TIENDA GALINDEZ
+   ========================================================= */
+
+:root {
+    --primary-dark: #311b14;
+    --accent-orange: #d85c32;
+    --warm-tan: #d58d51;
+    --light: #ffffff;
+    --background: #f6f1ec;
+    --border: #e0d6cf;
+    --text-muted: #6b5b55;
+}
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+body {
+    background: var(--background);
+    font-family: Arial, sans-serif;
+    color: var(--primary-dark);
+}
+
+
+/* =========================================================
+   TITULO
+   ========================================================= */
+
+body > h2 {
+    max-width: 650px;
+    margin: 40px auto 20px;
+    padding: 0 20px;
+
+    color: var(--primary-dark);
+
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   CONTENEDOR
+   ========================================================= */
+
+.container.mt-4 {
+    max-width: 650px;
+
+    margin-top: 0 !important;
+    margin-bottom: 40px;
+
+    padding: 30px;
+
+    background: var(--light);
+
+    border: 1px solid rgba(213, 141, 81, 0.2);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 8px 25px rgba(49, 27, 20, 0.08);
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   GRUPOS DEL FORMULARIO
+   ========================================================= */
+
+.container.mt-4 .form-group {
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   LABELS
+   ========================================================= */
+
+.container.mt-4 .form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--primary-dark);
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.container.mt-4 .form-control {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 10px 12px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    outline: none;
+
+    background: var(--light);
+
+    color: #40332e;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   INPUT TEXT FOCUS
+   ========================================================= */
+
+.container.mt-4 input[type="text"]:focus {
+    border-color: var(--accent-orange);
+
+    box-shadow:
+        0 0 0 3px rgba(216, 92, 50, 0.15);
+}
+
+
+/* =========================================================
+   INPUT FILE
+   ========================================================= */
+
+.container.mt-4 input[type="file"] {
+    padding: 8px;
+
+    background: #fffaf6;
+
+    color: var(--text-muted);
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   BOTÓN
+   ========================================================= */
+
+.container.mt-4 .btn-primary {
+    background: var(--accent-orange);
+
+    border-color: var(--accent-orange);
+
+    padding: 10px 22px;
+
+    border-radius: 9px;
+
+    font-weight: 700;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   BOTÓN HOVER
+   ========================================================= */
+
+.container.mt-4 .btn-primary:hover {
+    background: var(--primary-dark);
+
+    border-color: var(--primary-dark);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 12px rgba(49, 27, 20, 0.2);
+}
+
+
+/* =========================================================
+   BOTÓN ACTIVE
+   ========================================================= */
+
+.container.mt-4 .btn-primary:active {
+    background: var(--primary-dark);
+
+    border-color: var(--primary-dark);
+
+    transform: translateY(0);
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    body > h2 {
+        margin-top: 25px;
+
+        padding: 0 15px;
+
+        font-size: 1.5rem;
+    }
+
+    .container.mt-4 {
+        width: calc(100% - 30px);
+
+        padding: 20px;
+    }
+
+    .container.mt-4 .btn-primary {
+        width: 100%;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    body > h2 {
+        padding: 0 10px;
+
+        font-size: 1.35rem;
+    }
+
+    .container.mt-4 {
+        width: calc(100% - 20px);
+
+        padding: 15px;
+    }
+
+    .container.mt-4 .form-control {
+        padding: 9px 10px;
+    }
+}
