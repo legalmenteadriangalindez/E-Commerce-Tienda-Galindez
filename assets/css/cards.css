@@ -1,235 +1,428 @@
-/*============================== CARDS ============================*/
+/* =========================================================
+   CARDS DE PRODUCTOS
+   TIENDA GALINDEZ
+   ========================================================= */
 
-.container-cards {
-    /* display: flex; */
-    justify-content: center;
-    padding: 20px 0;
-    background-color: var(--light-bg);
-    flex-wrap: wrap;
-    gap: 20px;
-}
 
-/* CARD MEJORADA SIN ROMPER BOOTSTRAP */
-.card {
-    border: 1px solid var(--warm-tan);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-/* hover más limpio */
-.card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 20px rgba(49, 27, 20, 0.2);
-}
-
-.card-title {
-    color: var(--primary-dark);
-    font-weight: bold;
-}
-
-/* links */
-.card-link {
-    color: var(--accent-orange);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.card-link:hover {
-    color: var(--primary-dark);
-}
-
-/* imagen cards (si aplica en otro CSS puedes ignorarlo) */
-.card-img-top {
-    transition: transform 0.3s ease;
-}
-
-.card:hover .card-img-top {
-    transform: scale(1.05);
-}
-
-/*============================== TABLAS ============================*/
-
-.thead-dark th {
-    background-color: var(--primary-dark) !important;
-    color: var(--warm-tan) !important;
-}
-
-/*============================== UTILIDADES ============================*/
-
-.text-gradient {
-    color: var(--accent-orange);
-    font-weight: bold;
-}
+/* =========================================================
+   CONTENEDOR
+   ========================================================= */
 
 .container-cards {
     display: grid;
+
     grid-template-columns: repeat(6, minmax(0, 1fr));
+
     gap: 12px;
+
     align-items: stretch;
+
     width: 100%;
+
+    padding: 20px 0;
+
     box-sizing: border-box;
+
+    background-color: var(--light-bg);
 }
 
 
+/* =========================================================
+   PRODUCT CARD
+   ========================================================= */
 
-/* ================= CARD MODERNA ================= */
- .card {
+.product-card {
     width: 100%;
+
     max-width: 230px;
+
     min-width: 180px;
+
     margin: 0 auto;
+
     box-sizing: border-box;
+
+    background-color: #ffffff;
+
+    border: 1px solid var(--warm-tan);
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
 }
 
-/* Hover más limpio y moderno */
-.card:hover {
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.product-card:hover {
+
     transform: translateY(-6px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+
+    border-color: var(--warm-tan);
+
+    box-shadow:
+        0 12px 25px rgba(49, 27, 20, 0.15);
 }
 
-.card-body {
-    padding: 10px 10px;
-}
 
+/* =========================================================
+   IMAGEN
+   ========================================================= */
 
+.product-card .product-card-img {
 
-.card-img-top {
     width: 100%;
+
     height: 120px;
+
     object-fit: cover;
-    transition: transform 0.3s ease;
+
+    display: block;
+
+    transition:
+        transform 0.3s ease;
 }
 
-/* zoom suave en hover */
-.card:hover .card-img-top {
+
+/* Zoom de imagen */
+
+.product-card:hover .product-card-img {
+
     transform: scale(1.05);
 }
 
-/* Efecto hover tipo e-commerce */
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 10px 20px rgba(0,0,0,0.15);
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+.product-card .product-card-body {
+
+    padding: 10px;
 }
 
 
+/* =========================================================
+   TITULO
+   ========================================================= */
 
-.card-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #222;
+.product-card .product-card-title {
+
     margin-bottom: 5px;
+
+    color: #222;
+
+    font-size: 1rem;
+
+    font-weight: 600;
+
     white-space: nowrap;
+
     overflow: hidden;
+
     text-overflow: ellipsis;
 }
 
 
+/* =========================================================
+   DESCRIPCIÓN
+   ========================================================= */
 
-.card-text {
-    font-size: 0.875rem;
+.product-card .product-card-text {
+
+    margin-bottom: 0;
+
     color: #666;
+
+    font-size: 0.875rem;
+
     display: -webkit-box;
+
     -webkit-line-clamp: 2;
+
     line-clamp: 2;
+
     -webkit-box-orient: vertical;
+
     overflow: hidden;
 }
 
 
+/* =========================================================
+   INFORMACIÓN DEL PRODUCTO
+   ========================================================= */
+
+.product-card .product-list {
+
+    margin: 0;
+
+    border-top: 1px solid #f0ece9;
+}
+
+
+.product-card .product-list-item {
+
+    padding: 7px 10px;
+
+    color: #555;
+
+    font-size: 0.8rem;
+
+    background-color: #ffffff;
+
+    border-color: #f0ece9;
+}
+
+
+/* Precio */
+
+.product-card .product-price {
+
+    color: var(--primary-dark);
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+.product-card .product-actions {
+
+    display: flex;
+
+    gap: 8px;
+
+    padding: 10px;
+}
+
+
+/* =========================================================
+   LINK DETALLES
+   ========================================================= */
+
+.product-card .btn-secondary-action {
+
+    flex: 1;
+
+    text-decoration: none;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   AGREGAR AL CARRITO
+   ========================================================= */
+
+.product-card .btn-primary-action {
+
+    flex: 1;
+}
+
+
+/* =========================================================
+   ANIMACIÓN BOTÓN CARRITO
+   ========================================================= */
+
+.product-card .add-to-cart-btn {
+
+    position: relative;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.1s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.product-card .add-to-cart-btn:active {
+
+    transform: scale(0.95);
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+/* =========================================================
+   ESTADO AGREGADO
+   ========================================================= */
+
+.product-card .added {
+
+    background-color: #28a745 !important;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   TABLAS
+   ========================================================= */
+
+.thead-dark th {
+
+    background-color: var(--primary-dark) !important;
+
+    color: var(--warm-tan) !important;
+}
+
+
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
+
+.text-gradient {
+
+    color: var(--accent-orange);
+
+    font-weight: bold;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+
+/* 5 columnas */
 
 @media (max-width: 1400px) {
+
     .container-cards {
-        grid-template-columns: repeat(5, 1fr);
+
+        grid-template-columns:
+            repeat(5, minmax(0, 1fr));
     }
 }
+
+
+/* 4 columnas */
 
 @media (max-width: 1200px) {
+
     .container-cards {
-        grid-template-columns: repeat(4, 1fr);
+
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
     }
 }
+
+
+/* 3 columnas */
 
 @media (max-width: 992px) {
+
     .container-cards {
-        grid-template-columns: repeat(3, 1fr);
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
     }
 }
+
+
+/* 2 columnas */
 
 @media (max-width: 768px) {
+
     .container-cards {
-        grid-template-columns: repeat(2, 1fr);
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 }
 
-/* @media (max-width: 480px) {
-    .container-cards {
-        grid-template-columns: 1fr;
-    }
-} */
-/* ======================= */
+
+/* =========================================================
+   MÓVILES
+   ========================================================= */
+
 @media (max-width: 480px) {
+
     .container-cards {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
         gap: 8px;
+
         padding: 10px 8px;
     }
 
-    .container-cards .card {
-        width: 100% !important;
+
+    .container-cards .product-card {
+
+        width: 100%;
+
         max-width: none;
+
         min-width: 0;
+
         margin: 0;
     }
 
-    .container-cards .card-img-top {
+
+    .product-card .product-card-img {
+
         height: 100px;
     }
 
-    .container-cards .card-body {
+
+    .product-card .product-card-body {
+
         padding: 8px;
     }
 
-    .container-cards .card-title {
+
+    .product-card .product-card-title {
+
         font-size: 0.85rem;
     }
 
-    .container-cards .card-text {
+
+    .product-card .product-card-text {
+
         font-size: 0.75rem;
     }
 
-    .container-cards .list-group-item {
+
+    .product-card .product-list-item {
+
         padding: 6px 8px;
+
         font-size: 0.75rem;
     }
 
-    .container-cards .card-body.d-flex {
+
+    .product-card .product-actions {
+
         flex-direction: column;
-        gap: 5px !important;
+
+        gap: 5px;
+
+        padding: 8px;
     }
 
-    .container-cards .btn-primary-action,
-    .container-cards .btn-secondary-action {
+
+    .product-card .btn-primary-action,
+    .product-card .btn-secondary-action {
+
         width: 100%;
+
         font-size: 0.75rem;
+
         padding: 6px 4px;
+
         text-align: center;
     }
-}
-/* ====================== */
-.add-to-cart-btn {
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.1s ease, box-shadow 0.2s ease;
-}
-
-.add-to-cart-btn:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-/* estado activo */
-.added {
-    background-color: #28a745 !important;
-    color: white;
 }
