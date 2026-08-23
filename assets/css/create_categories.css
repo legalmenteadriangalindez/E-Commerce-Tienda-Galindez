@@ -1,0 +1,385 @@
+/* =========================================================
+   CREATE CATEGORY
+   GESTIÓN DE CATEGORÍAS
+   TIENDA GALINDEZ
+   ========================================================= */
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+:root {
+    --primary-dark: #311b14;
+    --accent-orange: #d85c32;
+    --warm-tan: #d58d51;
+    --light: #ffffff;
+
+    --background: #f6f1ec;
+    --border: #e0d6cf;
+    --text-muted: #6b5b55;
+
+    --success: #198754;
+    --danger: #dc3545;
+}
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+body {
+    background: var(--background);
+    font-family: Arial, sans-serif;
+}
+
+
+/* =========================================================
+   PAGE WRAPPER
+   ========================================================= */
+
+.page-wrapper {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.page-header {
+    margin-bottom: 20px;
+}
+
+
+.page-header h1 {
+    margin: 0 0 6px;
+
+    color: var(--primary-dark);
+
+    font-size: 1.8rem;
+
+    font-weight: 700;
+}
+
+
+.page-header p {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 0.95rem;
+}
+
+
+/* =========================================================
+   FORM CARD
+   ========================================================= */
+
+.form-card {
+    background: var(--light);
+
+    border: 1px solid rgba(213, 141, 81, 0.2);
+
+    border-radius: 14px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 8px 25px rgba(49, 27, 20, 0.08);
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   SMALL CARD
+   ========================================================= */
+
+.form-card.small-card {
+    max-width: 600px;
+}
+
+
+/* =========================================================
+   ALERTAS
+   ========================================================= */
+
+.alert {
+    padding: 11px 14px;
+
+    margin-bottom: 20px;
+
+    border-radius: 8px;
+
+    font-size: 0.9rem;
+
+    font-weight: 600;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   ALERTA ERROR
+   ========================================================= */
+
+.alert.error {
+    background: #fce8e8;
+
+    border: 1px solid #f1b8b8;
+
+    color: var(--danger);
+}
+
+
+/* =========================================================
+   ALERTA SUCCESS
+   ========================================================= */
+
+.alert.success {
+    background: #e8f5ee;
+
+    border: 1px solid #b7dfc8;
+
+    color: var(--success);
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.category-form {
+    width: 100%;
+}
+
+
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
+
+.category-form .form-group {
+    width: 100%;
+}
+
+
+/* =========================================================
+   LABEL
+   ========================================================= */
+
+.category-form label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--primary-dark);
+
+    font-size: 0.95rem;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+
+.category-form input[type="text"] {
+    width: 100%;
+
+    padding: 11px 13px;
+
+    box-sizing: border-box;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    outline: none;
+
+    background: var(--light);
+
+    color: #40332e;
+
+    font-size: 0.95rem;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   INPUT FOCUS
+   ========================================================= */
+
+.category-form input[type="text"]:focus {
+    border-color: var(--accent-orange);
+
+    box-shadow:
+        0 0 0 3px rgba(216, 92, 50, 0.15);
+}
+
+
+/* =========================================================
+   PLACEHOLDER
+   ========================================================= */
+
+.category-form input[type="text"]::placeholder {
+    color: #a59a94;
+}
+
+
+/* =========================================================
+   HELP TEXT
+   ========================================================= */
+
+.category-form small {
+    display: block;
+
+    margin-top: 7px;
+
+    color: var(--text-muted);
+
+    font-size: 0.8rem;
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.category-form .form-actions {
+    margin-top: 25px;
+
+    display: flex;
+
+    justify-content: flex-end;
+}
+
+
+/* =========================================================
+   BUTTON
+   ========================================================= */
+
+.category-form .form-actions button {
+    border: none;
+
+    padding: 11px 20px;
+
+    border-radius: 9px;
+
+    background: var(--accent-orange);
+
+    color: var(--light);
+
+    font-size: 0.9rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   BUTTON HOVER
+   ========================================================= */
+
+.category-form .form-actions button:hover {
+    background: var(--primary-dark);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 12px rgba(49, 27, 20, 0.2);
+}
+
+
+/* =========================================================
+   BUTTON ACTIVE
+   ========================================================= */
+
+.category-form .form-actions button:active {
+    transform: translateY(0);
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .page-wrapper {
+        margin: 25px auto;
+        padding: 0 15px;
+    }
+
+
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+
+    .form-card {
+        padding: 20px;
+    }
+
+
+    .category-form .form-actions {
+        justify-content: stretch;
+    }
+
+
+    .category-form .form-actions button {
+        width: 100%;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .page-wrapper {
+        padding: 0 10px;
+    }
+
+
+    .page-header h1 {
+        font-size: 1.35rem;
+    }
+
+
+    .page-header p {
+        font-size: 0.85rem;
+    }
+
+
+    .form-card {
+        padding: 15px;
+    }
+
+
+    .alert {
+        font-size: 0.8rem;
+    }
+
+
+    .category-form input[type="text"] {
+        padding: 10px;
+    }
+}
