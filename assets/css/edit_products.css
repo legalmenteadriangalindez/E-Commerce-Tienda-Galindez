@@ -1,0 +1,413 @@
+/* =========================================================
+   EDIT PRODUCTS
+   EDICIÓN DE PRODUCTOS
+   TIENDA GALINDEZ
+   ========================================================= */
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+:root {
+    --primary-dark: #311b14;
+    --accent-orange: #d85c32;
+    --warm-tan: #d58d51;
+    --light: #ffffff;
+
+    --background: #f6f1ec;
+    --border: #e0d6cf;
+    --text-muted: #6b5b55;
+}
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+body {
+    background: var(--background);
+    font-family: Arial, sans-serif;
+}
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.page-wrapper {
+    max-width: 1100px;
+
+    margin: 40px auto;
+
+    padding: 0 20px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.page-header h1 {
+    color: var(--primary-dark);
+
+    margin-bottom: 5px;
+}
+
+
+.page-header p {
+    color: var(--text-muted);
+
+    margin-bottom: 25px;
+}
+
+
+/* =========================================================
+   FORM CARD
+   ========================================================= */
+
+.form-card {
+    background: var(--light);
+
+    border-radius: 14px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 8px 25px rgba(49, 27, 20, 0.08);
+
+    border:
+        1px solid rgba(213, 141, 81, 0.2);
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.product-form {
+    width: 100%;
+}
+
+
+/* =========================================================
+   FORM GRID
+   ========================================================= */
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 16px;
+}
+
+
+/* =========================================================
+   FULL WIDTH
+   ========================================================= */
+
+.full {
+    grid-column: span 2;
+}
+
+
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-weight: 600;
+
+    color: var(--primary-dark);
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+
+    padding: 10px 12px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 8px;
+
+    outline: none;
+
+    box-sizing: border-box;
+
+    background: var(--light);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   INPUT FOCUS
+   ========================================================= */
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--accent-orange);
+
+    box-shadow:
+        0 0 0 3px rgba(216, 92, 50, 0.15);
+}
+
+
+/* =========================================================
+   IMAGE SECTION
+   ========================================================= */
+
+.image-section {
+    margin-top: 30px;
+}
+
+
+.image-section h2 {
+    color: var(--primary-dark);
+
+    margin-bottom: 15px;
+}
+
+
+/* =========================================================
+   IMAGE GRID
+   ========================================================= */
+
+.image-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(160px, 1fr));
+
+    gap: 15px;
+}
+
+
+/* =========================================================
+   IMAGE CARD
+   ========================================================= */
+
+.image-card {
+    border:
+        1px solid var(--border);
+
+    border-radius: 10px;
+
+    padding: 10px;
+
+    background: var(--light);
+
+    box-sizing: border-box;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.image-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================================
+   IMAGE
+   ========================================================= */
+
+.image-card img {
+    width: 100%;
+
+    border-radius: 8px;
+
+    margin-bottom: 8px;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   IMAGE ACTIONS
+   ========================================================= */
+
+.image-actions {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+
+/* =========================================================
+   DELETE CHECK
+   ========================================================= */
+
+.delete-check {
+    font-size: 12px;
+
+    color: #a33;
+
+    cursor: pointer;
+}
+
+
+.delete-check input {
+    margin-right: 5px;
+}
+
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+.empty {
+    color: #777;
+
+    margin: 10px 0;
+}
+
+
+/* =========================================================
+   UPLOAD NEW
+   ========================================================= */
+
+.upload-new {
+    margin-top: 20px;
+}
+
+
+.upload-new h3 {
+    color: var(--primary-dark);
+
+    margin-bottom: 10px;
+}
+
+
+/* =========================================================
+   FORM ACTIONS
+   ========================================================= */
+
+.form-actions {
+    margin-top: 25px;
+
+    text-align: right;
+}
+
+
+.form-actions button {
+    background: var(--accent-orange);
+
+    color: var(--light);
+
+    border: none;
+
+    padding: 12px 22px;
+
+    border-radius: 10px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.form-actions button:hover {
+    background: var(--primary-dark);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 12px rgba(49, 27, 20, 0.15);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .page-wrapper {
+        margin: 25px auto;
+
+        padding: 0 15px;
+    }
+
+
+    .form-card {
+        padding: 20px;
+    }
+
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .full {
+        grid-column: span 1;
+    }
+
+
+    .form-actions {
+        text-align: center;
+    }
+
+
+    .image-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .page-wrapper {
+        padding: 0 10px;
+    }
+
+
+    .form-card {
+        padding: 15px;
+    }
+
+
+    .image-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .form-actions button {
+        width: 100%;
+    }
+}
