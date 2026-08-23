@@ -1,0 +1,351 @@
+/* =========================================================
+   CREATE PROVIDERS
+   GESTIÓN DE PROVEEDORES
+   TIENDA GALINDEZ
+   ========================================================= */
+
+:root {
+    --primary-dark: #311b14;
+    --accent-orange: #d85c32;
+    --warm-tan: #d58d51;
+    --light: #ffffff;
+    --background: #f6f1ec;
+    --border: #e0d6cf;
+    --text-muted: #6b5b55;
+}
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+body {
+    background: var(--background);
+    font-family: Arial, sans-serif;
+    color: var(--primary-dark);
+}
+
+
+/* =========================================================
+   CONTENEDOR
+   ========================================================= */
+
+.page-wrapper {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.page-header {
+    margin-bottom: 20px;
+}
+
+.page-header h1 {
+    margin: 0 0 6px;
+
+    color: var(--primary-dark);
+
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.page-header p {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 0.95rem;
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.form-card {
+    background: var(--light);
+
+    border: 1px solid rgba(213, 141, 81, 0.2);
+
+    border-radius: 14px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 8px 25px rgba(49, 27, 20, 0.08);
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   FORMULARIO
+   ========================================================= */
+
+.provider-form {
+    width: 100%;
+}
+
+
+/* =========================================================
+   GRID
+   ========================================================= */
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+
+/* =========================================================
+   FULL WIDTH
+   ========================================================= */
+
+.form-group.full {
+    grid-column: span 2;
+}
+
+
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
+
+.form-group {
+    min-width: 0;
+}
+
+
+/* =========================================================
+   LABEL
+   ========================================================= */
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--primary-dark);
+
+    font-size: 0.9rem;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   INPUTS Y TEXTAREA
+   ========================================================= */
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 10px 12px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    outline: none;
+
+    background: var(--light);
+
+    color: #40332e;
+
+    font-family: inherit;
+
+    font-size: 0.95rem;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   TEXTAREA
+   ========================================================= */
+
+.form-group textarea {
+    resize: vertical;
+
+    min-height: 90px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--accent-orange);
+
+    box-shadow:
+        0 0 0 3px rgba(216, 92, 50, 0.15);
+}
+
+
+/* =========================================================
+   PLACEHOLDER
+   ========================================================= */
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #9a8b84;
+}
+
+
+/* =========================================================
+   ACCIONES
+   ========================================================= */
+
+.form-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    margin-top: 25px;
+}
+
+
+/* =========================================================
+   BOTÓN
+   ========================================================= */
+
+.form-actions button {
+    border: none;
+
+    padding: 12px 22px;
+
+    border-radius: 10px;
+
+    background: var(--accent-orange);
+
+    color: var(--light);
+
+    font-size: 0.9rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.form-actions button:hover {
+    background: var(--primary-dark);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 12px rgba(49, 27, 20, 0.2);
+}
+
+
+/* =========================================================
+   ACTIVE
+   ========================================================= */
+
+.form-actions button:active {
+    transform: translateY(0);
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .page-wrapper {
+        margin: 30px auto;
+
+        padding: 0 15px;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .form-card {
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full {
+        grid-column: span 1;
+    }
+
+    .form-actions {
+        justify-content: stretch;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .page-wrapper {
+        margin: 25px auto;
+
+        padding: 0 10px;
+    }
+
+    .page-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .page-header p {
+        font-size: 0.85rem;
+    }
+
+    .form-card {
+        padding: 15px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 9px 10px;
+
+        font-size: 0.9rem;
+    }
+
+    .form-actions button {
+        padding: 10px 16px;
+    }
+}
