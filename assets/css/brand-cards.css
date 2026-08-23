@@ -9,19 +9,21 @@
    ========================================================= */
 
 .container-brands {
-
     display: grid;
 
-    grid-template-columns:
-        repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, 220px);
 
-    gap: 20px;
+    gap: 18px;
 
     width: 100%;
 
     padding: 20px 0;
 
     box-sizing: border-box;
+
+    justify-content: start;
+
+    align-items: stretch;
 }
 
 
@@ -30,14 +32,9 @@
    ========================================================= */
 
 .brand-card {
+    width: 220px;
 
-    width: 100%;
-
-    max-width: 280px;
-
-    min-width: 0;
-
-    margin: 0 auto;
+    margin: 0;
 
     background-color: #ffffff;
 
@@ -61,7 +58,6 @@
    ========================================================= */
 
 .brand-card:hover {
-
     transform: translateY(-7px);
 
     border-color: var(--accent-orange);
@@ -75,11 +71,10 @@
    IMAGEN
    ========================================================= */
 
-.brand-card .brand-card-img {
-
+.brand-card-img {
     width: 100%;
 
-    height: 160px;
+    height: 150px;
 
     object-fit: contain;
 
@@ -96,10 +91,7 @@
 }
 
 
-/* Zoom */
-
 .brand-card:hover .brand-card-img {
-
     transform: scale(1.05);
 }
 
@@ -108,9 +100,8 @@
    BODY
    ========================================================= */
 
-.brand-card .brand-card-body {
-
-    padding: 15px;
+.brand-card-body {
+    padding: 12px;
 
     text-align: center;
 }
@@ -120,13 +111,12 @@
    TITULO
    ========================================================= */
 
-.brand-card .brand-card-title {
-
-    margin: 0 0 7px;
+.brand-card-title {
+    margin: 0 0 6px;
 
     color: var(--primary-dark);
 
-    font-size: 1.1rem;
+    font-size: 1rem;
 
     font-weight: 700;
 
@@ -142,13 +132,12 @@
    DESCRIPCIÓN
    ========================================================= */
 
-.brand-card .brand-card-text {
-
+.brand-card-text {
     margin: 0;
 
     color: #666;
 
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 
     line-height: 1.4;
 }
@@ -158,13 +147,12 @@
    ACCIONES
    ========================================================= */
 
-.brand-card .brand-card-actions {
-
+.brand-card-actions {
     display: flex;
 
     justify-content: center;
 
-    padding: 0 15px 15px;
+    padding: 0 12px 12px;
 }
 
 
@@ -173,7 +161,6 @@
    ========================================================= */
 
 .brand-card .btn-secondary-action {
-
     width: 100%;
 
     max-width: 180px;
@@ -189,88 +176,87 @@
    ========================================================= */
 
 
-/* 3 columnas */
+/* -----------------------------------------
+   PANTALLAS MEDIANAS
+   ----------------------------------------- */
 
 @media (max-width: 1200px) {
-
     .container-brands {
-
-        grid-template-columns:
-            repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, 220px);
     }
 }
 
 
-/* 2 columnas */
+/* -----------------------------------------
+   TABLETS
+   ----------------------------------------- */
+
+@media (max-width: 992px) {
+    .container-brands {
+        grid-template-columns: repeat(3, 220px);
+    }
+}
+
+
+/* -----------------------------------------
+   TABLETS PEQUEÑAS
+   ----------------------------------------- */
 
 @media (max-width: 768px) {
-
     .container-brands {
-
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
 
         gap: 15px;
+
+        padding: 15px 0;
+    }
+
+    .brand-card {
+        width: 100%;
     }
 }
 
 
-/* Móviles */
+/* -----------------------------------------
+   MÓVILES
+   ----------------------------------------- */
 
 @media (max-width: 480px) {
-
     .container-brands {
-
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
 
         gap: 8px;
 
         padding: 10px 8px;
     }
 
-
-    .container-brands .brand-card {
-
-        max-width: none;
+    .brand-card {
+        width: 100%;
     }
 
-
-    .brand-card .brand-card-img {
-
+    .brand-card-img {
         height: 100px;
 
         padding: 10px;
     }
 
-
-    .brand-card .brand-card-body {
-
+    .brand-card-body {
         padding: 8px;
     }
 
-
-    .brand-card .brand-card-title {
-
+    .brand-card-title {
         font-size: 0.85rem;
     }
 
-
-    .brand-card .brand-card-text {
-
+    .brand-card-text {
         font-size: 0.7rem;
     }
 
-
-    .brand-card .brand-card-actions {
-
-        padding:
-            0 8px 8px;
+    .brand-card-actions {
+        padding: 0 8px 8px;
     }
 
-
     .brand-card .btn-secondary-action {
-
         max-width: none;
 
         font-size: 0.75rem;
