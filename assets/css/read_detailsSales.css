@@ -1,0 +1,280 @@
+/* =========================================================
+   READ DETAILS SALES
+   GESTIÓN DE DETALLES DE VENTAS
+   TIENDA GALINDEZ
+   ========================================================= */
+
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
+main {
+    width: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TÍTULO
+   ========================================================= */
+
+main > div:first-child {
+    margin-bottom: 25px;
+}
+
+main > div:first-child h1 {
+    margin: 0;
+    color: #311b14;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+main .table {
+    width: 100%;
+    margin-bottom: 0;
+    background-color: #ffffff;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+main .table thead {
+    background-color: #311b14;
+    color: #ffffff;
+}
+
+main .table thead th {
+    padding: 14px 12px;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   CUERPO
+   ========================================================= */
+
+main .table tbody td,
+main .table tbody th {
+    padding: 13px 12px;
+    border-top: 1px solid #eee5df;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   FILAS
+   ========================================================= */
+
+main .table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+main .table tbody tr:hover {
+    background-color: #faf6f2;
+}
+
+
+/* =========================================================
+   VENTA
+   ========================================================= */
+
+main .table tbody td:nth-child(2) {
+    color: #6b5b55;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   CLIENTE
+   ========================================================= */
+
+main .table tbody td:nth-child(3) {
+    font-weight: 600;
+    color: #311b14;
+}
+
+
+/* =========================================================
+   PRODUCTO
+   ========================================================= */
+
+main .table tbody td:nth-child(4) {
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CANTIDAD
+   ========================================================= */
+
+main .table tbody td:nth-child(5) {
+    text-align: center;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   PRECIO UNITARIO
+   ========================================================= */
+
+main .table tbody td:nth-child(6) {
+    color: #555;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   TOTAL
+   ========================================================= */
+
+main .table tbody td:nth-child(7) {
+    color: #198754;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+main .table .btn {
+    display: inline-block;
+    padding: 7px 14px;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   BOTÓN EDITAR
+   ========================================================= */
+
+main .table .btn-success {
+    border: none;
+}
+
+main .table .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(25, 135, 84, 0.25);
+}
+
+
+/* =========================================================
+   BOTÓN ELIMINAR
+   ========================================================= */
+
+main .table .btn-danger {
+    border: none;
+}
+
+main .table .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.25);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   TABLETS
+   --------------------------------------------------------- */
+
+@media (max-width: 992px) {
+
+    main {
+        padding: 25px 20px;
+    }
+
+    main .table thead th,
+    main .table tbody td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   TABLETS PEQUEÑAS
+   --------------------------------------------------------- */
+
+@media (max-width: 768px) {
+
+    main {
+        padding: 20px 15px;
+        overflow-x: auto;
+    }
+
+    main > div:first-child h1 {
+        font-size: 24px;
+    }
+
+    /*
+       La tabla conserva todas sus columnas.
+       Se permite desplazamiento horizontal
+       para no modificar el HTML.
+    */
+
+    main .table {
+        min-width: 850px;
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   MÓVILES
+   --------------------------------------------------------- */
+
+@media (max-width: 576px) {
+
+    main {
+        padding: 15px 10px;
+    }
+
+    main > div:first-child {
+        margin-bottom: 18px;
+    }
+
+    main > div:first-child h1 {
+        font-size: 21px;
+    }
+
+    main .table {
+        min-width: 800px;
+    }
+
+    main .table .btn {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+}
