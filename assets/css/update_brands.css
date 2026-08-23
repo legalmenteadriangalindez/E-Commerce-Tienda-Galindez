@@ -1,0 +1,300 @@
+/* =========================================================
+   UPDATE BRANDS
+   GESTIÓN DE MARCAS
+   TIENDA GALINDEZ
+   ========================================================= */
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+:root {
+    --primary-dark: #311b14;
+    --accent-orange: #d85c32;
+    --warm-tan: #d58d51;
+    --light: #ffffff;
+
+    --background: #f6f1ec;
+    --border: #e0d6cf;
+    --text-muted: #6b5b55;
+}
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+body {
+    background: var(--background);
+    font-family: Arial, sans-serif;
+    color: var(--primary-dark);
+}
+
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
+main,
+body > h1,
+body > form {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TITULO
+   ========================================================= */
+
+body > h1 {
+    max-width: 650px;
+
+    margin: 40px auto 20px;
+
+    padding: 0 20px;
+
+    color: var(--primary-dark);
+
+    font-size: 1.8rem;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   FORMULARIO
+   ========================================================= */
+
+body > form {
+    width: calc(100% - 40px);
+
+    max-width: 650px;
+
+    margin: 0 auto 40px;
+
+    padding: 30px;
+
+    background: var(--light);
+
+    border: 1px solid rgba(213, 141, 81, 0.2);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 8px 25px rgba(49, 27, 20, 0.08);
+}
+
+
+/* =========================================================
+   INPUT NOMBRE
+   ========================================================= */
+
+body > form input[type="text"] {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 11px 13px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    outline: none;
+
+    background: var(--light);
+
+    color: #40332e;
+
+    font-size: 0.95rem;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   INPUT FOCUS
+   ========================================================= */
+
+body > form input[type="text"]:focus {
+    border-color: var(--accent-orange);
+
+    box-shadow:
+        0 0 0 3px rgba(216, 92, 50, 0.15);
+}
+
+
+/* =========================================================
+   IMAGEN ACTUAL
+   ========================================================= */
+
+body > form img {
+    display: block;
+
+    width: 100px;
+
+    height: 100px;
+
+    object-fit: contain;
+
+    padding: 5px;
+
+    box-sizing: border-box;
+
+    background: var(--light);
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    margin: 20px 0;
+}
+
+
+/* =========================================================
+   INPUT FILE
+   ========================================================= */
+
+body > form input[type="file"] {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 8px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    background: #fffaf6;
+
+    color: var(--text-muted);
+
+    font-size: 0.85rem;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   BOTÓN
+   ========================================================= */
+
+body > form button {
+    border: none;
+
+    padding: 11px 20px;
+
+    margin-top: 5px;
+
+    border-radius: 9px;
+
+    background: var(--accent-orange);
+
+    color: var(--light);
+
+    font-size: 0.9rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   BUTTON HOVER
+   ========================================================= */
+
+body > form button:hover {
+    background: var(--primary-dark);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 12px rgba(49, 27, 20, 0.2);
+}
+
+
+/* =========================================================
+   BUTTON ACTIVE
+   ========================================================= */
+
+body > form button:active {
+    transform: translateY(0);
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    body > h1 {
+        margin-top: 25px;
+
+        padding: 0 15px;
+
+        font-size: 1.5rem;
+    }
+
+
+    body > form {
+        width: calc(100% - 30px);
+
+        padding: 20px;
+    }
+
+
+    body > form button {
+        width: 100%;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    body > h1 {
+        padding: 0 10px;
+
+        font-size: 1.35rem;
+    }
+
+
+    body > form {
+        width: calc(100% - 20px);
+
+        padding: 15px;
+    }
+
+
+    body > form input[type="text"] {
+        padding: 10px;
+    }
+
+
+    body > form input[type="file"] {
+        font-size: 0.75rem;
+    }
+
+
+    body > form img {
+        width: 80px;
+
+        height: 80px;
+    }
+}
