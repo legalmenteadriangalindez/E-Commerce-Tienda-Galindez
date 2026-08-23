@@ -1,0 +1,117 @@
+    :root {
+        --primary-dark: #311b14;
+        --accent-orange: #d85c32;
+        --warm-tan: #d58d51;
+        --light: #ffffff;
+        --soft-bg: #f6f3f1;
+    }
+
+    body{
+        background: var(--soft-bg);
+    }
+
+    .analytics-container{
+        padding: 2rem;
+    }
+
+    .page-title{
+        color: var(--primary-dark);
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    .card-profit{
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+
+        background: white;
+
+        box-shadow: 0 10px 30px rgba(0,0,0,.08);
+
+        height: 100%;
+    }
+
+    .card-header-custom{
+        background: linear-gradient(
+            135deg,
+            var(--accent-orange),
+            var(--warm-tan)
+        );
+
+        color: white;
+
+        padding: 1.5rem;
+    }
+
+    .card-header-custom i{
+        font-size: 2rem;
+    }
+
+    .card-body-custom{
+        padding: 2rem;
+    }
+
+    .profit-value{
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-dark);
+    }
+
+    .profit-label{
+        color: #777;
+        margin-top: .5rem;
+    }
+
+    .margin-circle{
+        width: 180px;
+        height: 180px;
+
+        border-radius: 50%;
+
+        background: linear-gradient(
+            135deg,
+            var(--accent-orange),
+            var(--warm-tan)
+        );
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        margin: auto;
+
+        color: white;
+
+        flex-direction: column;
+
+        box-shadow: 0 10px 25px rgba(0,0,0,.15);
+    }
+
+    .margin-circle h1{
+        margin: 0;
+        font-size: 2.8rem;
+        font-weight: bold;
+    }
+
+    @media(max-width:768px){
+
+        .analytics-container{
+            padding: 1rem;
+        }
+
+        .profit-value{
+            font-size: 1.5rem;
+        }
+
+        .margin-circle{
+            width: 140px;
+            height: 140px;
+            margin-top: 2rem;
+        }
+
+        .margin-circle h1{
+            font-size: 2rem;
+        }
+
+    }
