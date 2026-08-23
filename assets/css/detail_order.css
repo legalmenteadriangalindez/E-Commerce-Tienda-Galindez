@@ -1,115 +1,260 @@
-.detail-order-container {
+/* =========================================================
+   DETALLE DE ORDEN
+   TIENDA GALINDEZ
+   ========================================================= */
 
-    padding: 30px;
-
+:root {
+    --primary-dark: #311b14;
+    --accent-orange: #d85c32;
+    --warm-tan: #d58d51;
+    --light: #ffffff;
+    --background: #f6f1ec;
+    --border: #e0d6cf;
+    --text-muted: #6b5b55;
 }
+
+
+/* =========================================================
+   CONTENEDOR
+   ========================================================= */
+
+.detail-order-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TITULO
+   ========================================================= */
 
 .title-container {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
     margin-bottom: 25px;
-
 }
 
-.order-card {
+.title-container h1 {
+    color: var(--primary-dark);
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
 
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.detail-order-container .order-card {
     margin-bottom: 25px;
+    border: 1px solid rgba(213, 141, 81, 0.2);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--light);
+    box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
+}
 
+
+/* =========================================================
+   HEADER DE CARD
+   ========================================================= */
+
+.detail-order-container .order-card .card-header {
+    background-color: var(--primary-dark);
+    color: #ffffff;
+    padding: 14px 20px;
+    font-size: 1.05rem;
+    font-weight: 700;
     border: none;
-
-    border-radius: 10px;
-
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-
 }
 
-.card-header {
 
-    background: #212529;
+/* =========================================================
+   BODY
+   ========================================================= */
 
-    color: white;
+.detail-order-container .order-card .card-body {
+    padding: 22px;
+}
 
+
+/* =========================================================
+   TITULOS DE INFORMACION
+   ========================================================= */
+
+.detail-order-container .order-card h5 {
+    color: var(--primary-dark);
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+
+/* =========================================================
+   DATOS
+   ========================================================= */
+
+.detail-order-container .order-card p {
+    margin: 0;
+    color: #555;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
+.detail-order-container .badge {
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
     font-weight: 600;
-
-    border-radius: 10px 10px 0 0 !important;
-
-    padding: 15px;
-
 }
 
-.card-body {
 
-    padding: 20px;
+/* =========================================================
+   TABLA DE PRODUCTOS
+   ========================================================= */
 
+.detail-order-container .table {
+    margin: 0;
+    vertical-align: middle;
 }
 
-.table {
-
-    margin-bottom: 0;
-
-}
-
-.table thead {
-
-    background: #f8f9fa;
-
-}
-
-.table th {
-
+.detail-order-container .table thead th {
+    background-color: var(--primary-dark);
+    color: #ffffff;
+    text-align: center;
     font-weight: 600;
+    white-space: nowrap;
+}
 
+.detail-order-container .table tbody td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.detail-order-container .table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.detail-order-container .table tbody tr:hover {
+    background-color: #faf6f2;
+}
+
+
+/* =========================================================
+   RESUMEN FINANCIERO
+   ========================================================= */
+
+.detail-order-container .total-card {
+    border-color: var(--warm-tan);
 }
 
 .summary-item {
-
     display: flex;
-
     justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    color: #555;
+}
 
-    margin-bottom: 15px;
-
-    font-size: 16px;
-
+.summary-item strong {
+    color: var(--primary-dark);
 }
 
 .summary-item.total {
-
-    font-size: 22px;
-
-    color: #198754;
-
+    padding-top: 15px;
+    font-size: 1.2rem;
 }
 
-h5 {
-
-    font-size: 15px;
-
-    color: #6c757d;
-
-    margin-bottom: 5px;
-
+.summary-item.total span,
+.summary-item.total strong {
+    color: var(--accent-orange);
+    font-weight: 700;
 }
 
-p {
 
-    margin-bottom: 0;
+/* =========================================================
+   LINEA RESUMEN
+   ========================================================= */
 
-    font-size: 16px;
-
-    font-weight: 500;
-
+.detail-order-container .total-card hr {
+    margin: 10px 0;
+    border-color: var(--border);
+    opacity: 1;
 }
 
-.badge {
 
-    padding: 10px 15px;
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
-    font-size: 13px;
+@media (max-width: 768px) {
 
+    .detail-order-container {
+        margin: 25px auto;
+        padding: 0 15px;
+    }
+
+    .title-container h1 {
+        font-size: 1.6rem;
+    }
+
+    .detail-order-container .order-card {
+        margin-bottom: 18px;
+    }
+
+    .detail-order-container .order-card .card-body {
+        padding: 17px;
+    }
+
+    .detail-order-container .table {
+        min-width: 650px;
+    }
+
+    .detail-order-container .card-body:has(.table) {
+        overflow-x: auto;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .detail-order-container {
+        margin: 20px auto;
+        padding: 0 10px;
+    }
+
+    .title-container h1 {
+        font-size: 1.4rem;
+    }
+
+    .detail-order-container .order-card .card-header {
+        padding: 12px 15px;
+        font-size: 0.95rem;
+    }
+
+    .detail-order-container .order-card .card-body {
+        padding: 14px;
+    }
+
+    .detail-order-container .table {
+        font-size: 0.8rem;
+    }
+
+    .detail-order-container .table thead th,
+    .detail-order-container .table tbody td {
+        padding: 8px;
+    }
+
+    .summary-item {
+        font-size: 0.9rem;
+    }
+
+    .summary-item.total {
+        font-size: 1.05rem;
+    }
 }
