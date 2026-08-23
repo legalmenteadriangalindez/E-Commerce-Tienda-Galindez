@@ -1,0 +1,197 @@
+/* =========================================================
+   READ ORDERS
+   TIENDA GALINDEZ
+   ========================================================= */
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
+main {
+    width: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TITULO
+   ========================================================= */
+
+main h1 {
+    color: var(--primary-dark, #311b14);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+main .table {
+    width: 100%;
+    margin-bottom: 0;
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+main .table thead th {
+    background-color: var(--primary-dark, #311b14);
+    color: #ffffff;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   CELDAS
+   ========================================================= */
+
+main .table tbody td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+main .table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+main .table tbody tr:hover {
+    background-color: #f8f3ef;
+}
+
+
+/* =========================================================
+   ORDEN Y USUARIO
+   ========================================================= */
+
+main .table tbody td:first-of-type {
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   TOTAL
+   ========================================================= */
+
+main .table tbody td:nth-child(3) {
+    font-weight: 600;
+    color: var(--primary-dark, #311b14);
+}
+
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+
+main .table .badge {
+    min-width: 85px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+main .table .btn {
+    min-width: 75px;
+    font-weight: 600;
+    border-radius: 7px;
+}
+
+
+/* =========================================================
+   BOTÓN CREAR
+   ========================================================= */
+
+main .table tbody tr:last-child td {
+    padding: 18px;
+    text-align: left;
+    background-color: #ffffff;
+}
+
+main .table tbody tr:last-child .btn {
+    padding: 9px 16px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+    main {
+        padding: 25px 20px;
+    }
+
+    main .table {
+        font-size: 0.9rem;
+    }
+
+    main .table .btn {
+        min-width: 65px;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+
+@media (max-width: 992px) {
+
+    main {
+        padding: 20px 15px;
+        overflow-x: auto;
+    }
+
+    main .table {
+        min-width: 900px;
+    }
+
+    main h1 {
+        font-size: 1.7rem;
+    }
+}
+
+
+@media (max-width: 576px) {
+
+    main {
+        padding: 15px 10px;
+    }
+
+    main h1 {
+        font-size: 1.5rem;
+        margin-bottom: 18px;
+    }
+
+    main .table {
+        min-width: 850px;
+        font-size: 0.8rem;
+    }
+
+    main .table .btn {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+    }
+
+    main .table .badge {
+        min-width: 70px;
+        padding: 5px 7px;
+        font-size: 0.7rem;
+    }
+}
