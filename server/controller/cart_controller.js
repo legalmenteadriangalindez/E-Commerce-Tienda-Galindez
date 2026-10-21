@@ -53,12 +53,11 @@ exports.add_to_carrito = async (req, res) => {
             });
             
         }
-
-       req.session.save(error => {
-           
        // INVALIDAR OPERACIÓN DE CAJA ANTERIOR
         delete req.session.claveIdempotenciaCaja;
-           
+        
+    req.session.save(error => {
+                
     if (error) {
         console.error("Error guardando carrito:", error);
 
