@@ -87,6 +87,17 @@ const orderSchema = new mongoose.Schema({
         required: true
     },
 
+    // ESTADO DEL PAGO
+    estadoPago: {
+       type: String,
+       enum: [
+          'PENDIENTE',
+          'PAGADO',
+          'RECHAZADO'
+       ],
+       default: 'PENDIENTE'
+     },
+    
     // ESTADO DE LA ORDEN
     estado: {
         type: String,
