@@ -291,6 +291,7 @@ exports.findByCategoryRopa = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
+    let actualizacionConfirmada = false;
     try {
         const product = await Productdb.findById(req.params.id);
 
@@ -399,89 +400,175 @@ if (!categoriaExiste || !marcaExiste) {
             nuevoProveedor = product.proveedor;
         }
 
-        let fotosActuales = [...product.fotos];
+ 
+// FOTOGRAFÍAS ACTUALES REGISTRADAS
+const fotosOriginales = [...(product.fotos || [])];
 
-        if (req.body.eliminarFotos) {
-            const eliminar = Array.isArray(req.body.eliminarFotos)
-                ? req.body.eliminarFotos
-                : [req.body.eliminarFotos];
+// FOTOGRAFÍAS SOLICITADAS PARA ELIMINAR
+const eliminar = req.body.eliminarFotos
+    ? [].concat(req.body.eliminarFotos)
+    : [];
 
-            eliminar.forEach(foto => {
-                const ruta = path.join(__dirname, '../public', foto);
+// VALIDAR QUE PERTENEZCAN AL PRODUCTO
+if (eliminar.some(foto => !fotosOriginales.includes(foto))) {
+    return res.status(400).send({
+        message: "Fotografía no pertenece al producto"
+    });
+}
 
-                if (fs.existsSync(ruta)) {
-                    fs.unlinkSync(ruta);
-                }
-            });
+const archivos = req.files || {};
+const fotosActuales = [];
 
-            fotosActuales = fotosActuales.filter(
-                foto => !eliminar.includes(foto)
-            );
-        }
+// VALIDAR ÍNDICES DE REEMPLAZO
+for (const campo of Object.keys(archivos)) {
 
-        if (req.files) {
-            Object.keys(req.files).forEach(key => {
-                if (key.startsWith('foto_')) {
-                    const index = parseInt(key.split('_')[1]);
-                    const file = req.files[key][0];
+    if (!campo.startsWith("foto_")) continue;
 
-                    if (file && !isNaN(index) && fotosActuales[index]) {
-                        const fotoAnterior = fotosActuales[index];
-                        const rutaAnterior = path.join(
-                            __dirname,
-                            '../public',
-                            fotoAnterior
-                        );
+    const indice = Number(campo.slice(5));
 
-                        if (fs.existsSync(rutaAnterior)) {
-                            fs.unlinkSync(rutaAnterior);
-                        }
+    if (
+        !Number.isInteger(indice) ||
+        indice < 0 ||
+        indice >= fotosOriginales.length
+    ) {
+        return res.status(400).send({
+            message: "Índice de fotografía inválido"
+        });
+    }
+}
 
-                        fotosActuales[index] = `/assets/img/${file.filename}`;
-                    }
-                }
-            });
-        }
+// CONSTRUIR NUEVA LISTA SIN BORRAR ARCHIVOS AÚN
+for (let i = 0; i < fotosOriginales.length; i++) {
 
-        if (req.files && req.files.nuevasFotos) {
-            const nuevas = req.files.nuevasFotos.map(
-                file => `/assets/img/${file.filename}`
-            );
+    const fotoAnterior = fotosOriginales[i];
+    const reemplazo = archivos[`foto_${i}`]?.[0];
 
-            fotosActuales = [...fotosActuales, ...nuevas];
-        }
+    if (eliminar.includes(fotoAnterior) && reemplazo) {
+        return res.status(400).send({
+            message:
+                "No puedes eliminar y reemplazar la misma foto a la vez"
+        });
+    }
 
-        fotosActuales = [...new Set(fotosActuales)].slice(0, 4);
+    if (eliminar.includes(fotoAnterior)) {
+        continue;
+    }
 
-        const updated = await Productdb.findByIdAndUpdate(
-            req.params.id,
-            {
-                nombre: req.body.nombre?.trim() || product.nombre,
-                descripcion: req.body.descripcion?.trim() ?? product.descripcion,
-                precioCosto: nuevoCosto,
-                precioVenta: nuevoPrecioVenta,
-                stock: nuevoStock,
-                categoria: nuevaCategoria,
-                marca: nuevaMarca,
-                proveedor: nuevoProveedor,
-                fotos: fotosActuales
-            },
-            {
-                new: true,
-                runValidators: true
-            }
+    if (reemplazo) {
+        fotosActuales.push(
+            `/assets/img/${reemplazo.filename}`
         );
+    } else {
+        fotosActuales.push(fotoAnterior);
+    }
+}
 
-        return res.redirect('/read-producto');
+// AGREGAR IMÁGENES NUEVAS
+const nuevasFotos = (archivos.nuevasFotos || [])
+    .map(archivo => `/assets/img/${archivo.filename}`);
 
+fotosActuales.push(...nuevasFotos);
+
+// RESPETAR EL MÁXIMO DE CUATRO IMÁGENES
+if (fotosActuales.length > 4) {
+    return res.status(400).send({
+        message: "Máximo 4 fotografías por producto"
+    });
+}
+
+// VALIDAR STOCK ORIGINAL DEL FORMULARIO
+const stockOriginalTexto = req.body.stockOriginal;
+
+if (
+    typeof stockOriginalTexto !== "string" ||
+    !stockOriginalTexto.trim()
+) {
+    return res.status(400).send({
+        message: "Falta el stock original"
+    });
+}
+
+const stockOriginal = Number(stockOriginalTexto);
+
+if (
+    !Number.isInteger(stockOriginal) ||
+    stockOriginal < 0
+) {
+    return res.status(400).send({
+        message: "Stock original inválido"
+    });
+}
+
+// ACTUALIZAR SOLO SI NO CAMBIÓ EL INVENTARIO
+// NI LA LISTA DE FOTOGRAFÍAS
+const updated = await Productdb.findOneAndUpdate(
+    {
+        _id: req.params.id,
+        stock: stockOriginal,
+        fotos: fotosOriginales
+    },
+    {
+        $set: {
+            nombre: req.body.nombre?.trim() || product.nombre,
+            descripcion:
+                req.body.descripcion?.trim() ?? product.descripcion,
+            precioCosto: nuevoCosto,
+            precioVenta: nuevoPrecioVenta,
+            stock: nuevoStock,
+            categoria: nuevaCategoria,
+            marca: nuevaMarca,
+            proveedor: nuevoProveedor,
+            fotos: fotosActuales
+        }
+    },
+    {
+        new: true,
+        runValidators: true
+    }
+);
+
+if (!updated) {
+    return res.status(409).send({
+        message:
+            "El producto cambió mientras lo editabas. Recarga la página antes de guardar."
+    });
+}
+
+// LA BASE DE DATOS CONFIRMÓ EL CAMBIO
+actualizacionConfirmada = true;
+
+// AHORA SÍ SE PUEDEN ELIMINAR LAS FOTOS ANTIGUAS
+const fotosAEliminar = fotosOriginales.filter(
+    foto => !fotosActuales.includes(foto)
+);
+
+await Promise.all(
+    [...new Set(fotosAEliminar)].map(borrarImagenLocal)
+);
+
+return res.redirect("/read-producto");
+
+
+    
     } catch (err) {
+
         console.error("Error actualizando producto:", err);
 
         return res.status(500).send({
-            message: err.message
+            message: "No se pudo actualizar el producto"
         });
+
+    } finally {
+
+        // Si no se confirmó la actualización,
+        // eliminar las imágenes nuevas subidas por Multer
+        if (!actualizacionConfirmada) {
+            await limpiarArchivosSubidos(req);
+        }
+
     }
 };
+
 
 exports.delete = async (req, res) => {
     try {
