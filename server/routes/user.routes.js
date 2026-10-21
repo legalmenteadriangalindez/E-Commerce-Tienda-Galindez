@@ -5,12 +5,12 @@ const userController = require('../controller/user_controller');
 const servicesRenderUser = require('../services/renderUsers');
 
 // API
-router.post('/', userController.create);
+router.post('/',isAdmin, userController.create);
 router.get('/', userController.find);
 router.get('/search', userController.search);
 router.get('/:id', userController.find);
-router.put('/:id', userController.update);
-router.delete('/:id', userController.delete);
+router.put('/:id',isAdmin, userController.update);
+router.delete('/:id',isAdmin, userController.delete);
 
 // VISTAS
 router.get('/update/:id', servicesRenderUser.update_user);
