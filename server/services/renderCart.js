@@ -130,10 +130,16 @@ return res.render(
 exports.add_to_carrito = async (req, res) => {
     try {
 
-        const response = await axios.post(
-            `${BASE_URL}/carrito/add`,
-            req.body,
-        );
+const response = await axios.post(
+    `${BASE_URL}/carrito/add`,
+    req.body,
+    {
+        headers: {
+            Cookie: req.headers.cookie || ""
+        },
+        timeout: 10000
+    }
+);
 
         return res.json(response.data);
 
