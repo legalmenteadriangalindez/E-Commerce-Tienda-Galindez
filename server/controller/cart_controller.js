@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Salesdb = require('../model/sales');
+const Saledb = require('../model/sales');
 const SaleDetaildb = require('../model/saleDetails');
 const Productdb = require('../model/product');
 const Ordendb = require('../model/order');
