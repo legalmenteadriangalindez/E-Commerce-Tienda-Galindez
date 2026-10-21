@@ -1,9 +1,8 @@
 var Productdb = require('../model/product');
-
+const Categorydb = require("../model/categories");
+const Branddb = require("../model/brands");
 const mongoose = require('mongoose');
-
 const path = require('path');
-
 const fs = require('fs'); 
 
 
@@ -58,6 +57,12 @@ exports.create = async (req, res) => {
             });
         }
 
+if (!Number.isInteger(cantidad)) {
+    return res.status(400).send({
+        message: "El stock debe ser un número entero"
+    });
+}
+        
         // Validar precio de venta
         if (venta < costo) {
             return res.status(400).send({
@@ -86,6 +91,25 @@ exports.create = async (req, res) => {
                 message: "ID de proveedor inválido"
             });
         }
+
+const [categoriaExiste, marcaExiste] =
+    await Promise.all([
+        Categorydb.exists({ _id: categoria }),
+        Branddb.exists({ _id: marca })
+    ]);
+
+if (!categoriaExiste) {
+    return res.status(400).send({
+        message: "La categoría no existe"
+    });
+}
+
+if (!marcaExiste) {
+    return res.status(400).send({
+        message: "La marca no existe"
+    });
+}
+
 
         // Procesar imágenes
         const rutasImagenes = req.files
@@ -253,6 +277,12 @@ exports.update = async (req, res) => {
             });
         }
 
+        if (!Number.isInteger(nuevoStock)) {
+    return res.status(400).send({
+        message: "El stock debe ser un número entero"
+    });
+}
+        
         const nuevaCategoria = req.body.categoria !== undefined
             ? req.body.categoria
             : product.categoria;
@@ -273,6 +303,20 @@ exports.update = async (req, res) => {
             });
         }
 
+
+const [categoriaExiste, marcaExiste] =
+    await Promise.all([
+        Categorydb.exists({ _id: nuevaCategoria }),
+        Branddb.exists({ _id: nuevaMarca })
+    ]);
+
+if (!categoriaExiste || !marcaExiste) {
+    return res.status(400).send({
+        message: "La categoría o marca no existe"
+    });
+}
+
+        
         let nuevoProveedor;
 
         if (req.body.proveedor !== undefined) {
