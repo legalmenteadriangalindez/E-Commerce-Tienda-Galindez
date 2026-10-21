@@ -26,8 +26,8 @@ router.get('/categoria/:nombre', servicesRenderCategory.category);
 router.get('/Detalles/:id',  servicesRenderProduct.product_detail);
 
 // perfil
-router.get('/perfil', servicesRenderProfile.profile);
-router.get('/perfil/editar/:id', servicesRenderProfile.update_profile_form);
+router.get('/perfil',isLogged, servicesRenderProfile.profile);
+router.get('/perfil/editar/:id',isLogged, servicesRenderProfile.update_profile_form);
 router.post('/perfil/editar/:id', servicesRenderProfile.update_profile);
 
 // router.get('/checkout', servicesRenderCart.checkout);
