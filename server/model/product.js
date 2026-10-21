@@ -27,10 +27,6 @@ var schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'providerdb'
     },
-    precioCosto: {
-    type: Number,
-    required: true
-    },
 
 precioCosto: {
     type: Number,
