@@ -3,7 +3,6 @@ const Salesdb = require('../model/sales');
 const SaleDetaildb = require('../model/saleDetails');
 const Productdb = require('../model/product');
 const Ordendb = require('../model/order');
-const Saledb = require('../model/sales');
 
 const crypto = require("crypto");
 const { descontarStock } = require("../business/inventoryService");
