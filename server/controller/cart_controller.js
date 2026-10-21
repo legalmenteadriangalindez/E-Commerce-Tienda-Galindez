@@ -10,9 +10,6 @@ const { descontarStock } = require("../business/inventoryService");
 
 const {verificarFirmaWompi,consultarTransaccionWompi } = require("../business/wompiService");
 
-const {
-    descontarStock
-} = require("../business/inventoryService");
 
 // const wompi = require("../config/wompi");
 const BASE_URL = process.env.BASE_URL
