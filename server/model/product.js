@@ -31,14 +31,29 @@ var schema = new mongoose.Schema({
     type: Number,
     required: true
     },
-    precioVenta: {
-        type: Number,
-        required: true
-    },
-    stock: {
-        type: Number,
-        default: 0
-    },
+
+precioCosto: {
+    type: Number,
+    required: true,
+    min: [0, "El precio de costo no puede ser negativo"]
+},
+
+precioVenta: {
+    type: Number,
+    required: true,
+    min: [0, "El precio de venta no puede ser negativo"]
+},
+
+stock: {
+    type: Number,
+    default: 0,
+    min: [0, "El stock no puede ser negativo"],
+    validate: {
+        validator: Number.isInteger,
+        message: "El stock debe ser un número entero"
+    }
+},
+
     fechaIngreso: {
         type: Date,
         default: Date.now
