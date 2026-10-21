@@ -826,6 +826,16 @@ if (!Array.isArray(productos) ||
     );
 }
 
+
+const ids = productos.map(p => p.productoId);
+
+if (new Set(ids).size !== ids.length) {
+    return res.status(400).send(
+        "Hay productos duplicados"
+    );
+}
+
+        
 for (const producto of productos) {
 
     const cantidad = Number(producto.cantidad);
