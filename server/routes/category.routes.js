@@ -3,10 +3,10 @@ const router = express.Router();
 
 const categoryController = require('../controller/category_controller');
 
-router.post('/', categoryController.create);
-router.get('/', categoryController.find);
+router.post('/',isAdmin, categoryController.create);
+router.get('/',isAdmin, categoryController.find);
 router.get('/:id', categoryController.find);
-router.put('/:id', categoryController.update);
-router.delete('/:id', categoryController.delete);
+router.put('/:id',isAdmin, categoryController.update);
+router.delete('/:id',isAdmin, categoryController.delete);
 
 module.exports = router;
