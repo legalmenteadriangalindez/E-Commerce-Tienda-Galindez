@@ -11,10 +11,10 @@ router.post('/payment-point', isLogged, servicesRenderPaymentPoint.payment_point
 
 const paymentController = require('../controller/payment_controller');
 
-router.get('/', paymentController.find);
-router.get('/:id', paymentController.findOne);
-router.post('/', paymentController.create);
-router.put('/:id', paymentController.update);
-router.delete('/:id', paymentController.delete);
+router.get('/',isLogged, paymentController.find);
+router.get('/:id',isLogged, paymentController.findOne);
+router.post('/',isLogged, paymentController.create);
+router.put('/:id',isLogged, paymentController.update);
+router.delete('/:id',isLgged, paymentController.delete);
 
 module.exports = router;
