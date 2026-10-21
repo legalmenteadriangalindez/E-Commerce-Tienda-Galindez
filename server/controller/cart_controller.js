@@ -534,131 +534,255 @@ exports.wompiWebhook = async (req, res) => {
 
 
 
+
 exports.checkout_admin = async (req, res) => {
+
+    const cart = req.session.cart || [];
+    const userSession = req.session.user;
+
+    // 1. VALIDAR USUARIO
+    if (!userSession?._id) {
+        return res.status(401).send(
+            "Debes iniciar sesión"
+        );
+    }
+
+    // 2. VALIDAR CARRITO
+    if (cart.length === 0) {
+        return res.status(400).send(
+            "El carrito está vacío"
+        );
+    }
+
+    // 3. DATOS DEL CLIENTE
+    const {
+        fullName,
+        email,
+        phone,
+        address,
+        city,
+        department,
+        reference,
+        notes
+    } = req.body;
+
+    if (
+        typeof fullName !== "string" ||
+        !fullName.trim() ||
+        typeof email !== "string" ||
+        !email.trim() ||
+        typeof phone !== "string" ||
+        !phone.trim()
+    ) {
+        return res.status(400).send(
+            "Faltan datos obligatorios del cliente"
+        );
+    }
+
+    const session = await mongoose.startSession();
+
+    let ordenId;
+
     try {
-        const cart = req.session.cart || [];
 
-        if (cart.length === 0) {
-            return res.status(400).send("El carrito está vacío");
-        }
+        // 4. INICIAR TRANSACCIÓN
+        await session.withTransaction(async () => {
 
-        const {
-            fullName,
-            email,
-            phone,
-            address,
-            city,
-            zip,
-            department,
-            reference,
-            notes
-        } = req.body;
+            let subtotal = 0;
+            const productosOrden = [];
 
-        let subtotal = 0;
+            // 5. VALIDAR PRODUCTOS Y DESCONTAR STOCK
+            for (const item of cart) {
 
-        for (const item of cart) {
-            const productoDB = await Productdb.findById(item.productoId);
+                const cantidad = Number(item.cantidad);
 
-            if (!productoDB) {
-                return res.status(404).send("Producto no encontrado");
+                if (
+                    !mongoose.isValidObjectId(item.productoId) ||
+                    !Number.isInteger(cantidad) ||
+                    cantidad <= 0
+                ) {
+                    throw new Error(
+                        "Producto o cantidad inválida"
+                    );
+                }
+
+                const productoDB = await Productdb
+                    .findById(item.productoId)
+                    .session(session);
+
+                if (!productoDB) {
+                    throw new Error(
+                        "Producto no encontrado"
+                    );
+                }
+
+                // Precio actual de la base de datos
+                const precioUnitario =
+                    Number(productoDB.precioVenta);
+
+                if (
+                    !Number.isFinite(precioUnitario) ||
+                    precioUnitario < 0
+                ) {
+                    throw new Error(
+                        "Precio del producto inválido"
+                    );
+                }
+
+                // Descuento atómico dentro de la transacción
+                await descontarStock(
+                    productoDB._id,
+                    cantidad,
+                    session
+                );
+
+                const subtotalProducto =
+                    precioUnitario * cantidad;
+
+                subtotal += subtotalProducto;
+
+                productosOrden.push({
+                    producto: productoDB._id,
+                    nombre: productoDB.nombre,
+                    cantidad,
+                    precioUnitario,
+                    subtotal: subtotalProducto
+                });
             }
 
-            if (productoDB.stock < item.cantidad) {
-                return res.status(400).send(
-                    `Stock insuficiente para ${productoDB.nombre}`
+            // 6. CALCULAR TOTALES
+            const impuestos = 0;
+            const costoEnvio = 5000;
+            const descuento = 0;
+
+            const total =
+                subtotal + impuestos +
+                costoEnvio - descuento;
+
+            // 7. CREAR ORDEN
+            const [orden] = await Ordendb.create(
+                [{
+                    numeroOrden:
+                        `ORD-ADM-${crypto.randomUUID()}`,
+
+                    usuario: userSession._id,
+
+                    cliente: {
+                        nombre: fullName.trim(),
+                        email: email.trim(),
+                        telefono: phone.trim()
+                    },
+
+                    productos: productosOrden,
+
+                    subtotal,
+                    impuestos,
+                    costoEnvio,
+                    descuento,
+                    total,
+
+                    estado: "PENDIENTE",
+                    estadoPago: "PENDIENTE",
+
+                    direccionEnvio: {
+                        nombreRecibe: fullName.trim(),
+                        telefono: phone.trim(),
+                        departamento: department,
+                        ciudad: city,
+                        direccion: address,
+                        referencia: reference
+                    },
+
+                    notasCliente: notes || ""
+                }],
+                { session }
+            );
+
+            ordenId = orden._id;
+
+            // 8. CREAR VENTA
+            const [venta] = await Saledb.create(
+                [{
+                    cliente: userSession._id,
+                    order: orden._id,
+
+                    subtotal,
+                    impuestos,
+                    costoEnvio,
+                    descuento,
+                    total,
+
+                    estadoPago: "PENDIENTE"
+                }],
+                { session }
+            );
+
+            // 9. CREAR DETALLES DE VENTA
+            const detallesVenta = productosOrden.map(
+                item => ({
+                    venta: venta._id,
+                    producto: item.producto,
+                    cantidad: item.cantidad,
+                    precioUnitario: item.precioUnitario,
+                    subtotal: item.subtotal
+                })
+            );
+
+            await SaleDetaildb.insertMany(
+                detallesVenta,
+                { session }
+            );
+
+        });
+
+        // 10. LA TRANSACCIÓN TERMINÓ CORRECTAMENTE
+        req.session.cart = [];
+
+        // 11. GUARDAR SESIÓN
+        req.session.save(err => {
+
+            if (err) {
+                console.error(
+                    "Venta guardada, pero falló la sesión:",
+                    err
+                );
+
+                return res.status(500).send(
+                    "La venta fue registrada, pero no se pudo actualizar el carrito. Verifica la orden antes de reintentar."
                 );
             }
 
-            subtotal += productoDB.precioVenta * item.cantidad;
-        }
-
-        // const impuestos = subtotal * 0.19;
-        const impuestos = 0;
-        const costoEnvio = 5000;
-        const descuento = 0;
-        const total = subtotal + impuestos + costoEnvio - descuento;
-
-        const orden = await Ordendb.create({
-            numeroOrden: `ORD-${Date.now()}`,
-            usuario: req.session.user._id,
-            cliente: {
-                nombre: fullName,
-                email,
-                telefono: phone
-            },
-            productos: cart.map(item => ({
-                producto: item.productoId,
-                nombre: item.nombre,
-                cantidad: item.cantidad,
-                precioUnitario: item.precio,
-                subtotal: item.precio * item.cantidad
-            })),
-            subtotal,
-            impuestos,
-            costoEnvio,
-            descuento,
-            total,
-            estado: 'PENDIENTE',
-            direccionEnvio: {
-                nombreRecibe: fullName,
-                telefono: phone,
-                departamento: department,
-                ciudad: city,
-                direccion: address,
-                referencia: reference
-            },
-            notasCliente: notes
-        });
-
-        const venta = await Saledb.create({
-            cliente: req.session.user._id,
-            order: orden._id,
-            subtotal,
-            impuestos,
-            costoEnvio,
-            descuento,
-            total,
-            estadoPago: 'PENDIENTE'
-        });
-
-        const detallesVenta = cart.map(item => ({
-            venta: venta._id,
-            producto: item.productoId,
-            cantidad: Number(item.cantidad),
-            precioUnitario: Number(item.precio),
-            subtotal: Number(item.precio) * Number(item.cantidad)
-        }));
-
-        await SaleDetaildb.insertMany(detallesVenta);
-
-        for (const item of cart) {
-            await Productdb.findByIdAndUpdate(
-                item.productoId,
-                {
-                    $inc: {
-                        stock: -item.cantidad
-                    }
-                }
-            );
-        }
-
-        req.session.cart = [];
-
-        req.session.save(err => {
-            if (err) {
-                return res.status(500).send(err.message);
-            }
-
             return res.redirect(
-                `/venta-finalizada-admin/${orden._id}`
+                `/venta-finalizada-admin/${ordenId}`
             );
         });
 
     } catch (error) {
-        console.error("ERROR CREANDO VENTA:", error);
-        return res.status(500).send(error.message);
+
+        console.error(
+            "ERROR CREANDO VENTA ADMIN:",
+            error
+        );
+
+        const errorEsperado =
+            /Stock insuficiente|inválid|no encontrado/i
+                .test(error.message);
+
+        return res.status(
+            errorEsperado ? 400 : 500
+        ).send(
+            errorEsperado
+                ? error.message
+                : "No se pudo registrar la venta"
+        );
+
+    } finally {
+
+        await session.endSession();
+
     }
 };
+
 
 exports.payment_point = async (req, res) => {
 
