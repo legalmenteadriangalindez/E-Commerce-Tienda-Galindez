@@ -270,7 +270,15 @@ exports.read_stock = async (req, res) => {
 
     try {
 
-        const response = await axios.get(`${BASE_URL}/api/productos/read-Stock`);
+        const response = await axios.get(
+    `${BASE_URL}/api/productos/read-Stock`,
+    {
+        headers: {
+            Cookie: req.headers.cookie || ""
+        },
+        timeout: 10000
+    }
+);
 
         res.render('admin/analytics/stock', {
 
