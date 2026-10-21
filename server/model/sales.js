@@ -54,4 +54,9 @@ const saleSchema = new mongoose.Schema({
     timestamps: true
 });
 
+saleSchema.index(
+    { order: 1 },
+    { unique: true }
+);
+
 module.exports = mongoose.model('saledb', saleSchema);
