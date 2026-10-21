@@ -86,7 +86,11 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-
+    descuento: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
     // ESTADO DEL PAGO
     estadoPago: {
        type: String,
@@ -145,6 +149,9 @@ const orderSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    wompiTransactionId: {
+         type: String
+    },
 
 }, {
     timestamps: true
@@ -153,6 +160,6 @@ const orderSchema = new mongoose.Schema({
 // ÍNDICES
 orderSchema.index({ usuario: 1 });
 orderSchema.index({ estado: 1 });
-orderSchema.index({ fechaOrden: -1 });
+orderSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('orderdb',orderSchema);
