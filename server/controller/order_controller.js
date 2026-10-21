@@ -53,7 +53,7 @@ exports.create = async (req, res) => {
                 });
             }
 
-            const precioUnitario = productoDB.precioBase;
+            const precioUnitario = productoDB.precioVenta;
 
             const subtotalProducto = precioUnitario * item.cantidad;
 
