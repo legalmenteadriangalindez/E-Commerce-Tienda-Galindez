@@ -7,6 +7,11 @@ const orderSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
+    
+    claveIdempotenciaCaja: {
+        type: String,
+        default: undefined
+    },
 
     usuario: {
         type: mongoose.Schema.Types.ObjectId,
@@ -171,5 +176,17 @@ orderSchema.index(
         }
     }
 );
+
+
+orderSchema.index(
+    { claveIdempotenciaCaja: 1 },
+    {
+        unique: true,
+        partialFilterExpression: {
+            claveIdempotenciaCaja: { $type: "string" }
+        }
+    }
+);
+
 
 module.exports = mongoose.model('orderdb',orderSchema);
