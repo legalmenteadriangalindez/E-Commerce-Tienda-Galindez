@@ -4,6 +4,8 @@ const Productdb = require('../model/product');
 const Ordendb = require('../model/order');
 const Saledb = require('../model/sales');
 const crypto = require("crypto");
+const { descontarStock } = require("../business/inventoryService");
+
 // const wompi = require("../config/wompi");
 const BASE_URL = process.env.BASE_URL
 
