@@ -10,7 +10,7 @@ router.get('/ropa',productController.findByCategoryRopa);
 router.put('/:id',isAdmin, upload.array('fotos', 4), productController.update);
 router.delete('/:id',isAdmin, productController.delete);
 router.get('/search', productController.searchApi);
-router.get('/:id', productController.findOne);
 router.get('/read-Stock',isAdmin, productController.getStockAlerts);
+router.get('/:id', productController.findOne);
 
 module.exports = router;
