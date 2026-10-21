@@ -53,12 +53,25 @@ exports.add_to_carrito = async (req, res) => {
             });
             
         }
-        req.session.save();
-        return res.json({
-                success: true,
-                message: "se agrego el producto al carrito",
-                cart: req.session.cart
+
+req.session.save(error => {
+
+    if (error) {
+        console.error("Error guardando carrito:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "No se pudo guardar el carrito"
         });
+    }
+
+    return res.json({
+        success: true,
+        message: "Se agregó el producto al carrito",
+        cart: req.session.cart
+    });
+});
+
     } catch (error) {
         
         return res.status(500).json({
@@ -223,7 +236,7 @@ if (
         const orden =
             await Ordendb.create({
 
-                numeroOrden:`ORD-${Date.now()}`,
+                numeroOrden: `ORD-${crypto.randomUUID()}`,
                 usuario: userSession._id,
                 // DATOS CLIENTE
                 cliente: {
