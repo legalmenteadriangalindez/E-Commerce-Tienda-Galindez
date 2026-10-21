@@ -225,7 +225,12 @@ exports.update_products = async (req, res) => {
 };
 
 exports.read_products = (req, res) => {
-    axios.get(`${BASE_URL}/api/productos`)
+    axios.get(`${BASE_URL}/api/productos`, {
+           headers: {
+               Cookie: req.headers.cookie || ""
+           },
+               timeout: 10000
+        })
         .then(response => {
             
             res.render('admin/products/read_products', { productos: response.data });
