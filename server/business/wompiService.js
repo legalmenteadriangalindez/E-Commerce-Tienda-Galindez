@@ -2,7 +2,7 @@
 const crypto = require("crypto");
 const axios = require("axios");
 
-// Verificar la firma recibida de Wompi
+// VERIFICAR LA FIRMA DEL EVENTO
 function verificarFirmaWompi(evento) {
 
     const secreto = process.env.WOMPI_EVENTS_KEY;
@@ -14,7 +14,8 @@ function verificarFirmaWompi(evento) {
         !Array.isArray(propiedades) ||
         propiedades.length === 0 ||
         !Number.isInteger(evento?.timestamp) ||
-        !/^[a-fA-F0-9]{64}$/.test(firma || "")
+        typeof firma !== "string" ||
+        !/^[a-fA-F0-9]{64}$/.test(firma)
     ) {
         return false;
     }
@@ -39,25 +40,23 @@ function verificarFirmaWompi(evento) {
         return false;
     }
 
-    const cadena = valores.map(String).join("") +
+    const cadena =
+        valores.map(String).join("") +
         evento.timestamp +
         secreto;
 
-    const firmaCalculada = crypto
+    const calculada = crypto
         .createHash("sha256")
         .update(cadena)
         .digest();
 
-    const firmaRecibida = Buffer.from(firma, "hex");
+    const recibida = Buffer.from(firma, "hex");
 
-    return crypto.timingSafeEqual(
-        firmaCalculada,
-        firmaRecibida
-    );
+    return crypto.timingSafeEqual(calculada, recibida);
 }
 
 
-// Consultar directamente a Wompi
+// CONSULTAR TRANSACCIÓN EN WOMPI
 async function consultarTransaccionWompi(id) {
 
     const ambiente = process.env.WOMPI_ENV;
