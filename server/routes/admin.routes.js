@@ -86,8 +86,8 @@ router.get('/update-rol', isAdmin, servicesRenderRol.update_rol);
 router.get('/delete-rol/:id', isAdmin, servicesRenderRol.delete_rol);
 
 
-router.get('/update-user/:id', servicesRenderUser.update_user);
-router.post('/update-user/:id', servicesRenderUser.update_user_data);
+router.get('/update-user/:id',isAdmin, servicesRenderUser.update_user);
+router.post('/update-user/:id',isAdmin, servicesRenderUser.update_user_data);
 router.get('/add-user-form', isAdmin, servicesRenderUser.create_user_form);
 router.get('/add-user', isAdmin, servicesRenderUser.add_user);
 router.post('/add-user', isAdmin, servicesRenderUser.add_user);
@@ -100,14 +100,14 @@ router.get('/delete-user/:id', isAdmin, servicesRenderUser.delete_user);
 
 router.get('/read-sales',isAdmin,servicesRenderSales.sales);
 router.get('/read-sale-details',isAdmin,servicesRenderSales.saleDetailView);
-router.get('/sale/:id', servicesRenderSales.saleDetailView);
+router.get('/sale/:id',isAdmin, servicesRenderSales.saleDetailView);
 router.get('/read-total-profit',isAdmin,servicesRenderSales.total_profit);
 router.get('/read-profit-margins',isAdmin,servicesRenderSales.profit_margins);
 
 
 
-router.get('/admin/perfil', servicesRenderProfile.profile);
-router.get('/admin/perfil/editar/:id', servicesRenderProfile.update_profile_form_admin);
-router.post('/admin/perfil/editar/:id', servicesRenderProfile.update_profile_admin);
+router.get('/admin/perfil',isAdmin, servicesRenderProfile.profile);
+router.get('/admin/perfil/editar/:id',isAdmin, servicesRenderProfile.update_profile_form_admin);
+router.post('/admin/perfil/editar/:id',isAdmin, servicesRenderProfile.update_profile_admin);
 
 module.exports = router;
