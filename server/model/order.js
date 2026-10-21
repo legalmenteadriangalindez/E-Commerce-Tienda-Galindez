@@ -162,4 +162,14 @@ orderSchema.index({ usuario: 1 });
 orderSchema.index({ estado: 1 });
 orderSchema.index({ createdAt: -1 });
 
+orderSchema.index(
+    { wompiTransactionId: 1 },
+    {
+        unique: true,
+        partialFilterExpression: {
+            wompiTransactionId: { $type: "string" }
+        }
+    }
+);
+
 module.exports = mongoose.model('orderdb',orderSchema);
