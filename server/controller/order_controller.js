@@ -1,5 +1,6 @@
 const Orderdb = require('../model/order');
 const Productdb = require('../model/product');
+const { descontarStock } = require("../business/inventoryService");
 
 
 // CREAR ORDEN
