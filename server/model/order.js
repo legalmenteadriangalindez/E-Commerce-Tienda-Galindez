@@ -95,9 +95,9 @@ const orderSchema = new mongoose.Schema({
     estadoPago: {
        type: String,
        enum: [
-          'PENDIENTE',
-          'PAGADO',
-          'RECHAZADO'
+           'PENDIENTE',
+           'PAGADO',
+           'RECHAZADO'
        ],
        default: 'PENDIENTE'
      },
