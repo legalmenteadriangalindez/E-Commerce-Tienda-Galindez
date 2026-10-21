@@ -54,8 +54,11 @@ exports.add_to_carrito = async (req, res) => {
             
         }
 
-req.session.save(error => {
-
+       req.session.save(error => {
+           
+       // INVALIDAR OPERACIÓN DE CAJA ANTERIOR
+        delete req.session.claveIdempotenciaCaja;
+           
     if (error) {
         console.error("Error guardando carrito:", error);
 
@@ -117,9 +120,12 @@ exports.remove_from_carrito = async (req, res) => {
             });
         }
 
-        req.session.cart = req.session.cart.filter(
-            item => item.productoId.toString() !== productoId.toString()
-        );
+req.session.cart = req.session.cart.filter(
+    item => item.productoId.toString() !== productoId.toString()
+);
+
+// INVALIDAR OPERACIÓN DE CAJA ANTERIOR
+delete req.session.claveIdempotenciaCaja;
 
         req.session.save(error => {
             if (error) {
@@ -313,7 +319,10 @@ if (
         checkoutUrl.searchParams.set("redirect-url",`${BASE_URL}/venta-finalizada/${orden._id}`);
         console.log("CHECKOUT WOMPI:", checkoutUrl.toString());
         req.session.cart = [];
-
+        
+        // INVALIDAR OPERACIÓN DE CAJA
+        delete req.session.claveIdempotenciaCaja;
+        
         req.session.save(err => {
 
             if (err) {
@@ -574,6 +583,56 @@ exports.checkout_admin = async (req, res) => {
         );
     }
 
+    // VALIDAR CLAVE DE IDEMPOTENCIA
+    const claveIdempotenciaCaja =
+        req.body?.claveIdempotenciaCaja;
+
+    const uuidValido =
+        typeof claveIdempotenciaCaja === "string" &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+            .test(claveIdempotenciaCaja);
+
+    if (!uuidValido) {
+        return res.status(400).send(
+            "Identificador de operación inválido"
+        );
+    }
+
+    // COMPROBAR SI YA EXISTE ESTA VENTA
+    try {
+        const ordenExistente = await Ordendb.findOne({
+            claveIdempotenciaCaja,
+            usuario: userSession._id
+        }).select("_id");
+
+        if (ordenExistente) {
+            return res.redirect(
+                `/venta-finalizada-admin/${ordenExistente._id}`
+            );
+        }
+
+    } catch (error) {
+        console.error(
+            "Error verificando la operación:",
+            error
+        );
+
+        return res.status(500).send(
+            "No se pudo verificar la operación"
+        );
+    }
+
+    // COMPROBAR CLAVE DE LA SESIÓN
+    if (
+        req.session.claveIdempotenciaCaja !==
+        claveIdempotenciaCaja
+    ) {
+        return res.status(409).send(
+            "La operación de caja ya no está vigente"
+        );
+    }
+
+    
     // 2. VALIDAR CARRITO
     if (cart.length === 0) {
         return res.status(400).send(
@@ -691,7 +750,7 @@ exports.checkout_admin = async (req, res) => {
                 [{
                     numeroOrden:
                         `ORD-ADM-${crypto.randomUUID()}`,
-
+                    claveIdempotenciaCaja,
                     usuario: userSession._id,
 
                     cliente: {
@@ -764,7 +823,10 @@ exports.checkout_admin = async (req, res) => {
 
         // 10. LA TRANSACCIÓN TERMINÓ CORRECTAMENTE
         req.session.cart = [];
-
+        
+        // ELIMINAR CLAVE DE LA OPERACIÓN FINALIZADA
+        delete req.session.claveIdempotenciaCaja;
+        
         // 11. GUARDAR SESIÓN
         req.session.save(err => {
 
@@ -784,12 +846,48 @@ exports.checkout_admin = async (req, res) => {
             );
         });
 
+    
     } catch (error) {
 
         console.error(
             "ERROR CREANDO VENTA ADMIN:",
             error
         );
+
+        // VERIFICAR CLAVE DE IDEMPOTENCIA DUPLICADA
+        const claveDuplicada =
+            error.code === 11000 &&
+            (
+                error.keyPattern?.claveIdempotenciaCaja === 1 ||
+                error.keyValue?.claveIdempotenciaCaja ===
+                    claveIdempotenciaCaja
+            );
+
+        if (claveDuplicada) {
+
+            try {
+                const ordenExistente = await Ordendb.findOne({
+                    claveIdempotenciaCaja,
+                    usuario: userSession._id
+                }).select("_id");
+
+                if (ordenExistente) {
+                    return res.redirect(
+                        `/venta-finalizada-admin/${ordenExistente._id}`
+                    );
+                }
+
+            } catch (consultaError) {
+                console.error(
+                    "Error consultando venta duplicada:",
+                    consultaError
+                );
+            }
+
+            return res.status(409).send(
+                "La operación está en proceso o requiere verificación. Consulta las órdenes antes de reintentar."
+            );
+        }
 
         const errorEsperado =
             /Stock insuficiente|inválid|no encontrado/i
@@ -809,6 +907,7 @@ exports.checkout_admin = async (req, res) => {
 
     }
 };
+
 
 
 exports.payment_point = async (req, res) => {
@@ -856,23 +955,24 @@ for (const producto of productos) {
 }
 
         
-        req.session.cart = req.session.cart.map(item => {
+req.session.cart = req.session.cart.map(item => {
 
-            const actualizado = productos.find(
-                p => p.productoId === item.productoId
-            );
+    const actualizado = productos.find(
+        p => p.productoId === item.productoId
+    );
 
-            if (actualizado) {
+    if (actualizado) {
+        return {
+            ...item,
+            cantidad: Number(actualizado.cantidad)
+        };
+    }
 
-                return {
-                    ...item,
-                    cantidad: Number(actualizado.cantidad)
-                };
-            }
+    return item;
+});
 
-            return item;
-
-        });
+// INVALIDAR OPERACIÓN DE CAJA ANTERIOR
+delete req.session.claveIdempotenciaCaja;
 
         req.session.save(err => {
 
