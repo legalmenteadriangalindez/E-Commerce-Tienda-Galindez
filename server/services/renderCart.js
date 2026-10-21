@@ -110,14 +110,16 @@ if (cart.length > 0 && !req.session.claveIdempotenciaCaja) {
             subtotal += item.precio * item.cantidad;
         });
 
-        return res.render(
-            'admin/payment/payment_point',
-            {
-                user: req.session.user,
-                productosCarrito: cart,
-                subtotal
-            }
-        );
+return res.render(
+    'admin/payment/payment_point',
+    {
+        user: req.session.user,
+        productosCarrito: cart,
+        subtotal,
+        claveIdempotenciaCaja:
+            req.session.claveIdempotenciaCaja
+    }
+);
 
     } catch (err) {
         
