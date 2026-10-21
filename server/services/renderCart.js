@@ -65,16 +65,14 @@ exports.payment_point = async (req, res) => {
             subtotal += item.precio * item.cantidad;
         });
 
-        return res.render(
-            'client/payment/payment_point',
-            {
-                user: req.session.user,
-                productosCarrito: cart,
-                subtotal,
-                claveIdempotenciaCaja:
-                req.session.claveIdempotenciaCaja
-            }
-        );
+return res.render(
+    'client/payment/payment_point',
+    {
+        user: req.session.user,
+        productosCarrito: cart,
+        subtotal
+    }
+);
 
     } catch (err) {
         
