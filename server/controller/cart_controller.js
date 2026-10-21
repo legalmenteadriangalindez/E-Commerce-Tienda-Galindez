@@ -311,52 +311,6 @@ exports.checkout = async (req, res) => {
 
 
 
-// verificación de firma
-
-function verificarFirmaWompi(event) {
-
-    const secreto = process.env.WOMPI_EVENTS_KEY;
-    const propiedades = event?.signature?.properties;
-    const firma = event?.signature?.checksum;
-
-    if (
-        !secreto ||
-        !Array.isArray(propiedades) ||
-        !Number.isInteger(event?.timestamp) ||
-        typeof firma !== "string" ||
-        !/^[0-9a-fA-F]{64}$/.test(firma)
-    ) {
-        return false;
-    }
-
-    const valores = propiedades.map(ruta =>
-        ruta.split(".").reduce(
-            (obj, clave) => obj?.[clave],
-            event.data
-        )
-    );
-
-    if (valores.some(v => v === undefined || v === null)) {
-        return false;
-    }
-
-    const cadena =
-        valores.map(String).join("") +
-        event.timestamp +
-        secreto;
-
-    const calculada = crypto
-        .createHash("sha256")
-        .update(cadena)
-        .digest();
-
-    const recibida = Buffer.from(firma, "hex");
-
-    return crypto.timingSafeEqual(calculada, recibida);
-}
-
-
-
 
 
 exports.wompiWebhook = async (req, res) => {
