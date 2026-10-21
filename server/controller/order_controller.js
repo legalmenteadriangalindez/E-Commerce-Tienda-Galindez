@@ -1,130 +1,143 @@
 const Orderdb = require('../model/order');
 const Productdb = require('../model/product');
 const { descontarStock } = require("../business/inventoryService");
-
+const mongoose = require("mongoose");
+const Userdb = require("../model/user");
+const { randomUUID } = require("node:crypto");
 
 // CREAR ORDEN
+
 exports.create = async (req, res) => {
 
-    try {
-
-        const {
-            usuario,
-            productos,
-            impuestos,
-            costoEnvio,
-            descuento,
-            direccionEnvio,
-            notasCliente
-        } = req.body;
-
-        // VALIDACIONES
-
-        if (!usuario) {
-            return res.status(400).send({
-                message: "Usuario requerido"
-            });
-        }
-
-        if (!productos || !Array.isArray(productos) || productos.length === 0) {
-            return res.status(400).send({
-                message: "Debe agregar productos"
-            });
-        }
-
-        let subtotal = 0;
-
-        const productosOrden = [];
-
-        // VALIDAR PRODUCTOS
-
-        for (const item of productos) {
-
-            const productoDB = await Productdb.findById(item.producto);
-
-            if (!productoDB) {
-                return res.status(404).send({
-                    message: `Producto no encontrado: ${item.producto}`
-                });
-            }
-
-            if (productoDB.stock < item.cantidad) {
-                return res.status(400).send({
-                    message: `Stock insuficiente para ${productoDB.nombre}`
-                });
-            }
-
-            const precioUnitario = productoDB.precioVenta;
-
-            const subtotalProducto = precioUnitario * item.cantidad;
-
-            subtotal += subtotalProducto;
-
-            productosOrden.push({
-                producto: productoDB._id,
-                nombre: productoDB.nombre,
-                cantidad: item.cantidad,
-                precioUnitario,
-                subtotal: subtotalProducto
-            });
-
-            // DESCONTAR STOCK
-
-            productoDB.stock -= item.cantidad;
-
-            await productoDB.save();
-        }
-
-        // TOTAL
-
-        const total =
-            subtotal +
-            (Number(impuestos) || 0) +
-            (Number(costoEnvio) || 0) -
-            (Number(descuento) || 0);
-
-        // NÚMERO DE ORDEN
-
-        const numeroOrden =
-            'ORD-' +
-            Date.now();
-
-        // CREAR ORDEN
-
-        const nuevaOrden = new Orderdb({
-
-            numeroOrden,
-
-            usuario,
-
-            productos: productosOrden,
-
-            subtotal,
-
-            impuestos: Number(impuestos) || 0,
-
-            costoEnvio: Number(costoEnvio) || 0,
-
-            descuento: Number(descuento) || 0,
-
-            total,
-
-            direccionEnvio,
-
-            notasCliente
-        });
-
-        const ordenGuardada = await nuevaOrden.save();
-
-        res.status(201).send(ordenGuardada);
-
-    } catch (err) {
-
-        res.status(500).send({
-            message: err.message
+    if (!req.session?.user?._id) {
+        return res.status(401).json({
+            message: "Debes iniciar sesión"
         });
     }
+
+    const productos = req.body.productos;
+
+    if (!Array.isArray(productos) || productos.length === 0) {
+        return res.status(400).json({
+            message: "Debe agregar productos"
+        });
+    }
+
+    const session = await mongoose.startSession();
+
+    try {
+        let ordenGuardada;
+
+        await session.withTransaction(async () => {
+
+            const usuarioDB = await Userdb.findById(
+                req.session.user._id
+            ).session(session);
+
+            if (!usuarioDB) {
+                throw new Error("Usuario no encontrado");
+            }
+
+            let subtotal = 0;
+            const productosOrden = [];
+
+            for (const item of productos) {
+
+                const cantidad = Number(item.cantidad);
+
+                if (!Number.isInteger(cantidad) || cantidad <= 0) {
+                    throw new Error("Cantidad inválida");
+                }
+
+                const productoDB = await Productdb
+                    .findById(item.producto)
+                    .session(session);
+
+                if (!productoDB) {
+                    throw new Error("Producto no encontrado");
+                }
+
+                const precioUnitario =
+                    Number(productoDB.precioVenta);
+
+                if (!Number.isFinite(precioUnitario) ||
+                    precioUnitario < 0) {
+                    throw new Error("Precio inválido");
+                }
+
+                // DESCONTAR STOCK DE FORMA SEGURA
+                await descontarStock(
+                    productoDB._id,
+                    cantidad,
+                    session
+                );
+
+                const subtotalProducto =
+                    precioUnitario * cantidad;
+
+                subtotal += subtotalProducto;
+
+                productosOrden.push({
+                    producto: productoDB._id,
+                    nombre: productoDB.nombre,
+                    cantidad,
+                    precioUnitario,
+                    subtotal: subtotalProducto
+                });
+            }
+
+            // Calcular totales desde el servidor
+            const impuestos = 0;
+            const costoEnvio = subtotal >= 30000 ? 0 : 5000;
+            const descuento = 0;
+
+            const total =
+                subtotal + impuestos + costoEnvio - descuento;
+
+            const nuevaOrden = new Orderdb({
+                numeroOrden: `ORD-${randomUUID()}`,
+                usuario: usuarioDB._id,
+
+                cliente: {
+                    nombre: usuarioDB.nombre,
+                    email: usuarioDB.email,
+                    telefono: usuarioDB.telefono
+                },
+
+                productos: productosOrden,
+                subtotal,
+                impuestos,
+                costoEnvio,
+                descuento,
+                total,
+                estado: "PENDIENTE",
+                direccionEnvio: req.body.direccionEnvio,
+                notasCliente: req.body.notasCliente || ""
+            });
+
+            ordenGuardada = await nuevaOrden.save({
+                session
+            });
+        });
+
+        return res.status(201).json(ordenGuardada);
+
+    } catch (error) {
+
+        console.error("Error creando orden:", error);
+
+        return res.status(
+            /Stock insuficiente|inválid|no encontrado/i.test(error.message)
+                ? 400 : 500
+        ).json({
+            message: "No se pudo crear la orden"
+        });
+
+    } finally {
+        await session.endSession();
+    }
 };
+
 
 
 // OBTENER TODAS LAS ÓRDENES
