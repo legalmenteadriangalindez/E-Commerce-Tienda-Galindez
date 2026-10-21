@@ -154,37 +154,52 @@ const response = await axios.post(
 };
 
 // actualizar carrito
-exports.update_carrito = async (req, res) => {
+// exports.update_carrito = async (req, res) => {
 
-    try {
+//     try {
 
-        const response = await axios.post(
-            `${BASE_URL}/carrito/actualizar`,
-            req.body,
-            getConfig(req)
-        );
+//         const response = await axios.post(
+//             `${BASE_URL}/carrito/actualizar`,
+//             req.body,
+//             getConfig(req)
+//         );
 
-        return res.json(response.data);
+//         return res.json(response.data);
 
-    } catch (err) {
+//     } catch (err) {
 
-        return res.status(
-            err.response?.status || 500
-        ).json({
-            success: false,
-            message: err.response?.data?.message || err.message
-        });
-    }
-};
+//         return res.status(
+//             err.response?.status || 500
+//         ).json({
+//             success: false,
+//             message: err.response?.data?.message || err.message
+//         });
+//     }
+// };
 
 // RENDER SALE SUCCESS
 exports.order_success = async (req, res) => {
 
     try {
 
-        const orden = await Ordendb.findById(
-            req.params.id
-        );
+
+if (!req.session.user?._id) {
+    return res.status(401).send(
+        "Debes iniciar sesión"
+    );
+}
+
+if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(400).send(
+        "Identificador de orden inválido"
+    );
+}
+
+const orden = await Ordendb.findOne({
+    _id: req.params.id,
+    usuario: req.session.user._id
+});
+
 
         if (!orden) {
 
