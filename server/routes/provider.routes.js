@@ -3,9 +3,9 @@ const router = express.Router();
 
 const providerController = require('../controller/provider_controller');
 
-router.post('/', providerController.create);
-router.get('/', providerController.find);
-router.put('/:id', providerController.update);
-router.delete('/:id', providerController.delete);
+router.post('/',isAdmin, providerController.create);
+router.get('/',isAdmin, providerController.find);
+router.put('/:id',isAdmin, providerController.update);
+router.delete('/:id',isAdmin, providerController.delete);
 
 module.exports = router;
