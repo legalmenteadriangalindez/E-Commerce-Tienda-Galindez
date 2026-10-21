@@ -8,6 +8,12 @@ const Saledb = require('../model/sales');
 const crypto = require("crypto");
 const { descontarStock } = require("../business/inventoryService");
 
+const {verificarFirmaWompi,consultarTransaccionWompi } = require("../business/wompiService");
+
+const {
+    descontarStock
+} = require("../business/inventoryService");
+
 // const wompi = require("../config/wompi");
 const BASE_URL = process.env.BASE_URL
 
@@ -355,31 +361,53 @@ function verificarFirmaWompi(event) {
 
 
 
+
 exports.wompiWebhook = async (req, res) => {
 
-    const event = req.body;
+    const evento = req.body;
 
-    // 1. Validar autenticidad
-    if (!verificarFirmaWompi(event)) {
+    // 1. VERIFICAR FIRMA
+    if (!verificarFirmaWompi(evento)) {
         return res.sendStatus(401);
     }
 
-    if (event.event !== "transaction.updated") {
-        return res.sendStatus(200);
-    }
+    // 2. VERIFICAR AMBIENTE
+    const ambienteEsperado =
+        process.env.WOMPI_ENV === "production"
+            ? "prod"
+            : "test";
 
-    const transaction = event.data?.transaction;
-
-    if (!transaction?.id || !transaction?.reference) {
+    if (evento.environment !== ambienteEsperado) {
         return res.sendStatus(400);
     }
 
-    const reference = transaction.reference;
-    const status = transaction.status;
+    // 3. FILTRAR EVENTOS
+    if (evento.event !== "transaction.updated") {
+        return res.sendStatus(200);
+    }
+
+    const transactionId =
+        evento.data?.transaction?.id;
+
+    if (!transactionId) {
+        return res.sendStatus(400);
+    }
 
     try {
 
-        // 2. Buscar orden
+        // 4. CONFIRMAR TRANSACCIÓN CON WOMPI
+        const transaction =
+            await consultarTransaccionWompi(transactionId);
+
+        if (!transaction ||
+            transaction.id !== transactionId) {
+            throw new Error("Transacción no verificable");
+        }
+
+        const reference = transaction.reference;
+        const status = transaction.status;
+
+        // 5. BUSCAR ORDEN
         const orden = await Ordendb.findOne({
             numeroOrden: reference
         });
@@ -388,7 +416,7 @@ exports.wompiWebhook = async (req, res) => {
             return res.sendStatus(404);
         }
 
-        // 3. Validar valor y moneda
+        // 6. COMPROBAR IMPORTE Y MONEDA
         const importeEsperado =
             Math.round(orden.total * 100);
 
@@ -396,17 +424,21 @@ exports.wompiWebhook = async (req, res) => {
             transaction.currency !== "COP" ||
             transaction.amount_in_cents !== importeEsperado
         ) {
-            console.error("Importe o moneda incorrectos");
-            return res.sendStatus(400);
+            console.error(
+                "Error: importe o moneda diferente"
+            );
+
+            return res.sendStatus(409);
         }
 
-        // 4. Gestionar pago rechazado
-        if (status === "DECLINED") {
+        // 7. PAGOS RECHAZADOS O FALLIDOS
+        if (["DECLINED", "VOIDED", "ERROR"].includes(status)) {
 
             await Ordendb.updateOne(
                 {
                     _id: orden._id,
-                    estado: "PENDIENTE"
+                    estado: "PENDIENTE",
+                    estadoPago: { $ne: "PAGADO" }
                 },
                 {
                     $set: {
@@ -418,57 +450,78 @@ exports.wompiWebhook = async (req, res) => {
             return res.sendStatus(200);
         }
 
-        // Otros estados no generan ventas
+        // NO PROCESAR PAGOS PENDIENTES
         if (status !== "APPROVED") {
             return res.sendStatus(200);
         }
 
-        // 5. Evitar procesar una orden ya pagada
-        if (orden.estado === "PAGADA") {
-            return res.sendStatus(200);
-        }
-
-        if (orden.estado !== "PENDIENTE") {
-            console.error(
-                "Pago aprobado para orden no pendiente:",
-                reference
-            );
-            return res.sendStatus(409);
-        }
-
+        // 8. INICIAR SESIÓN DE MONGODB
         const session = await mongoose.startSession();
 
         try {
 
-            // 6. Ejecutar operaciones conjuntamente
             await session.withTransaction(async () => {
 
-                // Reclamar la orden una sola vez
-                const ordenActualizada =
+                // CONSULTAR ORDEN DENTRO DE LA TRANSACCIÓN
+                const ordenActual = await Ordendb.findById(
+                    orden._id
+                ).session(session);
+
+                if (!ordenActual) {
+                    throw new Error("Orden no encontrada");
+                }
+
+                // 9. EVITAR PROCESAMIENTO DUPLICADO
+                if (ordenActual.estadoPago === "PAGADO") {
+
+                    if (
+                        ordenActual.wompiTransactionId !==
+                        transaction.id
+                    ) {
+                        throw new Error(
+                            "ALERTA: otro pago aprobado para la misma orden"
+                        );
+                    }
+
+                    return;
+                }
+
+                if (ordenActual.estado !== "PENDIENTE") {
+                    throw new Error(
+                        "Pago aprobado para una orden no pendiente"
+                    );
+                }
+
+                // 10. MARCAR ORDEN COMO PAGADA
+                const ordenPagada =
                     await Ordendb.findOneAndUpdate(
                         {
-                            _id: orden._id,
-                            estado: "PENDIENTE"
+                            _id: ordenActual._id,
+                            estado: "PENDIENTE",
+                            estadoPago: { $ne: "PAGADO" }
                         },
                         {
                             $set: {
                                 estado: "PAGADA",
-                                estadoPago: "PAGADO"
+                                estadoPago: "PAGADO",
+                                wompiTransactionId: transaction.id
                             }
                         },
                         {
                             new: true,
-                            session
+                            session,
+                            runValidators: true
                         }
                     );
 
-                // Ya procesada por otra ejecución
-                if (!ordenActualizada) {
-                    return;
+                if (!ordenPagada) {
+                    throw new Error(
+                        "No se pudo confirmar la orden"
+                    );
                 }
 
-                // 7. Descontar stock
-                for (const item of ordenActualizada.productos) {
+                // 11. DESCONTAR INVENTARIO
+                for (const item of ordenPagada.productos) {
 
                     await descontarStock(
                         item.producto,
@@ -477,17 +530,36 @@ exports.wompiWebhook = async (req, res) => {
                     );
                 }
 
-                // 8. Registrar venta
-                await Saledb.create([{
-                    cliente: ordenActualizada.usuario,
-                    order: ordenActualizada._id,
-                    subtotal: ordenActualizada.subtotal,
-                    impuestos: ordenActualizada.impuestos,
-                    costoEnvio: ordenActualizada.costoEnvio,
-                    descuento: ordenActualizada.descuento,
-                    total: ordenActualizada.total,
-                    estadoPago: "PAGADO"
-                }], { session });
+                // 12. REGISTRAR VENTA
+                const [venta] = await Saledb.create(
+                    [{
+                        cliente: ordenPagada.usuario,
+                        order: ordenPagada._id,
+                        subtotal: ordenPagada.subtotal,
+                        impuestos: ordenPagada.impuestos,
+                        costoEnvio: ordenPagada.costoEnvio,
+                        descuento: ordenPagada.descuento,
+                        total: ordenPagada.total,
+                        estadoPago: "PAGADO"
+                    }],
+                    { session }
+                );
+
+                // 13. REGISTRAR DETALLES DE VENTA
+                const detalles = ordenPagada.productos.map(
+                    item => ({
+                        venta: venta._id,
+                        producto: item.producto,
+                        cantidad: item.cantidad,
+                        precioUnitario: item.precioUnitario,
+                        subtotal: item.subtotal
+                    })
+                );
+
+                await SaleDetaildb.insertMany(
+                    detalles,
+                    { session }
+                );
 
             });
 
@@ -495,16 +567,20 @@ exports.wompiWebhook = async (req, res) => {
             await session.endSession();
         }
 
-        // 9. Confirmar recepción a Wompi
+        // 14. CONFIRMAR NOTIFICACIÓN
         return res.sendStatus(200);
 
     } catch (error) {
 
-        console.error("Error webhook Wompi:", error);
+        console.error(
+            "Error al procesar webhook Wompi:",
+            error
+        );
 
         return res.sendStatus(500);
     }
 };
+
 
 
 exports.checkout_admin = async (req, res) => {
