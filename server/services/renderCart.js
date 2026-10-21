@@ -1,6 +1,6 @@
 const axios = require('axios');
 const Ordendb = require('../model/order');
-
+const crypto = require("crypto");
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -70,7 +70,9 @@ exports.payment_point = async (req, res) => {
             {
                 user: req.session.user,
                 productosCarrito: cart,
-                subtotal
+                subtotal,
+                claveIdempotenciaCaja:
+                req.session.claveIdempotenciaCaja
             }
         );
 
@@ -86,6 +88,22 @@ exports.payment_point_admin = async (req, res) => {
     try {
         const cart = req.session.cart || [];
 
+
+if (cart.length > 0 && !req.session.claveIdempotenciaCaja) {
+
+    req.session.claveIdempotenciaCaja =
+        crypto.randomUUID();
+
+    // Guardar la clave antes de mostrar el formulario
+    await new Promise((resolve, reject) => {
+        req.session.save(error => {
+            if (error) return reject(error);
+            resolve();
+        });
+    });
+}
+
+        
         let subtotal = 0;
 
         cart.forEach(item => {
