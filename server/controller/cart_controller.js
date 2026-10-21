@@ -189,11 +189,16 @@ exports.checkout = async (req, res) => {
             const precioUnitario = Number(productoDB.precioVenta);
             const cantidad = Number(item.cantidad);
 
-            if (!Number.isFinite(precioUnitario) || !Number.isFinite(cantidad)) {
-                return res.status(400).send(
-                    `Precio o cantidad inválida para ${productoDB.nombre}`
-                );
-            }
+if (
+    !Number.isFinite(precioUnitario) ||
+    precioUnitario < 0 ||
+    !Number.isInteger(cantidad) ||
+    cantidad <= 0
+) {
+    return res.status(400).send(
+        "Precio o cantidad inválida"
+    );
+}
 
             const subtotalProducto = precioUnitario * cantidad;
 
@@ -799,6 +804,35 @@ exports.payment_point = async (req, res) => {
 
         const productos = req.body.productos || [];
 
+
+
+if (!Array.isArray(productos) ||
+    !Array.isArray(req.session.cart)) {
+    return res.status(400).send(
+        "Carrito o productos inválidos"
+    );
+}
+
+for (const producto of productos) {
+
+    const cantidad = Number(producto.cantidad);
+
+    if (!Number.isInteger(cantidad) || cantidad <= 0) {
+        return res.status(400).send(
+            "La cantidad debe ser un entero positivo"
+        );
+    }
+
+    if (!req.session.cart.some(
+        item => item.productoId === producto.productoId
+    )) {
+        return res.status(400).send(
+            "Producto no encontrado en el carrito"
+        );
+    }
+}
+
+        
         req.session.cart = req.session.cart.map(item => {
 
             const actualizado = productos.find(
