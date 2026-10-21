@@ -12,7 +12,7 @@ router.post('/add',isLogged, cartController.add_to_carrito);
 router.post('/remove', isLogged, cartController.remove_from_carrito);
 router.post('/checkout', isLogged, cartController.checkout);
 router.post('/checkout_admin', isAdmin, cartController.checkout_admin);
-router.post('/payment_point', isLogged, cartController.payment_point);
+router.post('/payment_point', isAdmin, cartController.payment_point);
 router.get('/get_carrito',isLogged, cartController.get_carrito)
 router.post('/get_wompi_webhook', cartController.wompiWebhook)
 
