@@ -12,8 +12,8 @@ router.post('/',
     reviewController.create
 );
 
-router.get('/', reviewController.find);
-router.put('/:id', reviewController.update);
-router.delete('/:id', reviewController.delete);
+router.get('/',isLogged, reviewController.find);
+router.put('/:id',isLogged, reviewController.update);
+router.delete('/:id',isLogged, reviewController.delete);
 
 module.exports = router;
