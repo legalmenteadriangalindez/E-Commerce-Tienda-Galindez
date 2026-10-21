@@ -233,29 +233,38 @@ exports.read_products = (req, res) => {
         .catch(err => res.send(err));
 };
 
-exports.delete_product = (req, res) => {
 
-    axios.delete(`${BASE_URL}/api/productos/${req.params.id}`)
+exports.delete_product = async (req, res) => {
 
-        .then(response => {
+    try {
 
-            res.redirect('/read-producto');
+        await axios.delete(
+            `${BASE_URL}/api/productos/${req.params.id}`,
+            {
+                headers: {
+                    Cookie: req.headers.cookie || ""
+                },
+                timeout: 10000
+            }
+        );
 
-        })
+        return res.redirect("/read-producto");
 
-        .catch(err => {
+    } catch (err) {
 
-            console.error(
-                err.response?.data || err.message
-            );
+        console.error(
+            "Error eliminando producto:",
+            err.response?.data || err.message
+        );
 
-            res.status(500).send(
-                err.message
-            );
-
-        });
-
+        return res.status(
+            err.response?.status || 500
+        ).send(
+            "No se pudo eliminar el producto"
+        );
+    }
 };
+
 
 exports.read_stock = async (req, res) => {
 
