@@ -17,6 +17,16 @@ const BASE_URL = process.env.BASE_URL
 exports.add_to_carrito = async (req, res) => {
     try {
         const { productoId, cantidad } = req.body;
+
+        const unidades = Number(cantidad);
+
+        if (!Number.isInteger(unidades) || unidades <= 0) {
+            return res.status(400).json({
+              success: false,
+              message: "La cantidad debe ser un entero positivo"
+            });
+        }
+        
         const produto = await Productdb.findById(productoId)
         .populate('categoria');
 
