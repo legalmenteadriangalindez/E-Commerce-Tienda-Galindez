@@ -6,6 +6,71 @@ const path = require('path');
 const fs = require('fs'); 
 
 
+
+const CARPETA_IMAGENES = path.resolve(
+    __dirname,
+    "../../assets/img"
+);
+
+// Borrar únicamente fotografías locales conocidas
+async function borrarImagenLocal(foto) {
+
+    if (
+        typeof foto !== "string" ||
+        !/^\/assets\/img\/[a-z0-9][a-z0-9._-]*\.(jpg|jpeg|png|webp)$/i
+            .test(foto)
+    ) {
+        return;
+    }
+
+    // No borrar si otro producto todavía utiliza la imagen
+    const estaEnUso = await Productdb.exists({
+        fotos: foto
+    });
+
+    if (estaEnUso) return;
+
+    const ruta = path.join(
+        CARPETA_IMAGENES,
+        path.basename(foto)
+    );
+
+    try {
+        await fs.promises.unlink(ruta);
+    } catch (error) {
+        if (error.code !== "ENOENT") {
+            console.error("Error borrando fotografía:", error);
+        }
+    }
+}
+
+// Limpiar imágenes nuevas cuando falla una actualización
+async function limpiarArchivosSubidos(req) {
+
+    const archivos = Object.values(
+        req.files || {}
+    ).flat();
+
+    await Promise.all(
+        archivos.map(async archivo => {
+            if (!archivo.path) return;
+
+            try {
+                await fs.promises.unlink(archivo.path);
+            } catch (error) {
+                if (error.code !== "ENOENT") {
+                    console.error(
+                        "Error limpiando archivo:",
+                        error
+                    );
+                }
+            }
+        })
+    );
+}
+
+
+
 exports.create = async (req, res) => {
     try {
 
