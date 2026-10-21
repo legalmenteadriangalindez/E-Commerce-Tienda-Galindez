@@ -304,60 +304,158 @@ exports.checkout = async (req, res) => {
 
 };
 
+
 exports.wompiWebhook = async (req, res) => {
+
+    const event = req.body;
+
+    // 1. Validar autenticidad
+    if (!verificarFirmaWompi(event)) {
+        return res.sendStatus(401);
+    }
+
+    if (event.event !== "transaction.updated") {
+        return res.sendStatus(200);
+    }
+
+    const transaction = event.data?.transaction;
+
+    if (!transaction?.id || !transaction?.reference) {
+        return res.sendStatus(400);
+    }
+
+    const reference = transaction.reference;
+    const status = transaction.status;
 
     try {
 
-        const event = req.body;
+        // 2. Buscar orden
+        const orden = await Ordendb.findOne({
+            numeroOrden: reference
+        });
 
-        const transaction = event.data.transaction;
-
-        const reference = transaction.reference;
-        const status = transaction.status;
-
-        const orden = await Ordendb.findOne({ numeroOrden: reference });
-
-        if (!orden) return res.sendStatus(404);
-
-        if (status === "APPROVED") {
-
-            // ✔ Marcar orden pagada
-            orden.estado = "PAGADO";
-            await orden.save();
-
-            await Saledb.create({
-                cliente: orden.usuario,
-                order: orden._id,
-                subtotal: orden.subtotal,
-                impuestos: orden.impuestos,
-                costoEnvio: orden.costoEnvio,
-                descuento: orden.descuento,
-                total: orden.total,
-                estadoPago: "PAGADO"
-            });
-
-            // ✔ Descontar stock aquí (NO antes)
-            for (const item of orden.productos) {
-                await Productdb.findByIdAndUpdate(
-                    item.producto,
-                    {
-                        $inc: { stock: -item.cantidad }
-                    }
-                );
-            }
-
-        } else if (status === "DECLINED") {
-            orden.estado = "RECHAZADO";
-            await orden.save();
+        if (!orden) {
+            return res.sendStatus(404);
         }
 
-        // return res.sendStatus(200);
-        return res.redirect(`/venta-finalizada/${orden._id}`);
+        // 3. Validar valor y moneda
+        const importeEsperado =
+            Math.round(orden.total * 100);
+
+        if (
+            transaction.currency !== "COP" ||
+            transaction.amount_in_cents !== importeEsperado
+        ) {
+            console.error("Importe o moneda incorrectos");
+            return res.sendStatus(400);
+        }
+
+        // 4. Gestionar pago rechazado
+        if (status === "DECLINED") {
+
+            await Ordendb.updateOne(
+                {
+                    _id: orden._id,
+                    estado: "PENDIENTE"
+                },
+                {
+                    $set: {
+                        estadoPago: "RECHAZADO"
+                    }
+                }
+            );
+
+            return res.sendStatus(200);
+        }
+
+        // Otros estados no generan ventas
+        if (status !== "APPROVED") {
+            return res.sendStatus(200);
+        }
+
+        // 5. Evitar procesar una orden ya pagada
+        if (orden.estado === "PAGADA") {
+            return res.sendStatus(200);
+        }
+
+        if (orden.estado !== "PENDIENTE") {
+            console.error(
+                "Pago aprobado para orden no pendiente:",
+                reference
+            );
+            return res.sendStatus(409);
+        }
+
+        const session = await mongoose.startSession();
+
+        try {
+
+            // 6. Ejecutar operaciones conjuntamente
+            await session.withTransaction(async () => {
+
+                // Reclamar la orden una sola vez
+                const ordenActualizada =
+                    await Ordendb.findOneAndUpdate(
+                        {
+                            _id: orden._id,
+                            estado: "PENDIENTE"
+                        },
+                        {
+                            $set: {
+                                estado: "PAGADA",
+                                estadoPago: "PAGADO"
+                            }
+                        },
+                        {
+                            new: true,
+                            session
+                        }
+                    );
+
+                // Ya procesada por otra ejecución
+                if (!ordenActualizada) {
+                    return;
+                }
+
+                // 7. Descontar stock
+                for (const item of ordenActualizada.productos) {
+
+                    await descontarStock(
+                        item.producto,
+                        item.cantidad,
+                        session
+                    );
+                }
+
+                // 8. Registrar venta
+                await Saledb.create([{
+                    cliente: ordenActualizada.usuario,
+                    order: ordenActualizada._id,
+                    subtotal: ordenActualizada.subtotal,
+                    impuestos: ordenActualizada.impuestos,
+                    costoEnvio: ordenActualizada.costoEnvio,
+                    descuento: ordenActualizada.descuento,
+                    total: ordenActualizada.total,
+                    estadoPago: "PAGADO"
+                }], { session });
+
+            });
+
+        } finally {
+            await session.endSession();
+        }
+
+        // 9. Confirmar recepción a Wompi
+        return res.sendStatus(200);
 
     } catch (error) {
-        return res.status(500).send(error.message);
+
+        console.error("Error webhook Wompi:", error);
+
+        return res.sendStatus(500);
     }
 };
+
 
 exports.checkout_admin = async (req, res) => {
     try {
