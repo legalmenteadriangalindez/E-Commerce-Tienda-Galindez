@@ -5,7 +5,7 @@ const morgan = require('morgan');
 dotenv.config({ path: './config.env' });
 
 const connectDB = require('./server/database/connection');
-const seedAdmin = require('./server/config/seedAdmin');
+// const seedAdmin = require('./server/config/seedAdmin');
 const sessionConfig = require('./server/config/session');
 const BASE_URL = process.env.BASE_URL
 const PORT = process.env.PORT || 8080;
@@ -18,6 +18,10 @@ const categoriasMiddleware = require('./server/middleware/categoriasMiddleware')
 const appConfig = require('./server/config/appConfig');
 
 const app = express();
+
+if (process.env.NODE_ENV === "production") {
+    app.set("trust proxy", 1);
+}
 
 // CONFIGURACIONES
 app.use(sessionConfig);
@@ -36,9 +40,16 @@ app.use('/', require('./server/routes'))
 
 
 // DB CONNECTION
+// connectDB().then(() => {
+//     console.log("MongoDB conectado");
+//     seedAdmin();
+// });
+
 connectDB().then(() => {
     console.log("MongoDB conectado");
-    seedAdmin();
+}).catch(() => {
+    console.error("No se pudo conectar a MongoDB");
+    process.exit(1);
 });
 
 module.exports = app;
