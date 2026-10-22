@@ -39,7 +39,7 @@ exports.create_sale_form = async (req, res) => {
 // ==================== LISTAR ====================
 exports.sales = async (req, res) => {
     try {
-        const response = await axios.get(`${BASE_URL}/api/ventas`);
+        const response = await axios.get(`${BASE_URL}/api/ventas`,configApi(req));
 
         res.render('admin/sales/read_sales', {
            sales: response.data
