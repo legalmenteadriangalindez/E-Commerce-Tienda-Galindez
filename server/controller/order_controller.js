@@ -168,13 +168,18 @@ exports.find = async (req, res) => {
             return res.send(orden);
         }
 
-        const ordenes = await Orderdb.find()
 
-            .populate('usuario')
+const ordenes = await Orderdb.find()
+    .populate({
+        path: "usuario",
+        select: "nombre apellido email telefono"
+    })
+    .populate({
+        path: "productos.producto",
+        select: "nombre precioVenta fotos"
+    })
+    .sort({ createdAt: -1 });
 
-            .populate('productos.producto')
-
-            .sort({ createdAt: -1 });
 
         res.send(ordenes);
 
@@ -201,16 +206,17 @@ exports.findOne = async (req, res) => {
         }
 
         // Buscar orden
-        const orden = await Orderdb.findById(id)
 
-            .populate({
-                path: 'usuario',
-                select: '-password'
-            })
+const orden = await Orderdb.findById(id)
+    .populate({
+        path: "usuario",
+        select: "nombre apellido email telefono"
+    })
+    .populate({
+        path: "productos.producto",
+        select: "nombre precioVenta fotos"
+    });
 
-            .populate({
-                path: 'productos.producto'
-            });
 
         // Validar existencia
         if (!orden) {
