@@ -11,6 +11,9 @@ exports.verificationCode = async (req, res) => {
         if (!user) {
             return res.status(404).send("Usuario no encontrado");
         }
+        if (user.estado !== "Activo") {
+           return res.status(403).send("La cuenta está desactivada");
+        }
         if (!user.verificationCode || !user.verificationExpire) {
             return res.status(400).send("No hay código activo");
         }
@@ -21,7 +24,7 @@ exports.verificationCode = async (req, res) => {
             return res.status(400).send("Código de verificación expirado");
         }
         user.verified = true;
-        user.estado = "Activo";
+        // user.estado = "Activo";
         user.verificationCode = null;
         user.verificationExpire = null;
         await user.save();
