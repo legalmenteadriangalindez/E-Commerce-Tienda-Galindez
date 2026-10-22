@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
+const { isAdmin } = require("../middleware/auth");
 const upload = require('../middleware/upload');
 const brandController = require('../controller/brand_controller');
 
