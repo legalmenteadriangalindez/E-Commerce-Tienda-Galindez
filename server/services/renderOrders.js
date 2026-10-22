@@ -13,7 +13,7 @@ function configApi(req) {
         },
         timeout: 10000
     };
-}
+} 
 
 
 // FORMULARIO CREAR ORDEN
