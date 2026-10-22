@@ -149,9 +149,14 @@ exports.find = async (req, res) => {
 
             const orden = await Orderdb.findById(req.query.id)
 
-                .populate('usuario')
-
-                .populate('productos.producto');
+                .populate({
+                    path: "usuario",
+                    select: "nombre apellido email telefono"
+                })
+                .populate({
+                   path: "productos.producto",
+                    select: "nombre precioVenta fotos"
+                })
 
             if (!orden) {
 
