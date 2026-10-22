@@ -177,20 +177,15 @@ exports.best_selling_products = async (req, res) => {
             }
         );
 
-    } catch (error) {
+} catch (error) {
+    console.error(
+        "Error consultando productos más vendidos:",
+        error.message
+    );
 
-        console.error(
-            'ERROR OBTENIENDO PRODUCTOS MÁS VENDIDOS:',
-            error.response?.data || error.message
-        );
-
-        res.render(
-            'admin/analytics/best_selling_products',
-            {
-                products: []
-            }
-        );
-
-    }
+    return res.status(502).send(
+        "No se pudieron consultar los productos más vendidos"
+    );
+}
 
 };
