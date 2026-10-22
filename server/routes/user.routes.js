@@ -1,19 +1,35 @@
-const express = require('express');
+
+const express = require("express");
 const router = express.Router();
-const { isAdmin } = require("../middleware/auth");
-const userController = require('../controller/user_controller');
-const servicesRenderUser = require('../services/renderUsers');
 
-// API
-router.post('/',isAdmin, userController.create);
-router.get('/', userController.find);
-router.get('/search', userController.search);
-router.get('/:id', userController.find);
-router.put('/:id',isAdmin, userController.update);
-router.delete('/:id',isAdmin, userController.delete);
+const { isAdminApi } = require("../middleware/auth");
 
-// VISTAS
-router.get('/update/:id', servicesRenderUser.update_user);
-router.post('/update/:id', servicesRenderUser.update_user_data);
+const userController = require("../controller/user_controller");
+const servicesRenderUser = require("../services/renderUsers");
+
+// Todas las rutas de esta API son administrativas
+router.use(isAdminApi);
+
+// Buscar usuarios
+router.get("/search", userController.search);
+
+// Listar usuarios
+router.get("/", userController.find);
+
+// Obtener usuario por ID
+router.get("/:id", userController.find);
+
+// Crear usuario desde administración
+router.post("/", userController.create);
+
+// Actualizar usuario desde administración
+router.put("/:id", userController.update);
+
+// Desactivar usuario
+router.delete("/:id", userController.delete);
+
+// Rutas auxiliares administrativas
+router.get("/update/:id", servicesRenderUser.update_user);
+router.post("/update/:id", servicesRenderUser.update_user_data);
 
 module.exports = router;
