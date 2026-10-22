@@ -6,6 +6,17 @@ dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 
+function configApi(req) {
+    return {
+        headers: {
+            Cookie: req.headers.cookie || ""
+        },
+        timeout: 10000
+    };
+}
+
+
+
 // ==================== FORM CREAR ====================
 exports.create_sale_form = async (req, res) => {
     try {
