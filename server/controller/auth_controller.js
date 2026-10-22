@@ -209,18 +209,18 @@ exports.register = async (req, res) => {
         await sendEmail(nuevoUsuario.email, code);
         
         // Opcional: iniciar sesión automáticamente
-        req.session.user = {
-            _id: nuevoUsuario._id,
-            nombre: nuevoUsuario.nombre,
-            email: nuevoUsuario.email,
-            telefono: nuevoUsuario.telefono,
-            direccion: nuevoUsuario.direccion,
-            ubicacion: nuevoUsuario.ubicacion,
-            ciudad: nuevoUsuario.ciudad,
-            rol: {
-                nombre: "Cliente"
-            }
-        };
+        // req.session.user = {
+        //     _id: nuevoUsuario._id,
+        //     nombre: nuevoUsuario.nombre,
+        //     email: nuevoUsuario.email,
+        //     telefono: nuevoUsuario.telefono,
+        //     direccion: nuevoUsuario.direccion,
+        //     ubicacion: nuevoUsuario.ubicacion,
+        //     ciudad: nuevoUsuario.ciudad,
+        //     rol: {
+        //         nombre: "Cliente"
+        //     }
+        // };
         return res.redirect(`/verify-email?email=${email}`);
     } catch (err) {
         
