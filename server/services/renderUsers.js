@@ -5,6 +5,15 @@ const dotenv = require('dotenv');
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
+function configApi(req) {
+    return {
+        headers: {
+            Cookie: req.headers.cookie || ""
+        },
+        timeout: 10000
+    };
+}
+
 exports.create_user_form = async (req, res) => {
     try {
         const rolesRes = await axios.get(`${BASE_URL}/api/roles`);
