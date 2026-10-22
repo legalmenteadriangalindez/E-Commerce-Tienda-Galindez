@@ -152,15 +152,14 @@ exports.profit_margins = async (req, res) => {
             }
         );
 
-    } catch (err) {
+        } catch (err) {
+           console.error(
+           "Error consultando ganancias por producto:",
+           err.message
+          );
 
-        res.render(
-            'admin/analytics/profit_margins',
-            {
-                products: []
-            }
-        );
-    }
+          return res.status(502).send("No se pudieron consultar las ganancias por producto");
+      }
 };
 
 
