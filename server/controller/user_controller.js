@@ -2,8 +2,12 @@ const Userdb = require('../model/user');
 const Roldb = require('../model/rol');
 const bcrypt = require('bcrypt');
 
-// CREATE USER
+const mongoose = require("mongoose");
 
+const CAMPOS_USUARIO_ADMIN =
+    "nombre email telefono genero direccion barrio ciudad puntoReferencia ubicacion rol estado fechaRegistro";
+
+// CREATE USER
 exports.create = async (req, res) => {
     try {
         
@@ -71,9 +75,13 @@ exports.create = async (req, res) => {
         });
 
         const data = await user.save();
-        const userResponse = data.toObject();
-        delete userResponse.password;
-        res.status(201).json(userResponse);
+const userResponse = data.toObject();
+
+delete userResponse.password;
+delete userResponse.verificationCode;
+delete userResponse.verificationExpire;
+
+return res.status(201).json(userResponse);
 
     } catch (err) {
         if (err.code === 11000) {
@@ -85,22 +93,47 @@ exports.create = async (req, res) => {
 
 // FIND USERS
 
+
 exports.find = async (req, res) => {
     try {
         if (req.params.id) {
-            const data = await Userdb.findById(req.params.id)
-                                              .populate('rol');;
-            if (!data) return res.status(404).json({ message: "Usuario no encontrado." });
-            return res.json(data);
-        } else {
-            const users = await Userdb.find({ estado: "Activo" })
-                                            .populate('rol'); // Solo activos
-            return res.json(users);
+
+            if (!mongoose.isValidObjectId(req.params.id)) {
+                return res.status(400).json({
+                    message: "ID de usuario inválido"
+                });
+            }
+
+            const user = await Userdb.findById(req.params.id)
+                .select(CAMPOS_USUARIO_ADMIN)
+                .populate("rol", "nombre");
+
+            if (!user) {
+                return res.status(404).json({
+                    message: "Usuario no encontrado"
+                });
+            }
+
+            return res.json(user);
         }
-    } catch (err) {
-        res.status(500).json({ message: err.message || "Error al obtener los usuarios." });
+
+        const users = await Userdb.find({
+            estado: "Activo"
+        })
+            .select(CAMPOS_USUARIO_ADMIN)
+            .populate("rol", "nombre");
+
+        return res.json(users);
+
+    } catch (error) {
+        console.error("Error consultando usuarios:", error.message);
+
+        return res.status(500).json({
+            message: "No se pudieron consultar los usuarios"
+        });
     }
 };
+
 
 // UPDATE USER
 exports.update = async (req, res) => {
@@ -145,7 +178,17 @@ exports.update = async (req, res) => {
         // Normalizar email si se actualiza (opcional)
         if (req.body.email) updateData.email = req.body.email.toLowerCase();
 
-        const data = await Userdb.findByIdAndUpdate(req.params.id, { $set: updateData }, { new: true });
+        const data = await Userdb.findByIdAndUpdate(
+    req.params.id,
+    { $set: updateData },
+    {
+        new: true,
+        runValidators: true
+    }
+)
+    .select(CAMPOS_USUARIO_ADMIN)
+    .populate("rol", "nombre");
+        
         if (!data) return res.status(404).json({ message: "Usuario no encontrado." });
 
         res.json(data);
@@ -204,7 +247,9 @@ exports.search = async (req, res) => {
                 { email: { $regex: search, $options: "i" } },
                 { telefono: { $regex: search, $options: "i" } }
             ]
-        }).limit(10);
+        })
+        .select(CAMPOS_USUARIO_ADMIN)
+        .limit(10);
 
         return res.json(users);
 
