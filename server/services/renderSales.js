@@ -71,12 +71,18 @@ exports.saleDetailView = async (req, res) => {
 
     try {
 
-        const { id } = req.params;
+const id = req.params.id || req.query.id;
 
-        // CONSUMIR API
-        const response = await axios.get(
-            `${BASE_URL}/api/ventas/${id}`
-        );
+if (!id) {
+    return res.status(400).send(
+        "Debes indicar el identificador de la venta"
+    );
+}
+
+const response = await axios.get(
+    `${BASE_URL}/api/ventas/${id}`,
+    configApi(req)
+);
 
         const venta = response.data;
 
@@ -116,7 +122,7 @@ exports.total_profit = async (req, res) => {
 
     try {
 
-        const response = await axios.get(`${BASE_URL}/api/ventas/analytics/total-profit`);
+        const response = await axios.get(`${BASE_URL}/api/ventas/analytics/total-profit`,configApi(req));
 
         res.render(
             'admin/analytics/total_profit',
@@ -125,20 +131,10 @@ exports.total_profit = async (req, res) => {
             }
         );
 
-    } catch (err) {
-
-        res.render(
-            'admin/analytics/total_profit',
-            {
-                profit: {
-                    ingresosTotales: 0,
-                    costosTotales: 0,
-                    gananciasTotales: 0,
-                    margenPorcentaje: 0
-                }
-            }
-        );
-    }
+        } catch (err) {
+           console.error("Error consultando ganancias:", err.message);
+           return res.status(502).send("No se pudieron consultar las ganancias");
+        }
 };
 
 
@@ -147,7 +143,7 @@ exports.profit_margins = async (req, res) => {
 
     try {
 
-        const response = await axios.get(`${BASE_URL}/ventas/analytics/profit-products`)
+        const response = await axios.get(`${BASE_URL}/api/ventas/analytics/profit-products`,configApi(req));
 
         res.render(
             'admin/analytics/profit_margins',
@@ -173,9 +169,7 @@ exports.best_selling_products = async (req, res) => {
 
     try {
 
-        const response = await axios.get(
-            `${BASE_URL}/api/ventas/analytics/best-selling-products`
-        );
+        const response = await axios.get(`${BASE_URL}/api/ventas/analytics/best-selling-products`,configApi(req));
 
         res.render(
             'admin/analytics/best_selling_products',
