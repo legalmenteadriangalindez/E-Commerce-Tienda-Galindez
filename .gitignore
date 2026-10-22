@@ -1,16 +1,6 @@
-# Credenciales y variables locales
 config.env
 .env
 .env.*
 !.env.example
-
-# Dependencias
 node_modules/
-
-# Archivos temporales y registros
 *.log
-npm-debug.log*
-.vercel/
-
-# Archivos privados
-*.pem
