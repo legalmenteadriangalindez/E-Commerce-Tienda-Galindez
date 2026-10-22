@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
+const { isAdmin } = require("../middleware/auth");
 const rolController = require('../controller/rol_controller');
 
 router.post('/',isAdmin, rolController.create);
