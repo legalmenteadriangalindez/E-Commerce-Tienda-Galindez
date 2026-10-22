@@ -98,7 +98,7 @@ exports.create = async (req, res) => {
 exports.find = async (req, res) => {
     try {
         const ventas = await Saledb.find()
-            .populate("cliente")
+            .populate("cliente", "nombre email telefono")
             .sort({ createdAt: -1 })
             .lean();
 
@@ -107,7 +107,7 @@ exports.find = async (req, res) => {
         const detalles = await SaleDetaildb.find({
             venta: { $in: ventasIds }
         })
-        .populate("producto")
+        .populate("producto", "nombre precioVenta fotos")
         .lean();
 
         const detallesMap = {};
