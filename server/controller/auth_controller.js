@@ -111,13 +111,24 @@ exports.login = async (req, res) => {
 
 
 // LOGOUT
+
 exports.logout = (req, res) => {
-    req.session.destroy((err) => {
-        res.clearCookie('connect.sid'); // nombre por defecto de la cookie de express-session
-        if (err) {
-            return res.send("Error al cerrar sesión");
+
+    if (!req.session) {
+        return res.redirect("/login");
+    }
+
+    req.session.destroy((error) => {
+
+        if (error) {
+            return res.status(500).send(
+                "No se pudo cerrar sesión"
+            );
         }
-        return res.redirect('/login');
+
+        res.clearCookie("tienda.sid");
+
+        return res.redirect("/login");
     });
 };
 
@@ -149,7 +160,7 @@ exports.register = async (req, res) => {
         }
         // Verificar si ya existe
         const existe = await Userdb.findOne({ email });
-        console.log("Usuario encontrado:", existe);
+        
         if (existe) {
             // await Userdb.deleteOne({email: "adriangalindez2419@gmail.com"});
             if (!existe.verified) {
