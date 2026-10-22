@@ -212,7 +212,7 @@ exports.findOne = async (req, res) => {
 
         // VENTA + CLIENTE + PAGO
         const venta = await Saledb.findById(id)
-            .populate("cliente")
+            .populate("cliente", "nombre email telefono")
             .lean();
 
         if (!venta) {
@@ -226,7 +226,7 @@ exports.findOne = async (req, res) => {
         const detalles = await SaleDetaildb.find({
             venta: id
         })
-        .populate("producto")
+        .populate("producto", "nombre precioVenta fotos")
         .lean();
 
         // AGREGAR DETALLES
