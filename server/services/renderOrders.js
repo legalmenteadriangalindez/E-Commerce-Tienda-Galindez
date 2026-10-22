@@ -5,17 +5,32 @@ const dotenv = require('dotenv');
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
+// Configuración para peticiones a nuestra propia API
+function configApi(req) {
+    return {
+        headers: {
+            Cookie: req.headers.cookie || ""
+        },
+        timeout: 10000
+    };
+}
+
+
 // FORMULARIO CREAR ORDEN
 exports.create_order_form = async (req, res) => {
 
     try {
 
-        const [productosRes, usuariosRes] = await Promise.all([
-
-            axios.get(`${BASE_URL}/api/productos`),
-
-            axios.get(`${BASE_URL}/api/users`)
-        ]);
+const [productosRes, usuariosRes] = await Promise.all([
+    axios.get(
+        `${BASE_URL}/api/productos`,
+        configApi(req)
+    ),
+    axios.get(
+        `${BASE_URL}/api/users`,
+        configApi(req)
+    )
+]);
 
         res.render('admin/orders/create_order', {
 
@@ -34,7 +49,10 @@ exports.create_order_form = async (req, res) => {
 // LISTAR ORDENES
 exports.read_orders = (req, res) => {
 
-    axios.get(`${BASE_URL}/api/orders`)
+axios.get(
+    `${BASE_URL}/api/orders`,
+    configApi(req)
+)
 
         .then(response => {
 
@@ -57,10 +75,10 @@ exports.update_order = async (req, res) => {
 
         const id = req.query.id;
 
-        const response = await axios.get(
-
-            `${BASE_URL}/api/orders?id=${id}`
-        );
+const response = await axios.get(
+    `${BASE_URL}/api/orders?id=${id}`,
+    configApi(req)
+);
 
         res.render('admin/orders/update_order', {
 
@@ -77,12 +95,11 @@ exports.update_order = async (req, res) => {
 // CREAR ORDEN
 exports.create_order = (req, res) => {
 
-    axios.post(
-
-        `${BASE_URL}/api/orders`,
-
-        req.body
-    )
+axios.post(
+    `${BASE_URL}/api/orders`,
+    req.body,
+    configApi(req)
+)
 
     .then(() => {
 
@@ -99,12 +116,11 @@ exports.create_order = (req, res) => {
 // ACTUALIZAR ORDEN
 exports.update_order_data = (req, res) => {
 
-    axios.put(
-
-        `${BASE_URL}/api/orders/${req.params.id}`,
-
-        req.body
-    )
+axios.put(
+    `${BASE_URL}/api/orders/${req.params.id}`,
+    req.body,
+    configApi(req)
+)
 
     .then(() => {
 
@@ -120,27 +136,18 @@ exports.update_order_data = (req, res) => {
 
 // ELIMINAR ORDEN
 exports.delete_order = (req, res) => {
-
-    axios.delete(
-
-        `${BASE_URL}/api/orders/${req.params.id}`
-    )
-
-    .then(() => {
-
-        res.redirect('/read-order');
-    })
-
-    .catch(err => {
-
-        res.send(err.response?.data || err.message);
-    });
+    return res.status(409).send(
+        "La eliminación de órdenes está deshabilitada hasta implementar una cancelación segura."
+    );
 };
 
 
 exports.detail_order = (req, res) => {
 
-    axios.get(`${BASE_URL}/api/orders/${req.params.id}`)
+    axios.get(
+    `${BASE_URL}/api/orders/${req.params.id}`,
+    configApi(req)
+)
 
     .then(response => {
 
