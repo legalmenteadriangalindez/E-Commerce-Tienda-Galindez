@@ -8,43 +8,107 @@ function generateCode() {
 }
 
 // LOGIN
+
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const user = await Userdb
-            .findOne({ email })
-            .populate('rol');
-        if (!user) {
-            return res.send("Usuario no encontrado");
+
+        const { email, password } = req.body || {};
+
+        if (
+            typeof email !== "string" ||
+            typeof password !== "string"
+        ) {
+            return res.status(400).send(
+                "Correo y contraseña requeridos"
+            );
         }
-        if (user.estado !== "Activo") {
-            return res.send("Usuario desactivado");
+
+        const usuario = await Userdb.findOne({
+            email: email.trim()
+        }).populate("rol", "nombre");
+
+        // Respuesta genérica para evitar revelar
+        // información sobre cuentas existentes
+        if (
+            !usuario ||
+            usuario.estado !== "Activo" ||
+            !usuario.rol?.nombre
+        ) {
+            return res.status(401).send(
+                "Credenciales inválidas"
+            );
         }
-        const match = await bcrypt.compare(password, user.password);
 
-        if (!match) {
-            return res.send("Contraseña incorrecta");
+        const passwordValida = await bcrypt.compare(
+            password,
+            usuario.password
+        );
+
+        if (!passwordValida) {
+            return res.status(401).send(
+                "Credenciales inválidas"
+            );
         }
-        req.session.user = user;    
 
-        if (user.rol.nombre === "Admin") {
+        // Conservar el carrito de la sesión anterior
+        const carritoAnterior = Array.isArray(req.session.cart)
+            ? req.session.cart
+            : [];
 
-            return res.redirect('/billing-point');
+        // Crear un nuevo ID de sesión al iniciar sesión
+        return req.session.regenerate((error) => {
 
-        } else if (user.rol.nombre === "dealer") {
+            if (error) {
+                return res.status(500).send(
+                    "No se pudo iniciar sesión"
+                );
+            }
 
-            return res.redirect('/dealer/orders/read');
+            // Guardar únicamente datos necesarios
+            req.session.user = {
+                _id: usuario._id.toString(),
+                nombre: usuario.nombre,
+                email: usuario.email,
+                telefono: usuario.telefono,
+                direccion: usuario.direccion,
+                ciudad: usuario.ciudad,
+                ubicacion: usuario.ubicacion,
+                rol: {
+                    nombre: usuario.rol.nombre
+                }
+            };
 
-        } else {
+            req.session.cart = carritoAnterior;
 
-            return res.redirect('/');
+            req.session.save((error) => {
 
-        }
-    } catch (err) {
-        
-        res.status(500).send("Error en login");
+                if (error) {
+                    return res.status(500).send(
+                        "No se pudo guardar la sesión"
+                    );
+                }
+
+                if (usuario.rol.nombre === "Admin") {
+                    return res.redirect("/billing-point");
+                }
+
+                if (usuario.rol.nombre === "dealer") {
+                    return res.redirect("/dealer/orders/read");
+                }
+
+                return res.redirect("/");
+            });
+        });
+
+    } catch (error) {
+        console.error("Error en login:", error.message);
+
+        return res.status(500).send(
+            "No se pudo iniciar sesión"
+        );
     }
 };
+
 
 // LOGOUT
 exports.logout = (req, res) => {
