@@ -35,12 +35,27 @@ exports.add_user = async (req, res) => {
     }
 };
 
+
 exports.read_users = async (req, res) => {
     try {
-        const response = await axios.get(`${BASE_URL}/api/users`);
-        res.render('admin/users/read_users', { users: response.data });
-    } catch (err) { res.send(err); }
+        const response = await axios.get(
+            `${BASE_URL}/api/users`,
+            configApi(req)
+        );
+
+        return res.render("admin/users/read_users", {
+            users: response.data
+        });
+
+    } catch (error) {
+        console.error("Error consultando usuarios:", error.message);
+
+        return res.status(502).send(
+            "No se pudo consultar la lista de usuarios"
+        );
+    }
 };
+
 
 exports.update_user = async (req, res) => {
 
