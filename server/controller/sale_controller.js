@@ -398,11 +398,11 @@ exports.confirmacion = async (req, res) => {
 
         const venta = await Saledb
             .findById(ventaId)
-            .populate("cliente");
+            .populate("cliente", "nombre email telefono")
 
         const detalles = await SaleDetaildb
             .find({ venta: ventaId })
-            .populate("producto");
+            .populate("producto", "nombre precioVenta fotos")
 
         res.render(
             "admin/payment/checkout_confirmation",
