@@ -49,7 +49,7 @@ Los importes son COP. El servidor trata los precios del catálogo como precios f
 | Cobro tardío o duplicado | El cobro queda registrado y se muestra una incidencia. No se envía automáticamente un pedido sin reserva confirmada. |
 | Caja | Registrar un pedido no lo marca como pagado. Un administrador confirma expresamente que recibió el dinero. |
 | Cliente | `/mis-pedidos` y consulta del estado del pago y entrega. El carrito no se vacía al abrir Wompi. |
-| Administración | `/admin/payments` para caja, incidencias y conciliación por ID de Wompi. |
+| Administración | `/admin/payments` para caja, incidencias y conciliación por ID de Wompi; `/admin-analytics?period=week` o `?period=month` para decisiones de ventas. |
 | Entrega | Solo permite PAGADA → PREPARANDO → ENVIADA → ENTREGADA, con pago y stock confirmados. Repartidores solo cambian los dos últimos pasos. |
 | Archivos | Nuevas fotos en MongoDB GridFS, convertidas a WEBP, sin metadatos y con límites de tamaño. Las fotos incluidas en Git siguen funcionando. |
 | Cuentas | Contraseñas nuevas de al menos 12 caracteres, códigos con hash y consumo atómico, recuperación por enlace de un uso y revocación de sesiones. |
@@ -110,6 +110,7 @@ No introduzcas tarjetas reales durante las pruebas sandbox. La aplicación usa e
 - **Segundo cobro o pago sin reserva:** no despaches automáticamente. Comprueba el dinero recibido y el inventario; gestiona la devolución en Wompi cuando corresponda y registra su comprobante. Para un pago tardío de esta versión, también puedes confirmar disponibilidad y reservar de nuevo desde el pedido, después de verificarlo con el cliente. Un segundo cobro se resuelve en la incidencia de ese ID de transacción; no marques como devuelta la compra original si solo devolviste el cobro adicional. Los cambios conservan administrador, motivo, fecha y referencia de comprobante.
 - **Devoluciones:** esta versión no mueve dinero para reembolsar. Primero efectúa y verifica la devolución total con el proveedor; después usa «Disponibilidad o devolución ya realizada» en el pedido y registra el motivo y comprobante. Solo marca reponer unidades si están físicamente disponibles en la tienda. El sistema evita registrar la misma devolución dos veces y excluye esas ventas de los indicadores. Las devoluciones parciales requieren gestión externa y no están modeladas por esta versión.
 - **Pedidos antiguos:** se conservan, pero no se adivina si su inventario ya fue descontado. Ejecuta `npm run audit:data` antes del lanzamiento. Los pedidos sin el nuevo estado de inventario requieren revisión del historial antes de incorporarlos al nuevo flujo; no los corrijas con actualizaciones masivas sin cotejar pagos y stock.
+- **Informe de ventas:** usa ventas con estado `PAGADO`, compara los últimos 7 o 30 días con el periodo anterior y muestra ingresos, ticket promedio, margen bruto estimado, canales, productos, categorías, stock bajo y productos sin rotación. La ganancia se calcula con el costo guardado en cada detalle; no incluye comisión de Wompi, costos reales de envío ni obligaciones tributarias.
 - **Códigos de verificación antiguos:** solicita un código nuevo después de actualizar, ya que ahora se guardan hashes.
 - **Imágenes antiguas que solo existían en Render:** expórtalas antes del despliegue y vuelve a subirlas desde el administrador. Un archivo perdido en el disco anterior no puede recuperarse con esta actualización.
 
@@ -129,3 +130,4 @@ El servidor cierra conexiones al recibir la señal de parada. Supervisa `/health
 Antes de abrir ventas, completa identificación y contacto de la tienda, política de tratamiento de datos, términos de compra, entregas, cambios, devoluciones y atención de reclamaciones. Usa información real del negocio y revisión legal/contable cuando corresponda. No se han inventado esos textos ni publicado políticas genéricas como si fueran tuyas.
 
 Referencia técnica: [Render](https://render.com/docs/node-version), [persistencia en Render](https://render.com/docs/disks), [checkout Wompi](https://docs.wompi.co/en/docs/colombia/widget-checkout-web/), [eventos Wompi](https://docs.wompi.co/en/docs/colombia/eventos/), [seguimiento de transacciones](https://docs.wompi.co/en/docs/colombia/seguimiento-de-transacciones/).
+

@@ -40,7 +40,11 @@ Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicació
 - Comprobación de variables: `npm run check:production`.
 - Auditoría de datos anteriores, de solo lectura: `npm run audit:data`.
 - Gestión de pagos: `/admin/payments`.
+- Informe de ventas: `/admin-analytics?period=week` o `?period=month`.
 - Gestión de reseñas: `/admin/reviews`.
 - Pedidos del cliente: `/mis-pedidos`.
 
 Nunca subas `.env`, `config.env`, contraseñas, claves ni `node_modules`. Las pruebas automatizadas usan datos temporales y transacciones simuladas del proveedor: completa las pruebas externas descritas en la guía antes de activar cobros reales.
+
+El informe de ventas usa únicamente ventas pagadas y permite comparar los últimos 7 o 30 días contra el periodo anterior. Muestra ingresos, pedidos, unidades, ticket promedio, ganancia bruta estimada, margen, tendencia diaria, canales, productos y categorías con mejor resultado, productos sin rotación y alertas de inventario. La ganancia no incluye gastos de envío, comisiones de pasarela ni obligaciones tributarias.
+
