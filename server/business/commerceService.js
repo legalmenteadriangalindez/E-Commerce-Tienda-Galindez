@@ -6,6 +6,7 @@ const Sale = require('../model/sales');
 const SaleDetail = require('../model/saleDetails');
 const PaymentEvent = require('../model/paymentEvent');
 const wompi = require('./wompiService');
+const raffle = require('./raffleService');
 
 class CommerceError extends Error {
     constructor(message, status = 400) { super(message); this.status = status; this.expose = true; }
@@ -223,6 +224,7 @@ async function applyTransaction(transaction) {
                 order.inventario = 'REVISION'; event.estado = 'REVISION'; event.detalle = order.incidenciaPago;
             }
             await recordSale(order, session);
+            await raffle.recordEligibleOrder(order, session);
         } else {
             await release(order, session);
             order.estadoPago = 'RECHAZADO'; order.estado = 'CANCELADA';
@@ -283,7 +285,9 @@ async function confirmCash(id, adminId) {
         if (order.inventario !== 'RESERVADO' || order.reservaHasta <= new Date()) throw new CommerceError('La reserva venció. Crea una nueva venta.', 409);
         order.estadoPago = 'PAGADO'; order.estado = 'PAGADA'; order.inventario = 'CONFIRMADO';
         order.confirmadoPor = adminId; order.pagoConfirmadoEn = new Date();
-        await recordSale(order, session); await order.save({ session }); return order;
+        await recordSale(order, session);
+        await raffle.recordEligibleOrder(order, session);
+        await order.save({ session }); return order;
     });
 }
 async function runMaintenance(fetchTransaction) {
