@@ -7,7 +7,23 @@ const parser = multer({ storage: multer.memoryStorage(), limits: {
 
 function checked(parse) {
     return (req, res, next) => parse(req, res, error => {
-        if (error) { error.status = 400; return next(error); }
+        if (error) {
+            console.warn(JSON.stringify({
+                event: 'multipart_parse_error',
+                requestId: req.requestId,
+                method: req.method,
+                path: req.path,
+                type: error.name,
+                code: error.code
+            }));
+            error.status = 400;
+            return next(error);
+        }
+
+        // La protección global ya comprobó el origen. Aquí Multer terminó de
+        // leer los campos y csrf.validateToken puede comprobar _csrf sin
+        // registrar su valor.
+        req.csrfValidationStage = 'after_multipart_parser';
         // Validar antes de decodificar imágenes o escribir en MongoDB.
         csrf.validateToken(req, res, async () => {
             const files = req.file ? [req.file] : Object.values(req.files || {}).flat();

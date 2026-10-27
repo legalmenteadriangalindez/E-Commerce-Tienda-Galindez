@@ -79,6 +79,10 @@ Configura además las cuatro claves `WOMPI_PUBLIC_KEY`, `WOMPI_PRIVATE_KEY`, `WO
 
 El proceso falla de forma explícita si faltan variables esenciales o si intentas usar el secreto local de ejemplo en producción. Revisa **Logs** si `/healthz` devuelve error. El inicio exige Atlas o un replica set: MongoDB independiente no ofrece las transacciones que necesita la tienda.
 
+### Diagnóstico temporal de formularios CSRF
+
+Si un formulario con imagen devuelve `403`, configura temporalmente `CSRF_DEBUG_LOGS=true` en Render y reproduce la operación. Los logs mostrarán la ruta, `requestId`, presencia y longitud de los tokens, cookie de sesión, origen y etapa del parser; nunca imprimen el token ni la cookie. La página HTML del error también muestra esos metadatos y el encabezado `X-CSRF-Reason`. Después de identificar el problema, vuelve a `false` o elimina la variable.
+
 Para operación continua, el servicio debe mantenerse activo. Las instancias que se suspenden no ejecutan el mantenimiento durante la suspensión; esto puede retrasar reservas y conciliaciones. Revisa también memoria, almacenamiento de Atlas y límites del plan. Las imágenes nuevas consumen espacio de MongoDB, no del disco efímero de Render.
 
 Si no tienes un administrador en esa base, configura temporalmente `INITIAL_ADMIN_EMAIL` y `INITIAL_ADMIN_PASSWORD` y ejecuta desde un entorno autorizado:

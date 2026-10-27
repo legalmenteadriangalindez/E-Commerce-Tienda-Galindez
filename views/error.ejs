@@ -1,2 +1,38 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Revisar solicitud · Tienda Galindez</title><link rel="stylesheet" href="/css/commerce.css"></head><body>
-<main class="commerce-panel"><article class="commerce-card"><h1>No se pudo completar la solicitud</h1><p><%= message %></p><p>Referencia: <%= requestId %></p><a href="/">Ir a la tienda</a> · <a href="/mis-pedidos">Mis pedidos</a></article></main></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Revisar solicitud · Tienda Galindez</title>
+    <link rel="stylesheet" href="/css/commerce.css">
+</head>
+<body>
+<main class="commerce-panel">
+    <article class="commerce-card">
+        <h1>No se pudo completar la solicitud</h1>
+        <p><%= message %></p>
+        <p>Referencia: <code><%= requestId %></code></p>
+
+        <% const diagnosticEntries = typeof diagnostics === 'object' && diagnostics ? Object.entries(diagnostics) : []; %>
+        <% if (diagnosticEntries.length) { %>
+            <details class="error-diagnostics" open>
+                <summary>Detalles técnicos para soporte</summary>
+                <p class="error-diagnostics-note">No se muestran cookies ni valores de tokens. Comparte la referencia y estos datos con el equipo técnico.</p>
+                <table>
+                    <tbody>
+                    <% diagnosticEntries.forEach(([key, value]) => { %>
+                        <tr><th scope="row"><%= key %></th><td><%= value %></td></tr>
+                    <% }) %>
+                    </tbody>
+                </table>
+            </details>
+            <script nonce="<%= typeof cspNonce !== 'undefined' ? cspNonce : '' %>">
+                console.warn('[Tienda Galindez] Solicitud rechazada. Revisa los detalles técnicos y usa la referencia mostrada.');
+            </script>
+        <% } %>
+
+        <a href="/">Ir a la tienda</a> · <a href="/mis-pedidos">Mis pedidos</a>
+    </article>
+</main>
+</body>
+</html>

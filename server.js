@@ -24,6 +24,11 @@ const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
+// Morgan no debe imprimir query strings porque pueden contener tokens de
+// recuperación. Este token conserva la ruta útil para soporte sin exponerlos.
+morgan.token('request-path', req => String(req.path || '/').replace(/[\r\n]/g, '').slice(0, 240));
+morgan.token('request-id', req => req.requestId || '-');
+
 if (process.env.NODE_ENV === "production") {
     app.set("trust proxy", 1);
 }
@@ -43,7 +48,7 @@ app.use(sessionConfig);
 appConfig(app);
 app.use(csrfProtection);
 // No registrar query strings: pueden contener correos o enlaces de recuperación.
-app.use(morgan(':method :status :res[content-length] :response-time ms', { skip: req => req.path === '/healthz' }));
+app.use(morgan(':method :request-path :status :res[content-length] :response-time ms requestId=:request-id', { skip: req => req.path === '/healthz' }));
 app.use(cartMiddleware);
 app.use(sessionLogger);
 app.use(categoriasMiddleware);

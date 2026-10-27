@@ -7,9 +7,21 @@ module.exports = (error, req, res, next) => {
     }
     if (error.code === 11000) { status = 409; message = 'El registro ya existe o la operación está en proceso.'; }
     if (error.type === 'entity.too.large') { status = 413; message = 'La solicitud es demasiado grande.'; }
-    console.error(JSON.stringify({ event: 'request_error', requestId: req.requestId, status, type: error.name, code: error.code }));
+    console.error(JSON.stringify({
+        event: 'request_error',
+        requestId: req.requestId,
+        method: req.method,
+        path: req.path,
+        status,
+        type: error.name,
+        code: error.code,
+        message: typeof error.message === 'string' ? error.message.slice(0, 500) : undefined
+    }));
+    const diagnostics = error.diagnostics || null;
     if (req.path.startsWith('/api/') || req.get('accept')?.includes('application/json')) {
-        return res.status(status).json({ success: false, message, requestId: req.requestId });
+        const response = { success: false, message, requestId: req.requestId };
+        if (diagnostics) response.diagnostics = diagnostics;
+        return res.status(status).json(response);
     }
-    res.status(status).render('error', { message, requestId: req.requestId || '', status });
+    res.status(status).render('error', { message, requestId: req.requestId || '', status, diagnostics });
 };
