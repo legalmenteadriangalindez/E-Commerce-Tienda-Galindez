@@ -44,6 +44,13 @@ function allowedOrigin(req, origin) {
     if (!origin) return true;
 
     const origins = new Set([requestOrigin(req)]);
+    // El proxy puede entregar HTTP al proceso aunque el navegador use HTTPS.
+    // Ambos protocolos siguen limitados al mismo host de la petición.
+    const host = req.get('host');
+    if (host) {
+        origins.add(`http://${host}`);
+        origins.add(`https://${host}`);
+    }
     if (process.env.BASE_URL) {
         try {
             origins.add(new URL(process.env.BASE_URL).origin);
