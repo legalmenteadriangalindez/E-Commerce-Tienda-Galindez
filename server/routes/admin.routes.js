@@ -16,6 +16,7 @@ const servicesRenderBrand = require('../services/renderBrands');
 const servicesRenderOrders = require('../services/renderOrders');
 const servicesRenderProfile = require('../services/renderProfile');
 const servicesRenderCart = require('../services/renderCart');
+const servicesRenderRaffle = require('../services/renderRaffle');
 
 const brandController = require('../controller/brand_controller');
 const saleController = require('../controller/sale_controller');
@@ -68,6 +69,10 @@ router.get('/payment_point', isAdmin, commercePages.checkout(true));
 router.get('/venta-finalizada-admin/:id', isAdmin, servicesRenderCart.order_success_admin);
 router.get('/admin-analytics', isAdmin, servicesRenderAdminAnalytics.renderAdminAnalytics);
 router.get('/admin-best_selling_products',isAdmin,servicesRenderSales.best_selling_products)
+router.get('/admin/raffle', isAdmin, servicesRenderRaffle.adminIndex);
+router.post('/admin/raffle', isAdmin, upload.single('imagenPremio'), servicesRenderRaffle.update);
+router.post('/admin/raffle/draw', isAdmin, servicesRenderRaffle.draw);
+router.post('/admin/raffle/reset', isAdmin, servicesRenderRaffle.reset);
 
 router.get('/create-marca', isAdmin, servicesRenderBrand.create_brand_form);
 router.post('/create-marca', isAdmin, servicesRenderBrand.create_brand);
@@ -112,7 +117,7 @@ router.post('/delete-user/:id', isAdmin, servicesRenderUser.delete_user);
 router.get('/read-sales',isAdmin,servicesRenderSales.sales);
 router.get('/read-sale-details',isAdmin,servicesRenderSales.saleDetailView);
 router.get('/sale/:id',isAdmin, servicesRenderSales.saleDetailView);
-router.get('/read-total-profit',isAdmin,servicesRenderSales.total_profit);
+router.get('/read-total-profit', isAdmin, (req, res) => res.redirect('/admin-analytics?period=month'));
 router.get('/read-profit-margins',isAdmin,servicesRenderSales.profit_margins);
 
 

@@ -1,0 +1,25 @@
+<%- include('../../include/_header') %>
+<link rel="stylesheet" href="/css/raffle.css">
+
+<main class="raffle-public-page">
+    <% if (raffle) { %>
+        <section class="raffle-public-card">
+            <% if (raffle.imagenUrl) { %>
+                <img src="<%= raffle.imagenUrl %>" alt="Imagen de la promoción">
+            <% } %>
+            <div class="raffle-public-copy">
+                <p class="raffle-eyebrow">Promoción activa</p>
+                <h1><%= raffle.titulo %></h1>
+                <p><%= raffle.descripcion %></p>
+                <strong>Compra mínima: $ <%= Number(raffle.montoMinimo).toLocaleString('es-CO') %> COP</strong>
+                <p class="raffle-public-note">Cada pedido pagado que cumpla el monto recibe una participación única.</p>
+            </div>
+        </section>
+    <% } else { %>
+        <section class="commerce-card">
+            <h1>No hay una rifa activa</h1>
+            <p>Vuelve pronto para conocer la próxima promoción.</p>
+        </section>
+    <% } %>
+</main>
+<%- include('../../include/_footer') %>

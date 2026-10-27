@@ -11,6 +11,7 @@ const servicesRenderProduct = require('../services/renderProducts');
 const servicesRenderCart = require('../services/renderCart');
 const clotehsService = require('../services/renderClothes');
 const servicesRenderSEO = require('../services/renderSEO');
+const servicesRenderRaffle = require('../services/renderRaffle');
 
 router.get('/clothes', clotehsService.renderClothes);
 
@@ -20,6 +21,7 @@ router.get('/robots.txt', servicesRenderSEO.robots);
 router.get('/', servicesRenderHomeRutes.homeRoutes);
 router.get('/search', servicesRenderHomeRutes.search);
 router.get('/promociones', servicesRenderPromotions.promotions);
+router.get('/sorteo', servicesRenderRaffle.publicIndex);
 router.get('/marcas', servicesRenderBrand.brands);
 router.get('/brand/:marca', servicesRenderBrand.Productbrands);
 router.get('/categoria/:nombre', servicesRenderCategory.category);

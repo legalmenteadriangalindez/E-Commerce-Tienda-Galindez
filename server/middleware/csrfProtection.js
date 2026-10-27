@@ -82,7 +82,7 @@ function csrfProtection(req, res, next) {
         // Un DELETE o login multipart no puede evitar la protección global.
         const allowed = (
             ['POST', 'PUT'].includes(req.method) && /^\/api\/(productos|marcas)(\/[a-f\d]{24})?\/?$/i.test(req.path)
-        ) || (req.method === 'POST' && /^\/update-marca\/[a-f\d]{24}$/.test(req.path)) || (
+        ) || (req.method === 'POST' && req.path === '/admin/raffle') || (req.method === 'POST' && /^\/update-marca\/[a-f\d]{24}$/.test(req.path)) || (
             ['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method) && /^\/api\/(admin\/)?reviews(?:\/[a-f\d]{24}(?:\/(reply|visibility))?)?\/?$/i.test(req.path)
         );
         if (!allowed) return validateToken(req, res, next);
