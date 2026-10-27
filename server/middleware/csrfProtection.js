@@ -23,6 +23,26 @@ function validToken(expected, provided) {
         crypto.timingSafeEqual(expectedBuffer, providedBuffer);
 }
 
+function requestOrigin(req) {
+    const host = req.get('host');
+    return host ? `${req.protocol}://${host}` : '';
+}
+
+function allowedOrigin(req, origin) {
+    if (!origin) return true;
+
+    const origins = new Set([requestOrigin(req)]);
+    if (process.env.BASE_URL) {
+        try {
+            origins.add(new URL(process.env.BASE_URL).origin);
+        } catch {
+            // production.js valida BASE_URL; se ignora aquí para no romper local.
+        }
+    }
+
+    return origins.has(origin);
+}
+
 function rejectRequest(req, res) {
     if ((req.originalUrl || req.path).startsWith('/api/')) {
         return res.status(403).json({
@@ -87,7 +107,7 @@ function csrfProtection(req, res, next) {
         );
         if (!allowed) return validateToken(req, res, next);
         const origin = req.get('origin');
-        if (origin && origin !== new URL(process.env.BASE_URL || 'http://localhost:3000').origin) return rejectRequest(req, res);
+        if (!allowedOrigin(req, origin)) return rejectRequest(req, res);
         return next();
     }
 
