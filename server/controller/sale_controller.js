@@ -183,10 +183,11 @@ exports.exportCsv = async (req, res) => {
     const filename = `ventas${suffix}.csv`;
 
     try {
+        // Mongoose 9 devuelve aquí un AggregationCursor async iterable;
+        // no es una Query y ya no expone .exec().
         const cursor = Saledb.aggregate(salesCsv.aggregatePipeline(filters))
             .allowDiskUse(true)
-            .cursor({ batchSize: 500 })
-            .exec();
+            .cursor({ batchSize: 500 });
 
         res.status(200);
         res.set({

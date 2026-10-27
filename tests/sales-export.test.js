@@ -75,3 +75,89 @@ test('la agregación limita filas para proteger el servicio', () => {
     assert.ok(pipeline.some(stage => stage.$limit === salesCsv.maxRows()));
     assert.deepEqual(salesCsv.COLUMNS.slice(0, 4), ['id_venta', 'numero_pedido', 'fecha_venta', 'estado_pago']);
 });
+
+test('descarga las ventas CSV desde HTTP usando una agregación de MongoDB real', {
+    skip: process.env.COMMERCE_TEST_MONGO_URI ? false : 'Ejecuta npm run test:integration.'
+}, async t => {
+    const mongoose = require('mongoose');
+    const Order = require('../server/model/order');
+    const Sale = require('../server/model/sales');
+    const Detail = require('../server/model/saleDetails');
+    const app = await require('./helpers/reviewApp').startReviewApp(
+        process.env.COMMERCE_TEST_MONGO_URI,
+        testApp => testApp.use('/api/ventas', require('../server/routes/sales.routes'))
+    );
+    t.after(() => app.close());
+
+    await Promise.all([Order, Sale, Detail].map(model => model.init()));
+    await Promise.all([Order.deleteMany({}), Sale.deleteMany({}), Detail.deleteMany({})]);
+
+    const order = await Order.create({
+        numeroOrden: 'ORD-CSV-001',
+        usuario: app.users.owner._id,
+        cliente: {
+            nombre: 'Cliente CSV',
+            email: 'csv@example.test',
+            telefono: '0000000000'
+        },
+        productos: [{
+            producto: app.product._id,
+            nombre: app.product.nombre,
+            cantidad: 2,
+            precioUnitario: 12000,
+            precioCostoUnitario: 8000,
+            subtotal: 24000
+        }],
+        subtotal: 24000,
+        impuestos: 0,
+        costoEnvio: 0,
+        descuento: 0,
+        total: 24000,
+        canal: 'CAJA',
+        inventario: 'CONFIRMADO',
+        estadoPago: 'PAGADO',
+        estado: 'ENTREGADA'
+    });
+    const sale = await Sale.create({
+        cliente: app.users.owner._id,
+        order: order._id,
+        subtotal: 24000,
+        impuestos: 0,
+        costoEnvio: 0,
+        descuento: 0,
+        total: 24000,
+        estadoPago: 'PAGADO'
+    });
+    await Detail.create({
+        venta: sale._id,
+        producto: app.product._id,
+        cantidad: 2,
+        precioUnitario: 12000,
+        precioCostoUnitario: 8000,
+        subtotal: 24000
+    });
+
+    const actor = await app.actor('admin');
+    const response = await fetch(`${app.origin}/api/ventas/export.csv?estadoPago=PAGADO&canal=CAJA`, {
+        headers: {
+            Accept: 'text/csv',
+            Cookie: actor.cookie
+        }
+    });
+
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get('content-type') || '', /text\/csv/);
+    assert.match(response.headers.get('content-disposition') || '', /attachment; filename="ventas\.csv"/);
+    assert.equal(response.headers.get('x-export-row-limit'), String(salesCsv.maxRows()));
+
+    const csv = await response.text();
+    assert.ok(csv.startsWith('\uFEFF' + salesCsv.header()));
+    assert.match(csv, /ORD-CSV-001/);
+    assert.match(csv, /Caf(?:é|\u00e9) de prueba/);
+    assert.match(csv, /24000/);
+    assert.match(csv, /16000/);
+    assert.match(csv, /8000/);
+    assert.equal(csv.split('\r\n').filter(Boolean).length, 2);
+
+    assert.equal(mongoose.connection.readyState, 1);
+});
