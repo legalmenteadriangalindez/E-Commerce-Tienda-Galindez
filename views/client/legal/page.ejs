@@ -1,0 +1,75 @@
+<%- include('../../include/_header') %>
+
+<main class="legal-page">
+    <div class="legal-shell">
+        <div class="legal-breadcrumb" aria-label="Migas de pan">
+            <a href="/">Inicio</a>
+            <span aria-hidden="true">/</span>
+            <span><%= policy.title %></span>
+        </div>
+
+        <div class="legal-layout">
+            <aside class="legal-nav" aria-label="Información legal">
+                <p class="legal-nav-label">Información de la tienda</p>
+                <nav>
+                    <% legalPages.forEach(page => { %>
+                        <a class="<%= page.key === policyKey ? 'is-active' : '' %>" href="<%= page.path %>">
+                            <span><%= page.title %></span>
+                            <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+                        </a>
+                    <% }) %>
+                </nav>
+            </aside>
+
+            <article class="legal-content">
+                <header class="legal-hero">
+                    <p class="legal-eyebrow"><%= policy.eyebrow %></p>
+                    <h1><%= policy.title %></h1>
+                    <p class="legal-intro"><%= policy.intro %></p>
+                    <p class="legal-updated">Última actualización: <%= contact.lastUpdated %></p>
+                </header>
+
+                <div class="legal-sections">
+                    <% policy.sections.forEach(section => { %>
+                        <section class="legal-section">
+                            <h2><%= section.heading %></h2>
+                            <% (section.paragraphs || []).forEach(paragraph => { %>
+                                <p><%= paragraph %></p>
+                            <% }) %>
+                            <% if (section.items && section.items.length) { %>
+                                <ul>
+                                    <% section.items.forEach(item => { %>
+                                        <li><%= item %></li>
+                                    <% }) %>
+                                </ul>
+                            <% } %>
+                            <% if (section.note) { %>
+                                <p class="legal-note"><%= section.note %></p>
+                            <% } %>
+                        </section>
+                    <% }) %>
+                </div>
+
+                <aside class="legal-contact-card">
+                    <div>
+                        <p class="legal-eyebrow">¿Necesitas ayuda?</p>
+                        <h2>Estamos para atenderte</h2>
+                        <p>Conserva tu número de pedido y cuéntanos qué necesitas. Te responderemos por un canal verificable.</p>
+                    </div>
+                    <div class="legal-contact-actions">
+                        <a class="legal-button" href="mailto:<%= contact.email %>">
+                            <i class="bi bi-envelope" aria-hidden="true"></i>
+                            <span><%= contact.email %></span>
+                        </a>
+                        <a class="legal-button legal-button-secondary" href="https://wa.me/<%= contact.phone.replace(/\D/g, '') %>" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-whatsapp" aria-hidden="true"></i>
+                            <span><%= contact.phone %></span>
+                        </a>
+                    </div>
+                </aside>
+            </article>
+        </div>
+    </div>
+</main>
+
+<%- include('../../include/_footer') %>

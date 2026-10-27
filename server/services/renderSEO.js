@@ -56,6 +56,19 @@ exports.sitemap = async (req, res) => {
             priority: '0.7'
         });
 
+        // Información pública que debe poder encontrar el cliente y los
+        // buscadores sin depender de una sesión iniciada.
+        [
+            ['/sorteo', '0.6'],
+            ['/privacidad', '0.5'],
+            ['/terminos', '0.5'],
+            ['/cambios-devoluciones', '0.5'],
+            ['/envios', '0.5'],
+            ['/reclamaciones', '0.5']
+        ].forEach(([path, priority]) => {
+            urls.push({ loc: `${BASE_URL}${path}`, priority });
+        });
+
 
         // ----------------------------------------------
         // CATEGORÍAS

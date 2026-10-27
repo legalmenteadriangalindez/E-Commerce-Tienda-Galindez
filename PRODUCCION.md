@@ -137,7 +137,7 @@ La integración necesita el ejecutable `mongod`, no Docker. Crea un replica set 
 
 El servidor cierra conexiones al recibir la señal de parada. Supervisa `/healthz`, errores HTTP, eventos de pago pendientes, almacenamiento de imágenes y copias de seguridad. Guarda copias de la base completa, incluidas las colecciones `media.files` y `media.chunks`, y practica una restauración en otra base. Una copia sin prueba de restauración no demuestra recuperación.
 
-Antes de abrir ventas, completa identificación y contacto de la tienda, política de tratamiento de datos, términos de compra, entregas, cambios, devoluciones y atención de reclamaciones. Usa información real del negocio y revisión legal/contable cuando corresponda. No se han inventado esos textos ni publicado políticas genéricas como si fueran tuyas.
+Las páginas públicas de privacidad, términos de compra, envíos, cambios y devoluciones y reclamaciones están disponibles en `/privacidad`, `/terminos`, `/envios`, `/cambios-devoluciones` y `/reclamaciones`. Antes de abrir ventas, completa los datos configurables (`LEGAL_*`) con la identificación y contacto reales del negocio y valida los textos con asesoría legal/contable cuando corresponda.
 
 Referencia técnica: [Render](https://render.com/docs/node-version), [persistencia en Render](https://render.com/docs/disks), [checkout Wompi](https://docs.wompi.co/en/docs/colombia/widget-checkout-web/), [eventos Wompi](https://docs.wompi.co/en/docs/colombia/eventos/), [seguimiento de transacciones](https://docs.wompi.co/en/docs/colombia/seguimiento-de-transacciones/).
 

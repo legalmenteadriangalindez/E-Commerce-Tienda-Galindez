@@ -12,6 +12,7 @@ const servicesRenderCart = require('../services/renderCart');
 const clotehsService = require('../services/renderClothes');
 const servicesRenderSEO = require('../services/renderSEO');
 const servicesRenderRaffle = require('../services/renderRaffle');
+const servicesRenderLegal = require('../services/renderLegal');
 
 router.get('/clothes', clotehsService.renderClothes);
 
@@ -22,6 +23,18 @@ router.get('/', servicesRenderHomeRutes.homeRoutes);
 router.get('/search', servicesRenderHomeRutes.search);
 router.get('/promociones', servicesRenderPromotions.promotions);
 router.get('/sorteo', servicesRenderRaffle.publicIndex);
+router.get('/privacidad', servicesRenderLegal.page('privacidad'));
+router.get('/terminos', servicesRenderLegal.page('terminos'));
+router.get('/cambios-devoluciones', servicesRenderLegal.page('cambios-devoluciones'));
+router.get('/envios', servicesRenderLegal.page('envios'));
+router.get('/reclamaciones', servicesRenderLegal.page('reclamaciones'));
+
+// Alias descriptivos para enlaces antiguos o campañas que ya estén publicados.
+router.get('/politica-privacidad', (req, res) => res.redirect(301, '/privacidad'));
+router.get('/terminos-y-condiciones', (req, res) => res.redirect(301, '/terminos'));
+router.get('/cambios-y-devoluciones', (req, res) => res.redirect(301, '/cambios-devoluciones'));
+router.get('/politica-de-envios', (req, res) => res.redirect(301, '/envios'));
+router.get('/pqr', (req, res) => res.redirect(301, '/reclamaciones'));
 router.get('/marcas', servicesRenderBrand.brands);
 router.get('/brand/:marca', servicesRenderBrand.Productbrands);
 router.get('/categoria/:nombre', servicesRenderCategory.category);
