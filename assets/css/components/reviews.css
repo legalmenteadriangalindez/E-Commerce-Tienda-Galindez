@@ -1,30 +1,81 @@
-/* ================= REVIEWS ================= */
-
-.reviews-section h3 {
-    margin-top: 40px;
-    color: var(--primary-dark);
+.reviews-section {
+    max-width: 1200px;
+    margin: 56px auto;
+    padding: 0 24px;
+    color: #311b14;
+    scroll-margin-top: 28px;
 }
-
-.review-card {
-    border: 1px solid #eee;
-    border-radius: 10px;
-    transition: 0.2s;
+.reviews-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 26px;
 }
-
-.review-card:hover {
-    box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+.reviews-eyebrow {
+    margin-bottom: 8px;
+    color: #76563e;
+    font-size: .75rem;
+    letter-spacing: .12em;
+    font-weight: 700;
 }
-
-.review-images img {
-    width: 90px;
-    height: 90px;
-    object-fit: cover;
-    margin-right: 5px;
-    border-radius: 6px;
+.reviews-heading h2 { margin: 0; font-size: clamp(1.4rem, 3vw, 2rem); }
+.reviews-score { display: flex; align-items: center; gap: 12px; flex-shrink: 0; font-size: .85rem; }
+.reviews-score__number { font-size: 2.8rem; font-weight: 700; line-height: 1; }
+.reviews-score span[aria-hidden] { color: #99651b; }
+.reviews-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.review-card, .review-editor, .reviews-empty { border: 1px solid #e6d9ce; border-radius: 14px; padding: 24px; background: white; }
+.review-card { margin-bottom: 16px; }
+.review-card__heading { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
+.review-card__heading strong { overflow-wrap: anywhere; }
+.review-stars { margin-left: auto; color: #966114; white-space: nowrap; }
+.review-rating { font-size: .8rem; color: #65544b; margin-left: 5px; }
+.review-own-badge { background: #f6eee7; border-radius: 5px; padding: 3px 7px; font-size: .72rem; }
+.review-comment { margin: 14px 0 12px; color: #443932; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.65; }
+.review-date { font-size: .78rem; color: #75665c; margin: 0; }
+.review-card__actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: baseline; margin-top: 14px; }
+.review-card__actions a, .review-delete { font-size: .82rem; text-underline-offset: 3px; }
+.review-delete { color: #9b302a; background: none; border: 0; text-decoration: underline; padding: 0; cursor: pointer; }
+.review-editor { background: #fcf9f5; scroll-margin-top: 28px; }
+.review-editor h3, .reviews-empty h3 { font-size: 1.2rem; margin: 0 0 12px; }
+.review-editor > p { color: #68584b; line-height: 1.6; font-size: .9rem; }
+.review-editor label, .review-rating-field legend { font-size: .9rem; font-weight: 600; }
+.review-rating-field { margin: 22px 0; padding: 0; border: 0; }
+.review-rating-field legend { float: none; width: auto; margin-bottom: 10px; }
+.review-rating-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.review-rating-options label { cursor: pointer; position: relative; }
+.review-rating-options input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.review-rating-options label > span { display: block; border: 1px solid #cbb9a8; padding: 9px 12px; border-radius: 8px; background: #fff; }
+.review-rating-options input:checked + span { background: #311b14; border-color: #311b14; color: #fff; }
+.review-rating-options input:focus-visible + span { outline: 3px solid #bd6f30; outline-offset: 3px; }
+.review-editor textarea { display: block; width: 100%; margin-top: 9px; border: 1px solid #cbb9a8; border-radius: 8px; padding: 12px; background: white; color: #311b14; resize: vertical; font: inherit; font-size: .95rem; }
+.review-editor textarea:focus { outline: 2px solid #bd6f30; outline-offset: 2px; }
+.review-hint { margin: 8px 0 18px; color: #776356; font-size: .75rem; }
+.review-submit { display: inline-flex; justify-content: center; padding: 11px 20px; background: #311b14; color: white; border: 1px solid #311b14; border-radius: 8px; font-weight: 600; font-size: .9rem; text-decoration: none; }
+.review-submit:hover { background: #573323; color: white; }
+.review-submit:disabled, .review-delete:disabled { opacity: .6; cursor: wait; }
+.review-editor__delete { margin-top: 18px; }
+.review-notice { padding: 14px 18px; border-radius: 8px; }
+.review-notice--success { background: #edf7ef; color: #23562d; }
+.review-notice--error, .review-form-error { color: #962c24; background: #fff0ed; }
+.review-form-error { padding: 10px; font-size: .86rem; border-radius: 6px; margin: 12px 0; overflow-wrap: anywhere; }
+.reviews-empty { text-align: center; color: #766253; padding: 44px 24px; }
+.reviews-empty > span { display: block; font-size: 3rem; line-height: 1; margin-bottom: 15px; }
+.reviews-empty p { font-size: .9rem; margin: 0; }
+.review-pagination { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 14px; padding: 15px 0; font-size: .85rem; }
+.review-pagination a { color: #311b14; border: 1px solid #d7c2b1; padding: 8px 12px; border-radius: 7px; }
+.review-images { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.review-images img { width: 90px; height: 90px; object-fit: cover; border-radius: 6px; }
+.review-video { max-width: 100%; width: 280px; margin-top: 12px; border-radius: 8px; }
+@media (max-width: 760px) {
+    .reviews-section { padding: 0 16px; margin: 36px auto; }
+    .reviews-heading { align-items: flex-start; flex-direction: column; gap: 18px; }
+    .reviews-layout { grid-template-columns: minmax(0, 1fr); }
+    .review-editor { grid-row: 1; }
+    .review-card, .review-editor { padding: 20px; }
 }
-
-.review-video {
-    margin-top: 10px;
-    border-radius: 8px;
-    overflow: hidden;
-}
+.review-store-reply { padding: 16px 18px; margin: 18px 0; border-left: 3px solid #b99c7e; border-radius: 0 8px 8px 0; background: #f7f3ee; }
+.review-store-reply > strong { display: block; margin-bottom: 8px; font-size: .9rem; color: #704524; }
+.review-store-reply .review-date { margin-bottom: 0; }
+.review-moderation-notice { padding: 14px; margin: 16px 0; background: #fff3dd; color: #714a21; border-radius: 8px; font-size: .88rem; overflow-wrap: anywhere; }
+.review-moderation-notice p { margin: 8px 0 0; white-space: pre-wrap; }

@@ -5,10 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = e.target.closest('.add-to-cart-btn');
         if (!btn) return;
         const productoId = btn.dataset.id;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
         try {
             const res = await fetch('/carrito/add', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
                 credentials: 'include',
                 body: JSON.stringify({ productoId, cantidad: 1 })
             });

@@ -12,6 +12,7 @@
     <div class="form-card">
 
         <form action="/update-order/<%= order._id %>" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <!-- INFORMACIÓN GENERAL -->
             <div class="form-section">

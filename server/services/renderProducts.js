@@ -1,139 +1,72 @@
+const { publicError, errorStatus } = require('./publicError');
 const axios = require('axios');
 const dotenv = require('dotenv');
+const internalApiConfig = require('./internalApiConfig');
+const reviewService = require('../business/reviewService');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const siteUrl = BASE_URL.replace(/\/$/, '');
-// Detalle de producto
-// exports.product_detail = async (req, res) => {
 
-//     try {
-//         const id = req.params.id;
-//         const [productRes, reviewsRes] = await Promise.all([
-
-//             axios.get(`${BASE_URL}/api/productos`, {
-//                 params: { id }
-//             }),
-
-//             axios.get(`${BASE_URL}/api/reviews`, {
-//                 params: { producto: id }
-//             })
-
-//         ]);
-//         const product = productRes.data;
-//         const reviews = reviewsRes.data;
-//         res.render('client/products/product_detail', { product, reviews });
-//     } catch (err) {
-//         res.send(err);
-//     }
-// };
-
-// Detalle de producto
+// Detalle público, con reseñas y permisos calculados para la sesión actual.
 exports.product_detail = async (req, res) => {
-
-    try {
-
-        const id = req.params.id;
-
-        // =========================================
-        // OBTENER PRODUCTO Y RESEÑAS
-        // =========================================
-
-        const [productRes, reviewsRes] = await Promise.all([
-
-            axios.get(`${BASE_URL}/api/productos`, {
-                params: { id }
-            }),
-
-            axios.get(`${BASE_URL}/api/reviews`, {
-                params: { producto: id }
-            })
-
-        ]);
-
-        const product = productRes.data;
-        const reviews = reviewsRes.data;
-
-        // =========================================
-        // URL BASE DEL SITIO
-        // =========================================
-
-        const siteUrl = BASE_URL.replace(/\/$/, '');
-
-        // =========================================
-        // SEO DEL PRODUCTO
-        // =========================================
-
-        const seoTitle =
-            `${product.nombre} | Tienda Galindez`;
-
-        const seoDescription = product.descripcion
-            ? product.descripcion.substring(0, 155)
-            : `Compra ${product.nombre} en Tienda Galindez. Consulta precio y disponibilidad.`;
-
-        // =========================================
-        // URL CANÓNICA
-        // =========================================
-
-        const seoCanonical =
-            `${siteUrl}/Detalles/${id}`;
-
-        // =========================================
-        // IMAGEN PRINCIPAL DEL PRODUCTO
-        // =========================================
-
-        let seoImage = null;
-
-        if (product.fotos && product.fotos.length > 0) {
-
-            seoImage =
-                `${siteUrl}${product.fotos[0]}`;
-
-        }
-
-        // =========================================
-        // RENDERIZAR VISTA
-        // =========================================
-
-        res.render(
-            'client/products/product_detail',
-            {
-                product,
-                reviews,
-
-                // SEO
-                seoTitle,
-                seoDescription,
-                seoCanonical,
-                seoImage,
-
-                // URL del sitio
-                siteUrl
-            }
-        );
-
-    } catch (err) {
-
-        console.error(
-            'Error cargando detalle del producto:',
-            err.response?.data || err.message
-        );
-
-        res.status(500).send(
-            'Error cargando el producto'
-        );
-
+    const id = req.params.id;
+    if (!reviewService.validId(id)) {
+        return res.status(404).send('Producto no encontrado');
     }
 
+    try {
+        const [productRes, reviewUser] = await Promise.all([
+            axios.get(BASE_URL + '/api/productos/catalogo/' + encodeURIComponent(id)),
+            reviewService.getViewer(req.session?.user)
+        ]);
+        const product = productRes.data;
+        const reviewData = await reviewService.getPage(id, req.query.reviewPage, reviewUser?._id);
+        const reviewFeedback = req.session?.reviewFeedback?.productId === id
+            ? req.session.reviewFeedback
+            : null;
+        if (reviewFeedback) delete req.session.reviewFeedback;
+        const reviewUrl = '/Detalles/' + id;
+        const reviewPagination = {
+            ...reviewData.pagination,
+            previousUrl: reviewData.pagination.page > 1
+                ? reviewUrl + '?reviewPage=' + (reviewData.pagination.page - 1) + '#resenas' : null,
+            nextUrl: reviewData.pagination.page < reviewData.pagination.totalPages
+                ? reviewUrl + '?reviewPage=' + (reviewData.pagination.page + 1) + '#resenas' : null
+        };
+
+        return res.render('client/products/product_detail', {
+            product,
+            reviews: reviewData.reviews,
+            reviewSummary: reviewData.summary,
+            ownReview: reviewData.ownReview,
+            reviewUser,
+            reviewPagination,
+            reviewFeedback,
+            reviewValues: reviewFeedback?.values || reviewData.ownReview || {},
+            seoTitle: product.nombre + ' | Tienda Galindez',
+            seoDescription: product.descripcion
+                ? product.descripcion.substring(0, 155)
+                : 'Compra ' + product.nombre + ' en Tienda Galindez. Consulta precio y disponibilidad.',
+            seoCanonical: siteUrl + reviewUrl,
+            seoImage: product.fotos?.[0] ? siteUrl + product.fotos[0] : null,
+            siteUrl
+        });
+    } catch (error) {
+        console.error('Error cargando detalle del producto:', error.response?.data || error.message);
+        return res.status(error.response?.status === 404 ? 404 : 500).send(
+            error.response?.status === 404 ? 'Producto no encontrado' : 'No se pudo cargar el producto'
+        );
+    }
 };
 
 exports.create_product = (req, res) => {
-    axios.post(`${BASE_URL}/api/productos`, req.body)
+    axios.post(`${BASE_URL}/api/productos`, req.body, internalApiConfig(req))
         .then(response => {
             
             res.redirect('admin/products/create-producto');
         })
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };
 
 exports.create_product_form = async (req, res) => {
@@ -149,12 +82,12 @@ exports.create_product_form = async (req, res) => {
 
             axios.get(`${BASE_URL}/api/marcas`),
             axios.get(`${BASE_URL}/api/categorias`),
-            axios.get(`${BASE_URL}/api/proveedores`)
+            axios.get(`${BASE_URL}/api/proveedores`, internalApiConfig(req))
             .catch(() => ({ data: [] }))
 
         ]);
 
-        console.log('MARCAS RECIBIDAS:', marcasRes.data);
+        
 
         res.render('admin/products/create_producto', {
 
@@ -187,8 +120,17 @@ exports.update_products = async (req, res) => {
             return res.status(400).send("ID no proporcionado");
         }
 
+        const apiConfig = {
+            headers: {
+                Cookie: req.headers.cookie || "",
+                'X-CSRF-Token': req.session?.csrfToken || ''
+            },
+            timeout: 10000
+        };
+
         const productoResponse = await axios.get(
-            `${BASE_URL}/api/productos/${id}`
+            `${BASE_URL}/api/productos/${id}`,
+            apiConfig
         );
 
         const producto = productoResponse.data;
@@ -202,9 +144,9 @@ exports.update_products = async (req, res) => {
             categoriasRes,
             proveedoresRes
         ] = await Promise.all([
-            axios.get(`${BASE_URL}/api/marcas`),
-            axios.get(`${BASE_URL}/api/categorias`),
-            axios.get(`${BASE_URL}/api/proveedores`)
+            axios.get(`${BASE_URL}/api/marcas`, apiConfig),
+            axios.get(`${BASE_URL}/api/categorias`, apiConfig),
+            axios.get(`${BASE_URL}/api/proveedores`, apiConfig)
         ]);
 
         return res.render(
@@ -235,7 +177,7 @@ exports.read_products = (req, res) => {
             
             res.render('admin/products/read_products', { productos: response.data });
         })
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };
 
 
@@ -247,7 +189,8 @@ exports.delete_product = async (req, res) => {
             `${BASE_URL}/api/productos/${req.params.id}`,
             {
                 headers: {
-                    Cookie: req.headers.cookie || ""
+                    Cookie: req.headers.cookie || "",
+                    'X-CSRF-Token': req.session?.csrfToken || ''
                 },
                 timeout: 10000
             }

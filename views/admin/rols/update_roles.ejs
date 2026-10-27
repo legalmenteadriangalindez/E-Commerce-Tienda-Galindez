@@ -13,6 +13,7 @@
   <div class="form-card small-card">
 
     <form action="/update-rol/<%= rol._id %>" method="POST" class="role-form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
       <div class="form-group">
         <label>Nombre del rol</label>

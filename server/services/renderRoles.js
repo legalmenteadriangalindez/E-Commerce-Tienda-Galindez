@@ -1,5 +1,7 @@
+const { publicError, errorStatus } = require('./publicError');
 const axios = require('axios');
 const dotenv = require('dotenv');
+const internalApiConfig = require('./internalApiConfig');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
@@ -10,20 +12,20 @@ exports.create_rol_form = (req, res) => {
 
 
 exports.read_roles = (req, res) => {
-    axios.get(`${BASE_URL}/api/roles`)
+    axios.get(`${BASE_URL}/api/roles`, internalApiConfig(req))
         .then(response => {
             res.render('admin/rols/read_rols', { roles: response.data });
         })
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };
 
 
 exports.update_rol = (req, res) => {
-    axios.get(`${BASE_URL}/api/roles?id=${req.query.id}`)
+    axios.get(`${BASE_URL}/api/roles?id=${req.query.id}`, internalApiConfig(req))
         .then(response => {
             res.render('admin/rols/update_roles', { rol: response.data });
         })
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };
 
 
@@ -33,20 +35,20 @@ exports.create_rol = (req, res) => {
         return res.send("Formulario vacío");
     }
 
-    axios.post(`${BASE_URL}/api/roles`, req.body)
+    axios.post(`${BASE_URL}/api/roles`, req.body, internalApiConfig(req))
         .then(() => {
             res.redirect('/read-rol');
         })
         .catch(err => {
             
-            res.send(err.response?.data || err.message);
+            res.status(errorStatus(err)).send(publicError(err));
         });
 };
 
 exports.delete_rol = (req, res) => {
-    axios.delete(`${BASE_URL}/api/roles/${req.params.id}`)
+    axios.delete(`${BASE_URL}/api/roles/${req.params.id}`, internalApiConfig(req))
         .then(response => {
             res.redirect('/read-rol');
         })
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };

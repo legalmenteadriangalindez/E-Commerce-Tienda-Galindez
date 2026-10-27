@@ -1,3 +1,4 @@
+const { publicError, errorStatus } = require('./publicError');
 
 const axios = require('axios');
 const dotenv = require('dotenv');
@@ -10,7 +11,8 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 function configApi(req) {
     return {
         headers: {
-            Cookie: req.headers.cookie || ""
+            Cookie: req.headers.cookie || "",
+            'X-CSRF-Token': req.session?.csrfToken || ''
         },
         timeout: 10000
     };
@@ -31,7 +33,7 @@ exports.create_user_form = async (req, res) => {
         });
 
     } catch (err) {
-        res.send(err.message);
+        res.status(errorStatus(err)).send(publicError(err));
     }
 };
 
@@ -155,7 +157,7 @@ exports.update_user_data = async (req, res) => {
         res.redirect('/read-user');
 
     } catch (err) {
-        res.send(err.message);
+        res.status(errorStatus(err)).send(publicError(err));
     }
 };
 
@@ -171,6 +173,6 @@ exports.delete_user = (req, res) => {
             res.redirect('/read-user');
         })
         .catch(err => {
-            res.send(err.message);
+            res.status(errorStatus(err)).send(publicError(err));
         });
 };

@@ -24,6 +24,7 @@
 
 </div>
 
+<%- include('./partials/product-reviews') %>
 
 <!-- ========================================= -->
 <!-- SEO: DATOS ESTRUCTURADOS DEL PRODUCTO -->
@@ -86,11 +87,21 @@
         }
 
     };
+
+    if (reviewSummary.total > 0) {
+        productSchema.aggregateRating = {
+            '@type': 'AggregateRating',
+            ratingValue: reviewSummary.average,
+            reviewCount: reviewSummary.total,
+            bestRating: 5,
+            worstRating: 1
+        };
+    }
 %>
 
 
-<script type="application/ld+json">
-<%- JSON.stringify(productSchema, (key, value) => value === undefined ? undefined : value) %>
+<script nonce="<%= cspNonce %>" type="application/ld+json">
+<%- JSON.stringify(productSchema).replace(/</g, '\\u003c') %>
 </script>
 
 

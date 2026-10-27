@@ -90,7 +90,7 @@ exports.create = async (req, res) => {
 
         return res.status(500).send({
             message: "Error al crear la venta",
-            error: error.message
+            error: 'No se pudo completar la consulta'
         });
     }
 };
@@ -134,7 +134,7 @@ exports.find = async (req, res) => {
 
         return res.status(500).json({
             message: "Error obteniendo ventas",
-            error: error.message
+            error: 'No se pudo completar la consulta'
         });
     }
 };
@@ -192,7 +192,7 @@ exports.delete = async (req, res) => {
 
         res.status(500).send({
             message: "Error eliminando venta",
-            error: error.message
+            error: 'No se pudo completar la consulta'
         });
     }
 };
@@ -238,7 +238,7 @@ exports.findOne = async (req, res) => {
 
         return res.status(500).send({
             message: "Error obteniendo venta",
-            error: error.message
+            error: 'No se pudo completar la consulta'
         });
     }
 };
@@ -385,7 +385,7 @@ exports.finalizarVenta = async (req, res) => {
         return res.status(500).json({
             ok: false,
             msg: "Error al registrar la venta",
-            error: error.message
+            error: 'No se pudo completar la consulta'
         });
     }
 };
@@ -425,6 +425,7 @@ exports.getTotalProfit = async (req, res) => {
     try {
 
         const detalles = await SaleDetaildb.find()
+            .populate('venta', 'estadoPago')
             .populate('producto')
             .lean();
 
@@ -433,6 +434,7 @@ exports.getTotalProfit = async (req, res) => {
         let gananciasTotales = 0;
 
         detalles.forEach(detalle => {
+            if (detalle.venta?.estadoPago !== 'PAGADO') return;
 
             if (!detalle.producto) return;
 
@@ -440,7 +442,7 @@ exports.getTotalProfit = async (req, res) => {
 
             const precioVenta = detalle.precioUnitario;
 
-            const precioCosto = detalle.producto.precioCosto;
+            const precioCosto = detalle.precioCostoUnitario ?? detalle.producto.precioCosto;
 
             const ingreso = precioVenta * cantidad;
 
@@ -482,12 +484,14 @@ exports.getTotalProfit = async (req, res) => {
 exports.getBestSellingProducts = async (req, res) => {
     try {
         const detalles = await SaleDetaildb.find()
+            .populate('venta', 'estadoPago')
             .populate('producto')
             .lean();
 
         const productosMap = {};
 
         detalles.forEach(detalle => {
+            if (detalle.venta?.estadoPago !== 'PAGADO') return;
             if (!detalle.producto) return;
 
             const producto = detalle.producto;
@@ -522,7 +526,7 @@ exports.getBestSellingProducts = async (req, res) => {
         return res.status(500).json({
             ok: false,
             message: "Error obteniendo productos más vendidos",
-            error: error.message
+            error: 'No se pudo completar la consulta'
         });
     }
 };
@@ -531,12 +535,14 @@ exports.getBestSellingProducts = async (req, res) => {
 exports.getProfitByProduct = async (req, res) => {
     try {
         const detalles = await SaleDetaildb.find()
+            .populate('venta', 'estadoPago')
             .populate('producto')
             .lean();
 
         const productosMap = {};
 
         detalles.forEach(detalle => {
+            if (detalle.venta?.estadoPago !== 'PAGADO') return;
             if (!detalle.producto) return;
 
             const producto = detalle.producto;
@@ -544,7 +550,7 @@ exports.getProfitByProduct = async (req, res) => {
 
             const cantidad = detalle.cantidad;
             const precioVenta = detalle.precioUnitario;
-            const precioCosto = producto.precioCosto || 0;
+            const precioCosto = detalle.precioCostoUnitario ?? producto.precioCosto ?? 0;
 
             const ingreso = precioVenta * cantidad;
             const costo = precioCosto * cantidad;
@@ -582,7 +588,7 @@ exports.getProfitByProduct = async (req, res) => {
         return res.status(500).json({
             ok: false,
             message: "Error calculando ganancias por producto",
-            error: error.message
+            error: 'No se pudo completar la consulta'
         });
     }
 };

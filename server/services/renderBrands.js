@@ -1,5 +1,8 @@
+const { publicError, errorStatus } = require('./publicError');
 const axios = require('axios');
 const dotenv = require('dotenv');
+const internalApiConfig = require('./internalApiConfig');
+const catalogPagination = require('./catalogPagination');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
@@ -11,20 +14,20 @@ exports.brands = (req, res) => {
         .then(response => {
             res.render('client/brands/brands', { brands: response.data });
         })
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };
 
 // ==================== MARCAS ===========================
 
 exports.create_brand = (req, res) => {
-    axios.post(`${BASE_URL}/api/marcas`, req.body)
+    axios.post(`${BASE_URL}/api/marcas`, req.body, internalApiConfig(req))
         .then(response => {
             
             res.redirect('/admin/brands/create-marca');
         })
         .catch(err => {
             
-            res.send(err);
+            res.status(errorStatus(err)).send(publicError(err));
         });
 };
 
@@ -38,7 +41,7 @@ exports.read_brands = (req, res) => {
         .then(response => {
             res.render('admin/brands/read_brands', { brands: response.data });
         })
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };
 
 
@@ -47,28 +50,43 @@ exports.update_brand = (req, res) => {
         .then(response => {
             res.render('admin/brands/update_brands', { brand: response.data });
         })
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };
 
 exports.delete_brand = (req, res) => {
-    axios.delete(`${BASE_URL}/api/marcas/${req.params.id}`)
+    axios.delete(`${BASE_URL}/api/marcas/${req.params.id}`, internalApiConfig(req))
         .then(response => {
             res.redirect('/admin/brands/read-brands'); // importante
         })
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };
 
-exports.Productbrands = (req, res) => {
-    axios.get(`${BASE_URL}/api/productos`)
-        .then(response => {
+exports.Productbrands = async (req, res) => {
+    try {
+        const response = await axios.get(
+            `${BASE_URL}/api/productos/catalogo/pagina`,
+            {
+                params: {
+                    page: req.query.page,
+                    limit: catalogPagination.PRODUCTS_PER_PAGE,
+                    brand: req.params.marca
+                }
+            }
+        );
 
-            const data = response.data;
-
-            const productos = data.filter(p => 
-                p.marca?.nombre?.trim().toLowerCase() === req.params.marca.trim().toLowerCase()
-            );
-            res.render('client/products/Product_brands', { products : productos , marca: req.params.marca });
-
-        })
-        .catch(err => res.send(err));
+        return res.render('client/products/Product_brands', {
+            products: response.data.productos,
+            marca: req.params.marca,
+            pagination: catalogPagination.buildPagination(
+                req,
+                response.data.pagination
+            )
+        });
+    } catch (error) {
+        console.error(
+            'Error cargando productos de la marca:',
+            error.response?.data || error.message
+        );
+        return res.status(502).send('No se pudieron cargar los productos de la marca');
+    }
 };

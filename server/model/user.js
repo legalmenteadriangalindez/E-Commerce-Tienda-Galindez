@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 var schema = new mongoose.Schema({
+    authVersion: { type: Number, default: 0 },
+    verificationCodeHash: { type: String, select: false },
+    verificationSentAt: Date,
+    resetPasswordHash: { type: String, select: false },
+    resetPasswordExpire: { type: Date, select: false },
 
     nombre: {
         type: String,
@@ -10,6 +15,9 @@ var schema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
+        trim: true,
+        lowercase: true,
+        maxlength: 254,
         unique: true
     },
 
@@ -58,6 +66,7 @@ var schema = new mongoose.Schema({
 
     estado: {
         type: String,
+        enum: ['Activo', 'Inactivo'],
         default: "Activo"
     },
 
@@ -71,11 +80,11 @@ var schema = new mongoose.Schema({
     },
     verificationCode:{
         type: String,
-        default: true
+        default: null
     },
     verificationExpire: {
         type: Date,
-        default: Date.now
+        default: null
     }
 });
 

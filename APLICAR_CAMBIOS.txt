@@ -1,0 +1,21 @@
+ACTUALIZACIÓN DE TIENDA GALINDEZ
+
+1. Guarda una copia del proyecto y de la base de datos.
+2. Detén el servidor con Ctrl+C.
+3. Extrae el contenido de este ZIP dentro de la carpeta donde está package.json.
+   Reemplaza los archivos coincidentes. Conserva tu .env.
+4. Abre la terminal de VS Code en esa carpeta:
+   npm ci
+   npm run check
+   npm test
+   npm run dev
+
+No necesitas Git para aplicar el ZIP ni Docker para usar MongoDB Atlas.
+El paquete es una actualización acumulativa; conserva las imágenes y archivos
+del repositorio que ya tienes. No incluye node_modules ni credenciales.
+
+Añade PAYMENTS_ENABLED=false, SHIPPING_PRICE=5000 y FREE_SHIPPING_FROM=30000
+a tu .env si no existen. Los pagos reales requieren configuración y pruebas.
+
+Lee PRODUCCION.md antes de subir los cambios a Render. No se ha desplegado
+esta actualización ni modificado tu base de datos real desde este chat.

@@ -1,3 +1,4 @@
+const { publicError, errorStatus } = require('./publicError');
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -31,7 +32,7 @@ exports.create_sale_form = async (req, res) => {
         });
 
     } catch (error) {
-        res.send(error.message);
+        res.status(errorStatus(error)).send(publicError(error));
     }
 };
 
@@ -46,7 +47,7 @@ exports.sales = async (req, res) => {
         });
 
     } catch (error) {
-        res.send(error.message);
+        res.status(errorStatus(error)).send(publicError(error));
     }
 };
 
@@ -61,7 +62,7 @@ exports.view_sale = async (req, res) => {
         });
 
     } catch (error) {
-        res.send(error.message);
+        res.status(errorStatus(error)).send(publicError(error));
     }
 };
 
@@ -96,7 +97,7 @@ const response = await axios.get(
 
     } catch (error) {
 
-        res.status(500).send(error.message);
+        res.status(500).send(publicError(error));
     }
 };
 

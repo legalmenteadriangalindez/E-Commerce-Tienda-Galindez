@@ -1,3 +1,4 @@
+const { publicError, errorStatus } = require('../services/publicError');
 var Providerdb = require('../model/provider');
 
 
@@ -68,7 +69,7 @@ exports.findById = async (req, res) => {
         if (!provider) return res.status(404).send({ message: "Proveedor no encontrado" });
         res.send(provider);
     } catch (err) {
-        res.status(500).send({ message: err.message });
+        res.status(500).send({ message: publicError(err) });
     }
 };
 
@@ -135,7 +136,7 @@ exports.delete = async (req, res) => {
 
     } catch (err) {
         res.status(500).send({
-            message: err.message
+            message: publicError(err)
         });
     }
 };

@@ -12,6 +12,7 @@ router.use('/api/proveedores', require('./provider.routes'));
 router.use('/api/ventas', require('./sales.routes'));
 router.use('/api/orders', require('./order.routes'));
 router.use('/api/reviews', require('./review.routes'));
+router.use('/api/admin/reviews', require('./adminReview.routes'));
 
 router.use('/api/roles', require('./roles.routes'));
 router.use('/carrito', require('./cart.routes'));
@@ -20,11 +21,12 @@ router.use('/', require('./admin.routes'));
 router.use('/dealer', require('./dealer.routes'));                   
 
 
-router.get('/reset-cart', (req, res) => {
+router.post('/reset-cart', (req, res) => {
 
     req.session.cart = [];
-
-    res.send('Carrito reseteado');
+    delete req.session.claveCheckout;
+    delete req.session.claveIdempotenciaCaja;
+    req.session.save(error => error ? res.status(503).json({ message: 'No se pudo guardar el carrito' }) : res.json({ success: true }));
 
 });
 

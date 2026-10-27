@@ -1,11 +1,19 @@
 {
-  "name": "crud_app",
+  "name": "tienda-galindez",
   "version": "1.0.0",
   "description": "crud application with express and mongodb",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "check": "node scripts/check-routes.js",
+    "test": "npm run check && node --test tests/*.test.js",
+    "test:integration": "node scripts/run-integration-tests.js",
+    "check:production": "node scripts/check-production.js",
+    "payments:reconcile": "node scripts/reconcile-payments.js",
+    "audit:data": "node scripts/audit-data.js",
+    "seed:admin": "node scripts/seed-admin.js",
+    "seed:local": "node scripts/seed-local.js"
   },
   "keywords": [
     "crud",
@@ -13,23 +21,27 @@
   ],
   "author": "akshay kashyap",
   "license": "ISC",
+  "engines": {
+    "node": "22.x || 24.x"
+  },
   "dependencies": {
-    "@getbrevo/brevo": "^6.0.2",
-    "@vercel/node": "^5.8.27",
-    "axios": "^0.21.0",
+    "@getbrevo/brevo": "^6.2.0",
+    "axios": "^1.20.0",
     "bcrypt": "^6.0.0",
-    "body-parser": "^1.19.0",
     "connect-mongo": "^5.1.0",
     "dotenv": "^8.6.0",
     "ejs": "^3.1.9",
-    "express": "^4.22.2",
+    "express": "^4.22.3",
     "express-session": "^1.19.0",
     "form-data": "^4.0.5",
+    "helmet": "^8.1.0",
     "method-override": "^3.0.0",
-    "mongoose": "^9.7.2",
-    "morgan": "^1.10.0",
-    "multer": "^2.1.1",
-    "nodemailer": "^9.0.1",
-    "nodemon": "^2.0.6"
+    "mongoose": "^9.11.4",
+    "morgan": "^1.12.1",
+    "multer": "^2.5.0",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

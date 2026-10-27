@@ -1,3 +1,4 @@
+const { publicError, errorStatus } = require('./publicError');
 const axios = require('axios');
 const dotenv = require('dotenv');
 
@@ -8,7 +9,7 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 exports.car = async (req, res) => {
     try {
         const carrito = req.session.carrito || [];
-        const response = await axios.get(`${BASE_URL}/api/productos`);
+        const response = await axios.get(`${BASE_URL}/api/productos/catalogo`);
         const productosTodos = response.data;
 
         const productosCarrito = carrito.map(item => {
@@ -18,5 +19,5 @@ exports.car = async (req, res) => {
 
         const subtotal = productosCarrito.reduce((sum, p) => sum + (p.precio || 0) * p.cantidad, 0);
         res.render('client/cart/cart', { productosCarrito, subtotal });
-    } catch (err) { res.send(err.message); }
+    } catch (err) { res.status(errorStatus(err)).send(publicError(err)); }
 };

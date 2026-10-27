@@ -1,3 +1,4 @@
+const { publicError, errorStatus } = require('./publicError');
 const axios = require('axios');
 const mongoose = require("mongoose");
 const Ordendb = require('../model/order');
@@ -23,7 +24,7 @@ exports.car = async (req, res) => {
         });
     } catch (err) {
 
-        return res.status(500).send(err.message);
+        return res.status(500).send(publicError(err));
     }
 };
 
@@ -50,7 +51,7 @@ exports.billing_point = async (req, res) => {
 
     } catch (err) {
         
-        return res.status(500).send(err.message);
+        return res.status(500).send(publicError(err));
 
     }
 };
@@ -77,7 +78,7 @@ return res.render(
 
     } catch (err) {
         
-        return res.status(500).send(err.message);
+        return res.status(500).send(publicError(err));
 
     }
 };
@@ -122,7 +123,7 @@ return res.render(
 
     } catch (err) {
         
-        return res.status(500).send(err.message);
+        return res.status(500).send(publicError(err));
 
     }
 };
@@ -136,7 +137,8 @@ const response = await axios.post(
     req.body,
     {
         headers: {
-            Cookie: req.headers.cookie || ""
+                Cookie: req.headers.cookie || "",
+                'X-CSRF-Token': req.session?.csrfToken || ''
         },
         timeout: 10000
     }
@@ -149,7 +151,7 @@ const response = await axios.post(
             err.response?.status || 500
         ).json({
             success: false,
-            message: err.response?.data?.message || err.message
+            message: publicError(err)
         });
     }
 };
@@ -173,7 +175,7 @@ const response = await axios.post(
 //             err.response?.status || 500
 //         ).json({
 //             success: false,
-//             message: err.response?.data?.message || err.message
+//             message: publicError(err)
 //         });
 //     }
 // };
@@ -232,7 +234,7 @@ const orden = await Ordendb.findOne({
     } catch (error) {
 
         return res.status(500)
-            .send(error.message);
+            .send(publicError(error));
 
     }
 
@@ -264,7 +266,7 @@ exports.order_success_admin = async (req, res) => {
     } catch (error) {
 
         return res.status(500)
-            .send(error.message);
+            .send(publicError(error));
 
     }
 

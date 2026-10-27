@@ -1,3 +1,4 @@
+const { publicError, errorStatus } = require('./publicError');
 // const { getUserProfile } = require('../controller/user_controller');
 // const axios = require('axios');
 
@@ -41,7 +42,7 @@
 //     try {
 //         const response = await axios.get(`${BASE_URL}/api/users/${req.params.id}`);
 //         res.render('client/profile/edit_profile', { user: response.data });
-//     } catch (err) { res.send(err); }
+//     } catch (err) { res.status(errorStatus(err)).send(publicError(err)); }
 // }; 
 
 // exports.update_profile = async (req, res) => {
@@ -66,7 +67,7 @@
 
 //     } catch (err) {
 
-//         res.send(err.message);
+//         res.status(errorStatus(err)).send(publicError(err));
 
 //     }
 // };
@@ -76,7 +77,7 @@
 //     try {
 //         const response = await axios.get(`${BASE_URL}/api/users/${req.params.id}`);
 //         res.render('admin/profile/edit_profile', { user: response.data });
-//     } catch (err) { res.send(err); }
+//     } catch (err) { res.status(errorStatus(err)).send(publicError(err)); }
 // }; 
 
 // exports.update_profile_admin = async (req, res) => {
@@ -101,7 +102,7 @@
 
 //     } catch (err) {
 
-//         res.send(err.message);
+//         res.status(errorStatus(err)).send(publicError(err));
 
 //     }
 // };

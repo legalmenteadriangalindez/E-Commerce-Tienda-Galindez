@@ -16,13 +16,15 @@
 
         <div class="badge-secure">
             <i class="fas fa-lock"></i>
-            Transacción 100% encriptada · Pago protegido
+            Registro de venta en caja
         </div>
 
     </div>
 
     <!-- FORMULARIO PRINCIPAL -->
     <form action="/carrito/checkout_admin" method="POST">
+        <input type="hidden" name="totalCotizado" value="<%= total %>">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
     <input
         type="hidden"
@@ -178,7 +180,7 @@
 
                     <span>
                         <i class="fas fa-clock"></i>
-                        Soporte 24/7
+                        Atención de la tienda
                     </span>
 
                 </div>
@@ -241,15 +243,14 @@
 
                 <div class="summary-line text-sumary">
                     <span>Envío</span>
-                    <span>$5000</span>
+                    <span>$<%= costoEnvio.toLocaleString("es-CO") %></span>
                 </div>
 
                 <div class="summary-line text-sumary">
-                    <span>Impuestos (estimado)</span>
-                    <span>$0</span>
+                    <span>Impuestos</span><span>Incluidos en los precios</span>
                 </div>
 
-                <% let envio = 5000; %>
+                <% let envio = costoEnvio; %>
                 <% let impuestos = 0; %>
                 <% let totalFinal = subtotal + envio + impuestos; %>
 
@@ -272,7 +273,7 @@
 
                     <i class="fas fa-lock"></i>
 
-                    Confirmar pago · $<%= totalFinal.toFixed(2) %>
+                    Registrar pedido · $<%= totalFinal.toFixed(2) %>
 
                 </button>
 

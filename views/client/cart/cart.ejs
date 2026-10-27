@@ -36,6 +36,7 @@
         action="/carrito/payment_point"
         method="POST"
       >
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
         <div class="product-list">
 
@@ -183,7 +184,7 @@
 
 </main>
 
-<script src="/assets/js/client_cart.js"></script>
+<script nonce="<%= cspNonce %>" src="/assets/js/client_cart.js"></script>
 
 <!-- include footer -->
 <%- include('../../include/_footer') %>

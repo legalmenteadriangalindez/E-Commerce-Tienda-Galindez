@@ -12,6 +12,7 @@
     method="POST" 
     enctype="multipart/form-data"
 >
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
     <input 
         type="text" 

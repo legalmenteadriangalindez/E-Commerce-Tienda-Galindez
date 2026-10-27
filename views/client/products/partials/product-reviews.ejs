@@ -1,47 +1,157 @@
 <link rel="stylesheet" href="/css/components/reviews.css">
 
-<div class="reviews-section">
-
-<h3>⭐ Reseñas de clientes</h3>
-
-<% if(!reviews || reviews.length === 0){ %>
-    <p>No hay reseñas todavía</p>
-<% } %>
-
-<% reviews.forEach(r => { %>
-
-<div class="card mb-3 review-card">
-
-    <div class="card-body">
-
-        <h5>⭐ <%= r.calificacion %> / 5</h5>
-
-        <p><%= r.comentario %></p>
-
-        <small>
-            Usuario: <%= r.usuario?.nombre || "Anónimo" %>
-        </small>
-
-        <% if(r.fotos && r.fotos.length > 0){ %>
-            <div class="mt-2 review-images">
-                <% r.fotos.forEach(f => { %>
-                    <img src="<%= f %>">
-                <% }) %>
+<section class="reviews-section" id="resenas" aria-labelledby="reviews-heading">
+    <header class="reviews-heading">
+        <div>
+            <p class="reviews-eyebrow">OPINIONES DE LA TIENDA</p>
+            <h2 id="reviews-heading">Reseñas de este producto</h2>
+        </div>
+        <% if (reviewSummary.total > 0) { %>
+            <div class="reviews-score" aria-label="<%= reviewSummary.average %> de 5 estrellas">
+                <span class="reviews-score__number"><%= reviewSummary.average.toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) %></span>
+                <span>/ 5 <span aria-hidden="true">★</span><br><%= reviewSummary.total %> <%= reviewSummary.total === 1 ? 'reseña' : 'reseñas' %></span>
             </div>
         <% } %>
+    </header>
 
-        <% if(r.video){ %>
-            <div class="mt-2 review-video">
-                <video width="250" controls>
-                    <source src="<%= r.video %>" type="video/mp4">
-                </video>
-            </div>
-        <% } %>
+    <% if (reviewUser?.rol?.nombre === 'Admin') { %>
+        <p><a href="/admin/reviews?producto=<%= encodeURIComponent(product.nombre) %>">Administrar reseñas de este producto</a></p>
+    <% } %>
 
+    <% if (reviewFeedback) { %>
+        <p class="review-notice <%= reviewFeedback.success ? 'review-notice--success' : 'review-notice--error' %>" role="status"><%= reviewFeedback.message %></p>
+    <% } %>
+
+    <div class="reviews-layout">
+        <div class="reviews-list">
+            <% if (reviews.length === 0) { %>
+                <div class="reviews-empty">
+                    <span aria-hidden="true">☆</span>
+                    <h3>Aún no hay reseñas</h3>
+                    <p>Comparte tu opinión y ayuda a otras personas a conocer este producto.</p>
+                </div>
+            <% } %>
+
+            <% reviews.forEach(r => {
+                const isOwner = reviewUser && r.usuario && String(reviewUser._id) === String(r.usuario._id);
+                const canDelete = reviewUser && (isOwner || reviewUser.rol.nombre === 'Admin');
+            %>
+                <article class="review-card" id="resena-<%= r._id %>">
+                    <div class="review-card__heading">
+                        <strong><%= r.usuario?.nombre || 'Usuario eliminado' %></strong>
+                        <% if (isOwner) { %><span class="review-own-badge">Tu reseña</span><% } %>
+                        <span class="review-stars" aria-label="<%= r.calificacion %> de 5 estrellas">
+                            <span aria-hidden="true"><%= '★'.repeat(Math.round(r.calificacion)) %><%= '☆'.repeat(5 - Math.round(r.calificacion)) %></span>
+                            <span class="review-rating"><%= r.calificacion %>/5</span>
+                        </span>
+                    </div>
+                    <p class="review-comment"><%= r.comentario %></p>
+                    <p class="review-date">
+                        <time datetime="<%= new Date(r.fecha).toISOString() %>"><%= new Date(r.fecha).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) %></time>
+                        <% if (r.fechaEdicion) { %> · Editada<% } %>
+                    </p>
+                    <% if (r.fotos.length) { %>
+                        <div class="review-images">
+                            <% r.fotos.forEach(foto => { %><img src="<%= foto %>" alt="Foto adjunta a la reseña" loading="lazy"><% }) %>
+                        </div>
+                    <% } %>
+                    <% if (r.video) { %><video class="review-video" controls preload="none" src="<%= r.video %>"></video><% } %>
+
+                    <% if (r.respuestaTienda) { %>
+                        <div class="review-store-reply">
+                            <strong>Respuesta de Tienda Galindez</strong>
+                            <p class="review-comment"><%= r.respuestaTienda.texto %></p>
+                            <p class="review-date"><%= new Date(r.respuestaTienda.fechaEdicion || r.respuestaTienda.fecha).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) %><%= r.respuestaTienda.fechaEdicion ? ' · Editada' : '' %></p>
+                        </div>
+                    <% } %>
+
+                    <div class="review-card__actions">
+                        <% if (isOwner && ownReview && String(ownReview._id) === String(r._id) && reviewUser.verified) { %>
+                            <a href="#mi-resena" data-edit-review>Editar mi reseña</a>
+                        <% } %>
+                        <% if (canDelete) { %>
+                            <form action="/api/reviews/<%= r._id %>" method="post" data-review-form data-method="DELETE">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="review-delete"><%= isOwner ? 'Eliminar mi reseña' : 'Eliminar reseña' %></button>
+                                <p class="review-form-error" data-review-error role="alert" tabindex="-1" hidden></p>
+                            </form>
+                        <% } %>
+                    </div>
+                </article>
+            <% }) %>
+
+            <% if (reviewPagination.totalPages > 1) { %>
+                <nav class="review-pagination" aria-label="Páginas de reseñas">
+                    <% if (reviewPagination.previousUrl) { %><a href="<%= reviewPagination.previousUrl %>" rel="prev">Anterior</a><% } %>
+                    <span>Página <%= reviewPagination.page %> de <%= reviewPagination.totalPages %></span>
+                    <% if (reviewPagination.nextUrl) { %><a href="<%= reviewPagination.nextUrl %>" rel="next">Siguiente</a><% } %>
+                </nav>
+            <% } %>
+        </div>
+
+        <aside class="review-editor" id="mi-resena" aria-labelledby="review-editor-title">
+            <h3 id="review-editor-title"><%= ownReview ? 'Tu opinión cuenta' : 'Escribe una reseña' %></h3>
+            <% if (ownReview?.oculta) { %>
+                <div class="review-moderation-notice" role="status">
+                    <strong>Tu reseña está oculta</strong>
+                    <p><%= ownReview.moderacion?.motivo || 'La tienda está revisando esta reseña.' %></p>
+                    <p>Puedes corregir tu comentario. Seguirá oculto hasta que la tienda lo vuelva a publicar.</p>
+                </div>
+            <% } else if (ownReview?.moderacion?.motivo) { %>
+                <div class="review-moderation-notice" role="status">
+                    <strong>Tu reseña volvió a publicarse</strong>
+                    <p><%= ownReview.moderacion.motivo %></p>
+                </div>
+            <% } %>
+            <% if (!reviewUser) { %>
+                <p>Inicia sesión para compartir tu experiencia con este producto.</p>
+                <a class="review-submit" href="/login">Iniciar sesión</a>
+            <% } else if (!reviewUser.verified) { %>
+                <p>Verifica tu correo electrónico para publicar o editar una reseña.</p>
+                <a href="/login">Continuar con la verificación</a>
+            <% } else { %>
+                <p><%= ownReview ? 'Puedes actualizar tu calificación y comentario.' : 'Comparte una opinión sobre el producto. Podrás editarla cuando quieras.' %></p>
+                <form action="<%= ownReview ? '/api/reviews/' + ownReview._id : '/api/reviews' %>"
+                      method="post" data-review-form data-method="<%= ownReview ? 'PUT' : 'POST' %>">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" name="producto" value="<%= product._id %>">
+                    <% if (ownReview) { %><input type="hidden" name="_method" value="PUT"><% } %>
+
+                    <fieldset class="review-rating-field">
+                        <legend>Tu calificación</legend>
+                        <div class="review-rating-options">
+                            <% for (let value = 1; value <= 5; value++) { %>
+                                <label>
+                                    <input type="radio" name="calificacion" value="<%= value %>"
+                                           aria-label="<%= value %> <%= value === 1 ? 'estrella' : 'estrellas' %>"
+                                           required <%= Number(reviewValues.calificacion) === value ? 'checked' : '' %>>
+                                    <span><%= value %> <span aria-hidden="true">★</span></span>
+                                </label>
+                            <% } %>
+                        </div>
+                    </fieldset>
+
+                    <label for="review-comment">Tu comentario</label>
+                    <textarea id="review-comment" name="comentario" rows="5" minlength="3" maxlength="1000"
+                              required aria-describedby="review-comment-hint"
+                              placeholder="¿Qué te pareció este producto?"><%= reviewValues.comentario || '' %></textarea>
+                    <p class="review-hint" id="review-comment-hint">
+                        De 3 a 1000 caracteres. <span data-review-count><%= (reviewValues.comentario || '').length %></span>/1000
+                    </p>
+                    <p class="review-form-error" data-review-error role="alert" tabindex="-1" hidden></p>
+                    <button class="review-submit" type="submit"><%= ownReview ? 'Guardar cambios' : 'Publicar reseña' %></button>
+                </form>
+                <% if (ownReview) { %>
+                    <form class="review-editor__delete" action="/api/reviews/<%= ownReview._id %>" method="post" data-review-form data-method="DELETE">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="review-delete">Eliminar mi reseña</button>
+                        <p class="review-form-error" data-review-error role="alert" tabindex="-1" hidden></p>
+                    </form>
+                <% } %>
+            <% } %>
+        </aside>
     </div>
-
-</div>
-
-<% }) %>
-
-</div>
+</section>
+<script nonce="<%= cspNonce %>" src="/js/product-reviews.js" defer></script>

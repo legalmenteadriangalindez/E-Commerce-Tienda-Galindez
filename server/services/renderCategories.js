@@ -1,5 +1,8 @@
+const { publicError, errorStatus } = require('./publicError');
 const axios = require('axios');
 const dotenv = require('dotenv');
+const internalApiConfig = require('./internalApiConfig');
+const catalogPagination = require('./catalogPagination');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
@@ -22,7 +25,7 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 //             res.render('client/categories/categories', { productos, categoria });
 
 //         })
-//         .catch(err => res.send(err));
+//         .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 // };
 
 exports.category = async (req, res) => {
@@ -32,14 +35,14 @@ exports.category = async (req, res) => {
         const nombreCategoria = req.params.nombre;
 
         const response = await axios.get(
-            `${BASE_URL}/api/productos`
-        );
-
-        const data = response.data;
-
-        // Filtrar productos de la categoría
-        const productos = data.filter(p =>
-            p.categoria?.nombre === nombreCategoria
+            `${BASE_URL}/api/productos/catalogo/pagina`,
+            {
+                params: {
+                    page: req.query.page,
+                    limit: catalogPagination.PRODUCTS_PER_PAGE,
+                    category: nombreCategoria
+                }
+            }
         );
 
         const categoria = {
@@ -62,7 +65,11 @@ exports.category = async (req, res) => {
         return res.render(
             'client/categories/categories',
             {
-                productos,
+                productos: response.data.productos,
+                pagination: catalogPagination.buildPagination(
+                    req,
+                    response.data.pagination
+                ),
                 categoria,
 
                 // SEO
@@ -91,14 +98,14 @@ exports.create_category_form = (req, res) => {
 
 exports.create_category = (req, res) => {
      
-    axios.post(`${BASE_URL}/api/categorias`, req.body)
+    axios.post(`${BASE_URL}/api/categorias`, req.body, internalApiConfig(req))
         .then(response => {
             
             res.redirect('/create-categoria');
         })
         .catch(err => {
             
-            res.send(err);
+            res.status(errorStatus(err)).send(publicError(err));
         });
 };
 
@@ -109,7 +116,7 @@ exports.read_categories = (req, res) => {
             
             res.render('admin/categories/read_categories', { categories: response.data });
         })
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };
 
 
@@ -124,24 +131,24 @@ exports.update_category = (req, res) => {
 
         })
         
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };
 
 exports.delete_category = (req, res) => {
-    axios.delete(`${BASE_URL}/api/categorias/${req.params.id}`)
+    axios.delete(`${BASE_URL}/api/categorias/${req.params.id}`, internalApiConfig(req))
         .then(response => {
             res.redirect('/read-categoria');
         })
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };
 
 exports.update_category_data = (req, res) => {
 
-    axios.put(`${BASE_URL}/api/categorias/${req.params.id}`, req.body)
+    axios.put(`${BASE_URL}/api/categorias/${req.params.id}`, req.body, internalApiConfig(req))
 
         .then(response => {
             res.redirect('/read-categoria');
         })
 
-        .catch(err => res.send(err));
+        .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };

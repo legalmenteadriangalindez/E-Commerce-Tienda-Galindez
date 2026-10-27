@@ -1,47 +1,144 @@
 <%- include('../../include/_headerAdmin') %>
 
-<main class="analytics-page">
+<% const money = value => Number(value || 0).toLocaleString('es-CO', { maximumFractionDigits: 0 }); %>
+<% const decimal = value => Number(value || 0).toLocaleString('es-CO', { maximumFractionDigits: 2 }); %>
+<% const changeText = value => value === null ? 'Nuevo en este periodo' : `${value > 0 ? '+' : ''}${value}% frente al periodo anterior`; %>
+<% const changeClass = value => value > 0 ? 'trend-positive' : value < 0 ? 'trend-negative' : 'trend-neutral'; %>
+<% const maxRevenue = Math.max(...(trend || []).map(day => Number(day.revenue || 0)), 1); %>
 
-    <div class="page-title">
-        <h1>📊 Panel de Analíticas</h1>
-        <p>Resumen general del rendimiento de ventas</p>
+<main class="analytics-dashboard">
+    <section class="analytics-heading">
+        <div>
+            <p class="analytics-eyebrow">Decisiones de tienda</p>
+            <h1>Informe de ventas</h1>
+            <p><%= period.label %> · <%= period.startLabel %> – <%= period.endLabel %></p>
+        </div>
+        <nav class="period-switcher" aria-label="Periodo del informe">
+            <a class="<%= period.key === 'week' ? 'active' : '' %>" href="/admin-analytics?period=week">7 días</a>
+            <a class="<%= period.key === 'month' ? 'active' : '' %>" href="/admin-analytics?period=month">30 días</a>
+        </nav>
+    </section>
+
+    <section class="analytics-kpis" aria-label="Indicadores principales">
+        <article class="analytics-kpi">
+            <span>Ingresos cobrados</span>
+            <strong>$ <%= money(kpis.revenue.current) %></strong>
+            <small class="<%= changeClass(kpis.revenue.change) %>"><%= changeText(kpis.revenue.change) %></small>
+        </article>
+        <article class="analytics-kpi">
+            <span>Pedidos pagados</span>
+            <strong><%= money(kpis.orders.current) %></strong>
+            <small class="<%= changeClass(kpis.orders.change) %>"><%= changeText(kpis.orders.change) %></small>
+        </article>
+        <article class="analytics-kpi">
+            <span>Unidades vendidas</span>
+            <strong><%= money(kpis.units.current) %></strong>
+            <small class="<%= changeClass(kpis.units.change) %>"><%= changeText(kpis.units.change) %></small>
+        </article>
+        <article class="analytics-kpi">
+            <span>Ticket promedio</span>
+            <strong>$ <%= money(kpis.averageTicket.current) %></strong>
+            <small class="<%= changeClass(kpis.averageTicket.change) %>"><%= changeText(kpis.averageTicket.change) %></small>
+        </article>
+        <article class="analytics-kpi">
+            <span>Ganancia bruta estimada</span>
+            <strong>$ <%= money(kpis.grossProfit.current) %></strong>
+            <small class="<%= changeClass(kpis.grossProfit.change) %>"><%= changeText(kpis.grossProfit.change) %></small>
+        </article>
+        <article class="analytics-kpi">
+            <span>Margen sobre productos</span>
+            <strong><%= decimal(kpis.grossMargin) %>%</strong>
+            <small>Antes de envío, pasarela e impuestos</small>
+        </article>
+    </section>
+
+    <section class="analytics-card analytics-decisions">
+        <div class="analytics-card-heading">
+            <div>
+                <p class="analytics-eyebrow">Lectura rápida</p>
+                <h2>Qué revisar para decidir</h2>
+            </div>
+            <span class="analytics-period-tag"><%= period.label %></span>
+        </div>
+        <% if (decisionNotes.length) { %>
+            <ul>
+                <% decisionNotes.forEach(note => { %><li><%= note %></li><% }) %>
+            </ul>
+        <% } else { %>
+            <p>No hay alertas relevantes en este periodo. Mantén el seguimiento de margen, rotación y existencias.</p>
+        <% } %>
+        <p class="analytics-note">Los ingresos corresponden a ventas con pago confirmado. Las devoluciones registradas quedan fuera. La ganancia es bruta y usa el costo guardado al vender.</p>
+    </section>
+
+    <div class="analytics-grid analytics-grid-main">
+        <section class="analytics-card">
+            <div class="analytics-card-heading"><h2>Ingresos por día</h2><span>Valores cobrados</span></div>
+            <% if (!trend.length) { %><p class="analytics-empty">No hay ventas pagadas en este periodo.</p><% } %>
+            <% trend.forEach(day => { %>
+                <div class="analytics-bar-row">
+                    <span><%= day.label %></span>
+                    <div class="analytics-bar"><i style="width:<%= Math.max(3, (day.revenue / maxRevenue) * 100) %>%"></i></div>
+                    <strong>$ <%= money(day.revenue) %></strong>
+                </div>
+            <% }) %>
+        </section>
+
+        <section class="analytics-card">
+            <div class="analytics-card-heading"><h2>Canal de venta</h2><span>Ingresos del periodo</span></div>
+            <% if (!channels.length) { %><p class="analytics-empty">Sin ventas para comparar.</p><% } %>
+            <% channels.forEach(channel => { %>
+                <div class="analytics-stat-row"><span><%= channel.nombre %></span><strong>$ <%= money(channel.ingresos) %></strong><small><%= channel.pedidos %> pedidos</small></div>
+            <% }) %>
+        </section>
     </div>
 
-    <!-- KPI -->
-    <%- include('./components/kpi') %>
+    <div class="analytics-grid analytics-grid-main">
+        <section class="analytics-card">
+            <div class="analytics-card-heading"><h2>Productos que generan resultado</h2><span>Ordenados por unidades</span></div>
+            <% if (!topProducts.length) { %><p class="analytics-empty">Aún no hay productos vendidos.</p><% } else { %>
+                <div class="analytics-table-wrap"><table class="analytics-table">
+                    <thead><tr><th>Producto</th><th>Unidades</th><th>Ingresos</th><th>Ganancia</th><th>Margen</th></tr></thead>
+                    <tbody><% topProducts.forEach(product => { %>
+                        <tr><td><strong><%= product.nombre %></strong></td><td><%= product.unidades %></td><td>$ <%= money(product.ingresos) %></td><td>$ <%= money(product.ganancia) %></td><td><%= decimal(product.margenPorcentaje) %>%</td></tr>
+                    <% }) %></tbody>
+                </table></div>
+            <% } %>
+        </section>
 
-    <!-- Secciones reutilizables -->
-    <%- include('./components/barSection', {
-        title: "🔥 Productos Más Vendidos",
-        data: [
-            {name: "Arroz", value: 90, label: "120 ventas"},
-            {name: "Azúcar", value: 70, label: "95 ventas"},
-            {name: "Aceite", value: 50, label: "60 ventas"}
-        ]
-    }) %>
+        <section class="analytics-card">
+            <div class="analytics-card-heading"><h2>Categorías</h2><span>Por ingresos</span></div>
+            <% if (!topCategories.length) { %><p class="analytics-empty">Sin categorías vendidas.</p><% } %>
+            <% topCategories.forEach(category => { %>
+                <div class="analytics-stat-row"><span><%= category.nombre %></span><strong>$ <%= money(category.ingresos) %></strong><small><%= category.unidades %> unidades · $ <%= money(category.ganancia) %> de ganancia</small></div>
+            <% }) %>
+        </section>
+    </div>
 
-    <%- include('./components/barSection', {
-        title: "📉 Productos Menos Vendidos",
-        data: [
-            {name: "Sal", value: 20, label: "12 ventas"},
-            {name: "Café", value: 15, label: "9 ventas"}
-        ]
-    }) %>
+    <div class="analytics-grid analytics-grid-main">
+        <section class="analytics-card">
+            <div class="analytics-card-heading"><h2>Stock para actuar</h2><a href="/read-Stock">Ver inventario</a></div>
+            <% if (!lowStock.length) { %><p class="analytics-empty">No hay productos con 10 unidades o menos.</p><% } else { %>
+                <div class="analytics-alert-list"><% lowStock.forEach(product => { %><div><span><%= product.nombre %></span><strong class="<%= product.stock <= 3 ? 'stock-danger' : '' %>"><%= product.stock %> disponibles</strong></div><% }) %></div>
+            <% } %>
+        </section>
 
-    <%- include('./components/barSection', {
-        title: "💰 Mayor Margen",
-        data: [
-            {name: "Perfume", value: 85, label: "$18 margen"},
-            {name: "Audífonos", value: 70, label: "$14 margen"}
-        ]
-    }) %>
+        <section class="analytics-card">
+            <div class="analytics-card-heading"><h2>Productos sin rotación</h2><span>Con stock disponible</span></div>
+            <% if (!noRotation.length) { %><p class="analytics-empty">Todos los productos con stock tuvieron ventas.</p><% } else { %>
+                <div class="analytics-alert-list"><% noRotation.forEach(product => { %><div><span><%= product.nombre %></span><strong><%= product.stock %> en stock</strong></div><% }) %></div>
+            <% } %>
+        </section>
+    </div>
 
-    <%- include('./components/table') %>
-
-    <%- include('./components/alerts') %>
-
-    <%- include('./components/heatmap') %>
-
+    <section class="analytics-card analytics-operations">
+        <div class="analytics-card-heading"><h2>Operación pendiente</h2><span>Estado actual de la tienda</span></div>
+        <div class="analytics-operation-links">
+            <a href="/admin/payments"><strong><%= pending %></strong><span>pedidos pendientes</span></a>
+            <a href="/admin/payments"><strong><%= incidents %></strong><span>incidencias de pago</span></a>
+            <a href="/read-producto"><strong><%= lowStock.length %></strong><span>alertas de stock</span></a>
+        </div>
+    </section>
 </main>
 
 <%- include('../../include/_footerAdmin') %>
+

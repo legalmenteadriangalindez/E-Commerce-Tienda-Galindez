@@ -3,9 +3,14 @@
 
 <!-- cards -->
 <div class="container-cards">
-    <% productos.forEach(p => { %>
-        <%- include('../../include/card', { p }) %>
-    <% }) %>
+    <% if (productos.length === 0) { %>
+        <p class="text-center">No hay productos en promoción por el momento.</p>
+    <% } else { %>
+        <% productos.forEach(p => { %>
+            <%- include('../../include/card', { p }) %>
+        <% }) %>
+    <% } %>
 </div>
+<%- include('../../include/_pagination', { pagination }) %>
 
 <%- include('../../include/_footer') %>

@@ -20,6 +20,7 @@ const saleDetailSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    precioCostoUnitario: Number,
     subtotal: {
         type: Number,
         required: true

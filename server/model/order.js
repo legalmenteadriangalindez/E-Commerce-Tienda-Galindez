@@ -13,6 +13,20 @@ const orderSchema = new mongoose.Schema({
         default: undefined
     },
 
+    claveCheckout: String,
+    canal: { type: String, enum: ['WOMPI', 'CAJA'] },
+    inventario: { type: String, enum: ['RESERVADO', 'CONFIRMADO', 'LIBERADO', 'REVISION'] },
+    reservaHasta: Date,
+    incidenciaPago: { type: String, maxlength: 500 },
+    confirmadoPor: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb' },
+    pagoConfirmadoEn: Date,
+    revisionPago: {
+        accion: String, motivo: String, comprobante: String,
+        administrador: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb' }, fecha: Date
+    },
+    historialPago: { type: [{ accion: String, motivo: String, comprobante: String,
+        administrador: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb' }, fecha: Date }], select: false },
+
     usuario: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'userdb',
@@ -63,6 +77,7 @@ const orderSchema = new mongoose.Schema({
                 type: Number,
                 required: true
             },
+            precioCostoUnitario: Number,
 
             subtotal: {
                 type: Number,
@@ -102,7 +117,8 @@ const orderSchema = new mongoose.Schema({
        enum: [
            'PENDIENTE',
            'PAGADO',
-           'RECHAZADO'
+           'RECHAZADO',
+           'REEMBOLSADO'
        ],
        default: 'PENDIENTE'
      },
@@ -116,7 +132,8 @@ const orderSchema = new mongoose.Schema({
             'PREPARANDO',
             'ENVIADA',
             'ENTREGADA',
-            'CANCELADA'
+            'CANCELADA',
+            'REQUIERE_REVISION'
         ],
         default: 'PENDIENTE'
     },
@@ -166,6 +183,12 @@ const orderSchema = new mongoose.Schema({
 orderSchema.index({ usuario: 1 });
 orderSchema.index({ estado: 1 });
 orderSchema.index({ createdAt: -1 });
+orderSchema.index({ inventario: 1, reservaHasta: 1 });
+orderSchema.index({ usuario: 1, canal: 1 }, { unique: true,
+    partialFilterExpression: { canal: 'WOMPI', inventario: 'RESERVADO' } });
+orderSchema.index({ claveCheckout: 1 }, {
+    unique: true, partialFilterExpression: { claveCheckout: { $type: 'string' } }
+});
 
 orderSchema.index(
     { wompiTransactionId: 1 },

@@ -19,7 +19,7 @@ exports.sitemap = async (req, res) => {
 
         // Obtener productos desde nuestra API
         const productosResponse = await axios.get(
-            `${BASE_URL}/api/productos`
+            `${BASE_URL}/api/productos/catalogo`
         );
 
         const productos = productosResponse.data || [];

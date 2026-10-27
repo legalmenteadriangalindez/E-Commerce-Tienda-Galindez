@@ -1,0 +1,19 @@
+<%- include('../../include/_header') %>
+<main class="commerce-panel">
+  <h1>Mis pedidos</h1>
+  <p>Consulta aquí el pago y la entrega de tus compras.</p>
+  <% if (!orders.length) { %><p>Todavía no hay pedidos en esta página.</p><% } %>
+  <% orders.forEach(order => { %>
+    <article class="commerce-card">
+      <h2><a href="/venta-finalizada/<%= order._id %>"><%= order.numeroOrden %></a></h2>
+      <p><%= new Date(order.createdAt).toLocaleString('es-CO') %> · $<%= order.total.toLocaleString('es-CO') %> COP</p>
+      <p>Pago: <strong><%= order.estadoPago %></strong> · Pedido: <strong><%= order.estado %></strong></p>
+    </article>
+  <% }) %>
+  <nav aria-label="Páginas de pedidos">
+    <% if (page > 1) { %><a href="?page=<%= page - 1 %>">Anterior</a><% } %>
+    <span>Página <%= page %></span>
+    <% if (more) { %><a href="?page=<%= page + 1 %>">Siguiente</a><% } %>
+  </nav>
+</main>
+<%- include('../../include/_footer') %>
