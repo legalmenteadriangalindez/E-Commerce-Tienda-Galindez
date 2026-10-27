@@ -14,7 +14,8 @@
         <% } %>
     </header>
 
-    <% if (reviewUser?.rol?.nombre === 'Admin') { %>
+    <% const canModerateReviews = reviewUser?.rol?.nombre === 'Admin' || reviewUser?.rol?.permisos?.includes('reviews:moderate'); %>
+    <% if (canModerateReviews) { %>
         <p><a href="/admin/reviews?producto=<%= encodeURIComponent(product.nombre) %>">Administrar reseñas de este producto</a></p>
     <% } %>
 
@@ -34,7 +35,7 @@
 
             <% reviews.forEach(r => {
                 const isOwner = reviewUser && r.usuario && String(reviewUser._id) === String(r.usuario._id);
-                const canDelete = reviewUser && (isOwner || reviewUser.rol.nombre === 'Admin');
+                const canDelete = reviewUser && (isOwner || canModerateReviews);
             %>
                 <article class="review-card" id="resena-<%= r._id %>">
                     <div class="review-card__heading">

@@ -42,7 +42,7 @@ async function getViewer(sessionUser) {
 
     const user = await Userdb.findById(id)
         .select('nombre estado verified rol')
-        .populate('rol', 'nombre')
+        .populate('rol', 'nombre permisos')
         .lean();
 
     return user?.estado === 'Activo' && user.rol?.nombre ? user : null;
