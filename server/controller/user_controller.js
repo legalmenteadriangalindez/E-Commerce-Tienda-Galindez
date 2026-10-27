@@ -1,5 +1,7 @@
+const { publicError, errorStatus } = require('../services/publicError');
 const Userdb = require('../model/user');
 const Roldb = require('../model/rol');
+const accounts = require('../business/accountService');
 const bcrypt = require('bcrypt');
 
 const mongoose = require("mongoose");
@@ -19,13 +21,13 @@ exports.create = async (req, res) => {
                 message: "Nombre, email, teléfono, dirección y contraseña son obligatorios."
             });
         }
-        if (password.length < 6) {
+        if (!accounts.validPassword(password)) {
             return res.status(400).json({
-                message: "La contraseña debe tener al menos 6 caracteres."
+                message: "La contraseña debe tener al menos 12 caracteres (máximo 72 bytes)."
             });
         }
         // Normalizar email
-        email = email.toLowerCase();
+        email = accounts.normalizeEmail(email);
         
         // Validar formato de email simple
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -87,7 +89,7 @@ return res.status(201).json(userResponse);
         if (err.code === 11000) {
             return res.status(400).json({ message: "El email ya existe." });
         }
-        res.status(500).json({ message: err.message || "Error creando el usuario." });
+        res.status(500).json({ message: publicError(err) });
     }
 };
 
@@ -161,26 +163,36 @@ exports.update = async (req, res) => {
         }
         // Actualizar email
         if (req.body.email) {
-            updateData.email = req.body.email.toLowerCase();
+            updateData.email = accounts.normalizeEmail(req.body.email);
         }
 
         // Actualizar contraseña si viene
         if (req.body.password && req.body.password.trim() !== "") {
 
-            if (req.body.password.length < 6) {
+            if (!accounts.validPassword(req.body.password)) {
                 return res.status(400).json({
-                    message: "La contraseña debe tener al menos 6 caracteres."
+                    message: "La contraseña debe tener al menos 12 caracteres (máximo 72 bytes)."
                 });
             }
 
             updateData.password = await bcrypt.hash(req.body.password, 10);
         }
         // Normalizar email si se actualiza (opcional)
-        if (req.body.email) updateData.email = req.body.email.toLowerCase();
+        if (req.body.email) updateData.email = accounts.normalizeEmail(req.body.email);
+        if (req.body.email && !updateData.email) return res.status(400).json({ message: 'Correo inválido.' });
+        if (updateData.email) {
+            const previous = await Userdb.findById(req.params.id).select('email');
+            if (previous && previous.email.toLowerCase() !== updateData.email) {
+                updateData.verified = false;
+                updateData.verificationCode = null;
+                updateData.verificationCodeHash = null;
+                updateData.verificationExpire = null;
+            }
+        }
 
         const data = await Userdb.findByIdAndUpdate(
     req.params.id,
-    { $set: updateData },
+    { $set: updateData, ...((updateData.password || updateData.email) ? { $inc: { authVersion: 1 } } : {}) },
     {
         new: true,
         runValidators: true
@@ -193,7 +205,7 @@ exports.update = async (req, res) => {
 
         res.json(data);
     } catch (err) {
-        res.status(500).json({ message: err.message || "Error actualizando el usuario." });
+        res.status(500).json({ message: publicError(err) });
     }
 };
 
@@ -210,7 +222,7 @@ exports.update_user = async (req, res) => {
 
     } catch (err) {
         
-        res.send(err.message);
+        res.status(errorStatus(err)).send(publicError(err));
     }
 };
 
@@ -226,7 +238,7 @@ exports.delete = async (req, res) => {
 
         res.json({ message: "Usuario marcado como inactivo." });
     } catch (err) {
-        res.status(500).json({ message: err.message || "Error eliminando el usuario." });
+        res.status(500).json({ message: publicError(err) });
     }
 };
 

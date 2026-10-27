@@ -21,6 +21,16 @@ const brandController = require('../controller/brand_controller');
 const saleController = require('../controller/sale_controller');
 const cartController = require('../controller/cart_controller');
 const upload = require('../middleware/upload');
+const csrfProtection = require('../middleware/csrfProtection');
+
+router.get('/admin/reviews', isAdmin, require('../services/renderReviews').adminIndex);
+const commercePages = require('../services/renderCommerce');
+router.get('/admin/payments', isAdmin, commercePages.adminPayments);
+router.post('/admin/payments/reconcile', isAdmin, commercePages.adminReconcile);
+router.post('/admin/payments/:id/confirm-cash', isAdmin, commercePages.confirmCash);
+router.post('/admin/payments/:id/cancel', isAdmin, commercePages.cancel);
+router.post('/admin/payments/:id/resolve', isAdmin, commercePages.resolveOrder);
+router.post('/admin/payments/events/:id/resolve', isAdmin, commercePages.resolveEvent);
 
 // ejemplo (puedes seguir agregando igual)
 router.get('/read-categoria', isAdmin, servicesRenderCategory.read_categories);
@@ -28,7 +38,7 @@ router.get('/create-categoria', isAdmin, servicesRenderCategory.create_category_
 router.get('/update-categoria', isAdmin, servicesRenderCategory.update_category);
 router.post('/update-categoria/:id',isAdmin,servicesRenderCategory.update_category_data);
 router.post('/create-categoria', isAdmin, servicesRenderCategory.create_category);
-router.get('/delete-categoria/:id',isAdmin,servicesRenderCategory.delete_category);
+router.post('/delete-categoria/:id',isAdmin,servicesRenderCategory.delete_category);
 
 router.post('/create-producto',isAdmin, servicesRenderProduct.create_product);
 router.get('/read-producto', isAdmin, servicesRenderProduct.read_products);
@@ -36,7 +46,7 @@ router.post('/read-producto', isAdmin, servicesRenderProduct.read_products);
 router.get('/update-producto/:id', isAdmin, servicesRenderProduct.update_products);
 router.post('/update-producto/:id', isAdmin, servicesRenderProduct.update_products);
 router.get('/create-producto', isAdmin, servicesRenderProduct.create_product_form);
-router.get('/delete-producto/:id', isAdmin, servicesRenderProduct.delete_product);
+router.post('/delete-producto/:id', isAdmin, servicesRenderProduct.delete_product);
 
 
 router.get('/read-stock', isAdmin, servicesRenderProduct.read_stock);
@@ -49,11 +59,12 @@ router.post('/read-order',isAdmin,servicesRenderOrders.read_orders);
 router.get('/order/:id',isAdmin,servicesRenderOrders.detail_order);
 router.get('/update-order',isAdmin,servicesRenderOrders.update_order);
 router.post('/update-order/:id',isAdmin,servicesRenderOrders.update_order_data);
-router.get('/delete-order/:id',isAdmin,servicesRenderOrders.delete_order);
+router.post('/delete-order/:id',isAdmin,servicesRenderOrders.delete_order);
 
 
 router.get('/billing-point', isAdmin, servicesRenderPaymentPoint.billing_point);
-router.post('/payment_point', isAdmin, servicesRenderCart.payment_point_admin);
+router.post('/payment_point', isAdmin, commercePages.checkout(true));
+router.get('/payment_point', isAdmin, commercePages.checkout(true));
 router.get('/venta-finalizada-admin/:id', isAdmin, servicesRenderCart.order_success_admin);
 router.get('/admin-analytics', isAdmin, servicesRenderAdminAnalytics.renderAdminAnalytics);
 router.get('/admin-best_selling_products',isAdmin,servicesRenderSales.best_selling_products)
@@ -62,8 +73,8 @@ router.get('/create-marca', isAdmin, servicesRenderBrand.create_brand_form);
 router.post('/create-marca', isAdmin, servicesRenderBrand.create_brand);
 router.get('/admin/brands/read-brands', isAdmin, servicesRenderBrand.read_brands);
 router.get('/update-marca', isAdmin, brandController.getBrandForEdit);
-router.post('/update-marca/:id',isAdmin, upload.single('foto'), brandController.update); // guarda cambios
-router.get('/delete-marca/:id', isAdmin, servicesRenderBrand.delete_brand);
+router.post('/update-marca/:id',isAdmin, upload.single('foto'), csrfProtection.validateToken, brandController.update); // guarda cambios
+router.post('/delete-marca/:id', isAdmin, servicesRenderBrand.delete_brand);
 
 
 router.get('/create-proveedor', isAdmin, servicesRenderProvider.create_provider_form);
@@ -74,7 +85,7 @@ router.get('/update-proveedor', isAdmin, servicesRenderProvider.update_provider)
 router.post('/update-proveedor', isAdmin, servicesRenderProvider.update_provider);
 router.get('/update-proveedor', isAdmin, servicesRenderProvider.edit_provider_form);
 router.post('/update-proveedor/:id', isAdmin, servicesRenderProvider.update_provider_data);
-router.get('/delete-proveedor/:id', isAdmin, servicesRenderProvider.delete_provider);
+router.post('/delete-proveedor/:id', isAdmin, servicesRenderProvider.delete_provider);
 
 
 router.post('/create-rol', isAdmin, servicesRenderRol.create_rol);
@@ -83,7 +94,7 @@ router.post('/read-rol', isAdmin, servicesRenderRol.read_roles);
 router.get('/read-rol', isAdmin, servicesRenderRol.read_roles);
 router.post('/update-rol', isAdmin, servicesRenderRol.update_rol);
 router.get('/update-rol', isAdmin, servicesRenderRol.update_rol);
-router.get('/delete-rol/:id', isAdmin, servicesRenderRol.delete_rol);
+router.post('/delete-rol/:id', isAdmin, servicesRenderRol.delete_rol);
 
 
 router.get('/update-user/:id',isAdmin, servicesRenderUser.update_user);
@@ -95,7 +106,7 @@ router.post('/read-user', isAdmin, servicesRenderUser.read_users);
 router.get('/read-user', isAdmin, servicesRenderUser.read_users);
 router.post('/update-user', isAdmin, servicesRenderUser.update_user);
 router.get('/update-user', isAdmin, servicesRenderUser.update_user);
-router.get('/delete-user/:id', isAdmin, servicesRenderUser.delete_user);
+router.post('/delete-user/:id', isAdmin, servicesRenderUser.delete_user);
 
 
 router.get('/read-sales',isAdmin,servicesRenderSales.sales);

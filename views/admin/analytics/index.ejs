@@ -1,47 +1,24 @@
 <%- include('../../include/_headerAdmin') %>
-
-<main class="analytics-page">
-
-    <div class="page-title">
-        <h1>📊 Panel de Analíticas</h1>
-        <p>Resumen general del rendimiento de ventas</p>
-    </div>
-
-    <!-- KPI -->
-    <%- include('./components/kpi') %>
-
-    <!-- Secciones reutilizables -->
-    <%- include('./components/barSection', {
-        title: "🔥 Productos Más Vendidos",
-        data: [
-            {name: "Arroz", value: 90, label: "120 ventas"},
-            {name: "Azúcar", value: 70, label: "95 ventas"},
-            {name: "Aceite", value: 50, label: "60 ventas"}
-        ]
-    }) %>
-
-    <%- include('./components/barSection', {
-        title: "📉 Productos Menos Vendidos",
-        data: [
-            {name: "Sal", value: 20, label: "12 ventas"},
-            {name: "Café", value: 15, label: "9 ventas"}
-        ]
-    }) %>
-
-    <%- include('./components/barSection', {
-        title: "💰 Mayor Margen",
-        data: [
-            {name: "Perfume", value: 85, label: "$18 margen"},
-            {name: "Audífonos", value: 70, label: "$14 margen"}
-        ]
-    }) %>
-
-    <%- include('./components/table') %>
-
-    <%- include('./components/alerts') %>
-
-    <%- include('./components/heatmap') %>
-
+<main class="commerce-panel">
+<h1>Resumen de ventas</h1>
+<p>Datos de la base de la tienda. Se excluyen los pagos pendientes y las devoluciones totales registradas.</p>
+<section class="commerce-card">
+  <h2>Pedidos cobrados</h2>
+  <p><strong><%= totalSales %></strong> ventas · <strong>$<%= revenue.toLocaleString('es-CO') %> COP</strong></p>
+  <p>Importes totales de pedidos, incluidos envíos. No representan ganancia neta ni liquidaciones recibidas del proveedor.</p>
+  <p><%= pending %> pedidos pendientes · <%= incidents %> pedidos requieren revisión</p>
+  <a href="/admin/payments">Revisar pagos</a>
+</section>
+<section class="commerce-card">
+  <h2>Productos más vendidos</h2>
+  <% if (!topProducts.length) { %><p>Aún no hay ventas confirmadas.</p><% } %>
+  <% topProducts.forEach(product => { %><p><strong><%= product.nombre %></strong> · <%= product.unidades %> unidades · $<%= product.ingresos.toLocaleString('es-CO') %></p><% }) %>
+</section>
+<section class="commerce-card">
+  <h2>Existencias disponibles bajas</h2>
+  <p>Hasta 20 productos con 10 unidades disponibles o menos; las reservas ya están descontadas.</p>
+  <% if (!lowStock.length) { %><p>No hay alertas de stock bajo.</p><% } %>
+  <% lowStock.forEach(product => { %><p><a href="/update-producto/<%= product._id %>"><%= product.nombre %></a> · <%= product.stock %> disponibles</p><% }) %>
+</section>
 </main>
-
 <%- include('../../include/_footerAdmin') %>

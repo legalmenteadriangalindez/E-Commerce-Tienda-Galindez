@@ -37,7 +37,10 @@
         </td>
 
         <td>
-          <a href="/delete-marca/<%= brand._id %>" class="btn btn-danger delete">Eliminar</a>
+          <form action="/delete-marca/<%= brand._id %>" method="POST" class="d-inline">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+          </form>
         </td>
       </tr>
       <% }); %>

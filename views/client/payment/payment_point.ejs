@@ -16,6 +16,9 @@
     </div>
 
     <form action="/carrito/checkout" method="POST">
+        <input type="hidden" name="claveCheckout" value="<%= claveCheckout %>">
+        <input type="hidden" name="totalCotizado" value="<%= total %>">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <input type="hidden" name="cliente" value="<%= user._id %>">
 
         <div class="checkout-grid">
@@ -210,25 +213,17 @@
                 <div class="summary-line text-sumary">
                     <span>Envío</span>
                     <span>
-                        $<%= (subtotal >= 30000 ? 0 : 5000).toLocaleString('es-CO') %>
+                        $<%= Number(costoEnvio).toLocaleString('es-CO') %>
                     </span>
                 </div>
 
                 <div class="summary-line text-sumary">
-                    <span>Impuestos</span>
-                    <span>
-                        $<%= Number(subtotal).toLocaleString('es-CO') %>
-                    </span>
-                </div>
+                    <span>Impuestos</span><span>Incluidos en los precios publicados</span></div>
 
                 <div class="summary-line total text-sumary">
                     <span>Total a pagar</span>
                     <span>
-                        $<%= Number(
-                            subtotal >= 30000
-                                ? subtotal
-                                : subtotal + 5000
-                        ).toLocaleString('es-CO') %>
+                        $<%= Number(total).toLocaleString('es-CO') %>
                     </span>
                 </div>
 

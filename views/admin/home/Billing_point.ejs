@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="/css/Add_product_billing_point.css">
 
 <form id="billingForm" action="/payment_point" method="POST">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
 <div class="checkout-wrapper">
 
@@ -109,7 +110,7 @@
                 type="button"
                 class="pay-btn"
                 style="margin-top:10px"
-                onclick="agregarProducto()"
+                data-commerce-action="add"
             >
 
                 <i class="fas fa-plus"></i>
@@ -160,7 +161,7 @@
 
             <div class="summary-line">
 
-                <span>IVA (0%)</span>
+                <span>Impuestos</span>
 
                 <span id="iva">
                     $0
@@ -188,7 +189,7 @@
             >
 
                 <i class="fas fa-check"></i>
-                Finalizar venta
+                Revisar pedido
 
             </button>
 
@@ -197,7 +198,7 @@
                 type="button"
                 class="btn-outline"
                 style="width:100%; margin-top:10px;"
-                onclick="cancelarVenta()"
+                data-commerce-action="cancel"
             >
 
                 <i class="fas fa-trash"></i>
@@ -214,8 +215,7 @@
 </form>
 
 <!-- SCRIPT -->
-<script src="/assets/js/Billing_point.js"></script>
-<script src="/assets/js/AdminPaymentPoint.js"></script>
+<script nonce="<%= cspNonce %>" src="/assets/js/AdminPaymentPoint.js"></script>
 
 <br>
 <br>

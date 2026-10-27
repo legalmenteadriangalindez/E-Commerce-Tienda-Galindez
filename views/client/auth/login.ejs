@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="<%= csrfToken %>">
     <title>Login</title>
     <link rel="stylesheet" href="/css/login.css">
     <!-- ICONO DE LA PESTAÑA -->
@@ -23,6 +24,7 @@
             <h3>Iniciar Sesión</h3>
 
             <form action="/login" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
                 <div class="input-group">
                     <span class="icon">👤</span>
@@ -43,6 +45,7 @@
 
                 <button type="submit" class="btn">Iniciar Sesión</button>
             </form>
+<a href="/forgot-password">Olvidé mi contraseña</a>
 
             <p class="register">
                 ¿No tienes una cuenta?
@@ -63,6 +66,6 @@
 
 </div>
 
-<script src="/js/login.js"></script>
+<script nonce="<%= cspNonce %>" src="/js/login.js"></script>
 </body>
 </html>

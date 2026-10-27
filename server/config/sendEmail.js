@@ -19,15 +19,34 @@
 
 const { BrevoClient } = require('@getbrevo/brevo');
 
-const brevo = new BrevoClient({
-    apiKey: process.env.BREVO_API_KEY
-});
+let brevo;
+
+function getBrevoClient() {
+    if (!process.env.BREVO_API_KEY) {
+        throw new Error("BREVO_API_KEY no está configurada");
+    }
+
+    if (!brevo) {
+        brevo = new BrevoClient({ apiKey: process.env.BREVO_API_KEY });
+    }
+
+    return brevo;
+}
 
 const sendEmail = async (to, code) => {
 
     try {
 
-        const result = await brevo.transactionalEmails.sendTransacEmail({
+        if (!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) {
+            if (process.env.NODE_ENV !== 'production') {
+                console.info(`[DESARROLLO LOCAL] Código de verificación para ${to}: ${code}`);
+                return { messageId: 'development-console' };
+            }
+
+            throw new Error("Configura BREVO_API_KEY y EMAIL_USER para enviar correos en producción");
+        }
+
+        const result = await getBrevoClient().transactionalEmails.sendTransacEmail({
 
             sender: {
                 name: 'Tienda Galindez',
@@ -98,3 +117,14 @@ const sendEmail = async (to, code) => {
 };
 
 module.exports = sendEmail;
+module.exports.sendPasswordReset = async (to, link) => {
+    if ((!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) && process.env.NODE_ENV !== 'production') {
+        console.info('[DESARROLLO LOCAL] Recuperación de contraseña:', link);
+        return;
+    }
+    return getBrevoClient().transactionalEmails.sendTransacEmail({
+        sender: { name: 'Tienda Galindez', email: process.env.EMAIL_USER }, to: [{ email: to }],
+        subject: 'Recuperar contraseña - Tienda Galindez',
+        textContent: `Solicitaste cambiar tu contraseña. Este enlace vence en una hora y solo puede usarse una vez: ${link}\nSi no lo solicitaste, ignora este mensaje.`
+    });
+};

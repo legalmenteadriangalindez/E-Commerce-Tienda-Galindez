@@ -10,10 +10,15 @@
 
 <!-- cards -->
 <div class="container-cards">
-    <% productos.forEach(p => { %>
-        <%- include('../../include/card', { p }) %>
-    <% }) %>
+    <% if (productos.length === 0) { %>
+        <p class="text-center">Todavía no hay productos publicados.</p>
+    <% } else { %>
+        <% productos.forEach(p => { %>
+            <%- include('../../include/card', { p }) %>
+        <% }) %>
+    <% } %>
 </div>
+<%- include('../../include/_pagination', { pagination }) %>
 
 
 <%- include('../../include/_nequi') %>

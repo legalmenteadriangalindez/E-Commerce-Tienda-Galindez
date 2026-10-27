@@ -1,9 +1,11 @@
+const { publicError, errorStatus } = require('../services/publicError');
 var Productdb = require('../model/product');
 const Categorydb = require("../model/categories");
 const Branddb = require("../model/brands");
 const mongoose = require('mongoose');
 const path = require('path');
-const fs = require('fs'); 
+const fs = require('fs');
+const media = require('../business/mediaService'); 
 
 
 
@@ -13,36 +15,7 @@ const CARPETA_IMAGENES = path.resolve(
 );
 
 // Borrar únicamente fotografías locales conocidas
-async function borrarImagenLocal(foto) {
-
-    if (
-        typeof foto !== "string" ||
-        !/^\/assets\/img\/[a-z0-9][a-z0-9._-]*\.(jpg|jpeg|png|webp)$/i
-            .test(foto)
-    ) {
-        return;
-    }
-
-    // No borrar si otro producto todavía utiliza la imagen
-    const estaEnUso = await Productdb.exists({
-        fotos: foto
-    });
-
-    if (estaEnUso) return;
-
-    const ruta = path.join(
-        CARPETA_IMAGENES,
-        path.basename(foto)
-    );
-
-    try {
-        await fs.promises.unlink(ruta);
-    } catch (error) {
-        if (error.code !== "ENOENT") {
-            console.error("Error borrando fotografía:", error);
-        }
-    }
-}
+async function borrarImagenLocal(foto) { await media.removeUnused(foto); }
 
 // Limpiar imágenes nuevas cuando falla una actualización
 async function limpiarArchivosSubidos(req) {
@@ -53,6 +26,7 @@ async function limpiarArchivosSubidos(req) {
 
     await Promise.all(
         archivos.map(async archivo => {
+            if (archivo.url) return media.removeUnused(archivo.url);
             if (!archivo.path) return;
 
             try {
@@ -178,7 +152,7 @@ if (!marcaExiste) {
 
         // Procesar imágenes
         const rutasImagenes = req.files
-            ? req.files.map(file => `/assets/img/${file.filename}`)
+            ? req.files.map(file => file.url)
             : [];
 
         // Crear producto
@@ -205,7 +179,7 @@ if (!marcaExiste) {
         console.error("Error creando producto:", err);
 
         return res.status(500).send({
-            message: err.message
+            message: publicError(err)
         });
     }
 };
@@ -219,7 +193,7 @@ exports.find = (req, res) => {
             .then(data => res.send(data)) 
             .catch(err => {
                 
-                res.status(500).send(err);
+                res.status(500).send(publicError(err));
             });
 
     } else {
@@ -228,9 +202,171 @@ exports.find = (req, res) => {
             .populate('categoria')
             .populate('proveedor')
             .then(data => res.send(data))
-            .catch(err => res.status(500).send(err));
+            .catch(err => res.status(500).send(publicError(err)));
     }
 }
+
+// Catálogo público: no devuelve costo ni proveedor.
+exports.findPublic = async (req, res) => {
+    try {
+        const productos = await Productdb.find()
+            .select('nombre descripcion fotos marca categoria precioVenta stock fechaIngreso')
+            .populate('marca', 'nombre')
+            .populate('categoria', 'nombre')
+            .lean();
+
+        return res.status(200).json(productos);
+    } catch (error) {
+        console.error('Error listando el catálogo público:', error);
+        return res.status(500).json({
+            message: 'No se pudo cargar el catálogo de productos'
+        });
+    }
+};
+
+// Catálogo público paginado. Los filtros se aplican en MongoDB para evitar
+// cargar todos los productos en memoria en cada solicitud.
+exports.findPublicPaginated = async (req, res) => {
+    try {
+        const parsePositiveInteger = (value, fallback) => {
+            const parsed = Number.parseInt(value, 10);
+            return Number.isSafeInteger(parsed) && parsed > 0
+                ? parsed
+                : fallback;
+        };
+
+        const escapeRegex = value =>
+            value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        const pageRequested = parsePositiveInteger(req.query.page, 1);
+        const limit = Math.min(
+            parsePositiveInteger(req.query.limit, 12),
+            48
+        );
+        const filter = {};
+
+        const categoryName = typeof req.query.category === 'string'
+            ? req.query.category.trim().slice(0, 100)
+            : '';
+        const brandName = typeof req.query.brand === 'string'
+            ? req.query.brand.trim().slice(0, 100)
+            : '';
+        const search = typeof req.query.search === 'string'
+            ? req.query.search.trim().slice(0, 100)
+            : '';
+
+        const [category, brand] = await Promise.all([
+            categoryName
+                ? Categorydb.findOne({
+                    nombre: new RegExp(`^${escapeRegex(categoryName)}$`, 'i')
+                }).select('_id').lean()
+                : null,
+            brandName
+                ? Branddb.findOne({
+                    nombre: new RegExp(`^${escapeRegex(brandName)}$`, 'i')
+                }).select('_id').lean()
+                : null
+        ]);
+
+        // Si el nombre no existe, devolver una página vacía sin exponer datos.
+        if (categoryName && !category) {
+            return res.status(200).json({
+                productos: [],
+                pagination: {
+                    page: 1,
+                    limit,
+                    totalItems: 0,
+                    totalPages: 0
+                }
+            });
+        }
+
+        if (brandName && !brand) {
+            return res.status(200).json({
+                productos: [],
+                pagination: {
+                    page: 1,
+                    limit,
+                    totalItems: 0,
+                    totalPages: 0
+                }
+            });
+        }
+
+        if (category) filter.categoria = category._id;
+        if (brand) filter.marca = brand._id;
+        if (search) filter.nombre = new RegExp(escapeRegex(search), 'i');
+
+        if (req.query.available === 'true') {
+            filter.stock = { $gt: 0 };
+        }
+
+        if (req.query.stockMin !== undefined) {
+            const stockMin = Number(req.query.stockMin);
+            if (!Number.isFinite(stockMin) || stockMin < 0) {
+                return res.status(400).json({
+                    message: 'El filtro de inventario no es válido'
+                });
+            }
+            filter.stock = { ...(filter.stock || {}), $gt: stockMin };
+        }
+
+        const totalItems = await Productdb.countDocuments(filter);
+        const totalPages = Math.ceil(totalItems / limit);
+        const page = Math.min(pageRequested, totalPages || 1);
+        const productos = await Productdb.find(filter)
+            .select('nombre descripcion fotos marca categoria precioVenta stock fechaIngreso')
+            .populate('marca', 'nombre')
+            .populate('categoria', 'nombre')
+            .sort({ fechaIngreso: -1, _id: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .lean();
+
+        return res.status(200).json({
+            productos,
+            pagination: {
+                page,
+                limit,
+                totalItems,
+                totalPages
+            }
+        });
+    } catch (error) {
+        console.error('Error listando una página del catálogo público:', error);
+        return res.status(500).json({
+            message: 'No se pudo cargar el catálogo de productos'
+        });
+    }
+};
+
+// Detalle público con los campos necesarios para la vista de producto.
+exports.findPublicOne = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+
+        const producto = await Productdb.findById(id)
+            .select('nombre descripcion fotos marca categoria precioVenta stock fechaIngreso')
+            .populate('marca', 'nombre')
+            .populate('categoria', 'nombre')
+            .lean();
+
+        if (!producto) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+
+        return res.status(200).json(producto);
+    } catch (error) {
+        console.error('Error buscando producto público:', error);
+        return res.status(500).json({
+            message: 'No se pudo cargar el producto'
+        });
+    }
+};
 
 exports.findOne = async (req, res) => {
 
@@ -267,12 +403,13 @@ exports.findOne = async (req, res) => {
 exports.findByCategoryRopa = async (req, res) => {
     try {
         const productos = await Productdb.find()
+            .select('nombre descripcion fotos marca categoria precioVenta stock fechaIngreso')
             .populate({
                 path: 'categoria',
-                match: { nombre: /^ropa$/i }
+                match: { nombre: /^ropa$/i },
+                select: 'nombre'
             })
-            .populate('marca')
-            .populate('proveedor')
+            .populate('marca', 'nombre')
             .lean();
 
         const productosRopa = productos.filter(
@@ -456,7 +593,7 @@ for (let i = 0; i < fotosOriginales.length; i++) {
 
     if (reemplazo) {
         fotosActuales.push(
-            `/assets/img/${reemplazo.filename}`
+            reemplazo.url
         );
     } else {
         fotosActuales.push(fotoAnterior);
@@ -465,7 +602,7 @@ for (let i = 0; i < fotosOriginales.length; i++) {
 
 // AGREGAR IMÁGENES NUEVAS
 const nuevasFotos = (archivos.nuevasFotos || [])
-    .map(archivo => `/assets/img/${archivo.filename}`);
+    .map(archivo => archivo.url);
 
 fotosActuales.push(...nuevasFotos);
 
@@ -570,42 +707,28 @@ return res.redirect("/read-producto");
 };
 
 
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
     try {
-        const product = await Productdb.findById(req.params.id);
-
-        if (!product) {
-            return res.status(404).send({
-                message: "Producto no encontrado"
-            });
-        }
-
-        product.fotos.forEach(foto => {
-            const ruta = path.join(__dirname, '../public', foto);
-
-            if (fs.existsSync(ruta)) {
-                fs.unlinkSync(ruta);
+        if (!mongoose.isObjectIdOrHexString(req.params.id)) return res.status(400).json({ message: 'Producto inválido' });
+        let photos = [];
+        await mongoose.connection.transaction(async session => {
+            const Order = require('../model/order');
+            if (await Order.exists({ 'productos.producto': req.params.id }).session(session)) {
+                const error = new Error('Este producto tiene pedidos. Conserva su historial; ajusta su stock a cero para retirarlo de la venta.');
+                error.status = 409; error.expose = true; throw error;
             }
+            const product = await Productdb.findByIdAndDelete(req.params.id).session(session);
+            if (!product) { const error = new Error('Producto no encontrado'); error.status = 404; error.expose = true; throw error; }
+            photos = product.fotos || [];
         });
-
-        await Productdb.findByIdAndDelete(req.params.id);
-
-        return res.status(200).send({
-            message: "Producto eliminado correctamente"
-        });
-
-    } catch (err) {
-        console.error("Error eliminando producto:", err);
-
-        return res.status(500).send({
-            message: err.message
-        });
-    }
+        await Promise.all(photos.map(media.removeUnused));
+        res.json({ message: 'Producto eliminado correctamente' });
+    } catch (error) { next(error); }
 };
 
 exports.searchApi = async (req, res) => {
     try {
-        const search = req.query.search;
+        const search = typeof req.query.search === 'string' ? req.query.search.trim().slice(0, 100) : '';
 
         if (!search || search.trim().length < 2) {
             return res.status(400).send({
@@ -614,7 +737,7 @@ exports.searchApi = async (req, res) => {
         }
 
         const productos = await Productdb.find({
-            nombre: { $regex: search, $options: 'i' },
+            nombre: { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' },
             stock: { $gt: 0 }
         })
         .select('nombre precioVenta stock fotos')

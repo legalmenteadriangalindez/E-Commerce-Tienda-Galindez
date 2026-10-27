@@ -120,13 +120,16 @@
 
     <div class="products-cards">
 
-        <% products.forEach(p => { %>
-
-            <%- include('../../include/_cardClothes',{p}) %>
-
-        <% }) %>
+        <% if (products.length === 0) { %>
+            <p class="text-center">No hay productos de ropa publicados.</p>
+        <% } else { %>
+            <% products.forEach(p => { %>
+                <%- include('../../include/_cardClothes',{p}) %>
+            <% }) %>
+        <% } %>
 
     </div>
+    <%- include('../../include/_pagination', { pagination }) %>
 
 </section>
 
@@ -135,4 +138,4 @@
 <!-- include footer -->
 <%- include('../../include/_footer') %>
 <!-- /include footer -->
-<script src="../../../assets/js/clothes.js"></script>
+<script nonce="<%= cspNonce %>" src="../../../assets/js/clothes.js"></script>

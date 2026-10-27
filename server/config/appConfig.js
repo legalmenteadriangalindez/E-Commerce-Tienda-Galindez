@@ -1,14 +1,20 @@
 const express = require('express');
 const methodOverride = require('method-override');
-const bodyparser = require('body-parser');
 const path = require('path');
 
 module.exports = (app) => {
-    app.use(express.json());
-    app.use(methodOverride('_method'));
-    app.use(bodyparser.urlencoded({ extended: true }));
+    require('axios').defaults.timeout = 10000;
+    require('axios').defaults.maxRedirects = 0;
+    require('./security')(app);
+    app.use(express.json({ limit: '100kb', inflate: false }));
+    app.use(express.urlencoded({ extended: true, limit: '100kb', parameterLimit: 100, depth: 5, inflate: false }));
+    app.use(methodOverride((req) => {
+        const method = req.body?._method || req.query?._method;
+        return req.method === 'POST' && typeof method === 'string' && ['PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase()) ? method.toUpperCase() : undefined;
+    }));
 
     app.use(express.static(path.join(__dirname, '../../public')));
+    app.get('/uploads/:filename', require('../business/mediaService').serve);
 
     app.set("view engine", "ejs");
     app.set("views", path.resolve(__dirname, "../../views"));

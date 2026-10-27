@@ -2,15 +2,24 @@
     <%- include('../../include/_header') %>
 <!-- /include header -->
 
-<h1>Productos que coisiden con tu busqueda: <%= search %></h1>
+<h1>Productos que coinciden con tu búsqueda: <%= search || '—' %></h1>
 
 
 <!-- cards -->
 <div class="container-cards">
-    <% productos.forEach(p => { %>
-        <%- include('../../include/card', { p }) %>
-    <% }) %>
+    <% if (productos.length === 0) { %>
+        <p class="text-center">
+            <%= search && search.length >= 2
+                ? 'No encontramos productos disponibles con ese nombre.'
+                : 'Escribe al menos dos caracteres para buscar productos.' %>
+        </p>
+    <% } else { %>
+        <% productos.forEach(p => { %>
+            <%- include('../../include/card', { p }) %>
+        <% }) %>
+    <% } %>
 </div>
+<%- include('../../include/_pagination', { pagination }) %>
 
 <!-- include footer -->
 <%- include('../../include/_footer') %>

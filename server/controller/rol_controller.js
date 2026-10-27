@@ -1,3 +1,4 @@
+const { publicError, errorStatus } = require('../services/publicError');
 const Roldb = require('../model/rol');
 const Userdb = require('../model/user');
 
@@ -24,7 +25,7 @@ exports.create = async (req, res) => {
         res.redirect('/read-rol');
 
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(publicError(err));
     }
 };
 
@@ -41,7 +42,7 @@ exports.find = async (req, res) => {
         res.send(roles);
 
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(publicError(err));
     }
 };
 
@@ -51,7 +52,11 @@ exports.update = async (req, res) => {
 
         const id = req.params.id;
 
-        const rol = await Roldb.findByIdAndUpdate(id, req.body, {
+        const previous = await Roldb.findById(id);
+        if (!previous) return res.status(404).send('Rol no encontrado');
+        if (['Admin', 'Cliente', 'dealer'].includes(previous.nombre) && req.body.nombre !== previous.nombre) return res.status(409).send('No se pueden renombrar los roles del sistema.');
+        if (typeof req.body.nombre !== 'string' || !req.body.nombre.trim() || req.body.nombre.length > 80 || (req.body.descripcion !== undefined && typeof req.body.descripcion !== 'string')) return res.status(400).send('Datos del rol inválidos');
+        const rol = await Roldb.findByIdAndUpdate(id, { $set: { nombre: req.body.nombre.trim(), descripcion: (req.body.descripcion || '').slice(0, 500) } }, {
             new: true
         });
 
@@ -62,7 +67,7 @@ exports.update = async (req, res) => {
         res.redirect('/read-rol');
 
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(publicError(err));
     }
 };
 
@@ -73,6 +78,8 @@ exports.delete = async (req, res) => {
         const id = req.params.id;
 
         const usuarios = await Userdb.find({ rol: id });
+        const original = await Roldb.findById(id);
+        if (original && ['Admin', 'Cliente', 'dealer'].includes(original.nombre)) return res.status(409).send('No se pueden eliminar los roles del sistema.');
 
         if (usuarios.length > 0) {
             return res.status(400).send("No puedes eliminar este rol, tiene usuarios");
@@ -87,6 +94,6 @@ exports.delete = async (req, res) => {
         res.redirect('/read-rol');
 
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(publicError(err));
     }
 };

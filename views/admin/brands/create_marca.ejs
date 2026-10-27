@@ -7,6 +7,7 @@
 <div class="container mt-4">
     
     <form action="/api/marcas" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
         <div class="form-group">
             <label for="nombre">Nombre de la marca</label>

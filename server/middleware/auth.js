@@ -95,7 +95,7 @@ function verificarAcceso(rolRequerido = null, api = false) {
             if (!usuario) {
                 usuario = await Userdb.findById(id)
                     .select(
-                        "nombre email telefono direccion ciudad ubicacion estado rol"
+                        "nombre email telefono direccion ciudad ubicacion estado rol verified authVersion"
                     )
                     .populate("rol", "nombre")
                     .lean();
@@ -105,7 +105,8 @@ function verificarAcceso(rolRequerido = null, api = false) {
             if (
                 !usuario ||
                 usuario.estado !== "Activo" ||
-                !usuario.rol?.nombre
+                !usuario.rol?.nombre ||
+                Number(req.session.user.authVersion || 0) !== Number(usuario.authVersion || 0)
             ) {
 
                 return req.session.destroy((error) => {
@@ -127,6 +128,7 @@ function verificarAcceso(rolRequerido = null, api = false) {
             // Conservar solo información necesaria
             const datosSesion = {
                 _id: usuario._id.toString(),
+                authVersion: usuario.authVersion || 0,
                 nombre: usuario.nombre,
                 email: usuario.email,
                 telefono: usuario.telefono,
@@ -187,6 +189,7 @@ function verificarAcceso(rolRequerido = null, api = false) {
 
 // Usuario autenticado
 exports.isLogged = verificarAcceso();
+exports.isLoggedApi = verificarAcceso(null, true);
 
 // Administrador en páginas EJS
 exports.isAdmin = verificarAcceso("Admin");

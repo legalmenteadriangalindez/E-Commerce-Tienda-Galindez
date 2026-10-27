@@ -13,6 +13,7 @@
   <div class="form-card">
 
     <form action="/update-user/<%= user._id %>" method="POST" class="user-form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
       <div class="form-grid">
 

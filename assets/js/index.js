@@ -1,10 +1,15 @@
 
 
-const dotenv = require('dotenv');
+const BASE_URL = window.location.origin;
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
 
-dotenv.config();
+$.ajaxPrefilter(function(options, originalOptions, xhr) {
+    const method = (options.type || options.method || 'GET').toUpperCase();
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+    if (!['GET', 'HEAD', 'OPTIONS'].includes(method) && csrfToken) {
+        xhr.setRequestHeader('X-CSRF-Token', csrfToken);
+    }
+});
 
 $("#add_user").submit(function(event){
     alert("Data Inserted Successfully!");

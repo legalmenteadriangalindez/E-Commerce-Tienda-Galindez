@@ -45,7 +45,12 @@
       <td><%= user.estado %></td>
       <td><%= user.fechaRegistro %></td>
       <td><a href="/update-user/<%= user._id %>" class="btn btn-warning">Editar</a></td>
-      <td><a href="/delete-user/<%= user._id %>" class="btn btn-danger delete">Eliminar</a></td>
+      <td>
+        <form action="/delete-user/<%= user._id %>" method="POST" class="d-inline">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+      </td>
     </tr>
     <% }); %>
       <tr>

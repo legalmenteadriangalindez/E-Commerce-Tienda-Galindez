@@ -1,0 +1,81 @@
+<%- include('../../include/_headerAdmin') %>
+<main class="commerce-panel">
+  <h1>Pagos y conciliación</h1>
+  <p>Confirma los pagos recibidos en caja y revisa las respuestas de Wompi.</p>
+  <% if (notice) { %><p class="commerce-notice" role="status"><%= notice %></p><% } %>
+  <section class="commerce-card">
+    <h2>Consultar una transacción</h2>
+    <form action="/admin/payments/reconcile" method="post">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label>ID de transacción de Wompi <input name="transactionId" required maxlength="150" pattern="[a-zA-Z0-9_-]+"></label>
+      <button type="submit">Consultar y conciliar</button>
+    </form>
+    <p>Esta consulta no cobra ni devuelve dinero. Las devoluciones se gestionan en Wompi y requieren revisión de inventario.</p>
+  </section>
+  <% if (events.length) { %>
+  <section class="commerce-card">
+    <h2>Pagos pendientes e incidencias</h2>
+    <% events.forEach(event => { %>
+      <p><strong><%= event.transactionId %></strong> · <%= event.status || 'POR CONSULTAR' %> · <%= event.detalle || 'Pendiente de verificación' %></p>
+      <% if (event.estado === 'REVISION') { %>
+      <details><summary>Registrar resolución externa de esta incidencia</summary>
+        <form action="/admin/payments/events/<%= event._id %>/resolve" method="post">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <label>Resolución<input name="motivo" required minlength="10" maxlength="500"></label>
+          <label>Referencia del comprobante<input name="comprobante" required maxlength="150"></label>
+          <label><input type="checkbox" name="confirmar" value="si" required> Verifiqué y resolví la incidencia con el proveedor.</label>
+          <button type="submit">Guardar resolución</button>
+        </form>
+      </details><% } %>
+    <% }) %>
+  </section><% } %>
+  <h2>Pedidos recientes</h2>
+  <a href="/admin/payments">Ver todos</a>
+  <% orders.forEach(order => { %>
+    <article class="commerce-card">
+      <h3><a href="/order/<%= order._id %>"><%= order.numeroOrden %></a></h3>
+      <p><%= order.cliente.nombre %> · $<%= order.total.toLocaleString('es-CO') %> COP · <%= order.canal || 'ANTERIOR A ESTA VERSIÓN' %></p>
+      <p>Pago: <strong><%= order.estadoPago %></strong> · Pedido: <%= order.estado %> · Inventario: <%= order.inventario || 'REVISAR HISTORIAL' %></p>
+      <% if (order.incidenciaPago) { %><p class="commerce-notice"><%= order.incidenciaPago %></p><% } %>
+      <% if (order.canal === 'CAJA' && order.estadoPago === 'PENDIENTE' && order.inventario === 'RESERVADO') { %>
+        <form action="/admin/payments/<%= order._id %>/confirm-cash" method="post">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <label><input type="checkbox" name="confirmar" value="si" required> Recibí el total de este pedido y comprobé el pago.</label>
+          <button type="submit">Confirmar pago recibido</button>
+        </form>
+      <% } %>
+      <% if (order.inventario === 'RESERVADO' && order.estadoPago === 'PENDIENTE') { %>
+        <form action="/admin/payments/<%= order._id %>/cancel" method="post">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit">Cancelar reserva pendiente</button>
+        </form>
+      <% } %>
+      <a href="/update-order?id=<%= order._id %>">Gestionar entrega</a>
+      <% if (order.estadoPago === 'PAGADO') { %>
+        <details><summary>Disponibilidad o devolución ya realizada</summary>
+          <p>Registrar una devolución no mueve dinero. Primero debes efectuarla y comprobarla en Wompi o en caja. Solo admite devolución total.</p>
+          <form action="/admin/payments/<%= order._id %>/resolve" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <label>Acción<select name="accion" required>
+              <option value="">Selecciona una acción</option>
+              <% if (order.estado === 'REQUIERE_REVISION' && order.canal === 'WOMPI') { %><option value="RESERVAR">Confirmar existencias y reservar de nuevo</option><% } %>
+              <option value="DEVOLUCION">Registrar devolución total ya realizada</option>
+            </select></label>
+            <label>Motivo<input name="motivo" required minlength="10" maxlength="500"></label>
+            <label>Referencia del comprobante<input name="comprobante" required maxlength="150"></label>
+            <label><input type="checkbox" name="reponer" value="si"> Al registrar la devolución, reponer todas las unidades: están en tienda y aptas para vender.</label>
+            <label><input type="checkbox" name="confirmar" value="si" required> Comprobé el pago, la acción y el inventario.</label>
+            <button type="submit">Registrar revisión</button>
+          </form>
+        </details>
+      <% } %>
+      <% if (order.revisionPago?.fecha) { %><p>Última revisión: <%= order.revisionPago.accion %> · <%= order.revisionPago.motivo %> · Comprobante: <%= order.revisionPago.comprobante %></p><% } %>
+    </article>
+  <% }) %>
+  <nav aria-label="Páginas de pagos">
+    <% if (page > 1) { %><a href="?page=<%= page - 1 %>">Anterior</a><% } %>
+    <span>Página <%= page %></span>
+    <% if (more) { %><a href="?page=<%= page + 1 %>">Siguiente</a><% } %>
+  </nav>
+</main>
+<%- include('../../include/_footerAdmin') %>

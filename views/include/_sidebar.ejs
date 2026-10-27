@@ -13,8 +13,11 @@
         Mi carrito
     </a>
 
-    <a href="/logout" class="btn btn-sm btn-danger w-100">
-        Cerrar sesión
-    </a>
+    <form action="/logout" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button type="submit" class="btn btn-sm btn-danger w-100">
+            Cerrar sesión
+        </button>
+    </form>
 
 </div>

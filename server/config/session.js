@@ -3,6 +3,10 @@
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 
+if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI no está configurada. Copia .env.example a .env y completa la configuración local.");
+}
+
 if (
     !process.env.SESSION_SECRET ||
     process.env.SESSION_SECRET.length < 32
@@ -12,6 +16,7 @@ if (
     );
 }
 
+const store = MongoStore.create({ mongoUrl: process.env.MONGO_URI });
 module.exports = session({
     name: "tienda.sid",
 
@@ -20,9 +25,7 @@ module.exports = session({
     resave: false,
     saveUninitialized: false,
 
-    store: MongoStore.create({
-        mongoUrl: process.env.MONGO_URI
-    }),
+    store,
 
     cookie: {
         httpOnly: true,
@@ -31,6 +34,7 @@ module.exports = session({
         maxAge: 1000 * 60 * 60 * 2
     }
 });
+module.exports.store = store;
 
 
 // const session = require("express-session");

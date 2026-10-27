@@ -1,0 +1,40 @@
+<% if (typeof pagination !== 'undefined' && pagination && pagination.totalItems > 0) { %>
+    <div class="catalog-pagination">
+        <p class="catalog-pagination__summary" aria-live="polite">
+            Mostrando <strong><%= pagination.from %>–<%= pagination.to %></strong>
+            de <strong><%= pagination.totalItems %></strong> productos
+        </p>
+
+        <% if (pagination.totalPages > 1) { %>
+            <nav aria-label="Paginación del catálogo">
+                <ul class="catalog-pagination__list">
+                    <li>
+                        <% if (pagination.previousUrl) { %>
+                            <a class="catalog-pagination__link" href="<%= pagination.previousUrl %>" rel="prev">Anterior</a>
+                        <% } else { %>
+                            <span class="catalog-pagination__link is-disabled" aria-disabled="true">Anterior</span>
+                        <% } %>
+                    </li>
+
+                    <% pagination.pages.forEach(page => { %>
+                        <li>
+                            <% if (page.current) { %>
+                                <span class="catalog-pagination__link is-current" aria-current="page"><%= page.number %></span>
+                            <% } else { %>
+                                <a class="catalog-pagination__link" href="<%= page.href %>"><%= page.number %></a>
+                            <% } %>
+                        </li>
+                    <% }) %>
+
+                    <li>
+                        <% if (pagination.nextUrl) { %>
+                            <a class="catalog-pagination__link" href="<%= pagination.nextUrl %>" rel="next">Siguiente</a>
+                        <% } else { %>
+                            <span class="catalog-pagination__link is-disabled" aria-disabled="true">Siguiente</span>
+                        <% } %>
+                    </li>
+                </ul>
+            </nav>
+        <% } %>
+    </div>
+<% } %>

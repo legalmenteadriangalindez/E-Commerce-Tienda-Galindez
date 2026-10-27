@@ -1,22 +1,16 @@
 const mongoose = require('mongoose');
 
-// console.log(process.env.MONGO_URI)
-
 const connectDB = async () => {
-    try{
-        // mongodb connection string
-        // const con = await mongoose.connect(process.env.MONGO_URI, {
-        //     useNewUrlParser: true,
-        //     useUnifiedTopology: true,
-        //     useFindAndModify: false,
-        //     useCreateIndex: true
-        // })
-        const con = await mongoose.connect(process.env.MONGO_URI)
-        console.log(`MongoDB connected : ${con.connection.host}`);
-    }catch(err){
-        console.error("Error al conectar con MongoDB");
-        process.exit(1);
+    if (!process.env.MONGO_URI) {
+        throw new Error("MONGO_URI no está configurada");
     }
-}
+
+    const con = await mongoose.connect(process.env.MONGO_URI, {
+        serverSelectionTimeoutMS: 15000
+    });
+
+    console.log(`MongoDB conectado: ${con.connection.host}`);
+    return con;
+};
 
 module.exports = connectDB

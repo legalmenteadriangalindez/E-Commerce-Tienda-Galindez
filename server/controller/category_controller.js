@@ -1,3 +1,4 @@
+const { publicError, errorStatus } = require('../services/publicError');
 const Categorydb = require('../model/categories');
 const Productdb = require('../model/product');
 // CREATE
@@ -22,7 +23,7 @@ exports.create = async (req, res) => {
         res.status(201).json(data);
     } catch (err) {
         res.status(500).json({
-            message: err.message
+            message: publicError(err)
         });
     }
 };
@@ -45,7 +46,7 @@ exports.find = async (req, res) => {
         res.json(data);
     } catch (err) {
         res.status(500).json({
-            message: err.message
+            message: publicError(err)
         });
     }
 };
@@ -60,10 +61,11 @@ exports.update = (req, res) => {
         });
     }
 
-    Categorydb.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    if (typeof req.body.nombre !== 'string' || !req.body.nombre.trim() || req.body.nombre.length > 100) return res.status(400).json({ message: 'Nombre de categoría inválido' });
+    Categorydb.findByIdAndUpdate(req.params.id, { $set: { nombre: req.body.nombre.trim() } }, { new: true, runValidators: true })
         .then(data => res.json(data))
         .catch(err => res.status(500).json({
-            message: err.message
+            message: publicError(err)
         }));
 };
 
@@ -100,7 +102,7 @@ exports.delete = async (req, res) => {
     } catch (err) {
         // ESTE ES EL QUE DEBES MODIFICAR
         res.status(500).json({
-            message: err.message
+            message: publicError(err)
         });
     }
 };

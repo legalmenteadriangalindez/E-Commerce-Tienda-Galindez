@@ -1,10 +1,12 @@
 const Userdb = require('../model/user');
 const Roldb = require('../model/rol');
 const bcrypt = require('bcrypt');
+const { randomInt } = require('crypto');
 const sendEmail = require('../config/sendEmail');
+const accounts = require('../business/accountService');
 
 function generateCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString(); 
+    return randomInt(100000, 1000000).toString();
 }
 
 // LOGIN
@@ -16,16 +18,14 @@ exports.login = async (req, res) => {
 
         if (
             typeof email !== "string" ||
-            typeof password !== "string"
+            typeof password !== "string" || Buffer.byteLength(password, "utf8") > 72 || !accounts.normalizeEmail(email)
         ) {
             return res.status(400).send(
                 "Correo y contraseña requeridos"
             );
         }
 
-        const usuario = await Userdb.findOne({
-            email: email.trim()
-        }).populate("rol", "nombre");
+        const usuario = await Userdb.findOne(accounts.emailFilter(accounts.normalizeEmail(email))).populate("rol", "nombre");
 
         // Respuesta genérica para evitar revelar
         // información sobre cuentas existentes
@@ -50,6 +50,20 @@ exports.login = async (req, res) => {
             );
         }
 
+        // Una autenticación correcta reinicia los fallos acumulados para esta cuenta.
+        try {
+            await req.clearLoginAccountLimit?.();
+        } catch (error) {
+            console.error('No se pudo reiniciar el contador de login:', error.message);
+        }
+
+        // Solo permitir el acceso después de verificar el correo.
+        if (usuario.verified !== true) {
+            return res.redirect(
+                `/verify-email?email=${encodeURIComponent(usuario.email)}`
+            );
+        }
+
         // Conservar el carrito de la sesión anterior
         const carritoAnterior = Array.isArray(req.session.cart)
             ? req.session.cart
@@ -67,6 +81,7 @@ exports.login = async (req, res) => {
             // Guardar únicamente datos necesarios
             req.session.user = {
                 _id: usuario._id.toString(),
+                authVersion: usuario.authVersion || 0,
                 nombre: usuario.nombre,
                 email: usuario.email,
                 telefono: usuario.telefono,
@@ -135,95 +150,31 @@ exports.logout = (req, res) => {
 
 
 // ======================= REGISTER =======================
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
     try {
-        const {
-            nombre,
-            email,
-            password,
-            telefono,
-            direccion,
-            genero,
-            barrio,
-            ciudad,
-            puntoReferencia,
-            ubicacion
-        } = req.body;
-
-        // Validar campos obligatorios
-        if (!nombre || !email || !password || !telefono || !direccion || !genero || !barrio || !ciudad || !puntoReferencia ) {
-            return res.send("Campos obligatorios incompletos");
-        }
-
-        if (password.length < 6) {
-            return res.send("La contraseña debe tener mínimo 6 caracteres");
-        }
-        // Verificar si ya existe
-        const existe = await Userdb.findOne({ email });
-        
-        if (existe) {
-            // await Userdb.deleteOne({email: "adriangalindez2419@gmail.com"});
-            if (!existe.verified) {
-                const code = generateCode();
-                const ExpirationTime = new Date(Date.now() + 10 * 60 * 1000);
-                existe.verificationCode = code;
-                existe.verificationExpire = ExpirationTime;
-                await existe.save();
-                await sendEmail(existe.email, code);
-                return res.redirect(`/verify-email?email=${email}`);
-            }else{
-                return res.redirect("/login");
+        const data = {};
+        for (const field of ['nombre', 'telefono', 'direccion', 'genero', 'barrio', 'ciudad', 'puntoReferencia']) {
+            if (typeof req.body[field] !== 'string' || !req.body[field].trim() || req.body[field].length > 200) {
+                return res.status(400).send('Completa los datos del formulario con texto válido.');
             }
+            data[field] = req.body[field].trim();
         }
-        
-
-        // Buscar rol CLIENTE
-        const rolCliente = await Roldb.findOne({ nombre: "Cliente" });
-        if (!rolCliente) {
-            return res.send("Rol Cliente no existe en la base de datos");
+        const email = accounts.normalizeEmail(req.body.email);
+        if (!email || !accounts.validPassword(req.body.password)) {
+            return res.status(400).send('Revisa el correo y usa una contraseña de al menos 12 caracteres y máximo 72 bytes.');
         }
-
-        // Encriptar contraseña
-        const hashedPassword = await bcrypt.hash(password, 10);
-        // Crear usuario
-
-        const code = generateCode();
-        const ExpirationTime = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos
-        const nuevoUsuario = new Userdb({
-            nombre,
-            email,
-            password: hashedPassword,
-            telefono,
-            direccion,
-            genero,
-            barrio,
-            ciudad,
-            puntoReferencia,
-            ubicacion,
-            verified: false,
-            verificationCode: code,
-            verificationExpire: ExpirationTime,
-            rol: rolCliente._id
-        });
-        await nuevoUsuario.save();
-        await sendEmail(nuevoUsuario.email, code);
-        
-        // Opcional: iniciar sesión automáticamente
-        // req.session.user = {
-        //     _id: nuevoUsuario._id,
-        //     nombre: nuevoUsuario.nombre,
-        //     email: nuevoUsuario.email,
-        //     telefono: nuevoUsuario.telefono,
-        //     direccion: nuevoUsuario.direccion,
-        //     ubicacion: nuevoUsuario.ubicacion,
-        //     ciudad: nuevoUsuario.ciudad,
-        //     rol: {
-        //         nombre: "Cliente"
-        //     }
-        // };
-        return res.redirect(`/verify-email?email=${email}`);
-    } catch (err) {
-        
-        res.status(500).send("Error en registro");
+        const target = '/verify-email?email=' + encodeURIComponent(email);
+        // El registro repetido no reenvía códigos ni cambia la contraseña.
+        if (await Userdb.exists(accounts.emailFilter(email))) return res.redirect(303, target);
+        const role = await Roldb.findOne({ nombre: 'Cliente' });
+        if (!role) return res.status(503).send('El registro todavía no está disponible.');
+        const challenge = accounts.verification(email);
+        await Userdb.create({ ...data, email, password: await bcrypt.hash(req.body.password, 12),
+            rol: role._id, verified: false, ...challenge.values });
+        await sendEmail(email, challenge.code);
+        res.redirect(303, target);
+    } catch (error) {
+        if (error.code === 11000) return res.redirect(303, '/login');
+        next(error);
     }
 };

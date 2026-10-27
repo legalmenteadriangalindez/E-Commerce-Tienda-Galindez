@@ -4,6 +4,7 @@
 <head>
 
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="<%= csrfToken %>">
 
     <meta
         name="viewport"
@@ -91,11 +92,14 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/pagination.css">
 
     <link rel="stylesheet" href="/css/components/product-info.css">
     <link rel="stylesheet" href="/css/components/buttons.css">
 
 
+<link rel="stylesheet" href="/css/commerce.css">
+<script nonce="<%= cspNonce %>" defer src="/js/commerce-ui.js"></script>
 </head>
 
 <body>
@@ -330,15 +334,14 @@
                         </li>
 
                         <li>
-
-                            <a
-                                class="dropdown-item text-danger"
-                                href="/logout"
-                            >
-                                <i class="bi bi-box-arrow-right"></i>
-                                Cerrar sesión
-                            </a>
-
+                            <a class="dropdown-item" href="/mis-pedidos">Mis pedidos</a>
+                            <form action="/logout" method="POST">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    Cerrar sesión
+                                </button>
+                            </form>
                         </li>
 
                     </ul>
@@ -356,4 +359,4 @@
 </header>
 
 
-<script src="/js/Add_to_cart_client_nav.js"></script>
+<script nonce="<%= cspNonce %>" src="/js/Add_to_cart_client_nav.js"></script>

@@ -1,437 +1,79 @@
-let timeout = null;
-
-// BUSCADOR
-document.getElementById("buscarProducto")
-
-.addEventListener("keyup", function(){
-
-    clearTimeout(timeout);
-
-    const texto = this.value;
-
-    if(texto.length < 2){
-
-        document.getElementById(
-            "resultadosBusqueda"
-        ).innerHTML = "";
-
-        return;
-    }
-
-    timeout = setTimeout(async () => {
-
-        try{
-
-            //  API búsqueda productos
-            const res = await fetch(
-                `/api/productos/search?search=${texto}`
-            );
-
-            const productos = await res.json();
-
-            renderResultados(productos);
-
-        }catch(err){
-
-            console.error(err);
-        }
-
-    }, 300);
-
-});
-
-// RENDER RESULTADOS
-function renderResultados(productos){
-
-    const contenedor =
-        document.getElementById("resultadosBusqueda");
-
-    contenedor.innerHTML = "";
-
-    if(productos.length === 0){
-
-        contenedor.innerHTML =
-            "<div class='search-item'>No hay resultados</div>";
-
-        return;
-    }
-
-    productos.forEach(p => {
-
-        contenedor.innerHTML += `
-        
-            <div
-                class="search-item"
-                onclick='seleccionarProducto(${JSON.stringify(p)})'
-            >
-                ${p.nombre} - $${Number(
-                    p.precioVenta || 0
-                ).toLocaleString()}
-            </div>
-        `;
+'use strict';
+const money = value => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value);
+const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content || '';
+const input = id => document.getElementById(id);
+async function request(path, body) {
+    const response = await fetch(path, {
+        method: body === undefined ? 'GET' : 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-Token': csrf() },
+        ...(body === undefined ? {} : { body: JSON.stringify(body) })
     });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'No se pudo completar la operación.');
+    return data;
 }
-
-// SELECCIONAR PRODUCTO
-function seleccionarProducto(producto){
-
-    document.getElementById("productoId").value =
-        producto._id;
-
-    document.getElementById("productoNombre").value =
-        producto.nombre;
-
-    document.getElementById("precio").value =
-        producto.precioVenta;
-
-    document.getElementById(
-        "resultadosBusqueda"
-    ).innerHTML = "";
-}
-
-async function eliminarProductoBackend(productoId) {
-
-    try {
-
-        const res = await fetch(
-            "/carrito/remove",
-            {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body: JSON.stringify({
-                    productoId: productoId
-                })
-
+let searchTimer;
+input('buscarProducto').addEventListener('input', event => {
+    clearTimeout(searchTimer);
+    const search = event.target.value.trim();
+    input('resultadosBusqueda').replaceChildren();
+    if (search.length < 2) return;
+    searchTimer = setTimeout(async () => {
+        try {
+            const products = await request('/api/productos/search?search=' + encodeURIComponent(search));
+            const results = input('resultadosBusqueda');
+            results.replaceChildren();
+            for (const product of products) {
+                const button = document.createElement('button');
+                button.type = 'button'; button.className = 'search-item';
+                button.textContent = product.nombre + ' · ' + money(product.precioVenta);
+                button.addEventListener('click', () => {
+                    input('productoId').value = product._id;
+                    input('productoNombre').value = product.nombre;
+                    input('precio').value = product.precioVenta;
+                    results.replaceChildren();
+                });
+                results.appendChild(button);
             }
-        );
-
-
-        console.log(
-            "STATUS HTTP:",
-            res.status
-        );
-
-
-        const data =
-            await res.json();
-
-
-        console.log(
-            "RESPUESTA BACKEND:",
-            data
-        );
-
-
-        if (data.success) {
-
-            console.log(
-                "Producto eliminado correctamente"
-            );
-
-
-            await cargarCarrito();
-
-
-        } else {
-
-            console.error(
-                "El backend respondió error:",
-                data.message
-            );
-
-
-            alert(
-                data.message ||
-                "Error eliminando producto"
-            );
-
-        }
-
-
-    } catch (err) {
-
-        console.error(
-            "ERROR FETCH:",
-            err
-        );
-
-    }
-
-}
-
-// CERRAR RESULTADOS
-document.addEventListener("click", function(e){
-
-    if(!e.target.closest("#buscarProducto")){
-
-        document.getElementById(
-            "resultadosBusqueda"
-        ).innerHTML = "";
-    }
+        } catch (error) { input('resultadosBusqueda').textContent = error.message; }
+    }, 250);
 });
-
-// FINALIZAR VENTA
-function finalizarVenta(){
-
-    window.location.href ="/carrito/checkout/confirmacion";
-    const metodoPago = document.querySelector(
-    'input[name="metodoPago"]:checked'
-    ).value;
-
-    console.log(metodoPago);
-}
-
-// LIMPIAR FORMULARIO
-function limpiarFormulario(){
-
-    document.getElementById("productoId").value = "";
-
-    document.getElementById("productoNombre").value = "";
-
-    document.getElementById("precio").value = "";
-
-    document.getElementById("cantidad").value = 1;
-}
-
-// CANCELAR VENTA
-function cancelarVenta(){
-
-    if(!confirm("¿Seguro que deseas cancelar la venta?")){
-        return;
-    }
-
-    // limpia frontend
-    document.getElementById("listaProductos").innerHTML = "";
-
-    limpiarFormulario();
-
-    document.getElementById("subtotal").innerText = "$0";
-
-    document.getElementById("iva").innerText = "$0";
-
-    document.getElementById("total").innerText = "$0";
-}
-
-
-// ➕ AGREGAR PRODUCTO
-async function agregarProducto(){
-
-    const productoId =
-        document.getElementById("productoId").value;
-
-    const cantidad = parseInt(
-        document.getElementById("cantidad").value
-    );
-
-    if(!productoId){
-
-        alert("Selecciona un producto primero");
-
-        return;
-    }
-
-    try{
-
-        const res = await fetch("/carrito/add", {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                productoId,
-                cantidad
-            })
-        });
-
-        const data = await res.json();
-
-        if(data.success){
-
-            // refresca carrito
-            await cargarCarrito();
-
-            // limpia inputs
-            limpiarFormulario();
-
-        }else{
-
-            alert(data.message || "Error agregando");
-        }
-
-    }catch(err){
-
-        console.error(err);
-
-        alert("Error al agregar");
-    }
-}
-
-
-// CALCULAR TOTALES
-function calcularTotalesBackend(items){
-
+async function cargarCarrito() {
+    const data = await request('/carrito/get_carrito');
+    const list = input('listaProductos');
+    list.replaceChildren(); input('productosHidden').replaceChildren();
     let subtotal = 0;
-
-    items.forEach(item => {
-
-        const precio =
-            Number(item.precio || 0);
-
-        const cantidad =
-            Number(item.cantidad || 0);
-
-        subtotal += precio * cantidad;
-    });
-
-    // const iva = subtotal * 0.19;
-    const iva = 0;
-
-    const total = subtotal + iva;
-
-    document.getElementById("subtotal").innerText =
-        "$" + subtotal.toLocaleString('es-CO');
-
-    document.getElementById("iva").innerText =
-        "$" + iva.toLocaleString('es-CO');
-
-    document.getElementById("total").innerText =
-        "$" + total.toLocaleString('es-CO');
-}
-
-// CARGAR CARRITO
-async function cargarCarrito(){
-
-    try{
-
-        const res = await fetch("/carrito/get_carrito");
-
-        const data = await res.json();
-        
-        if(data.success){
-
-            renderCarritoDesdeBackend(
-                data.cart
-            );
-
-        }else{
-
-            console.error(data.message);
-        }
-
-    }catch(err){
-
-        console.error(err);
+    for (const item of data.cart) {
+        const row = document.createElement('div'); row.className = 'order-item';
+        const label = document.createElement('p');
+        label.textContent = item.nombre + ' × ' + item.cantidad + ' · ' + money(item.precio * item.cantidad);
+        const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'delete-item-btn';
+        remove.textContent = 'Quitar';
+        remove.addEventListener('click', async () => {
+            try { await request('/carrito/remove', { productoId: item.productoId }); await cargarCarrito(); }
+            catch (error) { alert(error.message); }
+        });
+        row.append(label, remove); list.appendChild(row);
+        subtotal += Number(item.precio) * Number(item.cantidad);
     }
+    if (!data.cart.length) list.textContent = 'Agrega productos a la venta.';
+    input('subtotal').textContent = money(subtotal);
+    input('iva').textContent = 'Incluidos';
+    input('total').textContent = money(subtotal) + ' + envío, si aplica';
 }
-
-// RENDER CARRITO
-function renderCarritoDesdeBackend(items){
-
-    const lista =
-        document.getElementById("listaProductos");
-
-    lista.innerHTML = "";
-
-    if(items.length === 0){
-
-        lista.innerHTML = `
-
-            <div class="empty-cart">
-
-                <i class="fas fa-cart-shopping"></i>
-
-                <p>No hay productos agregados</p>
-
-            </div>
-
-        `;
-
-        calcularTotalesBackend([]);
-
-        return;
-    }
-
-    items.forEach((item) => {
-
-        const subtotal =
-            Number(item.precio || 0) *
-            Number(item.cantidad || 0);
-
-        lista.innerHTML += `
-        
-        <div class="order-item">
-
-            <!-- FOTO -->
-            <div class="order-item-image">
-
-                <img
-                    src="${item.foto || '/img/default.png'}"
-                    alt="${item.nombre}"
-                >
-
-            </div>
-
-            <!-- INFO -->
-            <div class="order-item-info">
-
-                <h4>
-                    ${item.nombre}
-                </h4>
-
-                <p>
-                    Cantidad:
-                    <strong>${item.cantidad}</strong>
-                </p>
-
-                <span class="category-badge">
-                    ${item.categoria || 'Producto'}
-                </span>
-
-            </div>
-
-            <!-- PRECIO -->
-            <div class="order-item-price">
-
-                <h3>
-                    $${subtotal.toLocaleString('es-CO')}
-                </h3>
-
-                <small>
-                    $${Number(item.precio).toLocaleString('es-CO')}
-                    c/u
-                </small>
-
-            </div>
-
-            <!-- ELIMINAR -->
-            <button
-                type="button"
-                class="delete-item-btn"
-                onclick="eliminarProductoBackend('${item.productoId}')"
-            >
-
-                <i class="fas fa-trash"></i>
-
-            </button>
-
-        </div>
-        `;
-    });
-
-    calcularTotalesBackend(items);
+async function agregarProducto() {
+    const productoId = input('productoId').value;
+    const cantidad = Number(input('cantidad').value);
+    if (!productoId || !Number.isInteger(cantidad) || cantidad <= 0) return alert('Selecciona un producto y una cantidad válida.');
+    try {
+        await request('/carrito/add', { productoId, cantidad });
+        await cargarCarrito();
+        for (const id of ['productoId', 'productoNombre', 'precio', 'buscarProducto']) input(id).value = '';
+        input('cantidad').value = '1';
+    } catch (error) { alert(error.message); }
 }
-
-// INIT
-window.onload = () => {
-
-    cargarCarrito();
-};
+async function cancelarVenta() {
+    try { await request('/reset-cart', {}); await cargarCarrito(); }
+    catch (error) { alert(error.message); }
+}
+cargarCarrito().catch(error => { input('listaProductos').textContent = error.message; });

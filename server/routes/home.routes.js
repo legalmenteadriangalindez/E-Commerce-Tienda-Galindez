@@ -32,8 +32,9 @@ router.post("/perfil/editar/:id",isLogged,servicesRenderProfile.update_profile);
 
 // router.get('/checkout', servicesRenderCart.checkout);
 router.get('/view_cart', isLogged, servicesRenderCart.car);
-router.get('/payment-point', isLogged, servicesRenderCart.payment_point);
-router.get('/venta-finalizada/:id', isLogged, servicesRenderCart.order_success);
+router.get('/payment-point', isLogged, require('../services/renderCommerce').checkout(false));
+router.get('/venta-finalizada/:id', isLogged, require('../services/renderCommerce').orderStatus);
+router.get('/mis-pedidos', isLogged, require('../services/renderCommerce').myOrders);
 // router.post('/carrito_add', isLogged, servicesRenderCart.add_to_carrito);
 
 module.exports = router;

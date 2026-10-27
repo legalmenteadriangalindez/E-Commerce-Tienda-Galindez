@@ -1,31 +1,36 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Node.js CI
-
+name: Pruebas de la tienda
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
-
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: tienda-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
+  verify:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+        node: [22, 24]
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - name: Instalar y comprobar como en Render
+        run: npm ci --omit=dev && npm run check
+      - run: npm audit --omit=dev --audit-level=moderate
+      - name: Preparar MongoDB temporal
+        run: |
+          curl --fail --location --retry 3 https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-8.0.17.tgz -o "$RUNNER_TEMP/mongo.tgz"
+          mkdir "$RUNNER_TEMP/mongo"
+          tar -xzf "$RUNNER_TEMP/mongo.tgz" --strip-components=1 -C "$RUNNER_TEMP/mongo"
+      - run: npm run test:integration
+        env:
+          MONGOD_BINARY: ${{ runner.temp }}/mongo/bin/mongod

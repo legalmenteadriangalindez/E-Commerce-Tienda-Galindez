@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="<%= csrfToken %>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
@@ -52,6 +53,7 @@
         </p>
 
         <form action="/verify-email" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <input
                 type="hidden"
@@ -98,6 +100,7 @@
             action="/resend-verification-code"
             method="POST"
         >
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <input
                 type="hidden"

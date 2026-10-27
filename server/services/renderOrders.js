@@ -1,3 +1,4 @@
+const { publicError, errorStatus } = require('./publicError');
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -9,7 +10,8 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 function configApi(req) {
     return {
         headers: {
-            Cookie: req.headers.cookie || ""
+            Cookie: req.headers.cookie || "",
+            'X-CSRF-Token': req.session?.csrfToken || ''
         },
         timeout: 10000
     };
@@ -41,7 +43,7 @@ const [productosRes, usuariosRes] = await Promise.all([
 
     } catch (err) {
 
-        res.send(err.message);
+        res.status(errorStatus(err)).send(publicError(err));
     }
 };
 
@@ -63,7 +65,7 @@ axios.get(
         })
         .catch(err => {
 
-            res.send(err.message);
+            res.status(errorStatus(err)).send(publicError(err));
         });
 };
 
@@ -87,7 +89,7 @@ const response = await axios.get(
 
     } catch (err) {
 
-        res.send(err.message);
+        res.status(errorStatus(err)).send(publicError(err));
     }
 };
 
@@ -108,7 +110,7 @@ axios.post(
 
     .catch(err => {
 
-        res.send(err.response?.data || err.message);
+        res.status(errorStatus(err)).send(publicError(err));
     });
 };
 
@@ -129,7 +131,7 @@ axios.put(
 
     .catch(err => {
 
-        res.send(err.response?.data || err.message);
+        res.status(errorStatus(err)).send(publicError(err));
     });
 };
 
@@ -159,6 +161,6 @@ exports.detail_order = (req, res) => {
 
     .catch(err => {
 
-        res.send(err.response?.data || err.message);
+        res.status(errorStatus(err)).send(publicError(err));
     });
 };
