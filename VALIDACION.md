@@ -1,6 +1,6 @@
 # Validación de la actualización
 
-Fecha: 26 de octubre de 2026.
+Fecha: 27 de octubre de 2026.
 
 - Sintaxis de JavaScript, compilación de plantillas EJS y carga de rutas verificadas con `npm run check`.
 - 47 pruebas automatizadas con MongoDB 8.0.17 temporal en replica set, ejecutadas en Node.js 24.22.1; sin fallos ni pruebas omitidas en la integración completa.
