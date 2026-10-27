@@ -17,6 +17,7 @@ const csrfProtection = require("./server/middleware/csrfProtection");
 const cartMiddleware = require("./server/middleware/cartMiddleware");
 const sessionLogger = require("./server/middleware/sessionLogger");
 const categoriasMiddleware = require("./server/middleware/categoriasMiddleware");
+const raffleBanner = require("./server/middleware/raffleBanner");
 const appConfig = require("./server/config/appConfig");
 
 const app = express();
@@ -46,6 +47,7 @@ app.use(morgan(':method :status :res[content-length] :response-time ms', { skip:
 app.use(cartMiddleware);
 app.use(sessionLogger);
 app.use(categoriasMiddleware);
+app.use(raffleBanner);
 app.use("/", require("./server/routes"));
 app.use((req, res) => res.status(404).render('error', {
     message: 'La página solicitada no existe.', requestId: req.requestId, status: 404
@@ -70,6 +72,7 @@ async function startServer() {
     await Promise.all([
         require('./server/model/order'), require('./server/model/sales'),
         require('./server/model/paymentEvent'), require('./server/model/review'),
+        require('./server/model/raffle'), require('./server/model/raffleEntry'),
         require('./server/model/rateLimitBucket')
     ].map(model => model.init()));
     const topology = await mongoose.connection.db.admin().command({ hello: 1 });
