@@ -30,10 +30,12 @@ async function storeImage(file) {
 async function removeUnused(url) {
     const id = idFromUrl(url);
     if (!id) return; // Las imágenes incluidas en el repositorio se conservan.
-    const [product, brand] = await Promise.all([
-        require('../model/product').exists({ fotos: url }), require('../model/brands').exists({ foto: url })
+    const [product, brand, raffle] = await Promise.all([
+        require('../model/product').exists({ fotos: url }),
+        require('../model/brands').exists({ foto: url }),
+        require('../model/raffle').exists({ imagenUrl: url })
     ]);
-    if (!product && !brand) await bucket().delete(id).catch(error => {
+    if (!product && !brand && !raffle) await bucket().delete(id).catch(error => {
         if (!/File not found/.test(error.message)) throw error;
     });
 }
