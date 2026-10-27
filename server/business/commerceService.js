@@ -299,7 +299,7 @@ async function expireReservations() {
 }
 async function changeState(id, state, actorId, dealer = false) {
     if (!mongoose.isObjectIdOrHexString(id)) throw new CommerceError('Pedido inválido.');
-    const order = await mongoose.connection.transaction(async session => {
+    return mongoose.connection.transaction(async session => {
         const order = await Order.findById(id).session(session);
         if (!order) throw new CommerceError('Pedido no encontrado.', 404);
         if (state === order.estado) return order;
@@ -347,7 +347,7 @@ async function resolveOrder(id, action, note, receipt, adminId, restock = false)
     const motivo = textField(note, 'motivo de revisión', 500);
     if (motivo.length < 10) throw new CommerceError('Describe la revisión con al menos 10 caracteres.');
     const comprobante = textField(receipt, 'comprobante o referencia', 150);
-    return mongoose.connection.transaction(async session => {
+    const order = await mongoose.connection.transaction(async session => {
         const order = await Order.findById(id).session(session);
         if (!order || order.estadoPago !== 'PAGADO') throw new CommerceError('La orden debe tener un cobro confirmado.', 409);
         if (action === 'RESERVAR') {
