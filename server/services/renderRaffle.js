@@ -15,7 +15,9 @@ exports.publicIndex = async (req, res, next) => {
 exports.adminIndex = async (req, res, next) => {
     try {
         const data = await raffle.adminData();
-        return res.render('admin/raffle/manage', data);
+        const raffleNotice = req.session.raffleNotice || '';
+        delete req.session.raffleNotice;
+        return res.render('admin/raffle/manage', { ...data, raffleNotice });
     } catch (error) {
         return next(error);
     }
