@@ -3,6 +3,7 @@ const Saledb = require('../model/sales');
 const SaleDetaildb = require('../model/saleDetails');
 const Productdb = require('../model/product');
 const adminPagination = require('../services/adminPagination');
+const salesCsv = require('../services/salesCsv');
 
 // CREATE (CON TRANSACCIÓN REAL)
 exports.create = async (req, res) => {
@@ -97,17 +98,29 @@ exports.create = async (req, res) => {
 };
 
 exports.find = async (req, res) => {
+    let filters;
+    try {
+        filters = salesCsv.parseFilters(req.query);
+    } catch (error) {
+        if (error instanceof salesCsv.SaleExportFilterError) {
+            return res.status(error.status).json({ message: error.message });
+        }
+        console.error('ERROR VALIDANDO FILTROS DE VENTAS:', error.message);
+        return res.status(400).json({ message: 'Los filtros de ventas no son válidos.' });
+    }
+
     try {
         const paginationRequest = adminPagination.isAdminList(req.query)
             ? adminPagination.requested(req.query, 10)
             : null;
-        const filter = {};
+        const filter = await salesCsv.saleFindFilter(filters);
         const totalItems = paginationRequest ? await Saledb.countDocuments(filter) : null;
         const pagination = paginationRequest
             ? adminPagination.metadata(paginationRequest.page, paginationRequest.limit, totalItems)
             : null;
         const ventas = await Saledb.find(filter)
             .populate("cliente", "nombre email telefono")
+            .populate("order", "numeroOrden canal estado")
             .sort({ createdAt: -1, _id: -1 })
             .skip(pagination ? (pagination.page - 1) * paginationRequest.limit : 0)
             .limit(pagination ? paginationRequest.limit : 0)
@@ -147,6 +160,54 @@ exports.find = async (req, res) => {
             message: "Error obteniendo ventas",
             error: 'No se pudo completar la consulta'
         });
+    }
+};
+
+// Exporta una fila por cada producto de cada venta para facilitar análisis en
+// Excel, Power BI, Python o R. La ruta está protegida por sales:read.
+exports.exportCsv = async (req, res) => {
+    let filters;
+    try {
+        filters = salesCsv.parseFilters(req.query);
+    } catch (error) {
+        if (error instanceof salesCsv.SaleExportFilterError) {
+            return res.status(error.status).json({ message: error.message });
+        }
+        console.error('ERROR VALIDANDO EXPORTACIÓN DE VENTAS:', error.message);
+        return res.status(400).json({ message: 'Los filtros de exportación no son válidos.' });
+    }
+
+    const suffix = filters.fromInput || filters.toInput
+        ? `-${filters.fromInput || 'inicio'}-${filters.toInput || 'hoy'}`
+        : '';
+    const filename = `ventas${suffix}.csv`;
+
+    try {
+        const cursor = Saledb.aggregate(salesCsv.aggregatePipeline(filters))
+            .allowDiskUse(true)
+            .cursor({ batchSize: 500 })
+            .exec();
+
+        res.status(200);
+        res.set({
+            'Content-Type': 'text/csv; charset=utf-8',
+            'Content-Disposition': `attachment; filename="${filename}"`,
+            'Cache-Control': 'no-store',
+            'X-Export-Row-Limit': String(salesCsv.maxRows())
+        });
+        // BOM: Excel reconoce correctamente tildes y caracteres como ñ.
+        res.write('\uFEFF');
+        res.write(salesCsv.header());
+
+        for await (const row of cursor) {
+            res.write(salesCsv.row(row));
+        }
+
+        return res.end();
+    } catch (error) {
+        console.error('ERROR EXPORTANDO VENTAS:', error.message);
+        if (res.headersSent) return res.destroy(error);
+        return res.status(500).json({ message: 'No se pudo generar el archivo de ventas.' });
     }
 };
 

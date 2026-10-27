@@ -21,6 +21,8 @@ router.get("/analytics/profit-products",saleController.getProfitByProduct);
 router.get("/analytics/best-selling-products",saleController.getBestSellingProducts);
 
 // ==================== CONSULTAS ====================
+// Descargar una fila por producto y venta para análisis externo.
+router.get("/export.csv", saleController.exportCsv);
 // Consultar todas las ventas
 router.get("/", saleController.find);
 

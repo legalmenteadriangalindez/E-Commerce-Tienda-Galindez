@@ -242,3 +242,172 @@ main .table .btn-info:hover {
     }
 
 }
+
+/* =========================================================
+   FILTROS Y EXPORTACIÓN CSV
+   ========================================================= */
+
+.sales-export-panel {
+    margin: 0 0 24px;
+    padding: 22px;
+    border: 1px solid #e4d8d0;
+    border-radius: 14px;
+    background: #fffaf6;
+    box-shadow: 0 5px 18px rgba(49, 27, 20, .05);
+}
+
+.sales-export-panel__heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.sales-export-panel h2 {
+    margin: 0;
+    color: #311b14;
+    font-size: 1.15rem;
+}
+
+.sales-export-panel .admin-list-eyebrow {
+    margin-bottom: 4px;
+}
+
+.sales-export-panel__hint {
+    color: #6b5b55;
+    font-size: .84rem;
+}
+
+.sales-filters {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(130px, 1fr)) auto;
+    align-items: end;
+    gap: 13px;
+}
+
+.sales-filters label {
+    display: grid;
+    gap: 6px;
+    color: #4e3e37;
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.sales-filters input,
+.sales-filters select {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 10px;
+    border: 1px solid #d9c8bd;
+    border-radius: 8px;
+    background: #fff;
+    color: #311b14;
+    font: inherit;
+    font-weight: 400;
+}
+
+.sales-filters input:focus,
+.sales-filters select:focus {
+    border-color: #d85c32;
+    outline: 3px solid rgba(216, 92, 50, .14);
+}
+
+.sales-filters__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+}
+
+.sales-filter-button {
+    min-height: 40px;
+    padding: 8px 13px;
+    border: 0;
+    border-radius: 8px;
+    background: #311b14;
+    color: #fff;
+    cursor: pointer;
+    font-size: .84rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.sales-filter-button:hover {
+    background: #d85c32;
+}
+
+.sales-filter-reset {
+    color: #6b3f2d;
+    font-size: .84rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.sales-status-badge {
+    display: inline-flex;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #f1ece8;
+    color: #6b5b55;
+    font-size: .72rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.sales-status-badge--pagado {
+    background: #e2f5ea;
+    color: #146c43;
+}
+
+.sales-status-badge--pendiente {
+    background: #fff1d8;
+    color: #8a5a00;
+}
+
+.sales-status-badge--rechazado,
+.sales-status-badge--fallido {
+    background: #fde7e7;
+    color: #a12b2b;
+}
+
+.sales-status-badge--reembolsado {
+    background: #e9e6fb;
+    color: #51449a;
+}
+
+.sales-total {
+    color: #198754;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+    .sales-filters {
+        grid-template-columns: repeat(2, minmax(150px, 1fr));
+    }
+
+    .sales-filters__actions {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 700px) {
+    .sales-export-panel {
+        padding: 17px;
+    }
+
+    .sales-export-panel__heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .sales-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .sales-filters__actions {
+        grid-column: auto;
+        justify-content: space-between;
+    }
+}

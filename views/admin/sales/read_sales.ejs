@@ -2,16 +2,63 @@
 <%- include('../../include/_headerAdmin') %>
 <!-- /include header -->
 
-<link rel="stylesheet" href="/css/admin/sales/read_sales.css">
+<link rel="stylesheet" href="/css/read_sales.css">
 
 <main class="admin-list-page">
   <header class="admin-list-heading">
     <div>
       <p class="admin-list-eyebrow">Resultados</p>
       <h1>Gestionar ventas</h1>
-      <p class="admin-list-description">Consulta las ventas confirmadas y revisa el detalle de cada operación.</p>
+      <p class="admin-list-description">Consulta las ventas y descarga los datos para analizarlos en Excel, Power BI, Python o R.</p>
     </div>
+    <a class="admin-list-primary" href="<%= exportUrl %>">
+      <i class="bi bi-filetype-csv me-1"></i> Exportar CSV
+    </a>
   </header>
+
+  <section class="sales-export-panel" aria-labelledby="sales-filter-title">
+    <div class="sales-export-panel__heading">
+      <div>
+        <p class="admin-list-eyebrow">Análisis de datos</p>
+        <h2 id="sales-filter-title">Filtrar ventas antes de exportar</h2>
+      </div>
+      <span class="sales-export-panel__hint">Cada fila del archivo representa un producto dentro de una venta.</span>
+    </div>
+    <form class="sales-filters" method="get" action="/read-sales">
+      <label>
+        Desde
+        <input type="date" name="from" value="<%= filters.from %>">
+      </label>
+      <label>
+        Hasta
+        <input type="date" name="to" value="<%= filters.to %>">
+      </label>
+      <label>
+        Estado del pago
+        <select name="estadoPago">
+          <option value="">Todos</option>
+          <% const statusLabels = { PAGADO: 'Pagado', PENDIENTE: 'Pendiente', FALLIDO: 'Fallido', RECHAZADO: 'Rechazado', REEMBOLSADO: 'Reembolsado' }; %>
+          <% paymentStatuses.forEach(status => { %>
+            <option value="<%= status %>" <%= filters.estadoPago === status ? 'selected' : '' %>><%= statusLabels[status] || status %></option>
+          <% }) %>
+        </select>
+      </label>
+      <label>
+        Canal
+        <select name="canal">
+          <option value="">Todos</option>
+          <% channels.forEach(channel => { %>
+            <option value="<%= channel %>" <%= filters.canal === channel ? 'selected' : '' %>><%= channel === 'WOMPI' ? 'Wompi' : 'Caja' %></option>
+          <% }) %>
+        </select>
+      </label>
+      <div class="sales-filters__actions">
+        <button class="sales-filter-button" type="submit"><i class="bi bi-funnel me-1"></i>Aplicar filtros</button>
+        <a class="sales-filter-reset" href="/read-sales">Limpiar</a>
+      </div>
+    </form>
+  </section>
+
   <div class="admin-table-wrap">
   <table class="table">
     <thead>
@@ -21,6 +68,8 @@
             <th>Producto</th>
             <th>Cantidad</th>
             <th>Cliente</th>
+            <th>Pago</th>
+            <th>Canal</th>
             <th>Total</th>
             <th>Detalles</th>
 
@@ -88,9 +137,18 @@
                 <%= sale.cliente?.nombre || 'Consumidor Final' %>
             </td>
 
+            <td>
+                <span class="sales-status-badge sales-status-badge--<%= String(sale.estadoPago || '').toLowerCase() %>">
+                    <%= sale.estadoPago || 'Sin estado' %>
+                </span>
+            </td>
+
+            <td>
+                <%= sale.order?.canal || 'Sin canal' %>
+            </td>
 
             <!-- TOTAL -->
-            <td>
+            <td class="sales-total">
                 $ <%= sale.total %>
             </td>
 
@@ -107,7 +165,7 @@
 </table>
   </div>
   <% if (!sales.length) { %>
-    <p class="admin-list-empty">No hay ventas confirmadas registradas.</p>
+    <p class="admin-list-empty">No hay ventas que coincidan con los filtros.</p>
   <% } %>
   <%- include('../../include/_adminPagination', { pagination, label: 'ventas' }) %>
 </main>

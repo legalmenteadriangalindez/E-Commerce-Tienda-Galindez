@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const catalogPagination = require('./catalogPagination');
+const salesCsv = require('./salesCsv');
 
 
 function configApi(req) {
@@ -41,12 +42,20 @@ exports.create_sale_form = async (req, res) => {
 // ==================== LISTAR ====================
 exports.sales = async (req, res) => {
     try {
+        const filterKeys = ['from', 'to', 'estadoPago', 'canal'];
+        const filters = Object.fromEntries(
+            filterKeys
+                .map(key => [key, typeof req.query[key] === 'string' ? req.query[key].trim() : ''])
+                .filter(([, value]) => value)
+        );
+        const exportQuery = new URLSearchParams(filters).toString();
         const response = await axios.get(`${BASE_URL}/api/ventas`, {
             ...configApi(req),
             params: {
                 adminList: '1',
                 page: req.query.page || 1,
-                limit: 10
+                limit: 10,
+                ...filters
             }
         });
 
@@ -55,7 +64,16 @@ exports.sales = async (req, res) => {
            sales: payload.items || payload,
            pagination: catalogPagination.buildPagination(req, payload.pagination || {
                page: 1, limit: 10, totalItems: payload.length, totalPages: payload.length ? 1 : 0
-           })
+           }),
+           filters: {
+               from: filters.from || '',
+               to: filters.to || '',
+               estadoPago: filters.estadoPago || '',
+               canal: filters.canal || ''
+           },
+           paymentStatuses: salesCsv.PAYMENT_STATUSES,
+           channels: salesCsv.CHANNELS,
+           exportUrl: `/api/ventas/export.csv${exportQuery ? `?${exportQuery}` : ''}`
         });
 
     } catch (error) {

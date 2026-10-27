@@ -34,6 +34,7 @@ Añade a tu `.env` existente las variables nuevas:
 PAYMENTS_ENABLED=false
 SHIPPING_PRICE=5000
 FREE_SHIPPING_FROM=30000
+CSV_EXPORT_MAX_ROWS=100000
 ```
 
 Los importes son COP. El servidor trata los precios del catálogo como precios finales con impuestos incluidos. Valida esta política y los costes de envío con los responsables del negocio antes de vender; el software no determina las obligaciones tributarias ni emite facturación electrónica.
@@ -54,6 +55,7 @@ Los importes son COP. El servidor trata los precios del catálogo como precios f
 | Caja | Registrar un pedido no lo marca como pagado. Un administrador confirma expresamente que recibió el dinero. |
 | Cliente | `/mis-pedidos` y consulta del estado del pago y entrega. El carrito no se vacía al abrir Wompi. |
 | Administración | `/admin/payments` para caja, incidencias y conciliación por ID de Wompi; `/admin-analytics?period=week` o `?period=month` para decisiones de ventas. |
+| Exportación | `/read-sales` permite filtrar por fechas, estado de pago y canal, y descargar `/api/ventas/export.csv` con una fila por producto vendido. |
 | Entrega | Solo permite PAGADA → PREPARANDO → ENVIADA → ENTREGADA, con pago y stock confirmados. El administrador asigna el repartidor y el repartidor solo actualiza pedidos que le pertenecen. |
 | Archivos | Nuevas fotos en MongoDB GridFS, convertidas a WEBP, sin metadatos y con límites de tamaño. Las fotos incluidas en Git siguen funcionando. |
 | Cuentas | Contraseñas nuevas de al menos 12 caracteres, códigos con hash y consumo atómico, recuperación por enlace de un uso y revocación de sesiones. |
@@ -121,6 +123,7 @@ No introduzcas tarjetas reales durante las pruebas sandbox. La aplicación usa e
 - **Devoluciones:** esta versión no mueve dinero para reembolsar. Primero efectúa y verifica la devolución total con el proveedor; después usa «Disponibilidad o devolución ya realizada» en el pedido y registra el motivo y comprobante. Solo marca reponer unidades si están físicamente disponibles en la tienda. El sistema evita registrar la misma devolución dos veces y excluye esas ventas de los indicadores. Las devoluciones parciales requieren gestión externa y no están modeladas por esta versión.
 - **Pedidos antiguos:** se conservan, pero no se adivina si su inventario ya fue descontado. Ejecuta `npm run audit:data` antes del lanzamiento. Los pedidos sin el nuevo estado de inventario requieren revisión del historial antes de incorporarlos al nuevo flujo; no los corrijas con actualizaciones masivas sin cotejar pagos y stock.
 - **Informe de ventas:** usa ventas con estado `PAGADO`, compara los últimos 7 o 30 días con el periodo anterior y muestra ingresos, ticket promedio, margen bruto estimado, canales, productos, categorías, stock bajo y productos sin rotación. La ganancia se calcula con el costo guardado en cada detalle; no incluye comisión de Wompi, costos reales de envío ni obligaciones tributarias.
+- **Exportación CSV:** desde `/read-sales` filtra el rango, estado y canal antes de pulsar «Exportar CSV». El archivo incluye pedido, fecha, cliente, producto, cantidad, precios, costos, envío, descuento, total y ganancia bruta por línea. El límite configurable es `CSV_EXPORT_MAX_ROWS` (100.000 por defecto); si necesitas periodos mayores, exporta por rangos de fecha.
 - **Códigos de verificación antiguos:** solicita un código nuevo después de actualizar, ya que ahora se guardan hashes.
 - **Imágenes antiguas que solo existían en Render:** expórtalas antes del despliegue y vuelve a subirlas desde el administrador. Un archivo perdido en el disco anterior no puede recuperarse con esta actualización.
 

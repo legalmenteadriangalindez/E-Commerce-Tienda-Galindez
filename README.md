@@ -41,6 +41,7 @@ Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicació
 - Auditoría de datos anteriores, de solo lectura: `npm run audit:data`.
 - Gestión de pagos: `/admin/payments`.
 - Informe de ventas: `/admin-analytics?period=week` o `?period=month`.
+- Exportación de ventas: `/read-sales`, con filtros por fecha, estado de pago y canal, y descarga CSV para Excel, Power BI, Python o R.
 - Gestión de reseñas: `/admin/reviews`.
 - Pedidos del cliente: `/mis-pedidos`.
 - Correos de pedidos: confirmación, cambios de estado, aviso de envío y entrega se guardan en una bandeja durable y se envían mediante Brevo con reintentos automáticos.
