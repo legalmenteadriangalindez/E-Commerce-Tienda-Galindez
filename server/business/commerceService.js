@@ -6,6 +6,7 @@ const Sale = require('../model/sales');
 const SaleDetail = require('../model/saleDetails');
 const PaymentEvent = require('../model/paymentEvent');
 const wompi = require('./wompiService');
+const sendEmail = require('../config/sendEmail');
 
 class CommerceError extends Error {
     constructor(message, status = 400) { super(message); this.status = status; this.expose = true; }
@@ -109,6 +110,48 @@ async function recordSale(order, session) {
         precioUnitario: item.precioUnitario, precioCostoUnitario: item.precioCostoUnitario, subtotal: item.subtotal
     })), { session });
 }
+async function notifyOrderConfirmation(order) {
+    if (!order || order.estadoPago !== 'PAGADO' || order.inventario !== 'CONFIRMADO') return;
+
+    const now = new Date();
+    const claim = await Order.findOneAndUpdate(
+        {
+            _id: order._id,
+            confirmationEmailSentAt: { $exists: false },
+            $or: [
+                { confirmationEmailClaimedAt: { $exists: false } },
+                { confirmationEmailClaimedAt: { $lt: new Date(Date.now() - 15 * 60 * 1000) } }
+            ]
+        },
+        {
+            $set: { confirmationEmailClaimedAt: now, confirmationEmailLastAttemptAt: now },
+            $inc: { confirmationEmailAttempts: 1 }
+        },
+        { new: true }
+    );
+    if (!claim) return;
+
+    try {
+        const result = await sendEmail.sendOrderConfirmation(claim);
+        await Order.updateOne(
+            { _id: claim._id },
+            {
+                $set: { confirmationEmailSentAt: new Date(), confirmationEmailMessageId: String(result?.messageId || '') },
+                $unset: { confirmationEmailClaimedAt: 1, confirmationEmailLastError: 1 }
+            }
+        );
+    } catch (error) {
+        await Order.updateOne(
+            { _id: claim._id },
+            {
+                $unset: { confirmationEmailClaimedAt: 1 },
+                $set: { confirmationEmailLastError: String(error.message || 'Error de correo').slice(0, 500) }
+            }
+        ).catch(() => {});
+        console.error('No se pudo enviar la confirmación del pedido:', error.message);
+    }
+}
+
 async function createOrder({ userId, cart, body, key, channel = 'WOMPI' }) {
     if (typeof key !== 'string' || !/^[\da-f-]{36}$/i.test(key)) throw new CommerceError('Recarga el formulario antes de confirmar.');
     const claveCheckout = `${channel}:${userId}:${key}`;
@@ -183,7 +226,7 @@ async function applyTransaction(transaction) {
     if (!validTransactionId(id)) throw new CommerceError('Transacción no verificable.');
     if (!['PENDING', 'APPROVED', 'DECLINED', 'VOIDED', 'ERROR'].includes(transaction.status)) throw new CommerceError('Estado de pago desconocido.');
     await enqueue(id);
-    return mongoose.connection.transaction(async session => {
+    const result = await mongoose.connection.transaction(async session => {
         const event = await PaymentEvent.findOne({ transactionId: id }).session(session);
         if (event.estado === 'RESUELTO' && event.status === transaction.status) return;
         event.status = transaction.status;
@@ -231,6 +274,8 @@ async function applyTransaction(transaction) {
         await order.save({ session }); await event.save({ session });
         return order;
     });
+    await notifyOrderConfirmation(result);
+    return result;
 }
 async function reconcile(id, fetchTransaction = wompi.consultarTransaccionWompi, expectedOrder) {
     const tx = await fetchTransaction(id);
@@ -276,7 +321,7 @@ async function changeState(id, state, actorId, dealer = false) {
     });
 }
 async function confirmCash(id, adminId) {
-    return mongoose.connection.transaction(async session => {
+    const order = await mongoose.connection.transaction(async session => {
         const order = await Order.findById(id).session(session);
         if (!order || order.canal !== 'CAJA') throw new CommerceError('La orden no corresponde a una venta en caja.', 409);
         if (order.estadoPago === 'PAGADO') return order;
@@ -285,6 +330,8 @@ async function confirmCash(id, adminId) {
         order.confirmadoPor = adminId; order.pagoConfirmadoEn = new Date();
         await recordSale(order, session); await order.save({ session }); return order;
     });
+    await notifyOrderConfirmation(order);
+    return order;
 }
 async function runMaintenance(fetchTransaction) {
     const events = await PaymentEvent.find({ estado: 'PENDIENTE' }).sort({ ultimoIntento: 1 }).limit(30);
@@ -300,7 +347,7 @@ async function resolveOrder(id, action, note, receipt, adminId, restock = false)
     const motivo = textField(note, 'motivo de revisión', 500);
     if (motivo.length < 10) throw new CommerceError('Describe la revisión con al menos 10 caracteres.');
     const comprobante = textField(receipt, 'comprobante o referencia', 150);
-    return mongoose.connection.transaction(async session => {
+    const order = await mongoose.connection.transaction(async session => {
         const order = await Order.findById(id).session(session);
         if (!order || order.estadoPago !== 'PAGADO') throw new CommerceError('La orden debe tener un cobro confirmado.', 409);
         if (action === 'RESERVAR') {
@@ -325,6 +372,8 @@ async function resolveOrder(id, action, note, receipt, adminId, restock = false)
             { $set: { estado: 'RESUELTO', resolucion: { motivo, comprobante, administrador: adminId, fecha: new Date() } } }, { session });
         return order;
     });
+    await notifyOrderConfirmation(order);
+    return order;
 }
 async function resolveEvent(id, note, receipt, adminId) {
     if (!mongoose.isObjectIdOrHexString(id)) throw new CommerceError('Evento inválido.');

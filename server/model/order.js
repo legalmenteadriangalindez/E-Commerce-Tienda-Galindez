@@ -20,6 +20,12 @@ const orderSchema = new mongoose.Schema({
     incidenciaPago: { type: String, maxlength: 500 },
     confirmadoPor: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb' },
     pagoConfirmadoEn: Date,
+    confirmationEmailSentAt: Date,
+    confirmationEmailMessageId: { type: String, maxlength: 200 },
+    confirmationEmailClaimedAt: Date,
+    confirmationEmailLastAttemptAt: Date,
+    confirmationEmailAttempts: { type: Number, default: 0, min: 0 },
+    confirmationEmailLastError: { type: String, maxlength: 500 },
     revisionPago: {
         accion: String, motivo: String, comprobante: String,
         administrador: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb' }, fecha: Date
