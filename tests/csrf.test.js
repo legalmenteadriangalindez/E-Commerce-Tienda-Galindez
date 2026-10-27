@@ -117,4 +117,15 @@ test('muestra diagnóstico seguro cuando rechaza el origen del formulario', asyn
     assert.match(invalidTokenHtml, /after_multipart_parser/);
     assert.match(invalidTokenHtml, /providedTokenLength/);
     assert.doesNotMatch(invalidTokenHtml, /token-no-valido/);
+
+    const opaqueOriginForm = new FormData();
+    opaqueOriginForm.set('_csrf', csrfToken);
+    opaqueOriginForm.set('activo', 'si');
+    const opaqueOriginResponse = await fetch(`${baseUrl}/admin/raffle`, {
+        method: 'POST',
+        headers: { Cookie: cookie, Origin: 'null' },
+        body: opaqueOriginForm
+    });
+
+    assert.equal(opaqueOriginResponse.status, 204);
 });

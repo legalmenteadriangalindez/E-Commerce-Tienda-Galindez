@@ -52,6 +52,10 @@ function firstForwarded(value) {
     return String(value || '').split(',')[0].trim();
 }
 
+function isOpaqueOrigin(value) {
+    return String(value || '').trim().toLowerCase() === 'null';
+}
+
 function sessionCookiePresent(req) {
     // La aplicación usa tienda.sid. connect.sid se admite únicamente para
     // servidores de prueba que montan express-session con su nombre por defecto.
@@ -97,8 +101,10 @@ function requestDiagnostics(req, extra = {}) {
         providedTokenLength: token.providedLength,
         providedTokenType: token.providedType,
         tokenSource: token.source,
+        originHeader: originHeader ? truncate(originHeader) : '(none)',
         origin: originHeader ? (normalizeOrigin(originHeader) || 'invalid') : '(none)',
         originAllowed: originHeader ? allowedOrigin(req, originHeader) : true,
+        originDeferred: Boolean(req.csrfOriginDeferred),
         host: truncate(req.get('host') || '(none)'),
         forwardedHost: truncate(forwardedHost || '(none)'),
         forwardedProto: truncate(forwardedProto || '(none)'),
@@ -111,7 +117,7 @@ function requestDiagnostics(req, extra = {}) {
 }
 
 function logCsrf(event, diagnostics) {
-    if (event !== 'csrf_rejected' && !debugLogsEnabled()) return;
+    if (!['csrf_rejected', 'csrf_origin_deferred'].includes(event) && !debugLogsEnabled()) return;
 
     const logger = event === 'csrf_rejected' ? console.warn : console.info;
     logger(JSON.stringify({ event, ...diagnostics }));
@@ -197,7 +203,7 @@ function validateToken(req, res, next) {
 
     logCsrf('csrf_validated', requestDiagnostics(req, {
         stage: req.csrfValidationStage || 'token_validation',
-        reason: 'valid'
+        reason: req.csrfOriginDeferred ? 'valid_token_opaque_origin' : 'valid'
     }));
 
     return next();
@@ -246,6 +252,17 @@ function csrfProtection(req, res, next) {
         }
         const origin = req.get('origin');
         if (!allowedOrigin(req, origin)) {
+            // Algunos navegadores o WebViews envían Origin: null para un
+            // formulario multipart. No se omite CSRF: se difiere la decisión
+            // de origen hasta después de que Multer lea y valide _csrf.
+            if (isOpaqueOrigin(origin)) {
+                req.csrfOriginDeferred = true;
+                logCsrf('csrf_origin_deferred', requestDiagnostics(req, {
+                    stage: 'global_multipart_origin',
+                    reason: 'opaque_origin'
+                }));
+                return next();
+            }
             return rejectRequest(req, res, 'origin_mismatch', {
                 stage: 'global_multipart_origin'
             });
