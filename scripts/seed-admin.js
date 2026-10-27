@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const Role = require('../server/model/rol');
 const User = require('../server/model/user');
 const accounts = require('../server/business/accountService');
+const { ALL_PERMISSIONS } = require('../server/config/permissions');
 async function main() {
     const email = accounts.normalizeEmail(process.env.INITIAL_ADMIN_EMAIL);
     const password = process.env.INITIAL_ADMIN_PASSWORD;
@@ -12,7 +13,19 @@ async function main() {
     await require('../server/database/connection')();
     try {
         await Promise.all([Role.init(), User.init()]);
-        for (const nombre of ['Admin', 'Cliente', 'dealer']) await Role.updateOne({ nombre }, { $setOnInsert: { nombre } }, { upsert: true });
+        for (const nombre of ['Admin', 'Cliente', 'dealer']) {
+            await Role.updateOne(
+                { nombre },
+                { $setOnInsert: { nombre, permisos: nombre === 'Admin' ? ALL_PERMISSIONS : [] } },
+                { upsert: true }
+            );
+            if (nombre === 'Admin') {
+                await Role.updateOne(
+                    { nombre, permisos: { $exists: false } },
+                    { $set: { permisos: ALL_PERMISSIONS } }
+                );
+            }
+        }
         const existing = await User.findOne(accounts.emailFilter(email)).populate('rol', 'nombre');
         if (existing) {
             if (existing.rol?.nombre !== 'Admin') throw new Error('El correo ya pertenece a otra cuenta. No se modificó su rol.');

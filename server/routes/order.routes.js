@@ -4,25 +4,23 @@ const router = express.Router();
 
 const orderController = require("../controller/order_controller");
 
-const { isAdminApi } = require("../middleware/auth");
-
-// PROTEGER TODAS LAS RUTAS DE ESTA API
-router.use(isAdminApi);
+const { requirePermission } = require("../middleware/auth");
+const { PERMISSIONS: P } = require('../config/permissions');
 
 // CONSULTAR ÓRDENES
-router.get("/", orderController.find);
+router.get("/", requirePermission(P.ORDERS_READ, true), orderController.find);
 
 // CONSULTAR ORDEN POR ID
-router.get("/:id", orderController.findOne);
+router.get("/:id", requirePermission(P.ORDERS_READ, true), orderController.findOne);
 
 // CREAR ORDEN ADMINISTRATIVA
-router.post("/", orderController.create);
+router.post("/", requirePermission(P.ORDERS_MANAGE, true), orderController.create);
 
 // ACTUALIZAR ORDEN ADMINISTRATIVA
-router.put("/:id", orderController.update);
+router.put("/:id", requirePermission(P.ORDERS_MANAGE, true), orderController.update);
 
 // ELIMINACIÓN TEMPORALMENTE DESHABILITADA
-router.delete("/:id", (req, res) => {
+router.delete("/:id", requirePermission(P.ORDERS_MANAGE, true), (req, res) => {
     return res.status(409).json({
         success: false,
         message:

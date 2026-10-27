@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { isAdmin } = require("../middleware/auth");
+const { requirePermission } = require("../middleware/auth");
+const { PERMISSIONS: P } = require('../config/permissions');
 const providerController = require('../controller/provider_controller');
 
-router.post('/',isAdmin, providerController.create);
-router.get('/',isAdmin, providerController.find);
-router.get('/:id',isAdmin, providerController.findById);
-router.put('/:id',isAdmin, providerController.update);
-router.delete('/:id',isAdmin, providerController.delete);
+router.post('/',requirePermission(P.PROVIDERS_MANAGE, true), providerController.create);
+router.get('/',requirePermission(P.PROVIDERS_MANAGE, true), providerController.find);
+router.get('/:id',requirePermission(P.PROVIDERS_MANAGE, true), providerController.findById);
+router.put('/:id',requirePermission(P.PROVIDERS_MANAGE, true), providerController.update);
+router.delete('/:id',requirePermission(P.PROVIDERS_MANAGE, true), providerController.delete);
 
 module.exports = router;

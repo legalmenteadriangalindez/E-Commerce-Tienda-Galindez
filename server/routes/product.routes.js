@@ -2,7 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload");
-const { isAdmin, isAdminApi } = require("../middleware/auth");
+const { requirePermission } = require("../middleware/auth");
+const { PERMISSIONS: P } = require('../config/permissions');
 const csrfProtection = require("../middleware/csrfProtection");
 const productController = require("../controller/product_controller");
 
@@ -10,14 +11,14 @@ const productController = require("../controller/product_controller");
 router.get("/catalogo", productController.findPublic);
 router.get("/catalogo/pagina", productController.findPublicPaginated);
 router.get("/catalogo/:id", productController.findPublicOne);
-router.get("/", isAdmin, productController.find);
-router.post("/",isAdmin,upload.array("fotos", 4),csrfProtection.validateToken,productController.create);
+router.get("/", requirePermission(P.CATALOG_READ, true), productController.find);
+router.post("/",requirePermission(P.CATALOG_WRITE, true),upload.array("fotos", 4),csrfProtection.validateToken,productController.create);
 router.get("/ropa", productController.findByCategoryRopa);
 router.get("/search", productController.searchApi);
-router.get("/read-Stock",isAdmin,productController.getStockAlerts);
+router.get("/read-Stock",requirePermission(P.INVENTORY_READ, true),productController.getStockAlerts);
 
 // ACTUALIZAR PRODUCTO Y FOTOGRAFÍAS
-router.put("/:id",isAdmin,
+router.put("/:id",requirePermission(P.CATALOG_WRITE, true),
     upload.fields([
         { name: "foto_0", maxCount: 1 },
         { name: "foto_1", maxCount: 1 },
@@ -29,8 +30,8 @@ router.put("/:id",isAdmin,
     productController.update
 );
 
-router.delete("/:id",isAdmin,productController.delete);
-router.get("/:id", isAdminApi, productController.findOne);
+router.delete("/:id",requirePermission(P.CATALOG_WRITE, true),productController.delete);
+router.get("/:id", requirePermission(P.CATALOG_READ, true), productController.findOne);
 
 module.exports = router;
 

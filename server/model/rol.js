@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { PERMISSION_KEYS } = require('../config/permissions');
 
 var schema = new mongoose.Schema({
 
@@ -8,7 +9,17 @@ var schema = new mongoose.Schema({
         unique: true
     },
 
-    descripcion: String
+    descripcion: String,
+
+    // Permisos concretos que puede ejercer el rol. Los nombres se validan
+    // contra el catálogo central para evitar permisos escritos a mano.
+    permisos: {
+        type: [{
+            type: String,
+            enum: PERMISSION_KEYS
+        }],
+        default: []
+    }
 
 })
 

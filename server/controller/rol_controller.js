@@ -2,6 +2,32 @@ const { publicError, errorStatus } = require('../services/publicError');
 const Roldb = require('../model/rol');
 const Userdb = require('../model/user');
 const adminPagination = require('../services/adminPagination');
+const {
+    ALL_PERMISSIONS,
+    PERMISSIONS,
+    expandPermissions
+} = require('../config/permissions');
+
+function permissionsFromRequest(value, nombre) {
+    if (nombre === 'Admin') return [...ALL_PERMISSIONS];
+    if (['Cliente', 'dealer'].includes(nombre)) return [];
+
+    const permissions = expandPermissions(value);
+    if (permissions.length && !permissions.includes(PERMISSIONS.ADMIN_ACCESS)) {
+        permissions.unshift(PERMISSIONS.ADMIN_ACCESS);
+    }
+    return permissions;
+}
+
+function roleForResponse(role) {
+    if (!role) return role;
+    const data = typeof role.toObject === 'function' ? role.toObject() : { ...role };
+    const permissions = expandPermissions(data.permisos);
+    data.permisos = data.nombre === 'Admin' && permissions.length === 0
+        ? [...ALL_PERMISSIONS]
+        : permissions;
+    return data;
+}
 
 // ======================= CREATE =======================
 exports.create = async (req, res) => {
@@ -9,17 +35,23 @@ exports.create = async (req, res) => {
 
         const { nombre, descripcion } = req.body;
 
-        if (!nombre) {
+        if (typeof nombre !== 'string' || !nombre.trim() || nombre.length > 80) {
             return res.status(400).send("El nombre es obligatorio");
         }
 
-        const existe = await Roldb.findOne({ nombre });
+        const nombreNormalizado = nombre.trim();
+
+        const existe = await Roldb.findOne({ nombre: nombreNormalizado });
 
         if (existe) {
             return res.status(400).send("El rol ya existe");
         }
 
-        const rol = new Roldb({ nombre, descripcion });
+        const rol = new Roldb({
+            nombre: nombreNormalizado,
+            descripcion: typeof descripcion === 'string' ? descripcion.slice(0, 500) : '',
+            permisos: permissionsFromRequest(req.body.permisos, nombreNormalizado)
+        });
 
         await rol.save();
 
@@ -36,7 +68,7 @@ exports.find = async (req, res) => {
 
         if (req.query.id) {
             const rol = await Roldb.findById(req.query.id);
-            return res.send(rol);
+            return res.send(roleForResponse(rol));
         }
 
         if (adminPagination.isAdminList(req.query)) {
@@ -48,10 +80,10 @@ exports.find = async (req, res) => {
                 .skip((pagination.page - 1) * limit)
                 .limit(limit)
                 .lean();
-            return res.send({ items, pagination });
+            return res.send({ items: items.map(roleForResponse), pagination });
         }
 
-        const roles = await Roldb.find().sort({ nombre: 1, _id: 1 });
+        const roles = (await Roldb.find().sort({ nombre: 1, _id: 1 })).map(roleForResponse);
         res.send(roles);
 
     } catch (err) {
@@ -69,7 +101,15 @@ exports.update = async (req, res) => {
         if (!previous) return res.status(404).send('Rol no encontrado');
         if (['Admin', 'Cliente', 'dealer'].includes(previous.nombre) && req.body.nombre !== previous.nombre) return res.status(409).send('No se pueden renombrar los roles del sistema.');
         if (typeof req.body.nombre !== 'string' || !req.body.nombre.trim() || req.body.nombre.length > 80 || (req.body.descripcion !== undefined && typeof req.body.descripcion !== 'string')) return res.status(400).send('Datos del rol inválidos');
-        const rol = await Roldb.findByIdAndUpdate(id, { $set: { nombre: req.body.nombre.trim(), descripcion: (req.body.descripcion || '').slice(0, 500) } }, {
+        const nombre = req.body.nombre.trim();
+        if (previous.nombre !== nombre && ['Admin', 'Cliente', 'dealer'].includes(nombre)) {
+            return res.status(409).send('Ese nombre está reservado para un rol del sistema.');
+        }
+        const rol = await Roldb.findByIdAndUpdate(id, { $set: {
+            nombre,
+            descripcion: (req.body.descripcion || '').slice(0, 500),
+            permisos: permissionsFromRequest(req.body.permisos, previous.nombre)
+        } }, {
             new: true
         });
 

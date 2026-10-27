@@ -5,11 +5,12 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Userdb = require("../server/model/user");
 const Roldb = require("../server/model/rol");
+const { ALL_PERMISSIONS } = require("../server/config/permissions");
 
 async function crearRolesLocales() {
     const roles = [
         { nombre: "Cliente", descripcion: "Cliente de la tienda" },
-        { nombre: "Admin", descripcion: "Administrador local" },
+        { nombre: "Admin", descripcion: "Administrador local", permisos: ALL_PERMISSIONS },
         { nombre: "dealer", descripcion: "Distribuidor local" }
     ];
 
@@ -19,6 +20,13 @@ async function crearRolesLocales() {
             { $setOnInsert: datos },
             { upsert: true }
         );
+
+        if (datos.nombre === "Admin") {
+            await Roldb.updateOne(
+                { nombre: datos.nombre, permisos: { $exists: false } },
+                { $set: { permisos: ALL_PERMISSIONS } }
+            );
+        }
     }
 }
 

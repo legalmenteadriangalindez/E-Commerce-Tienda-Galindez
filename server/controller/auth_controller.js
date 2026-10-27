@@ -4,6 +4,8 @@ const bcrypt = require('bcrypt');
 const { randomInt } = require('crypto');
 const sendEmail = require('../config/sendEmail');
 const accounts = require('../business/accountService');
+const { permissionsForRole } = require('../middleware/auth');
+const { PERMISSIONS: P } = require('../config/permissions');
 
 function generateCode() {
     return randomInt(100000, 1000000).toString();
@@ -25,7 +27,7 @@ exports.login = async (req, res) => {
             );
         }
 
-        const usuario = await Userdb.findOne(accounts.emailFilter(accounts.normalizeEmail(email))).populate("rol", "nombre");
+        const usuario = await Userdb.findOne(accounts.emailFilter(accounts.normalizeEmail(email))).populate("rol", "nombre permisos");
 
         // Respuesta genérica para evitar revelar
         // información sobre cuentas existentes
@@ -78,7 +80,9 @@ exports.login = async (req, res) => {
                 );
             }
 
-            // Guardar únicamente datos necesarios
+        const permisos = permissionsForRole(usuario.rol);
+
+        // Guardar únicamente datos necesarios
             req.session.user = {
                 _id: usuario._id.toString(),
                 authVersion: usuario.authVersion || 0,
@@ -89,7 +93,8 @@ exports.login = async (req, res) => {
                 ciudad: usuario.ciudad,
                 ubicacion: usuario.ubicacion,
                 rol: {
-                    nombre: usuario.rol.nombre
+                    nombre: usuario.rol.nombre,
+                    permisos
                 }
             };
 
@@ -103,12 +108,20 @@ exports.login = async (req, res) => {
                     );
                 }
 
-                if (usuario.rol.nombre === "Admin") {
-                    return res.redirect("/billing-point");
-                }
-
                 if (usuario.rol.nombre === "dealer") {
                     return res.redirect("/dealer/orders/read");
+                }
+
+                if (permisos.includes(P.ADMIN_ACCESS)) {
+                    if (permisos.includes(P.PAYMENTS_MANAGE)) return res.redirect("/billing-point");
+                    if (permisos.includes(P.ANALYTICS_READ)) return res.redirect("/admin-analytics");
+                    if (permisos.includes(P.CATALOG_READ)) return res.redirect("/read-producto");
+                    if (permisos.includes(P.ORDERS_READ)) return res.redirect("/read-order");
+                    if (permisos.includes(P.PAYMENTS_READ)) return res.redirect("/admin/payments");
+                    if (permisos.includes(P.SALES_READ)) return res.redirect("/read-sales");
+                    if (permisos.includes(P.DELIVERY_MANAGE)) return res.redirect("/admin/delivery");
+                    if (permisos.includes(P.ROLES_MANAGE)) return res.redirect("/read-rol");
+                    if (permisos.includes(P.USERS_MANAGE)) return res.redirect("/read-user");
                 }
 
                 return res.redirect("/");

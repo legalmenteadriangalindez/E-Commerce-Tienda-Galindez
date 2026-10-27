@@ -82,7 +82,7 @@ exports.create_product_form = async (req, res) => {
         ] = await Promise.all([
 
             axios.get(`${BASE_URL}/api/marcas`),
-            axios.get(`${BASE_URL}/api/categorias`),
+            axios.get(`${BASE_URL}/api/categorias`, internalApiConfig(req)),
             axios.get(`${BASE_URL}/api/proveedores`, internalApiConfig(req))
             .catch(() => ({ data: [] }))
 

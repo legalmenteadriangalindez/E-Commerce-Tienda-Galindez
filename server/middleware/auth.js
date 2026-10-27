@@ -62,6 +62,32 @@
 
 const mongoose = require("mongoose");
 const Userdb = require("../model/user");
+const {
+    ALL_PERMISSIONS,
+    PERMISSIONS,
+    expandPermissions
+} = require("../config/permissions");
+
+function permissionsForRole(role) {
+    const explicit = expandPermissions(role?.permisos);
+
+    // Compatibilidad con administradores creados antes de introducir la
+    // matriz de permisos. Se puede restringir el rol desde el panel una vez
+    // que sus permisos hayan sido guardados explícitamente.
+    if (role?.nombre === "Admin" && explicit.length === 0) {
+        return [...ALL_PERMISSIONS];
+    }
+
+    return explicit;
+}
+
+function hasPermission(usuario, permission) {
+    const permissions = permissionsForRole(usuario?.rol);
+    return permissions.includes(permission) && (
+        permission === PERMISSIONS.ADMIN_ACCESS ||
+        permissions.includes(PERMISSIONS.ADMIN_ACCESS)
+    );
+}
 
 // Respuesta cuando no existe una sesión válida
 function noAutenticado(res, api) {
@@ -76,7 +102,7 @@ function noAutenticado(res, api) {
 }
 
 // Verificar usuario, estado y rol en la base de datos
-function verificarAcceso(rolRequerido = null, api = false) {
+function verificarAcceso(rolRequerido = null, api = false, permisoRequerido = null) {
 
     return async (req, res, next) => {
 
@@ -97,7 +123,7 @@ function verificarAcceso(rolRequerido = null, api = false) {
                     .select(
                         "nombre email telefono direccion ciudad ubicacion estado rol verified authVersion"
                     )
-                    .populate("rol", "nombre")
+                    .populate("rol", "nombre permisos")
                     .lean();
             }
 
@@ -124,6 +150,9 @@ function verificarAcceso(rolRequerido = null, api = false) {
             }
 
             req.usuarioActual = usuario;
+            const permisos = permissionsForRole(usuario.rol);
+            res.locals.authUser = usuario;
+            res.locals.can = permission => hasPermission(usuario, permission);
 
             // Conservar solo información necesaria
             const datosSesion = {
@@ -136,7 +165,8 @@ function verificarAcceso(rolRequerido = null, api = false) {
                 ciudad: usuario.ciudad,
                 ubicacion: usuario.ubicacion,
                 rol: {
-                    nombre: usuario.rol.nombre
+                    nombre: usuario.rol.nombre,
+                    permisos
                 }
             };
 
@@ -163,6 +193,21 @@ function verificarAcceso(rolRequerido = null, api = false) {
                 return res.status(403).send(
                     "Acceso denegado"
                 );
+            }
+
+            const permisoValido = Array.isArray(permisoRequerido)
+                ? permisoRequerido.some(permission => hasPermission(usuario, permission))
+                : !permisoRequerido || hasPermission(usuario, permisoRequerido);
+
+            if (permisoRequerido && !permisoValido) {
+                if (api) {
+                    return res.status(403).json({
+                        success: false,
+                        message: "No tienes permisos para realizar esta acción"
+                    });
+                }
+
+                return res.status(403).send("No tienes permisos para realizar esta acción");
             }
 
             return next();
@@ -199,4 +244,11 @@ exports.isAdminApi = verificarAcceso("Admin", true);
 
 // Distribuidor
 exports.isDealer = verificarAcceso("dealer");
+
+exports.permissionsForRole = permissionsForRole;
+exports.hasPermission = hasPermission;
+exports.requirePermission = (permission, api = false) =>
+    verificarAcceso(null, api, permission);
+exports.requireAnyPermission = (permissions, api = false) =>
+    verificarAcceso(null, api, permissions);
 

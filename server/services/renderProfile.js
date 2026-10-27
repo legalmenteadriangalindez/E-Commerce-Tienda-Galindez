@@ -164,11 +164,11 @@ async function obtenerPerfil(id) {
 }
 
 // Elegir la vista según el rol
-function obtenerVista(user, editar = false) {
+function obtenerVista(user, editar = false, adminView = false) {
     const rol = user.rol?.nombre;
 
     const carpeta =
-        rol === "Admin"
+        adminView || rol === "Admin"
             ? "admin"
             : rol === "dealer"
                 ? "dealer"
@@ -180,7 +180,7 @@ function obtenerVista(user, editar = false) {
 }
 
 // Mostrar perfil o formulario de edición
-async function mostrarPerfil(req, res, editar = false) {
+async function mostrarPerfil(req, res, editar = false, adminView = false) {
     const id = verificarPropietario(req, res);
     if (!id) return;
 
@@ -194,7 +194,7 @@ async function mostrarPerfil(req, res, editar = false) {
         }
 
         return res.render(
-            obtenerVista(user, editar),
+            obtenerVista(user, editar, adminView),
             { user }
         );
 
@@ -211,6 +211,10 @@ exports.profile = (req, res) => {
     return mostrarPerfil(req, res, false);
 };
 
+exports.profile_admin = (req, res) => {
+    return mostrarPerfil(req, res, false, true);
+};
+
 // FORMULARIO EDITAR PERFIL
 exports.update_profile_form = (req, res) => {
     return mostrarPerfil(req, res, true);
@@ -218,11 +222,11 @@ exports.update_profile_form = (req, res) => {
 
 // FORMULARIO EDITAR PERFIL ADMIN
 exports.update_profile_form_admin = (req, res) => {
-    return mostrarPerfil(req, res, true);
+    return mostrarPerfil(req, res, true, true);
 };
 
 // ACTUALIZAR SOLAMENTE EL PERFIL PROPIO
-async function guardarPerfil(req, res) {
+async function guardarPerfil(req, res, adminMode = false) {
     const id = verificarPropietario(req, res);
     if (!id) return;
 
@@ -308,7 +312,7 @@ async function guardarPerfil(req, res) {
                 );
             }
 
-            return res.redirect("/perfil");
+            return res.redirect(adminMode ? "/admin/perfil" : "/perfil");
         });
 
     } catch (error) {
@@ -321,6 +325,6 @@ async function guardarPerfil(req, res) {
 }
 
 exports.update_profile = guardarPerfil;
-exports.update_profile_admin = guardarPerfil;
+exports.update_profile_admin = (req, res) => guardarPerfil(req, res, true);
 
 

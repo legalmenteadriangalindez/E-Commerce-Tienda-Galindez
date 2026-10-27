@@ -2,13 +2,14 @@
 const express = require("express");
 const router = express.Router();
 
-const { isAdminApi } = require("../middleware/auth");
+const { requirePermission } = require("../middleware/auth");
+const { PERMISSIONS: P } = require('../config/permissions');
 
 const userController = require("../controller/user_controller");
 const servicesRenderUser = require("../services/renderUsers");
 
 // Todas las rutas de esta API son administrativas
-router.use(isAdminApi);
+router.use(requirePermission(P.USERS_MANAGE, true));
 
 // Buscar usuarios
 router.get("/search", userController.search);

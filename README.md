@@ -47,6 +47,7 @@ Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicació
 - Sorteo de regalos: cada pedido pagado elegible recibe un número; el ganador recibe un aviso por Brevo y el resultado público muestra el número, la fecha y el total de participaciones sin exponer datos personales.
 - Participaciones administrativas: la tabla usa paginación en MongoDB y permite consultar 10, 25 o 50 filas por página sin el límite anterior de 500 registros.
 - Reparto y seguimiento: el administrador asigna pedidos pagados a usuarios con rol `dealer`; cada repartidor ve únicamente sus entregas y el cliente consulta una línea de tiempo desde `/mis-pedidos`.
+- Permisos por rol: `Admin` conserva acceso de superadministrador por compatibilidad. Desde `/create-rol` y `/read-rol` puedes crear roles personalizados y seleccionar módulos como catálogo, pedidos, pagos, analítica, reseñas, rifa, reparto, usuarios o proveedores. Los permisos se guardan en `roledb.permisos`, se comprueban en páginas y API, y el menú oculta las opciones no autorizadas. Para aplicar un rol a una cuenta, edítala desde `/read-user` y selecciona el rol; las cuentas existentes se actualizan al siguiente acceso sin migración manual.
 
 Nunca subas `.env`, `config.env`, contraseñas, claves ni `node_modules`. Las pruebas automatizadas usan datos temporales y transacciones simuladas del proveedor: completa las pruebas externas descritas en la guía antes de activar cobros reales.
 

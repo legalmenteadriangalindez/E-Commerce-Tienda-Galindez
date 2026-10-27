@@ -7,13 +7,14 @@
 
   <div class="page-header">
     <h1>Editar Rol</h1>
-    <p>Actualiza el nombre del rol del sistema</p>
+    <p>Actualiza el nombre, descripción y permisos del rol</p>
   </div>
 
   <div class="form-card small-card">
 
-    <form action="/update-rol/<%= rol._id %>" method="POST" class="role-form">
+    <form action="/update-rol" method="POST" class="role-form">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="id" value="<%= rol._id %>">
 
       <div class="form-group">
         <label>Nombre del rol</label>
@@ -27,6 +28,31 @@
         >
 
         <small>Este nombre define el nivel de acceso</small>
+      </div>
+
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea name="descripcion" rows="3" maxlength="500"><%= rol.descripcion || '' %></textarea>
+      </div>
+
+      <% const systemRole = ['Admin', 'Cliente', 'dealer'].includes(rol.nombre); %>
+      <div class="form-group">
+        <label>Permisos</label>
+        <% if (systemRole) { %>
+          <small>Los roles del sistema conservan sus permisos base para evitar bloquear el acceso de clientes, repartidores o administradores.</small>
+        <% } else { %>
+          <small>El acceso al panel se añade automáticamente cuando seleccionas cualquier permiso administrativo.</small>
+        <% } %>
+        <div class="permission-grid" role="group" aria-label="Permisos del rol">
+          <% (permissionKeys || []).forEach(function(permission) { %>
+            <label class="permission-option <%= systemRole ? 'is-disabled' : '' %>">
+              <input type="checkbox" name="permisos" value="<%= permission %>"
+                <%= (selectedPermissions || []).includes(permission) ? 'checked' : '' %>
+                <%= systemRole ? 'disabled' : '' %>>
+              <span><%= permissionLabels[permission] %></span>
+            </label>
+          <% }); %>
+        </div>
       </div>
 
       <div class="form-actions">

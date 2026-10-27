@@ -1,6 +1,8 @@
 const Reviewdb = require('../model/review');
 const Productdb = require('../model/product');
 const reviewService = require('../business/reviewService');
+const { hasPermission } = require('../middleware/auth');
+const { PERMISSIONS: P } = require('../config/permissions');
 
 function jsonRequest(req) {
     return req.is('application/json') || (req.get('accept') || '').includes('application/json');
@@ -164,13 +166,13 @@ exports.delete = async (req, res) => {
 
         const productId = review.producto.toString();
         const userId = req.usuarioActual._id;
-        const isAdmin = req.usuarioActual.rol?.nombre === 'Admin';
-        if (!isAdmin && review.usuario.toString() !== userId.toString()) {
+        const isModerator = hasPermission(req.usuarioActual, P.REVIEWS_MODERATE);
+        if (!isModerator && review.usuario.toString() !== userId.toString()) {
             return respond(req, res, 403, 'No puedes eliminar esta reseña.', productId);
         }
 
         const filter = { _id: review._id };
-        if (!isAdmin) filter.usuario = userId;
+        if (!isModerator) filter.usuario = userId;
         const deleted = await Reviewdb.findOneAndDelete(filter);
         if (!deleted) return respond(req, res, 404, 'La reseña ya no existe.', productId);
 

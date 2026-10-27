@@ -5,10 +5,11 @@ const router = express.Router();
 const saleController = require("../controller/sale_controller");
 
 // Middleware que ya creamos en el paso 2.2
-const { isAdminApi } = require("../middleware/auth");
+const { requirePermission } = require("../middleware/auth");
+const { PERMISSIONS: P } = require('../config/permissions');
 
 // TODAS LAS RUTAS REQUIEREN ADMINISTRADOR
-router.use(isAdminApi);
+router.use(requirePermission(P.SALES_READ, true));
 
 // ==================== ESTADÍSTICAS ====================
 

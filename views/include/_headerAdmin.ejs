@@ -28,11 +28,16 @@
 </head>
 <body>
 
+<% const canAccess = typeof can === 'function' ? can : () => true; %>
+<% const adminHome = canAccess('payments:manage') ? '/billing-point' : canAccess('analytics:read') ? '/admin-analytics' : canAccess('catalog:read') ? '/read-producto' : canAccess('orders:read') ? '/read-order' : canAccess('payments:read') ? '/admin/payments' : canAccess('sales:read') ? '/read-sales' : canAccess('delivery:manage') ? '/admin/delivery' : canAccess('roles:manage') ? '/read-rol' : canAccess('users:manage') ? '/read-user' : '/'; %>
+<% const showManagement = ['payments:read', 'delivery:manage', 'catalog:read', 'providers:manage', 'roles:manage', 'reviews:moderate', 'users:manage'].some(canAccess); %>
+<% const showAnalytics = ['analytics:read', 'orders:read', 'inventory:read', 'sales:read', 'raffle:manage'].some(canAccess); %>
+
 <header id="header">
 <nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container-fluid">
     <!-- BRAND -->
-    <a class="navbar-brand d-flex align-items-center" href="/billing-point">
+    <a class="navbar-brand d-flex align-items-center" href="<%= adminHome %>">
         <i class="bi bi-shield-lock me-2"></i>
         <span class="brand-text">Admin Galindez</span>
     </a>
@@ -45,37 +50,36 @@
     <div class="collapse navbar-collapse" id="navbarAdmin">
       <!-- LEFT -->
       <ul class="navbar-nav me-auto">
-        <li class="nav-item dropdown">
+        <% if (showManagement) { %><li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
             <i class="bi bi-gear"></i> Gestión
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/admin/payments">Pagos y conciliación</a></li>
-            <li><a class="dropdown-item" href="/admin/delivery"><i class="bi bi-bicycle"></i> Reparto y seguimiento</a></li>
-            <li><a class="dropdown-item" href="/read-producto"><i class="bi bi-box-seam"></i> Productos</a></li>
-            <li><a class="dropdown-item" href="/read-categoria"><i class="bi bi-tags"></i> Categorías</a></li>
-            <li><a class="dropdown-item" href="/admin/brands/read-brands"><i class="bi bi-bookmark-star"></i> Marcas</a></li>
-            <li><a class="dropdown-item" href="/read-proveedor"><i class="bi bi-truck"></i> Proveedores</a></li>
-            <li><a class="dropdown-item" href="/read-rol"><i class="bi bi-person-badge"></i> Roles</a></li>
-            <li><a class="dropdown-item" href="/admin/reviews"><i class="bi bi-chat-left-text"></i> Reseñas</a></li>
-            <li><a class="dropdown-item" href="/read-user"><i class="bi bi-person-plus"></i> Usuarios</a></li>
+            <% if (canAccess('payments:read')) { %><li><a class="dropdown-item" href="/admin/payments">Pagos y conciliación</a></li><% } %>
+            <% if (canAccess('delivery:manage')) { %><li><a class="dropdown-item" href="/admin/delivery"><i class="bi bi-bicycle"></i> Reparto y seguimiento</a></li><% } %>
+            <% if (canAccess('catalog:read')) { %><li><a class="dropdown-item" href="/read-producto"><i class="bi bi-box-seam"></i> Productos</a></li><% } %>
+            <% if (canAccess('catalog:read')) { %><li><a class="dropdown-item" href="/read-categoria"><i class="bi bi-tags"></i> Categorías</a></li><% } %>
+            <% if (canAccess('catalog:read')) { %><li><a class="dropdown-item" href="/admin/brands/read-brands"><i class="bi bi-bookmark-star"></i> Marcas</a></li><% } %>
+            <% if (canAccess('providers:manage')) { %><li><a class="dropdown-item" href="/read-proveedor"><i class="bi bi-truck"></i> Proveedores</a></li><% } %>
+            <% if (canAccess('roles:manage')) { %><li><a class="dropdown-item" href="/read-rol"><i class="bi bi-person-badge"></i> Roles</a></li><% } %>
+            <% if (canAccess('reviews:moderate')) { %><li><a class="dropdown-item" href="/admin/reviews"><i class="bi bi-chat-left-text"></i> Reseñas</a></li><% } %>
+            <% if (canAccess('users:manage')) { %><li><a class="dropdown-item" href="/read-user"><i class="bi bi-person-plus"></i> Usuarios</a></li><% } %>
 
           </ul>
-        </li>
-             <li class="nav-item dropdown">
+        </li><% } %>
+             <% if (showAnalytics) { %><li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
               <i class="bi bi-graph-up-arrow"></i> Analitics
             </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/admin-analytics"><i class="bi bi-speedometer2"></i> Informe de ventas</a></li>
-            <li><a class="dropdown-item" href="/read-order"><i class="bi bi-receipt-cutoff"></i> Ordenes </a></li>
-            <li><a class="dropdown-item" href="/read-Stock"><i class="bi bi-box-seam"></i> Stock </a></li>
-            <li><a class="dropdown-item" href="/admin-best_selling_products"><i class="bi bi-box-seam"></i> Productos mas vendidos </a></li>
-            <li><a class="dropdown-item" href="/admin/raffle"><i class="bi bi-gift"></i> Sorteo de regalos</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="/read-sales"><i class="bi bi-cart-check"></i> Ventas</a></li>
+            <% if (canAccess('analytics:read')) { %><li><a class="dropdown-item" href="/admin-analytics"><i class="bi bi-speedometer2"></i> Informe de ventas</a></li><% } %>
+            <% if (canAccess('orders:read')) { %><li><a class="dropdown-item" href="/read-order"><i class="bi bi-receipt-cutoff"></i> Ordenes </a></li><% } %>
+            <% if (canAccess('inventory:read')) { %><li><a class="dropdown-item" href="/read-Stock"><i class="bi bi-box-seam"></i> Stock </a></li><% } %>
+            <% if (canAccess('sales:read')) { %><li><a class="dropdown-item" href="/admin-best_selling_products"><i class="bi bi-box-seam"></i> Productos mas vendidos </a></li><% } %>
+            <% if (canAccess('raffle:manage')) { %><li><a class="dropdown-item" href="/admin/raffle"><i class="bi bi-gift"></i> Sorteo de regalos</a></li><% } %>
+            <% if (canAccess('sales:read')) { %><li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/read-sales"><i class="bi bi-cart-check"></i> Ventas</a></li><% } %>
           </ul>
-        </li>
+        </li><% } %>
       </ul>
 
       <!-- RIGHT -->
@@ -86,8 +90,8 @@
             <i class="bi bi-person-circle"></i>
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="/admin/perfil"><i class="bi bi-person"></i> Perfil</a></li>
-            <li><a class="dropdown-item" href="/billing-point"><i class="bi bi-grid"></i> Panel</a></li>
+            <% if (canAccess('profile:manage')) { %><li><a class="dropdown-item" href="/admin/perfil"><i class="bi bi-person"></i> Perfil</a></li><% } %>
+            <% if (canAccess('payments:manage')) { %><li><a class="dropdown-item" href="/billing-point"><i class="bi bi-grid"></i> Panel</a></li><% } %>
             <li><hr class="dropdown-divider"></li>
             <li>
               <form action="/logout" method="POST">
