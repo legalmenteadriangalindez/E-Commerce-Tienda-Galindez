@@ -23,43 +23,51 @@ function validToken(expected, provided) {
         crypto.timingSafeEqual(expectedBuffer, providedBuffer);
 }
 
-function requestOrigin(req) {
-    const host = req.get('host');
-    if (!host) return '';
+function normalizeOrigin(value) {
+    if (typeof value !== 'string' || !value.trim()) return '';
 
-    // Render termina TLS en el proxy y reenvía la petición al proceso por HTTP.
-    // Leer el primer X-Forwarded-Proto evita rechazar formularios HTTPS legítimos.
-    const forwardedProto = String(req.get('x-forwarded-proto') || '')
-        .split(',')[0]
-        .trim()
-        .toLowerCase();
-    const protocol = ['http', 'https'].includes(forwardedProto)
-        ? forwardedProto
-        : req.protocol;
+    try {
+        const url = new URL(value.trim());
+        if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) {
+            return '';
+        }
 
-    return `${protocol}://${host}`;
+        return url.origin.toLowerCase();
+    } catch {
+        return '';
+    }
+}
+
+function firstForwarded(value) {
+    return String(value || '').split(',')[0].trim();
 }
 
 function allowedOrigin(req, origin) {
     if (!origin) return true;
 
-    const origins = new Set([requestOrigin(req)]);
+    const requestedOrigin = normalizeOrigin(origin);
+    if (!requestedOrigin) return false;
+
+    const hosts = new Set([
+        req.get('host'),
+        // Render puede conservar el host público únicamente en este encabezado.
+        firstForwarded(req.get('x-forwarded-host'))
+    ].filter(Boolean));
+    const origins = new Set();
+
     // El proxy puede entregar HTTP al proceso aunque el navegador use HTTPS.
-    // Ambos protocolos siguen limitados al mismo host de la petición.
-    const host = req.get('host');
-    if (host) {
-        origins.add(`http://${host}`);
-        origins.add(`https://${host}`);
-    }
-    if (process.env.BASE_URL) {
-        try {
-            origins.add(new URL(process.env.BASE_URL).origin);
-        } catch {
-            // production.js valida BASE_URL; se ignora aquí para no romper local.
-        }
+    // Se comparan ambos protocolos, pero siempre con un host conocido de la petición.
+    for (const host of hosts) {
+        origins.add(normalizeOrigin(`http://${host}`));
+        origins.add(normalizeOrigin(`https://${host}`));
     }
 
-    return origins.has(origin);
+    if (process.env.BASE_URL) {
+        const configuredOrigin = normalizeOrigin(process.env.BASE_URL);
+        if (configuredOrigin) origins.add(configuredOrigin);
+    }
+
+    return origins.has(requestedOrigin);
 }
 
 function rejectRequest(req, res) {

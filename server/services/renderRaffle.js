@@ -17,7 +17,17 @@ exports.adminIndex = async (req, res, next) => {
         const data = await raffle.adminData();
         const raffleNotice = req.session.raffleNotice || '';
         delete req.session.raffleNotice;
-        return res.render('admin/raffle/manage', { ...data, raffleNotice });
+        const renderPage = () => res.render('admin/raffle/manage', { ...data, raffleNotice });
+
+        // El token CSRF se crea antes de llegar a esta ruta. Guardar la sesión
+        // explícitamente evita que Render entregue el formulario antes de que
+        // connect-mongo haya persistido el token que luego validará Multer.
+        if (typeof req.session.save !== 'function') return renderPage();
+
+        return req.session.save(error => {
+            if (error) return next(error);
+            return renderPage();
+        });
     } catch (error) {
         return next(error);
     }
