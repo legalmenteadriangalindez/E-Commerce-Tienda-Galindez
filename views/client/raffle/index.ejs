@@ -15,6 +15,40 @@
                 <p class="raffle-public-note">Cada pedido pagado que cumpla el monto recibe una participación única.</p>
             </div>
         </section>
+
+        <% if (user) { %>
+            <section class="commerce-card raffle-my-entries" aria-labelledby="raffle-my-entries-title">
+                <div class="raffle-section-heading">
+                    <div>
+                        <p class="raffle-eyebrow">Tus participaciones</p>
+                        <h2 id="raffle-my-entries-title">Números asignados</h2>
+                    </div>
+                    <span class="raffle-entry-count"><%= entries.length %></span>
+                </div>
+
+                <% if (entries.length) { %>
+                    <div class="raffle-entry-grid">
+                        <% entries.forEach(entry => { %>
+                            <article class="raffle-entry-card <%= entry.ganador ? 'is-winner' : '' %>">
+                                <div>
+                                    <p class="raffle-entry-label"><%= entry.ganador ? 'Número ganador' : 'Número de participación' %></p>
+                                    <strong class="raffle-entry-number">#<%= entry.numero %></strong>
+                                </div>
+                                <p class="raffle-entry-order">
+                                    Pedido <%= entry.order?.numeroOrden || 'histórico' %><br>
+                                    <%= new Date(entry.createdAt).toLocaleDateString('es-CO') %>
+                                </p>
+                            </article>
+                        <% }) %>
+                    </div>
+                    <p class="raffle-public-note">Conserva estos números. Cada pedido pagado elegible recibe una sola participación.</p>
+                <% } else { %>
+                    <p class="raffle-public-note">Aún no tienes participaciones. Realiza un pedido pagado por el monto mínimo para recibir tu número.</p>
+                <% } %>
+            </section>
+        <% } else { %>
+            <p class="raffle-login-note">Inicia sesión para consultar tus números de participación.</p>
+        <% } %>
     <% } else { %>
         <section class="commerce-card">
             <h1>No hay una rifa activa</h1>

@@ -36,6 +36,45 @@ async function publicConfig() {
         .lean();
 }
 
+function validUserId(userId) {
+    return userId && mongoose.isObjectIdOrHexString(String(userId));
+}
+
+async function entriesForUser(userId, raffleId) {
+    if (!validUserId(userId)) return [];
+
+    const filter = { usuario: userId };
+    if (raffleId && mongoose.isObjectIdOrHexString(String(raffleId))) {
+        filter.raffle = raffleId;
+    }
+
+    return RaffleEntry.find(filter)
+        .populate('order', 'numeroOrden total createdAt estado estadoPago')
+        .sort({ numero: 1 })
+        .lean();
+}
+
+async function entryForOrder(orderId, userId) {
+    if (!validUserId(userId) || !mongoose.isObjectIdOrHexString(String(orderId))) return null;
+
+    return RaffleEntry.findOne({ order: orderId, usuario: userId })
+        .populate('order', 'numeroOrden total createdAt estado estadoPago')
+        .lean();
+}
+
+async function entriesForOrders(userId, orderIds) {
+    if (!validUserId(userId) || !Array.isArray(orderIds)) return [];
+
+    const ids = orderIds
+        .map(id => String(id))
+        .filter(id => mongoose.isObjectIdOrHexString(id));
+    if (!ids.length) return [];
+
+    return RaffleEntry.find({ usuario: userId, order: { $in: ids } })
+        .select('order numero ganador montoCompra createdAt')
+        .lean();
+}
+
 async function updateConfig(body, file) {
     const montoMinimo = Number(body.montoMinimo);
     if (!Number.isSafeInteger(montoMinimo) || montoMinimo < 0 || montoMinimo > 100000000) {
@@ -161,6 +200,9 @@ module.exports = {
     publicConfig,
     updateConfig,
     adminData,
+    entriesForUser,
+    entryForOrder,
+    entriesForOrders,
     recordEligibleOrder,
     drawWinner,
     resetRaffle

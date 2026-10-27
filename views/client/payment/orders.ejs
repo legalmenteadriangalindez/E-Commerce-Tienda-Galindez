@@ -1,13 +1,18 @@
 <%- include('../../include/_header') %>
+<% const entriesByOrder = raffleEntriesByOrder || {}; %>
 <main class="commerce-panel">
   <h1>Mis pedidos</h1>
   <p>Consulta aquí el pago y la entrega de tus compras.</p>
   <% if (!orders.length) { %><p>Todavía no hay pedidos en esta página.</p><% } %>
   <% orders.forEach(order => { %>
+    <% const raffleEntry = entriesByOrder[String(order._id)]; %>
     <article class="commerce-card">
       <h2><a href="/venta-finalizada/<%= order._id %>"><%= order.numeroOrden %></a></h2>
       <p><%= new Date(order.createdAt).toLocaleString('es-CO') %> · $<%= order.total.toLocaleString('es-CO') %> COP</p>
       <p>Pago: <strong><%= order.estadoPago %></strong> · Pedido: <strong><%= order.estado %></strong></p>
+      <% if (raffleEntry) { %>
+        <p class="raffle-order-number">Rifa: <strong>número #<%= raffleEntry.numero %></strong></p>
+      <% } %>
     </article>
   <% }) %>
   <nav aria-label="Páginas de pedidos">

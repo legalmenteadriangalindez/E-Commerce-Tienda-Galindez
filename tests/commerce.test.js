@@ -8,6 +8,9 @@ const Sale = require('../server/model/sales');
 const Detail = require('../server/model/saleDetails');
 const Event = require('../server/model/paymentEvent');
 const EmailEvent = require('../server/model/orderEmailEvent');
+const Raffle = require('../server/model/raffle');
+const RaffleEntry = require('../server/model/raffleEntry');
+const raffle = require('../server/business/raffleService');
 
 test('importes en centavos y validación del carrito', () => {
     assert.equal(commerce.cents(123.45), 12345);
@@ -22,7 +25,7 @@ test('compras y pagos con transacciones reales en MongoDB temporal', {
 }, async t => {
     const app = await require('./helpers/reviewApp').startReviewApp(process.env.COMMERCE_TEST_MONGO_URI);
     t.after(() => app.close());
-    await Promise.all([Order, Sale, Detail, Event, EmailEvent].map(model => model.init()));
+    await Promise.all([Order, Sale, Detail, Event, EmailEvent, Raffle, RaffleEntry].map(model => model.init()));
     const body = { fullName: 'Cliente de prueba', email: 'cliente@example.test', phone: '0000000000', address: 'Calle de prueba', city: 'Ciudad de prueba' };
     const make = (user, quantity = 1, key = randomUUID(), extra = {}) => commerce.createOrder({
         userId: user._id, cart: [{ productoId: app.product.id, cantidad: quantity }], key, body, ...extra
@@ -30,7 +33,14 @@ test('compras y pagos con transacciones reales en MongoDB temporal', {
     const tx = (order, status = 'APPROVED', id = randomUUID()) => ({ id, reference: order.numeroOrden,
         currency: 'COP', amount_in_cents: commerce.cents(order.total), status });
     const reset = async stock => {
-        await Promise.all([Order, Sale, Detail, Event, EmailEvent].map(model => model.deleteMany({})));
+        await Promise.all([Order, Sale, Detail, Event, EmailEvent, Raffle, RaffleEntry].map(model => model.deleteMany({})));
+        await Raffle.create({
+            clave: 'principal',
+            activo: true,
+            montoMinimo: 0,
+            titulo: 'Rifa de prueba',
+            descripcion: 'Rifa de prueba'
+        });
         await app.Product.updateOne({ _id: app.product._id }, { stock });
     };
     await t.test('doble clic crea una sola orden y reserva una sola vez', async () => {
@@ -53,9 +63,27 @@ test('compras y pagos con transacciones reales en MongoDB temporal', {
         assert.equal(await Sale.countDocuments(), 1); assert.equal(await Detail.countDocuments(), 1);
         assert.equal((await app.Product.findById(app.product._id)).stock, 8);
         assert.equal((await Order.findById(order._id)).estado, 'PAGADA');
+        assert.equal(await RaffleEntry.countDocuments(), 1);
+        assert.equal((await RaffleEntry.findOne({ order: order._id })).numero, 1);
         await commerce.applyTransaction(tx(order));
         assert.equal(await Event.countDocuments({ estado: 'REVISION' }), 1);
         assert.equal(await Sale.countDocuments(), 1);
+    });
+    await t.test('cada pedido elegible recibe un número visible solo para su cliente', async () => {
+        await reset(10);
+        const first = await make(app.users.owner);
+        const second = await make(app.users.second);
+        await commerce.applyTransaction(tx(first));
+        await commerce.applyTransaction(tx(second));
+
+        const entries = await RaffleEntry.find().sort({ numero: 1 }).lean();
+        assert.deepEqual(entries.map(entry => entry.numero), [1, 2]);
+        assert.equal((await raffle.entryForOrder(first._id, app.users.owner._id)).numero, 1);
+        assert.equal(await raffle.entryForOrder(first._id, app.users.second._id), null);
+        assert.deepEqual(
+            (await raffle.entriesForOrders(app.users.owner._id, [first._id])).map(entry => entry.numero),
+            [1]
+        );
     });
     await t.test('rechazo libera la reserva una vez y un vencimiento no la libera otra vez', async () => {
         await reset(10); const order = await make(app.users.owner, 3); const transaction = tx(order, 'DECLINED');

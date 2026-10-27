@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Order = require('../model/order');
 const PaymentEvent = require('../model/paymentEvent');
 const commerce = require('../business/commerceService');
+const raffle = require('../business/raffleService');
 const catalogPagination = require('./catalogPagination');
 const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 const saveSession = req => new Promise((resolve, reject) => req.session.save(error => error ? reject(error) : resolve()));
@@ -33,7 +34,21 @@ exports.myOrders = wrap(async (req, res) => {
     const page = Math.max(1, Math.min(Number.parseInt(req.query.page, 10) || 1, 100000));
     const orders = await Order.find({ usuario: req.session.user._id, canal: { $ne: 'CAJA' } })
         .sort({ createdAt: -1 }).skip((page - 1) * 20).limit(21).lean();
-    res.render('client/payment/orders', { orders: orders.slice(0, 20), page, more: orders.length > 20, user: req.usuarioActual });
+    const visibleOrders = orders.slice(0, 20);
+    const raffleEntries = await raffle.entriesForOrders(
+        req.session.user._id,
+        visibleOrders.map(order => order._id)
+    );
+    const raffleEntriesByOrder = Object.fromEntries(
+        raffleEntries.map(entry => [String(entry.order), entry])
+    );
+    res.render('client/payment/orders', {
+        orders: visibleOrders,
+        raffleEntriesByOrder,
+        page,
+        more: orders.length > 20,
+        user: req.usuarioActual
+    });
 });
 exports.orderStatus = wrap(async (req, res) => {
     if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new commerce.CommerceError('Pedido no encontrado.', 404);
@@ -50,7 +65,14 @@ exports.orderStatus = wrap(async (req, res) => {
         req.session.cart = []; delete req.session.claveCheckout; await saveSession(req);
     }
     const hasPaymentPending = Boolean(await PaymentEvent.exists({ order: order._id, estado: 'PENDIENTE' }));
-    res.render('client/payment/order_status', { order, notice, hasPaymentPending, user: req.usuarioActual });
+    const raffleEntry = await raffle.entryForOrder(order._id, req.session.user._id);
+    res.render('client/payment/order_status', {
+        order,
+        raffleEntry,
+        notice,
+        hasPaymentPending,
+        user: req.usuarioActual
+    });
 });
 exports.adminPayments = wrap(async (req, res) => {
     const page = Math.max(1, Math.min(Number.parseInt(req.query.page, 10) || 1, 100000));

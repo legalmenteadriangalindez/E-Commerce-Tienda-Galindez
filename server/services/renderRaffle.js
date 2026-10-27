@@ -32,9 +32,14 @@ function logRaffle(event, req, extra = {}) {
 
 exports.publicIndex = async (req, res, next) => {
     try {
+        const activeRaffle = await raffle.publicConfig();
+        const user = req.usuarioActual || req.session.user;
         return res.render('client/raffle/index', {
-            raffle: await raffle.publicConfig(),
-            user: req.usuarioActual || req.session.user
+            raffle: activeRaffle,
+            entries: activeRaffle && user
+                ? await raffle.entriesForUser(user._id, activeRaffle._id)
+                : [],
+            user
         });
     } catch (error) {
         return next(error);

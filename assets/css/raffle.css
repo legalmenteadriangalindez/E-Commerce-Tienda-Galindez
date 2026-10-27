@@ -31,6 +31,23 @@
 .raffle-public-copy strong { display:inline-block; margin-top:10px; color:#7b2cbf; }
 .raffle-public-note { color:#65717c; }
 .raffle-eyebrow { margin:0 0 6px; color:#c9184a; font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.raffle-my-entries { margin-top:22px; padding:24px; }
+.raffle-section-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; }
+.raffle-section-heading h2 { margin:0; color:#321642; }
+.raffle-entry-count { display:inline-flex; align-items:center; justify-content:center; min-width:32px; height:32px; padding:0 9px; border-radius:999px; background:#f3e6fa; color:#7b2cbf; font-weight:800; }
+.raffle-entry-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px; }
+.raffle-entry-card { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:16px; border:1px solid #eadce8; border-radius:14px; background:linear-gradient(135deg, #fff, #fbf5ff); box-shadow:0 5px 16px rgba(55, 20, 70, .08); }
+.raffle-entry-card.is-winner { border-color:#e0ae2f; background:linear-gradient(135deg, #fffdf1, #fff4bd); }
+.raffle-entry-card--status { margin:22px 0; }
+.raffle-entry-label { margin:0 0 5px; color:#7b2cbf; font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+.raffle-entry-card.is-winner .raffle-entry-label { color:#8b6500; }
+.raffle-entry-number { display:block; color:#321642; font-size:1.8rem; line-height:1; letter-spacing:.02em; }
+.raffle-entry-order { margin:0; color:#65717c; font-size:.78rem; line-height:1.45; text-align:right; }
+.raffle-entry-card h2 { margin:0 0 7px; color:#321642; font-size:1.2rem; }
+.raffle-entry-card h2 .raffle-entry-number { display:inline; font-size:1.5rem; }
+.raffle-entry-card p { margin-bottom:0; }
+.raffle-entry-link { align-self:flex-start; color:#7b2cbf; font-size:.85rem; font-weight:800; white-space:nowrap; }
+.raffle-login-note { margin:22px 0; padding:14px 16px; border:1px solid #eadce8; border-radius:10px; background:#fbf5ff; color:#594b60; }
 .raffle-admin-page { max-width:1180px; margin:32px auto; padding:0 20px; }
 .raffle-admin-heading { display:flex; justify-content:space-between; gap:20px; align-items:end; margin-bottom:20px; }
 .raffle-admin-heading h1 { margin:.2rem 0; }
@@ -70,4 +87,9 @@
     .raffle-admin-heading { align-items:start; flex-direction:column; }
     .raffle-public-page { margin:24px auto; }
     .raffle-public-copy { padding:20px; }
+    .raffle-my-entries { padding:18px; }
+    .raffle-section-heading { align-items:flex-start; }
+    .raffle-entry-card { align-items:flex-start; flex-direction:column; }
+    .raffle-entry-order { text-align:left; }
+    .raffle-entry-card--status { align-items:flex-start; }
 }
