@@ -172,7 +172,7 @@ module.exports.sendOrderConfirmation = async order => {
         sender: { name: 'Tienda Galindez', email: process.env.EMAIL_USER },
         to: [{ email: to }],
         subject: 'Pedido confirmado ' + (order.numeroOrden || '') + ' - Tienda Galindez',
-        textContent: 'Hola ' + (order.cliente.nombre || 'cliente') + ',\\n\\nTu pedido ' +
+        textContent: 'Hola ' + (order.cliente.nombre || 'cliente') + ',\n\nTu pedido ' +
             (order.numeroOrden || '') + ' fue confirmado. Total: ' + total +
             '. Dirección: ' + address + '.\\n\\nGracias por comprar en Tienda Galindez.',
         htmlContent: [
