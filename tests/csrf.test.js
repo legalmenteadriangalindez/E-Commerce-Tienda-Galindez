@@ -1,15 +1,55 @@
-[eval]:1
-process.stdout.write(require('fs').readFileSync(tests/csrf.test.js, 'utf8'))
-                                                ^
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const express = require('express');
+const session = require('express-session');
 
-ReferenceError: tests is not defined
-    at [eval]:1:49
-    at runScriptInThisContext (node:internal/vm:219:10)
-    at node:internal/process/execution:451:12
-    at [eval]-wrapper:6:24
-    at runScriptInContext (node:internal/process/execution:449:60)
-    at evalFunction (node:internal/process/execution:283:30)
-    at evalTypeScript (node:internal/process/execution:295:3)
-    at node:internal/main/eval_string:71:3
+const csrfProtection = require('../server/middleware/csrfProtection');
+const upload = require('../server/middleware/upload');
 
-Node.js v24.22.1
+test('acepta un formulario multipart detrás del proxy cuando el token pertenece a la sesión', async t => {
+    const app = express();
+    app.set('trust proxy', 1);
+    app.use(session({
+        secret: 'secreto-de-prueba-csrf-multipart-32-caracteres',
+        resave: false,
+        saveUninitialized: false
+    }));
+    app.use(csrfProtection);
+    app.get('/admin/raffle', (req, res) => {
+        res.type('html').send(`<input name="_csrf" value="${res.locals.csrfToken}">`);
+    });
+    app.post('/admin/raffle', upload.single('imagenPremio'), (req, res) => {
+        res.status(204).end();
+    });
+
+    const server = await new Promise(resolve => {
+        const httpServer = app.listen(0, '127.0.0.1', () => resolve(httpServer));
+    });
+    t.after(() => server.close());
+
+    const baseUrl = `http://127.0.0.1:${server.address().port}`;
+    const page = await fetch(`${baseUrl}/admin/raffle`);
+    const cookie = page.headers.get('set-cookie')?.split(';')[0];
+    const html = await page.text();
+    const csrfToken = html.match(/value="([^"]+)"/)?.[1];
+
+    assert.ok(cookie);
+    assert.equal(csrfToken?.length, 64);
+
+    const form = new FormData();
+    form.set('_csrf', csrfToken);
+    form.set('activo', 'si');
+
+    const response = await fetch(`${baseUrl}/admin/raffle`, {
+        method: 'POST',
+        headers: {
+            Cookie: cookie,
+            Origin: 'https://e-commerce-tienda-galindez.onrender.com',
+            'X-Forwarded-Host': 'e-commerce-tienda-galindez.onrender.com',
+            'X-Forwarded-Proto': 'https'
+        },
+        body: form
+    });
+
+    assert.equal(response.status, 204);
+});
