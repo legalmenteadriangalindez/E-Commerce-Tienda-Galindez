@@ -38,6 +38,7 @@ exports.draw = async (req, res, next) => {
     try {
         if (req.body.confirmar !== 'si') throw new Error('Confirma el sorteo antes de continuar.');
         await raffle.drawWinner();
+        banner.clearCache();
         req.session.raffleNotice = 'Ganador seleccionado. La rifa se desactivó para evitar nuevas participaciones.';
         return res.redirect(303, '/admin/raffle');
     } catch (error) {
