@@ -2,6 +2,7 @@ const { publicError, errorStatus } = require('./publicError');
 const axios = require('axios');
 const dotenv = require('dotenv');
 const internalApiConfig = require('./internalApiConfig');
+const catalogPagination = require('./catalogPagination');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
@@ -12,9 +13,22 @@ exports.create_rol_form = (req, res) => {
 
 
 exports.read_roles = (req, res) => {
-    axios.get(`${BASE_URL}/api/roles`, internalApiConfig(req))
+    axios.get(`${BASE_URL}/api/roles`, {
+        ...internalApiConfig(req),
+        params: {
+            adminList: '1',
+            page: req.query.page || 1,
+            limit: 10
+        }
+    })
         .then(response => {
-            res.render('admin/rols/read_rols', { roles: response.data });
+            const payload = response.data;
+            res.render('admin/rols/read_rols', {
+                roles: payload.items || payload,
+                pagination: catalogPagination.buildPagination(req, payload.pagination || {
+                    page: 1, limit: 10, totalItems: payload.length, totalPages: payload.length ? 1 : 0
+                })
+            });
         })
         .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };

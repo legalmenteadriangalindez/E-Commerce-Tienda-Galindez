@@ -4,12 +4,17 @@
 
 <link rel="stylesheet" href="/css/read_brands.css">
 
-<main>
-<div>
-<h1>Gestionar Marcas</h1>
-</div>
+<main class="admin-list-page">
+  <header class="admin-list-heading">
+    <div>
+      <p class="admin-list-eyebrow">Catálogo</p>
+      <h1>Gestionar marcas</h1>
+      <p class="admin-list-description">Mantén consistentes las marcas que aparecen en tus productos.</p>
+    </div>
+    <a href="/create-marca" class="admin-list-primary">Crear marca</a>
+  </header>
 
-
+  <div class="admin-table-wrap">
   <table class="table">
     <thead>
       <tr>
@@ -44,13 +49,13 @@
         </td>
       </tr>
       <% }); %>
-       <tr>
-        <td colspan="4" >
-          <a href="/create-marca" class="btn btn-primary">Crear Nueva Marca</a>
-        </td>
-      </tr>
     </tbody>
   </table>
+  </div>
+  <% if (!brands.length) { %>
+    <p class="admin-list-empty">No hay marcas registradas.</p>
+  <% } %>
+  <%- include('../../include/_adminPagination', { pagination, label: 'marcas' }) %>
 
 </main>
 

@@ -1,7 +1,12 @@
 <%- include('../../include/_headerAdmin') %>
-<main class="commerce-panel">
-  <h1>Pagos y conciliación</h1>
-  <p>Confirma los pagos recibidos en caja y revisa las respuestas de Wompi.</p>
+<main class="commerce-panel admin-list-page">
+  <header class="admin-list-heading">
+    <div>
+      <p class="admin-list-eyebrow">Operación financiera</p>
+      <h1>Pagos y conciliación</h1>
+      <p class="admin-list-description">Confirma los pagos recibidos en caja y revisa las respuestas de Wompi.</p>
+    </div>
+  </header>
   <% if (notice) { %><p class="commerce-notice" role="status"><%= notice %></p><% } %>
   <section class="commerce-card">
     <h2>Consultar una transacción</h2>
@@ -30,12 +35,12 @@
     <% }) %>
   </section><% } %>
   <h2>Pedidos recientes</h2>
-  <a href="/admin/payments">Ver todos</a>
   <% orders.forEach(order => { %>
     <article class="commerce-card">
       <h3><a href="/order/<%= order._id %>"><%= order.numeroOrden %></a></h3>
       <p><%= order.cliente.nombre %> · $<%= order.total.toLocaleString('es-CO') %> COP · <%= order.canal || 'ANTERIOR A ESTA VERSIÓN' %></p>
       <p>Pago: <strong><%= order.estadoPago %></strong> · Pedido: <%= order.estado %> · Inventario: <%= order.inventario || 'REVISAR HISTORIAL' %></p>
+      <p>Repartidor: <strong><%= order.repartidor?.nombre || 'Sin asignar' %></strong></p>
       <% if (order.incidenciaPago) { %><p class="commerce-notice"><%= order.incidenciaPago %></p><% } %>
       <% if (order.canal === 'CAJA' && order.estadoPago === 'PENDIENTE' && order.inventario === 'RESERVADO') { %>
         <form action="/admin/payments/<%= order._id %>/confirm-cash" method="post">
@@ -51,6 +56,9 @@
         </form>
       <% } %>
       <a href="/update-order?id=<%= order._id %>">Gestionar entrega</a>
+      <% if (['PAGADA', 'PREPARANDO', 'ENVIADA', 'ENTREGADA'].includes(order.estado) && order.estadoPago === 'PAGADO') { %>
+        · <a href="/admin/delivery">Asignar o revisar reparto</a>
+      <% } %>
       <% if (order.estadoPago === 'PAGADO') { %>
         <details><summary>Disponibilidad o devolución ya realizada</summary>
           <p>Registrar una devolución no mueve dinero. Primero debes efectuarla y comprobarla en Wompi o en caja. Solo admite devolución total.</p>
@@ -72,10 +80,9 @@
       <% if (order.revisionPago?.fecha) { %><p>Última revisión: <%= order.revisionPago.accion %> · <%= order.revisionPago.motivo %> · Comprobante: <%= order.revisionPago.comprobante %></p><% } %>
     </article>
   <% }) %>
-  <nav aria-label="Páginas de pagos">
-    <% if (page > 1) { %><a href="?page=<%= page - 1 %>">Anterior</a><% } %>
-    <span>Página <%= page %></span>
-    <% if (more) { %><a href="?page=<%= page + 1 %>">Siguiente</a><% } %>
-  </nav>
+  <% if (!orders.length) { %>
+    <p class="admin-list-empty">No hay pedidos para mostrar.</p>
+  <% } %>
+  <%- include('../../include/_adminPagination', { pagination, label: 'pedidos' }) %>
 </main>
 <%- include('../../include/_footerAdmin') %>

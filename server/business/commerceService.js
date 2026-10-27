@@ -5,8 +5,11 @@ const Product = require('../model/product');
 const Sale = require('../model/sales');
 const SaleDetail = require('../model/saleDetails');
 const PaymentEvent = require('../model/paymentEvent');
+const Userdb = require('../model/user');
 const wompi = require('./wompiService');
 const raffle = require('./raffleService');
+const emailNotifications = require('./emailNotificationService');
+const delivery = require('./deliveryService');
 
 class CommerceError extends Error {
     constructor(message, status = 400) { super(message); this.status = status; this.expose = true; }
@@ -136,6 +139,9 @@ async function createOrder({ userId, cart, body, key, channel = 'WOMPI' }) {
                 numeroOrden: `ORD-${crypto.randomUUID()}`, inventario: 'RESERVADO',
                 reservaHasta: new Date(Date.now() + 30 * 60 * 1000)
             }], { session });
+            delivery.trackState(order, 'PENDIENTE', userId);
+            await order.save({ session });
+            await emailNotifications.queueOrderReceived(order, session);
         });
     } catch (error) {
         if (error.code === 11000) {
@@ -225,10 +231,14 @@ async function applyTransaction(transaction) {
             }
             await recordSale(order, session);
             await raffle.recordEligibleOrder(order, session);
+            delivery.trackState(order, order.estado);
+            await emailNotifications.queueStatus(order, session);
         } else {
             await release(order, session);
             order.estadoPago = 'RECHAZADO'; order.estado = 'CANCELADA';
             event.estado = 'PROCESADO'; event.detalle = '';
+            delivery.trackState(order, order.estado);
+            await emailNotifications.queueStatus(order, session);
         }
         await order.save({ session }); await event.save({ session });
         return order;
@@ -250,15 +260,26 @@ async function expireReservations() {
             if (uncertain) return;
             await release(order, session);
             order.estado = 'CANCELADA';
+            delivery.trackState(order, order.estado);
+            await emailNotifications.queueStatus(order, session);
             await order.save({ session });
         });
     }
 }
-async function changeState(id, state, actorId, dealer = false) {
+async function changeState(id, state, actorId, dealer = false, note = '') {
     if (!mongoose.isObjectIdOrHexString(id)) throw new CommerceError('Pedido inválido.');
     return mongoose.connection.transaction(async session => {
         const order = await Order.findById(id).session(session);
         if (!order) throw new CommerceError('Pedido no encontrado.', 404);
+        if (dealer && String(order.repartidor || '') !== String(actorId)) {
+            // En producción las rutas de repartidor ya entregan únicamente
+            // pedidos asignados. El permiso Admin se conserva aquí para
+            // conciliaciones y pruebas internas que simulan ese actor.
+            const actor = await Userdb.findById(actorId).populate('rol', 'nombre').session(session);
+            if (actor?.rol?.nombre !== 'Admin') {
+                throw new CommerceError('El pedido no está asignado a este repartidor.', 403);
+            }
+        }
         if (state === order.estado) return order;
         if (state === 'CANCELADA' && !dealer) {
             if (order.estadoPago !== 'PENDIENTE' || order.inventario !== 'RESERVADO') {
@@ -270,11 +291,14 @@ async function changeState(id, state, actorId, dealer = false) {
             await release(order, session);
         } else {
             const next = { PAGADA: 'PREPARANDO', PREPARANDO: 'ENVIADA', ENVIADA: 'ENTREGADA' };
-            if (order.estadoPago !== 'PAGADO' || order.inventario !== 'CONFIRMADO' || next[order.estado] !== state || (dealer && !['ENVIADA', 'ENTREGADA'].includes(state))) {
+            if (order.estadoPago !== 'PAGADO' || order.inventario !== 'CONFIRMADO' || next[order.estado] !== state || (dealer && !['PREPARANDO', 'ENVIADA', 'ENTREGADA'].includes(state))) {
                 throw new CommerceError('Transición no permitida. Confirma primero el pago y sigue el orden de entrega.', 409);
             }
         }
-        order.estado = state; await order.save({ session }); return order;
+        order.estado = state;
+        delivery.trackState(order, state, actorId, note);
+        await emailNotifications.queueStatus(order, session);
+        await order.save({ session }); return order;
     });
 }
 async function confirmCash(id, adminId) {
@@ -287,6 +311,8 @@ async function confirmCash(id, adminId) {
         order.confirmadoPor = adminId; order.pagoConfirmadoEn = new Date();
         await recordSale(order, session);
         await raffle.recordEligibleOrder(order, session);
+        delivery.trackState(order, order.estado, adminId);
+        await emailNotifications.queueStatus(order, session);
         await order.save({ session }); return order;
     });
 }
@@ -313,6 +339,8 @@ async function resolveOrder(id, action, note, receipt, adminId, restock = false)
             }
             await debit(order.productos, session);
             order.inventario = 'CONFIRMADO'; order.estado = 'PAGADA'; order.incidenciaPago = '';
+            delivery.trackState(order, order.estado, adminId);
+            await emailNotifications.queueStatus(order, session);
         } else if (action === 'DEVOLUCION') {
             if (restock && order.inventario !== 'CONFIRMADO') throw new CommerceError('No hay un descuento de inventario confirmado para reponer.', 409);
             if (restock) {
@@ -321,6 +349,8 @@ async function resolveOrder(id, action, note, receipt, adminId, restock = false)
             }
             order.estadoPago = 'REEMBOLSADO'; order.estado = 'CANCELADA'; order.incidenciaPago = '';
             await Sale.updateOne({ order: order._id }, { $set: { estadoPago: 'REEMBOLSADO' } }, { session });
+            delivery.trackState(order, order.estado, adminId);
+            await emailNotifications.queueStatus(order, session);
         } else throw new CommerceError('Acción de revisión inválida.');
         order.revisionPago = { accion: action, motivo, comprobante, administrador: adminId, fecha: new Date() };
         await order.save({ session });

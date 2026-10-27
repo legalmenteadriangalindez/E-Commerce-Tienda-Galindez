@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Saledb = require('../model/sales');
 const SaleDetaildb = require('../model/saleDetails');
 const Productdb = require('../model/product');
+const adminPagination = require('../services/adminPagination');
 
 // CREATE (CON TRANSACCIÓN REAL)
 exports.create = async (req, res) => {
@@ -97,9 +98,19 @@ exports.create = async (req, res) => {
 
 exports.find = async (req, res) => {
     try {
-        const ventas = await Saledb.find()
+        const paginationRequest = adminPagination.isAdminList(req.query)
+            ? adminPagination.requested(req.query, 10)
+            : null;
+        const filter = {};
+        const totalItems = paginationRequest ? await Saledb.countDocuments(filter) : null;
+        const pagination = paginationRequest
+            ? adminPagination.metadata(paginationRequest.page, paginationRequest.limit, totalItems)
+            : null;
+        const ventas = await Saledb.find(filter)
             .populate("cliente", "nombre email telefono")
-            .sort({ createdAt: -1 })
+            .sort({ createdAt: -1, _id: -1 })
+            .skip(pagination ? (pagination.page - 1) * paginationRequest.limit : 0)
+            .limit(pagination ? paginationRequest.limit : 0)
             .lean();
 
         const ventasIds = ventas.map(venta => venta._id);
@@ -127,7 +138,7 @@ exports.find = async (req, res) => {
             venta.detalles = detallesMap[ventaId] || [];
         }
 
-        return res.json(ventas);
+        return res.json(pagination ? { items: ventas, pagination } : ventas);
 
     } catch (error) {
         console.error("ERROR OBTENIENDO VENTAS:", error);

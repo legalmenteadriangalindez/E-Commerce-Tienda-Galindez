@@ -1,6 +1,7 @@
 <%- include('../../include/_headerDealer') %>
 
 <link rel="stylesheet" href="/css/dealer_update_orders.css">
+<link rel="stylesheet" href="/css/delivery-tracking.css">
 
 <div class="page-wrapper">
 
@@ -37,6 +38,14 @@
                     >
                 </div>
 
+            </div>
+
+            <div class="form-section delivery-assigned-summary">
+                <h3>Asignación</h3>
+                <p>Este pedido está asignado a tu cuenta como repartidor.</p>
+                <% if (order.asignacionReparto?.asignadoEn) { %>
+                    <small>Asignado el <%= new Date(order.asignacionReparto.asignadoEn).toLocaleString('es-CO') %></small>
+                <% } %>
             </div>
 
             <!-- DATOS DEL CLIENTE -->
@@ -223,44 +232,20 @@
                     <label>Estado</label>
 
                     <select name="estado" required>
-
-                        <option 
-                            value="PENDIENTE"
-                            <%= order.estado === 'PENDIENTE' ? 'selected' : '' %>>
-                            PENDIENTE
-                        </option>
-
-                        <option 
-                            value="PAGADA"
-                            <%= order.estado === 'PAGADA' ? 'selected' : '' %>>
-                            PAGADA
-                        </option>
-
-                        <option 
-                            value="PREPARANDO"
-                            <%= order.estado === 'PREPARANDO' ? 'selected' : '' %>>
-                            PREPARANDO
-                        </option>
-
-                        <option 
-                            value="ENVIADA"
-                            <%= order.estado === 'ENVIADA' ? 'selected' : '' %>>
-                            ENVIADA
-                        </option>
-
-                        <option 
-                            value="ENTREGADA"
-                            <%= order.estado === 'ENTREGADA' ? 'selected' : '' %>>
-                            ENTREGADA
-                        </option>
-
-                        <option 
-                            value="CANCELADA"
-                            <%= order.estado === 'CANCELADA' ? 'selected' : '' %>>
-                            CANCELADA
-                        </option>
-
+                        <option value="<%= order.estado %>" selected>Estado actual: <%= statusLabels[order.estado] || order.estado %></option>
+                        <% if (order.estado === 'PAGADA') { %>
+                            <option value="PREPARANDO">Marcar como en preparación</option>
+                        <% } %>
+                        <% if (order.estado === 'PREPARANDO') { %>
+                            <option value="ENVIADA">Marcar como enviado</option>
+                        <% } %>
+                        <% if (order.estado === 'ENVIADA') { %>
+                            <option value="ENTREGADA">Confirmar entrega</option>
+                        <% } %>
                     </select>
+
+                    <label for="delivery-note">Nota de seguimiento (visible para el cliente, opcional)</label>
+                    <textarea id="delivery-note" name="nota" maxlength="300" rows="3" placeholder="Ejemplo: se dejó en portería o se coordinó la entrega."></textarea>
 
                 </div>
 
@@ -278,5 +263,7 @@
     </div>
 
 </div>
+
+<%- include('../../include/_deliveryTimeline', { order, visibleOnly: true, showActor: false }) %>
 
 <%- include('../../include/_footerAdmin') %>

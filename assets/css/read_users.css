@@ -101,7 +101,7 @@ main .table tbody tr:hover {
    ÚLTIMA FILA
    ========================================================= */
 
-main .table tbody tr:last-child td {
+main .table tbody tr.admin-create-row td {
     border-bottom: none;
 }
 

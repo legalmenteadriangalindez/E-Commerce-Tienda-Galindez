@@ -19,6 +19,7 @@ const sessionLogger = require("./server/middleware/sessionLogger");
 const categoriasMiddleware = require("./server/middleware/categoriasMiddleware");
 const raffleBanner = require("./server/middleware/raffleBanner");
 const appConfig = require("./server/config/appConfig");
+const emailNotifications = require('./server/business/emailNotificationService');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -68,6 +69,7 @@ async function maintenance() {
     try {
         await require('./server/business/commerceService').runMaintenance();
         await require('./server/business/mediaService').cleanup();
+        await emailNotifications.processPending();
     } catch { console.error('No se completó el mantenimiento. Se reintentará.'); }
     finally { maintenanceRunning = false; }
 }
@@ -78,7 +80,7 @@ async function startServer() {
         require('./server/model/order'), require('./server/model/sales'),
         require('./server/model/paymentEvent'), require('./server/model/review'),
         require('./server/model/raffle'), require('./server/model/raffleEntry'),
-        require('./server/model/rateLimitBucket')
+        require('./server/model/rateLimitBucket'), require('./server/model/orderEmailEvent')
     ].map(model => model.init()));
     const topology = await mongoose.connection.db.admin().command({ hello: 1 });
     if (!topology.setName && topology.msg !== 'isdbgrid') throw new Error('Usa MongoDB Atlas o un replica set: las compras requieren transacciones.');

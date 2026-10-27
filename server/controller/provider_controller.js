@@ -1,5 +1,6 @@
 const { publicError, errorStatus } = require('../services/publicError');
 var Providerdb = require('../model/provider');
+const adminPagination = require('../services/adminPagination');
 
 
 // CREATE
@@ -48,14 +49,24 @@ exports.find = (req, res)=>{
                 res.status(500).send({ message: "Error retrieving proveedor with id " + id})
             })
 
-    }else{
-        Providerdb.find()
-            .then(provider => {
-                res.send(provider)
-            })
-            .catch(err => {
-                res.status(500).send({ message : err.message || "Error retrieving proveedores" })
-            })
+    } else {
+        if (adminPagination.isAdminList(req.query)) {
+            const { page, limit } = adminPagination.requested(req.query, 10);
+            Providerdb.countDocuments().then(totalItems => {
+                const pagination = adminPagination.metadata(page, limit, totalItems);
+                return Providerdb.find()
+                    .sort({ nombre: 1, _id: 1 })
+                    .skip((pagination.page - 1) * limit)
+                    .limit(limit)
+                    .lean()
+                    .then(items => res.send({ items, pagination }));
+            }).catch(err => res.status(500).send({ message: err.message || "Error retrieving proveedores" }));
+            return;
+        }
+
+        Providerdb.find().sort({ nombre: 1, _id: 1 })
+            .then(provider => res.send(provider))
+            .catch(err => res.status(500).send({ message: err.message || "Error retrieving proveedores" }));
     }
 }
 

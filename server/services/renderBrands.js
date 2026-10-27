@@ -37,9 +37,22 @@ exports.create_brand_form = (req, res) => {
 
 
 exports.read_brands = (req, res) => {
-    axios.get(`${BASE_URL}/api/marcas`)
+    axios.get(`${BASE_URL}/api/marcas`, {
+        ...internalApiConfig(req),
+        params: {
+            adminList: '1',
+            page: req.query.page || 1,
+            limit: 10
+        }
+    })
         .then(response => {
-            res.render('admin/brands/read_brands', { brands: response.data });
+            const payload = response.data;
+            res.render('admin/brands/read_brands', {
+                brands: payload.items || payload,
+                pagination: catalogPagination.buildPagination(req, payload.pagination || {
+                    page: 1, limit: 10, totalItems: payload.length, totalPages: payload.length ? 1 : 0
+                })
+            });
         })
         .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };

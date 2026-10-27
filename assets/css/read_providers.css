@@ -213,7 +213,7 @@ main .table .btn-danger:hover {
    BOTÓN CREAR
    ========================================================= */
 
-main .table tbody tr:last-child td {
+main .table tbody tr.admin-create-row td {
     padding: 16px 12px;
 
     background: #fffaf6;

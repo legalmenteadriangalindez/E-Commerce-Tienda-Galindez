@@ -5,10 +5,16 @@
 <link rel="stylesheet" href="/css/read_categories.css">
 
 
-<main>
-<div>
-<h1>Gestionar Categorías</h1>
-</div>
+<main class="admin-list-page">
+  <header class="admin-list-heading">
+    <div>
+      <p class="admin-list-eyebrow">Catálogo</p>
+      <h1>Gestionar categorías</h1>
+      <p class="admin-list-description">Organiza los productos para que el catálogo sea fácil de explorar.</p>
+    </div>
+    <a href="/create-categoria" class="admin-list-primary">Crear categoría</a>
+  </header>
+  <div class="admin-table-wrap">
   <table class="table">
     <thead>
       <tr>
@@ -36,13 +42,13 @@
         </td>
       </tr>
       <% }); %>
-      <tr>
-        <td colspan="4" >
-          <a href="/create-categoria" class="btn btn-primary">Crear Nueva Categoría</a>
-        </td>
-      </tr>
     </tbody>
   </table>
+  </div>
+  <% if (!categories.length) { %>
+    <p class="admin-list-empty">No hay categorías registradas.</p>
+  <% } %>
+  <%- include('../../include/_adminPagination', { pagination, label: 'categorías' }) %>
 
 </main>
 

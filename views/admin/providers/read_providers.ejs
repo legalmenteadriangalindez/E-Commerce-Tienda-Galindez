@@ -5,10 +5,16 @@
 <link rel="stylesheet" href="/css/read_providers.css">
 
 
-<main>
-<div>
-<h1>Gestionar Proveedores</h1>
-</div>
+<main class="admin-list-page">
+  <header class="admin-list-heading">
+    <div>
+      <p class="admin-list-eyebrow">Operación</p>
+      <h1>Gestionar proveedores</h1>
+      <p class="admin-list-description">Consulta y actualiza los datos de contacto de tus proveedores.</p>
+    </div>
+    <a href="/create-proveedor" class="admin-list-primary">Crear proveedor</a>
+  </header>
+  <div class="admin-table-wrap">
   <table class="table">
     <thead>
       <tr>
@@ -41,13 +47,13 @@
         </td>
       </tr>
       <% }); %>
-        <tr>
-          <td colspan="6" >
-          <a href="/create-proveedor" class="btn btn-primary">Crear Nuevo Proveedor</a>
-        </td>
-      </tr>
     </tbody>
   </table>
+  </div>
+  <% if (!providers.length) { %>
+    <p class="admin-list-empty">No hay proveedores registrados.</p>
+  <% } %>
+  <%- include('../../include/_adminPagination', { pagination, label: 'proveedores' }) %>
 
 </main>
 

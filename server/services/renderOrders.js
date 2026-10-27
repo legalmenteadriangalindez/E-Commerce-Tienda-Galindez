@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const catalogPagination = require('./catalogPagination');
 
 // Configuración para peticiones a nuestra propia API
 function configApi(req) {
@@ -53,14 +54,24 @@ exports.read_orders = (req, res) => {
 
 axios.get(
     `${BASE_URL}/api/orders`,
-    configApi(req)
+    {
+        ...configApi(req),
+        params: {
+            adminList: '1',
+            page: req.query.page || 1,
+            limit: 10
+        }
+    }
 )
 
         .then(response => {
 
+            const payload = response.data;
             res.render('admin/orders/read_orders', {
-
-                orders: response.data
+                orders: payload.items || payload,
+                pagination: catalogPagination.buildPagination(req, payload.pagination || {
+                    page: 1, limit: 10, totalItems: payload.length, totalPages: payload.length ? 1 : 0
+                })
             });
         })
         .catch(err => {

@@ -3,6 +3,7 @@ const axios = require('axios');
 const dotenv = require('dotenv');
 const internalApiConfig = require('./internalApiConfig');
 const reviewService = require('../business/reviewService');
+const catalogPagination = require('./catalogPagination');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
@@ -168,14 +169,24 @@ exports.update_products = async (req, res) => {
 
 exports.read_products = (req, res) => {
     axios.get(`${BASE_URL}/api/productos`, {
+           params: {
+               adminList: '1',
+               page: req.query.page || 1,
+               limit: 10
+           },
            headers: {
                Cookie: req.headers.cookie || ""
            },
                timeout: 10000
         })
         .then(response => {
-            
-            res.render('admin/products/read_products', { productos: response.data });
+            const payload = response.data;
+            res.render('admin/products/read_products', {
+                productos: payload.items || payload,
+                pagination: catalogPagination.buildPagination(req, payload.pagination || {
+                    page: 1, limit: 10, totalItems: payload.length, totalPages: payload.length ? 1 : 0
+                })
+            });
         })
         .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };

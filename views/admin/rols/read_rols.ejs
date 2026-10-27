@@ -4,10 +4,16 @@
 
 <link rel="stylesheet" href="/css/read_rols.css">
 
-<main>
-<div>
-<h1>Gestionar Roles</h1>
-</div>
+<main class="admin-list-page">
+  <header class="admin-list-heading">
+    <div>
+      <p class="admin-list-eyebrow">Accesos</p>
+      <h1>Gestionar roles</h1>
+      <p class="admin-list-description">Revisa los roles disponibles para las cuentas administrativas.</p>
+    </div>
+    <a href="/create-rol" class="admin-list-primary">Crear rol</a>
+  </header>
+  <div class="admin-table-wrap">
   <table class="table">
     <thead>
       <tr>
@@ -37,13 +43,13 @@
         </td>
       </tr>
       <% }); %>
-            <tr>
-        <td colspan="4" >
-          <a href="/create-rol" class="btn btn-primary">Crear Nuevo Rol</a>
-        </td>
-      </tr>
     </tbody>
   </table>
+  </div>
+  <% if (!roles.length) { %>
+    <p class="admin-list-empty">No hay roles registrados.</p>
+  <% } %>
+  <%- include('../../include/_adminPagination', { pagination, label: 'roles' }) %>
 
 </main>
 

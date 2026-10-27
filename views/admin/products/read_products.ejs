@@ -4,11 +4,17 @@
 <link rel="stylesheet" href="/css/read_products.css">
 
 
-<main>
-  <div>
-    <h1>Gestionar Productos</h1>
-  </div>
+<main class="admin-list-page">
+  <header class="admin-list-heading">
+    <div>
+      <p class="admin-list-eyebrow">Catálogo</p>
+      <h1>Gestionar productos</h1>
+      <p class="admin-list-description">Administra precios, inventario y relaciones del catálogo.</p>
+    </div>
+    <a href="/create-producto" class="admin-list-primary">Crear producto</a>
+  </header>
 
+  <div class="admin-table-wrap">
   <table class="table">
     <thead>
       <tr>
@@ -111,15 +117,13 @@
         </tr>
       <% }); %>
 
-      <tr>
-        <td colspan="13">
-          <a href="/create-producto" class="btn btn-primary">
-            Crear Nuevo Producto
-          </a>
-        </td>
-      </tr>
     </tbody>
   </table>
+  </div>
+  <% if (!productos.length) { %>
+    <p class="admin-list-empty">No hay productos registrados.</p>
+  <% } %>
+  <%- include('../../include/_adminPagination', { pagination, label: 'productos' }) %>
 </main>
 
 <%- include('../../include/_footerAdmin') %>

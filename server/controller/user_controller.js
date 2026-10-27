@@ -3,6 +3,7 @@ const Userdb = require('../model/user');
 const Roldb = require('../model/rol');
 const accounts = require('../business/accountService');
 const bcrypt = require('bcrypt');
+const adminPagination = require('../services/adminPagination');
 
 const mongoose = require("mongoose");
 
@@ -119,9 +120,22 @@ exports.find = async (req, res) => {
             return res.json(user);
         }
 
-        const users = await Userdb.find({
-            estado: "Activo"
-        })
+        const filter = { estado: "Activo" };
+        if (adminPagination.isAdminList(req.query)) {
+            const { page, limit } = adminPagination.requested(req.query, 10);
+            const totalItems = await Userdb.countDocuments(filter);
+            const pagination = adminPagination.metadata(page, limit, totalItems);
+            const items = await Userdb.find(filter)
+                .select(CAMPOS_USUARIO_ADMIN)
+                .populate("rol", "nombre")
+                .sort({ fechaRegistro: -1, _id: -1 })
+                .skip((pagination.page - 1) * limit)
+                .limit(limit)
+                .lean();
+            return res.json({ items, pagination });
+        }
+
+        const users = await Userdb.find(filter)
             .select(CAMPOS_USUARIO_ADMIN)
             .populate("rol", "nombre");
 

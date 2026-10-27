@@ -1,0 +1,53 @@
+<% const allTracking = Array.isArray(order?.seguimientoEntrega) ? order.seguimientoEntrega : []; %>
+<% const onlyVisible = typeof visibleOnly !== 'undefined' && visibleOnly; %>
+<% const tracking = allTracking
+    .filter(event => !onlyVisible || event.visibleCliente !== false)
+    .slice()
+    .sort((a, b) => new Date(a.fecha) - new Date(b.fecha)); %>
+<% const trackingLabels = {
+    PEDIDO_RECIBIDO: 'Pedido recibido',
+    PAGO_CONFIRMADO: 'Pago confirmado',
+    PREPARANDO: 'Preparando pedido',
+    ASIGNADO: 'Repartidor asignado',
+    DESASIGNADO: 'Asignación actualizada',
+    ENVIADA: 'Pedido en camino',
+    ENTREGADA: 'Pedido entregado',
+    CANCELADA: 'Pedido cancelado',
+    REQUIERE_REVISION: 'Revisión requerida',
+    ACTUALIZACION: 'Actualización'
+}; %>
+
+<section class="delivery-timeline" aria-label="Seguimiento de entrega">
+    <div class="delivery-timeline__heading">
+        <div>
+            <p class="delivery-timeline__eyebrow">Seguimiento</p>
+            <h2>Línea de tiempo del pedido</h2>
+        </div>
+        <% if (tracking.length) { %><span><%= tracking.length %> actualización(es)</span><% } %>
+    </div>
+
+    <% if (tracking.length) { %>
+        <ol class="delivery-timeline__list">
+            <% tracking.forEach((event, index) => { %>
+                <li class="delivery-timeline__item <%= index === tracking.length - 1 ? 'is-current' : '' %>">
+                    <span class="delivery-timeline__dot" aria-hidden="true"></span>
+                    <div class="delivery-timeline__content">
+                        <div class="delivery-timeline__meta">
+                            <strong><%= trackingLabels[event.evento] || event.evento %></strong>
+                            <time datetime="<%= new Date(event.fecha).toISOString() %>"><%= new Date(event.fecha).toLocaleString('es-CO') %></time>
+                        </div>
+                        <p><%= event.mensaje %></p>
+                        <% if (typeof showActor !== 'undefined' && showActor && event.actor?.nombre) { %>
+                            <small>Registrado por <%= event.actor.nombre %></small>
+                        <% } %>
+                    </div>
+                </li>
+            <% }) %>
+        </ol>
+    <% } else { %>
+        <p class="delivery-timeline__empty">
+            Todavía no hay actualizaciones históricas para este pedido. Estado actual:
+            <strong><%= order.estado || 'Pendiente' %></strong>.
+        </p>
+    <% } %>
+</section>

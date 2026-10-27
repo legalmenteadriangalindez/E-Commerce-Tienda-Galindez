@@ -1,6 +1,7 @@
 const { publicError, errorStatus } = require('../services/publicError');
 var Brand_db = require('../model/brands');
 const media = require('../business/mediaService');
+const adminPagination = require('../services/adminPagination');
 
 exports.create = (req, res) => {
 
@@ -22,11 +23,29 @@ exports.create = (req, res) => {
 };
 
 
-exports.find = (req,res)=>{
-    Brand_db.find()
-        .then(data => res.send(data))
-        .catch(err => res.status(500).send(publicError(err)))
-}
+exports.find = async (req, res) => {
+    try {
+        if (req.query.id) {
+            return res.send(await Brand_db.findById(req.query.id));
+        }
+
+        if (adminPagination.isAdminList(req.query)) {
+            const { page, limit } = adminPagination.requested(req.query, 10);
+            const totalItems = await Brand_db.countDocuments();
+            const pagination = adminPagination.metadata(page, limit, totalItems);
+            const items = await Brand_db.find()
+                .sort({ nombre: 1, _id: 1 })
+                .skip((pagination.page - 1) * limit)
+                .limit(limit)
+                .lean();
+            return res.json({ items, pagination });
+        }
+
+        return res.send(await Brand_db.find().sort({ nombre: 1, _id: 1 }));
+    } catch (err) {
+        return res.status(500).send(publicError(err));
+    }
+};
 
 exports.findOne = async (req, res) => {
     try {

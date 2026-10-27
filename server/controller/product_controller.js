@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
 const media = require('../business/mediaService'); 
+const adminPagination = require('../services/adminPagination');
 
 
 
@@ -184,27 +185,43 @@ if (!marcaExiste) {
     }
 };
 
-exports.find = (req, res) => {
-    if (req.query.id) {
-        Productdb.findById(req.query.id)
-            .populate('marca')
-            .populate('categoria')
-            .populate('proveedor') 
-            .then(data => res.send(data)) 
-            .catch(err => {
-                
-                res.status(500).send(publicError(err));
-            });
+exports.find = async (req, res) => {
+    try {
+        if (req.query.id) {
+            const data = await Productdb.findById(req.query.id)
+                .populate('marca')
+                .populate('categoria')
+                .populate('proveedor');
+            return res.send(data);
+        }
 
-    } else {
-        Productdb.find()
+        if (adminPagination.isAdminList(req.query)) {
+            const { page, limit } = adminPagination.requested(req.query, 10);
+            const totalItems = await Productdb.countDocuments();
+            const pagination = adminPagination.metadata(page, limit, totalItems);
+            const productos = await Productdb.find()
+                .populate('marca')
+                .populate('categoria')
+                .populate('proveedor')
+                .sort({ fechaIngreso: -1, _id: -1 })
+                .skip((pagination.page - 1) * limit)
+                .limit(limit)
+                .lean();
+            return res.json({
+                items: productos,
+                pagination
+            });
+        }
+
+        const data = await Productdb.find()
             .populate('marca')
             .populate('categoria')
-            .populate('proveedor')
-            .then(data => res.send(data))
-            .catch(err => res.status(500).send(publicError(err)));
+            .populate('proveedor');
+        return res.send(data);
+    } catch (err) {
+        return res.status(500).send(publicError(err));
     }
-}
+};
 
 // Catálogo público: no devuelve costo ni proveedor.
 exports.findPublic = async (req, res) => {

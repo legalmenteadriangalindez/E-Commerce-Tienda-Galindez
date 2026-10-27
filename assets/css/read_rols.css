@@ -154,7 +154,7 @@ main .table .btn-danger:hover {
    CREAR NUEVO ROL
    ========================================================= */
 
-main .table tbody tr:last-child td {
+main .table tbody tr.admin-create-row td {
     background-color: #fcfaf8;
     padding: 18px 12px;
 }

@@ -128,3 +128,26 @@ module.exports.sendPasswordReset = async (to, link) => {
         textContent: `Solicitaste cambiar tu contraseña. Este enlace vence en una hora y solo puede usarse una vez: ${link}\nSi no lo solicitaste, ignora este mensaje.`
     });
 };
+
+module.exports.sendOrderNotification = async event => {
+    const recipient = event?.destinatario || {};
+    const email = typeof recipient.email === 'string' ? recipient.email.trim() : '';
+    if (!email) throw new Error('El pedido no tiene un correo de destino válido.');
+
+    const notification = require('../business/emailNotificationService').renderOrderNotification(event);
+    if (!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) {
+        if (process.env.NODE_ENV !== 'production') {
+            console.info(`[DESARROLLO LOCAL] Correo de pedido ${event.tipo} para ${email}: ${notification.subject}`);
+            return { messageId: 'development-console' };
+        }
+        throw new Error('Configura BREVO_API_KEY y EMAIL_USER para enviar correos de pedidos en producción.');
+    }
+
+    return getBrevoClient().transactionalEmails.sendTransacEmail({
+        sender: { name: 'Tienda Galindez', email: process.env.EMAIL_USER },
+        to: [{ email }],
+        subject: notification.subject,
+        htmlContent: notification.htmlContent,
+        textContent: notification.textContent
+    });
+};

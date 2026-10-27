@@ -17,6 +17,7 @@ const servicesRenderOrders = require('../services/renderOrders');
 const servicesRenderProfile = require('../services/renderProfile');
 const servicesRenderCart = require('../services/renderCart');
 const servicesRenderRaffle = require('../services/renderRaffle');
+const servicesRenderDelivery = require('../services/renderDelivery');
 
 const brandController = require('../controller/brand_controller');
 const saleController = require('../controller/sale_controller');
@@ -73,6 +74,9 @@ router.get('/admin/raffle', isAdmin, servicesRenderRaffle.adminIndex);
 router.post('/admin/raffle', isAdmin, upload.single('imagenPremio'), servicesRenderRaffle.update);
 router.post('/admin/raffle/draw', isAdmin, servicesRenderRaffle.draw);
 router.post('/admin/raffle/reset', isAdmin, servicesRenderRaffle.reset);
+router.get('/admin/delivery', isAdmin, servicesRenderDelivery.adminIndex);
+router.post('/admin/delivery/:id/assign', isAdmin, servicesRenderDelivery.assign);
+router.post('/admin/delivery/:id/unassign', isAdmin, servicesRenderDelivery.unassign);
 
 router.get('/create-marca', isAdmin, servicesRenderBrand.create_brand_form);
 router.post('/create-marca', isAdmin, servicesRenderBrand.create_brand);

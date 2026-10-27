@@ -3,6 +3,64 @@
     font-weight: bold;
 }
 
+.dealer-orders-page {
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.dealer-orders-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.dealer-eyebrow {
+    margin: 0 0 4px;
+    color: #d85c32;
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.dealer-description {
+    margin: 6px 0 0;
+    color: #6b5b55;
+}
+
+.dealer-orders-count {
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #fff3ed;
+    color: #8c3f24;
+    font-size: .85rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.dealer-status {
+    display: inline-flex;
+    min-width: 110px;
+    justify-content: center;
+    padding: 6px 9px;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 800;
+}
+
+.dealer-status--pagada { background: #e6f5e8; color: #216b31; }
+.dealer-status--preparando { background: #fff3d7; color: #795815; }
+.dealer-status--enviada { background: #e5f4fb; color: #14617d; }
+.dealer-status--entregada { background: #e8e5fb; color: #4e3d98; }
+
+.dealer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
 /* TABLET */
 @media (max-width: 992px){
 
@@ -19,6 +77,16 @@
 
 /* MOBILE ANDROID */
 @media (max-width: 768px){
+
+    .dealer-orders-heading{
+        align-items: stretch;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .dealer-orders-count{
+        align-self: flex-start;
+    }
 
     .orders-table thead{
         display: none;
@@ -64,6 +132,10 @@
     .orders-table .btn{
         width: 100%;
         margin-top: 5px;
+    }
+
+    .dealer-actions{
+        display: block;
     }
 
     .title-orders{

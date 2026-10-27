@@ -4,10 +4,15 @@
 
 <link rel="stylesheet" href="/css/admin/sales/read_sales.css">
 
-<main>
-<div>
-<h1>Gestionar Ventas</h1>
-</div>
+<main class="admin-list-page">
+  <header class="admin-list-heading">
+    <div>
+      <p class="admin-list-eyebrow">Resultados</p>
+      <h1>Gestionar ventas</h1>
+      <p class="admin-list-description">Consulta las ventas confirmadas y revisa el detalle de cada operación.</p>
+    </div>
+  </header>
+  <div class="admin-table-wrap">
   <table class="table">
     <thead>
         <tr>
@@ -100,6 +105,11 @@
 
     </tbody>
 </table>
+  </div>
+  <% if (!sales.length) { %>
+    <p class="admin-list-empty">No hay ventas confirmadas registradas.</p>
+  <% } %>
+  <%- include('../../include/_adminPagination', { pagination, label: 'ventas' }) %>
 </main>
 
 

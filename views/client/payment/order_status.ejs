@@ -1,4 +1,5 @@
 <%- include('../../include/_header') %>
+<link rel="stylesheet" href="/css/delivery-tracking.css">
 <main class="commerce-panel">
   <a href="/mis-pedidos">← Mis pedidos</a>
   <h1>Estado de tu pedido</h1>
@@ -12,7 +13,10 @@
     <% } else if (order.estadoPago === 'PAGADO') { %><p>Tu pago está confirmado. Aquí podrás consultar el avance de la entrega.</p>
     <% } else if (order.estado === 'CANCELADA') { %><p>Este intento de compra terminó. Si tu banco muestra un cobro, contacta con la tienda antes de repetirlo.</p>
     <% } else { %><p>El pedido todavía no tiene un pago confirmado. Si acabas de pagar, espera la confirmación antes de reintentar.</p><% } %>
-    <a href="">Actualizar estado</a>
+    <a href="/venta-finalizada/<%= order._id %>">Actualizar estado</a>
+    <% if (order.repartidor) { %>
+      <p class="delivery-assigned-client"><i class="bi bi-bicycle"></i> Tu pedido ya está asignado a reparto.</p>
+    <% } %>
     <% if (!hasPaymentPending && order.canal === 'WOMPI' && order.estadoPago === 'PENDIENTE' && order.inventario === 'RESERVADO' && order.reservaHasta > new Date()) { %>
       <form method="post" action="/carrito/pay/<%= order._id %>">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -20,6 +24,7 @@
       </form>
     <% } %>
   </article>
+  <%- include('../../include/_deliveryTimeline', { order, visibleOnly: true, showActor: false }) %>
   <article class="commerce-card">
     <h2>Resumen</h2>
     <% order.productos.forEach(item => { %><p><%= item.nombre %> × <%= item.cantidad %> — $<%= item.subtotal.toLocaleString('es-CO') %></p><% }) %>

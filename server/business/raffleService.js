@@ -2,6 +2,7 @@ const crypto = require('node:crypto');
 const mongoose = require('mongoose');
 const Raffle = require('../model/raffle');
 const RaffleEntry = require('../model/raffleEntry');
+const adminPagination = require('../services/adminPagination');
 
 const KEY = 'principal';
 const DEFAULTS = {
@@ -62,15 +63,19 @@ async function updateConfig(body, file) {
     return raffle;
 }
 
-async function adminData() {
+async function adminData(query = {}) {
     const raffle = await getOrCreate();
+    const { page, limit } = adminPagination.requested(query, 10);
+    const totalItems = await RaffleEntry.countDocuments({ raffle: raffle._id });
+    const pagination = adminPagination.metadata(page, limit, totalItems);
     const entries = await RaffleEntry.find({ raffle: raffle._id })
         .populate('usuario', 'nombre email')
         .populate('order', 'numeroOrden total createdAt')
         .sort({ numero: 1 })
-        .limit(500)
+        .skip((pagination.page - 1) * limit)
+        .limit(limit)
         .lean();
-    return { raffle, entries };
+    return { raffle, entries, pagination };
 }
 
 async function recordEligibleOrder(order, session) {

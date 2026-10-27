@@ -1,5 +1,20 @@
 const raffle = require('../business/raffleService');
 const banner = require('../middleware/raffleBanner');
+const catalogPagination = require('./catalogPagination');
+
+function logRaffle(event, req, extra = {}) {
+    console.info(JSON.stringify({
+        event,
+        requestId: req.requestId,
+        method: req.method,
+        path: req.path,
+        fields: req.body && typeof req.body === 'object' ? Object.keys(req.body) : [],
+        filePresent: Boolean(req.file),
+        fileMimeType: req.file?.mimetype || undefined,
+        fileSize: Number.isFinite(req.file?.size) ? req.file.size : undefined,
+        ...extra
+    }));
+}
 
 function logRaffle(event, req, extra = {}) {
     console.info(JSON.stringify({
@@ -28,7 +43,8 @@ exports.publicIndex = async (req, res, next) => {
 
 exports.adminIndex = async (req, res, next) => {
     try {
-        const data = await raffle.adminData();
+        const data = await raffle.adminData(req.query);
+        data.pagination = catalogPagination.buildPagination(req, data.pagination);
         const raffleNotice = req.session.raffleNotice || '';
         delete req.session.raffleNotice;
         const renderPage = () => res.render('admin/raffle/manage', { ...data, raffleNotice });

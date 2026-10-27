@@ -63,7 +63,7 @@
             <h2>Estado del sorteo</h2>
             <dl class="raffle-summary">
                 <div><dt>Estado</dt><dd><%= raffle.activo ? 'Activo' : 'Inactivo' %></dd></div>
-                <div><dt>Participaciones</dt><dd><%= entries.length %></dd></div>
+                <div><dt>Participaciones</dt><dd><%= pagination.totalItems %></dd></div>
                 <div><dt>Próximo número</dt><dd><%= raffle.siguienteNumero %></dd></div>
                 <div><dt>Ganador</dt><dd><%= raffle.ganador?.numero ? 'Número ' + raffle.ganador.numero : 'Pendiente' %></dd></div>
             </dl>
@@ -112,6 +112,7 @@
                 </table>
             </div>
         <% } %>
+        <%- include('../../include/_adminPagination', { pagination, label: 'participaciones' }) %>
     </section>
 </main>
 <%- include('../../include/_footerAdmin') %>

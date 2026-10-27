@@ -1,6 +1,7 @@
 const { publicError, errorStatus } = require('../services/publicError');
 const Roldb = require('../model/rol');
 const Userdb = require('../model/user');
+const adminPagination = require('../services/adminPagination');
 
 // ======================= CREATE =======================
 exports.create = async (req, res) => {
@@ -38,7 +39,19 @@ exports.find = async (req, res) => {
             return res.send(rol);
         }
 
-        const roles = await Roldb.find();
+        if (adminPagination.isAdminList(req.query)) {
+            const { page, limit } = adminPagination.requested(req.query, 10);
+            const totalItems = await Roldb.countDocuments();
+            const pagination = adminPagination.metadata(page, limit, totalItems);
+            const items = await Roldb.find()
+                .sort({ nombre: 1, _id: 1 })
+                .skip((pagination.page - 1) * limit)
+                .limit(limit)
+                .lean();
+            return res.send({ items, pagination });
+        }
+
+        const roles = await Roldb.find().sort({ nombre: 1, _id: 1 });
         res.send(roles);
 
     } catch (err) {

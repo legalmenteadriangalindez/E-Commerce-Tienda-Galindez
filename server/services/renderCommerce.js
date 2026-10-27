@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Order = require('../model/order');
 const PaymentEvent = require('../model/paymentEvent');
 const commerce = require('../business/commerceService');
+const catalogPagination = require('./catalogPagination');
 const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 const saveSession = req => new Promise((resolve, reject) => req.session.save(error => error ? reject(error) : resolve()));
 
@@ -36,13 +37,14 @@ exports.myOrders = wrap(async (req, res) => {
 });
 exports.orderStatus = wrap(async (req, res) => {
     if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new commerce.CommerceError('Pedido no encontrado.', 404);
-    let order = await Order.findOne({ _id: req.params.id, usuario: req.session.user._id });
+    let order = await Order.findOne({ _id: req.params.id, usuario: req.session.user._id })
+        .populate('repartidor', 'nombre');
     if (!order) throw new commerce.CommerceError('Pedido no encontrado.', 404);
     let notice = '';
     if (commerce.validTransactionId(req.query.id) && order.estadoPago === 'PENDIENTE') {
         try { await commerce.reconcile(req.query.id, undefined, order); }
         catch { notice = 'Estamos verificando el pago. Puedes consultar esta página de nuevo sin volver a pagar.'; }
-        order = await Order.findById(order._id);
+        order = await Order.findById(order._id).populate('repartidor', 'nombre');
     }
     if (order.estadoPago === 'PAGADO' && req.session.claveCheckout && order.claveCheckout === `WOMPI:${req.session.user._id}:${req.session.claveCheckout}`) {
         req.session.cart = []; delete req.session.claveCheckout; await saveSession(req);
@@ -53,12 +55,25 @@ exports.orderStatus = wrap(async (req, res) => {
 exports.adminPayments = wrap(async (req, res) => {
     const page = Math.max(1, Math.min(Number.parseInt(req.query.page, 10) || 1, 100000));
     const filter = mongoose.isObjectIdOrHexString(req.query.order) ? { _id: req.query.order } : {};
+    const limit = 10;
+    const totalItems = await Order.countDocuments(filter);
+    const pagination = catalogPagination.buildPagination(req, {
+        page,
+        limit,
+        totalItems,
+        totalPages: Math.ceil(totalItems / limit)
+    });
     const [orders, events] = await Promise.all([
-        Order.find(filter).sort({ createdAt: -1 }).skip((page - 1) * 20).limit(21).lean(),
+        Order.find(filter)
+            .populate('repartidor', 'nombre email telefono')
+            .sort({ createdAt: -1, _id: -1 })
+            .skip((pagination.currentPage - 1) * limit)
+            .limit(limit)
+            .lean(),
         PaymentEvent.find({ estado: { $in: ['REVISION', 'PENDIENTE'] } }).sort({ updatedAt: -1 }).limit(30).lean()
     ]);
     const notice = req.session.commerceNotice || ''; delete req.session.commerceNotice;
-    res.render('admin/payment/manage', { orders: orders.slice(0, 20), events, page, more: orders.length > 20, notice });
+    res.render('admin/payment/manage', { orders, events, page: pagination.currentPage, more: pagination.nextUrl !== null, pagination, notice });
 });
 exports.confirmCash = wrap(async (req, res) => {
     if (req.body.confirmar !== 'si') throw new commerce.CommerceError('Confirma que recibiste el dinero.');

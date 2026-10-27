@@ -1,6 +1,7 @@
 const { publicError, errorStatus } = require('../services/publicError');
 const Categorydb = require('../model/categories');
 const Productdb = require('../model/product');
+const adminPagination = require('../services/adminPagination');
 // CREATE
 exports.create = async (req, res) => {
     try {
@@ -42,7 +43,19 @@ exports.find = async (req, res) => {
             }
             return res.json(data);
         }
-        const data = await Categorydb.find();
+        if (adminPagination.isAdminList(req.query)) {
+            const { page, limit } = adminPagination.requested(req.query, 10);
+            const totalItems = await Categorydb.countDocuments();
+            const pagination = adminPagination.metadata(page, limit, totalItems);
+            const items = await Categorydb.find()
+                .sort({ nombre: 1, _id: 1 })
+                .skip((pagination.page - 1) * limit)
+                .limit(limit)
+                .lean();
+            return res.json({ items, pagination });
+        }
+
+        const data = await Categorydb.find().sort({ nombre: 1, _id: 1 });
         res.json(data);
     } catch (err) {
         res.status(500).json({

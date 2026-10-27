@@ -4,10 +4,16 @@
 
 <link rel="stylesheet" href="/css/read_users.css">
 
-<main>
-<div>
-<h1>Gestionar Usuarios</h1>
-</div>
+<main class="admin-list-page">
+  <header class="admin-list-heading">
+    <div>
+      <p class="admin-list-eyebrow">Cuentas</p>
+      <h1>Gestionar usuarios</h1>
+      <p class="admin-list-description">Administra cuentas, roles y estados de acceso de la tienda.</p>
+    </div>
+    <a href="/add-user-form" class="admin-list-primary">Crear usuario</a>
+  </header>
+  <div class="admin-table-wrap">
      <table class="table">
   <thead>
     <tr>
@@ -53,13 +59,13 @@
       </td>
     </tr>
     <% }); %>
-      <tr>
-          <td colspan="14" >
-          <a href="/add-user-form" class="btn btn-primary">Crear Nuevo Usuario</a>
-        </td>
-      </tr>
   </tbody>
 </table>
+  </div>
+  <% if (!users.length) { %>
+    <p class="admin-list-empty">No hay usuarios activos registrados.</p>
+  <% } %>
+  <%- include('../../include/_adminPagination', { pagination, label: 'usuarios' }) %>
 
 </main>
 

@@ -118,13 +118,13 @@ main .table .btn {
    BOTÓN CREAR
    ========================================================= */
 
-main .table tbody tr:last-child td {
+main .table tbody tr.admin-create-row td {
     padding: 18px;
     text-align: left;
     background-color: #ffffff;
 }
 
-main .table tbody tr:last-child .btn {
+main .table tbody tr.admin-create-row .btn {
     padding: 9px 16px;
 }
 

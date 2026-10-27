@@ -111,10 +111,22 @@ exports.create_category = (req, res) => {
 
 
 exports.read_categories = (req, res) => {
-    axios.get(`${BASE_URL}/api/categorias`)
+    axios.get(`${BASE_URL}/api/categorias`, {
+        ...internalApiConfig(req),
+        params: {
+            adminList: '1',
+            page: req.query.page || 1,
+            limit: 10
+        }
+    })
         .then(response => {
-            
-            res.render('admin/categories/read_categories', { categories: response.data });
+            const payload = response.data;
+            res.render('admin/categories/read_categories', {
+                categories: payload.items || payload,
+                pagination: catalogPagination.buildPagination(req, payload.pagination || {
+                    page: 1, limit: 10, totalItems: payload.length, totalPages: payload.length ? 1 : 0
+                })
+            });
         })
         .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };

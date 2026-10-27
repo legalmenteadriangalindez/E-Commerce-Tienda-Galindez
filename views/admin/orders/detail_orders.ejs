@@ -3,6 +3,7 @@
 <!-- /include header -->
 
 <link rel="stylesheet" href="/css/detail_order.css">
+<link rel="stylesheet" href="/css/delivery-tracking.css">
 
 <main class="detail-order-container">
 
@@ -10,6 +11,28 @@
 
         <h1>Detalle de Orden</h1>
 
+    </div>
+
+    <div class="card order-card delivery-assigned-summary">
+        <div class="card-header">Asignación y reparto</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <strong>Repartidor:</strong>
+                    <%= order.repartidor?.nombre || 'Sin asignar' %>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <strong>Asignado el:</strong>
+                    <%= order.asignacionReparto?.asignadoEn
+                        ? new Date(order.asignacionReparto.asignadoEn).toLocaleString('es-CO')
+                        : 'Pendiente' %>
+                </div>
+            </div>
+            <% if (order.asignacionReparto?.nota) { %>
+                <p class="mb-0"><strong>Nota interna:</strong> <%= order.asignacionReparto.nota %></p>
+            <% } %>
+            <p class="mb-0 mt-2"><a href="/admin/delivery">Abrir panel de reparto</a></p>
+        </div>
     </div>
 
     <!-- INFORMACIÓN GENERAL -->
@@ -377,6 +400,8 @@
     </div>
 
 </main>
+
+<%- include('../../include/_deliveryTimeline', { order, visibleOnly: false, showActor: true }) %>
 
 <!-- include footer -->
 <%- include('../../include/_footerAdmin') %>

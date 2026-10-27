@@ -7,6 +7,7 @@ const Order = require('../server/model/order');
 const Sale = require('../server/model/sales');
 const Detail = require('../server/model/saleDetails');
 const Event = require('../server/model/paymentEvent');
+const EmailEvent = require('../server/model/orderEmailEvent');
 
 test('importes en centavos y validación del carrito', () => {
     assert.equal(commerce.cents(123.45), 12345);
@@ -21,7 +22,7 @@ test('compras y pagos con transacciones reales en MongoDB temporal', {
 }, async t => {
     const app = await require('./helpers/reviewApp').startReviewApp(process.env.COMMERCE_TEST_MONGO_URI);
     t.after(() => app.close());
-    await Promise.all([Order, Sale, Detail, Event].map(model => model.init()));
+    await Promise.all([Order, Sale, Detail, Event, EmailEvent].map(model => model.init()));
     const body = { fullName: 'Cliente de prueba', email: 'cliente@example.test', phone: '0000000000', address: 'Calle de prueba', city: 'Ciudad de prueba' };
     const make = (user, quantity = 1, key = randomUUID(), extra = {}) => commerce.createOrder({
         userId: user._id, cart: [{ productoId: app.product.id, cantidad: quantity }], key, body, ...extra
@@ -29,7 +30,7 @@ test('compras y pagos con transacciones reales en MongoDB temporal', {
     const tx = (order, status = 'APPROVED', id = randomUUID()) => ({ id, reference: order.numeroOrden,
         currency: 'COP', amount_in_cents: commerce.cents(order.total), status });
     const reset = async stock => {
-        await Promise.all([Order, Sale, Detail, Event].map(model => model.deleteMany({})));
+        await Promise.all([Order, Sale, Detail, Event, EmailEvent].map(model => model.deleteMany({})));
         await app.Product.updateOne({ _id: app.product._id }, { stock });
     };
     await t.test('doble clic crea una sola orden y reserva una sola vez', async () => {

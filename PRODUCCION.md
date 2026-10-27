@@ -46,16 +46,18 @@ Los importes son COP. El servidor trata los precios del catálogo como precios f
 | Inventario | Reserva atómica al crear la orden; una unidad no puede venderse a dos compradores. |
 | Vencimiento | La reserva dura 30 minutos. El servidor revisa vencimientos cada minuto mientras está activo. Un pago conocido que sigue pendiente conserva su reserva hasta conciliación. |
 | Wompi | Firma del webhook, consulta privada al proveedor y comparación de referencia, importe y moneda. Bandeja de eventos persistente y reintentos. |
+| Correo de pedidos | Confirmación de pedido, cambios de estado, aviso de envío y entrega. Los eventos se guardan en MongoDB, se envían por Brevo y se reintentan si el proveedor falla. |
+| Reparto | El administrador asigna pedidos pagados desde `/admin/delivery`. El repartidor solo puede consultar y avanzar los pedidos asignados; el cliente ve el historial público de entrega en `/mis-pedidos`. |
 | Cobro tardío o duplicado | El cobro queda registrado y se muestra una incidencia. No se envía automáticamente un pedido sin reserva confirmada. |
 | Caja | Registrar un pedido no lo marca como pagado. Un administrador confirma expresamente que recibió el dinero. |
 | Cliente | `/mis-pedidos` y consulta del estado del pago y entrega. El carrito no se vacía al abrir Wompi. |
 | Administración | `/admin/payments` para caja, incidencias y conciliación por ID de Wompi; `/admin-analytics?period=week` o `?period=month` para decisiones de ventas. |
-| Entrega | Solo permite PAGADA → PREPARANDO → ENVIADA → ENTREGADA, con pago y stock confirmados. Repartidores solo cambian los dos últimos pasos. |
+| Entrega | Solo permite PAGADA → PREPARANDO → ENVIADA → ENTREGADA, con pago y stock confirmados. El administrador asigna el repartidor y el repartidor solo actualiza pedidos que le pertenecen. |
 | Archivos | Nuevas fotos en MongoDB GridFS, convertidas a WEBP, sin metadatos y con límites de tamaño. Las fotos incluidas en Git siguen funcionando. |
 | Cuentas | Contraseñas nuevas de al menos 12 caracteres, códigos con hash y consumo atómico, recuperación por enlace de un uso y revocación de sesiones. |
 | Seguridad | CSRF también con archivos, límites de intentos en MongoDB, CSP con nonce, cookies seguras y errores sin detalles internos. |
 
-El repartidor tiene acceso a los pedidos confirmados que estén en preparación, envío o entrega. Esta versión no asigna pedidos a un repartidor individual; concede ese rol únicamente a personal autorizado para esas entregas.
+El repartidor tiene acceso únicamente a los pedidos pagados que el administrador le asignó. Desde `/admin/delivery`, el administrador puede asignar, reasignar o retirar una asignación antes de que el pedido salga en camino. El repartidor puede registrar `PREPARANDO`, `ENVIADA` y `ENTREGADA`, y añadir una nota visible para el cliente.
 
 ## 3. Preparar Render
 
@@ -104,6 +106,8 @@ El comando crea los tres roles y un administrador verificado; no cambia una cuen
 6. Comprueba una reserva vencida y un evento que llegue tarde. La incidencia debe quedar visible para la tienda.
 7. Configura las claves de producción, cambia `WOMPI_ENV` y ejecuta `npm run check:production`. Este comando valida variables; **no certifica** pagos, correo, restauración ni requisitos legales.
 8. Realiza una compra real controlada y autorizada, comprueba el cobro en Wompi, el pedido, la entrega y el procedimiento de devolución.
+
+Configura en Brevo un remitente verificado y prueba en este orden: creación de pedido, pago confirmado, cambio a preparación, envío y entrega. En local, si no configuras `BREVO_API_KEY` y `EMAIL_USER`, los correos se registran de forma segura en la terminal. En producción, un evento que no pueda enviarse queda en la bandeja de MongoDB y se reintenta con espera progresiva; revisa los logs `order_email_failed` si supera los intentos permitidos.
 
 No introduzcas tarjetas reales durante las pruebas sandbox. La aplicación usa el checkout alojado de Wompi y no guarda tarjetas.
 

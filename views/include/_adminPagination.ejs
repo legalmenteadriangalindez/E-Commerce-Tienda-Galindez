@@ -1,0 +1,31 @@
+<% if (pagination && pagination.totalItems > 0) { %>
+<nav class="admin-pagination" aria-label="Páginas de <%= label || 'resultados' %>">
+    <p class="admin-pagination__summary">
+        Mostrando <strong><%= pagination.from %>–<%= pagination.to %></strong>
+        de <strong><%= pagination.totalItems %></strong>
+    </p>
+    <% if (pagination.totalPages > 1) { %>
+        <div class="admin-pagination__links">
+            <% if (pagination.previousUrl) { %>
+                <a class="admin-pagination__link admin-pagination__link--arrow" href="<%= pagination.previousUrl %>" rel="prev" aria-label="Página anterior">‹</a>
+            <% } else { %>
+                <span class="admin-pagination__link admin-pagination__link--arrow is-disabled" aria-hidden="true">‹</span>
+            <% } %>
+
+            <% pagination.pages.forEach(page => { %>
+                <% if (page.current) { %>
+                    <span class="admin-pagination__link is-current" aria-current="page"><%= page.number %></span>
+                <% } else { %>
+                    <a class="admin-pagination__link" href="<%= page.href %>" aria-label="Página <%= page.number %>"><%= page.number %></a>
+                <% } %>
+            <% }) %>
+
+            <% if (pagination.nextUrl) { %>
+                <a class="admin-pagination__link admin-pagination__link--arrow" href="<%= pagination.nextUrl %>" rel="next" aria-label="Página siguiente">›</a>
+            <% } else { %>
+                <span class="admin-pagination__link admin-pagination__link--arrow is-disabled" aria-hidden="true">›</span>
+            <% } %>
+        </div>
+    <% } %>
+</nav>
+<% } %>

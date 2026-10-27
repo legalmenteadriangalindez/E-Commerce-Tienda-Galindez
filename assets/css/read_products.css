@@ -286,7 +286,7 @@ main .table .btn-primary:hover {
    FILA CREAR PRODUCTO
    ========================================================= */
 
-main .table tbody tr:last-child td {
+main .table tbody tr.admin-create-row td {
     padding: 15px;
 
     background: #fffaf6;

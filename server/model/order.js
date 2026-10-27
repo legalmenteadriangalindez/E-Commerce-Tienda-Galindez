@@ -1,5 +1,21 @@
 const mongoose = require('mongoose');
 
+const trackingSchema = new mongoose.Schema({
+    evento: {
+        type: String,
+        enum: [
+            'PEDIDO_RECIBIDO', 'PAGO_CONFIRMADO', 'PREPARANDO',
+            'ASIGNADO', 'DESASIGNADO', 'ENVIADA', 'ENTREGADA',
+            'CANCELADA', 'REQUIERE_REVISION', 'ACTUALIZACION'
+        ],
+        required: true
+    },
+    mensaje: { type: String, required: true, maxlength: 500 },
+    fecha: { type: Date, default: Date.now },
+    actor: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb' },
+    visibleCliente: { type: Boolean, default: true }
+}, { _id: true });
+
 const orderSchema = new mongoose.Schema({
 
     numeroOrden: {
@@ -175,6 +191,22 @@ const orderSchema = new mongoose.Schema({
          type: String
     },
 
+    // REPARTO Y SEGUIMIENTO
+    repartidor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userdb',
+        default: null
+    },
+    asignacionReparto: {
+        asignadoEn: Date,
+        asignadoPor: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb' },
+        nota: { type: String, maxlength: 500 }
+    },
+    seguimientoEntrega: {
+        type: [trackingSchema],
+        default: []
+    },
+
 }, {
     timestamps: true
 });
@@ -184,6 +216,7 @@ orderSchema.index({ usuario: 1 });
 orderSchema.index({ estado: 1 });
 orderSchema.index({ createdAt: -1 });
 orderSchema.index({ inventario: 1, reservaHasta: 1 });
+orderSchema.index({ repartidor: 1, estado: 1, createdAt: -1 });
 orderSchema.index({ usuario: 1, canal: 1 }, { unique: true,
     partialFilterExpression: { canal: 'WOMPI', inventario: 'RESERVADO' } });
 orderSchema.index({ claveCheckout: 1 }, {
