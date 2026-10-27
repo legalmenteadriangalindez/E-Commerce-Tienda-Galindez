@@ -47,6 +47,7 @@ Los importes son COP. El servidor trata los precios del catálogo como precios f
 | Vencimiento | La reserva dura 30 minutos. El servidor revisa vencimientos cada minuto mientras está activo. Un pago conocido que sigue pendiente conserva su reserva hasta conciliación. |
 | Wompi | Firma del webhook, consulta privada al proveedor y comparación de referencia, importe y moneda. Bandeja de eventos persistente y reintentos. |
 | Correo de pedidos | Confirmación de pedido, cambios de estado, aviso de envío y entrega. Los eventos se guardan en MongoDB, se envían por Brevo y se reintentan si el proveedor falla. |
+| Sorteo | Cada pedido pagado que cumple el monto recibe un número único. Al seleccionar ganador se encola un aviso por Brevo y `/sorteo` publica el número ganador, la fecha y el total de participaciones, sin nombres ni correos. |
 | Reparto | El administrador asigna pedidos pagados desde `/admin/delivery`. El repartidor solo puede consultar y avanzar los pedidos asignados; el cliente ve el historial público de entrega en `/mis-pedidos`. |
 | Cobro tardío o duplicado | El cobro queda registrado y se muestra una incidencia. No se envía automáticamente un pedido sin reserva confirmada. |
 | Caja | Registrar un pedido no lo marca como pagado. Un administrador confirma expresamente que recibió el dinero. |

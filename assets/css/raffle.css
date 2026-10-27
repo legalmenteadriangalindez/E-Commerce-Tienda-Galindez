@@ -30,6 +30,12 @@
 .raffle-public-copy h1 { margin:0 0 12px; }
 .raffle-public-copy strong { display:inline-block; margin-top:10px; color:#7b2cbf; }
 .raffle-public-note { color:#65717c; }
+.raffle-transparency-stat { margin:18px 0 0; color:#594b60; font-size:.9rem; }
+.raffle-transparency-stat strong { margin:0; color:#321642; }
+.raffle-public-result { margin-top:22px; padding:22px 24px; border:1px solid #e0ae2f; border-radius:16px; background:linear-gradient(135deg, #fffdf1, #fff4bd); box-shadow:0 6px 20px rgba(110, 77, 0, .1); }
+.raffle-public-result h2 { margin:0 0 8px; color:#5f4300; }
+.raffle-public-result h2 strong { color:#8b6500; }
+.raffle-public-result p { margin-bottom:8px; }
 .raffle-eyebrow { margin:0 0 6px; color:#c9184a; font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
 .raffle-my-entries { margin-top:22px; padding:24px; }
 .raffle-section-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; }

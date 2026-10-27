@@ -8,15 +8,31 @@
                 <img src="<%= raffle.imagenUrl %>" alt="Imagen de la promoción">
             <% } %>
             <div class="raffle-public-copy">
-                <p class="raffle-eyebrow">Promoción activa</p>
+                <p class="raffle-eyebrow"><%= raffle.activo ? 'Promoción activa' : 'Sorteo finalizado' %></p>
                 <h1><%= raffle.titulo %></h1>
                 <p><%= raffle.descripcion %></p>
                 <strong>Compra mínima: $ <%= Number(raffle.montoMinimo).toLocaleString('es-CO') %> COP</strong>
-                <p class="raffle-public-note">Cada pedido pagado que cumpla el monto recibe una participación única.</p>
+                <% if (raffle.activo) { %>
+                    <p class="raffle-public-note">Cada pedido pagado que cumpla el monto recibe una participación única.</p>
+                <% } else { %>
+                    <p class="raffle-public-note">Esta edición ya terminó. Consulta abajo el resultado público.</p>
+                <% } %>
+                <p class="raffle-transparency-stat">Participaciones registradas: <strong><%= totalEntries %></strong></p>
             </div>
         </section>
 
-        <% if (user) { %>
+        <% if (raffle.ganador?.numero) { %>
+            <section class="raffle-public-result" aria-labelledby="raffle-result-title">
+                <p class="raffle-eyebrow">Resultado público</p>
+                <h2 id="raffle-result-title">Número ganador: <strong>#<%= raffle.ganador.numero %></strong></h2>
+                <% if (raffle.ganador.seleccionadoEn) { %>
+                    <p>Seleccionado el <%= new Date(raffle.ganador.seleccionadoEn).toLocaleString('es-CO') %>.</p>
+                <% } %>
+                <p class="raffle-public-note">El ganador se eligió al azar entre las participaciones registradas. Para proteger la privacidad, no se publican nombres, correos ni datos del pedido.</p>
+            </section>
+        <% } %>
+
+        <% if (user && entries.length) { %>
             <section class="commerce-card raffle-my-entries" aria-labelledby="raffle-my-entries-title">
                 <div class="raffle-section-heading">
                     <div>
@@ -46,7 +62,17 @@
                     <p class="raffle-public-note">Aún no tienes participaciones. Realiza un pedido pagado por el monto mínimo para recibir tu número.</p>
                 <% } %>
             </section>
-        <% } else { %>
+        <% } else if (user && raffle.activo) { %>
+            <section class="commerce-card raffle-my-entries" aria-labelledby="raffle-my-entries-title">
+                <div class="raffle-section-heading">
+                    <div>
+                        <p class="raffle-eyebrow">Tus participaciones</p>
+                        <h2 id="raffle-my-entries-title">Aún no tienes números</h2>
+                    </div>
+                </div>
+                <p class="raffle-public-note">Realiza un pedido pagado por el monto mínimo para recibir tu número de participación.</p>
+            </section>
+        <% } else if (!user && raffle.activo) { %>
             <p class="raffle-login-note">Inicia sesión para consultar tus números de participación.</p>
         <% } %>
     <% } else { %>

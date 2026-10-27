@@ -44,6 +44,7 @@ Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicació
 - Gestión de reseñas: `/admin/reviews`.
 - Pedidos del cliente: `/mis-pedidos`.
 - Correos de pedidos: confirmación, cambios de estado, aviso de envío y entrega se guardan en una bandeja durable y se envían mediante Brevo con reintentos automáticos.
+- Sorteo de regalos: cada pedido pagado elegible recibe un número; el ganador recibe un aviso por Brevo y el resultado público muestra el número, la fecha y el total de participaciones sin exponer datos personales.
 - Reparto y seguimiento: el administrador asigna pedidos pagados a usuarios con rol `dealer`; cada repartidor ve únicamente sus entregas y el cliente consulta una línea de tiempo desde `/mis-pedidos`.
 
 Nunca subas `.env`, `config.env`, contraseñas, claves ni `node_modules`. Las pruebas automatizadas usan datos temporales y transacciones simuladas del proveedor: completa las pruebas externas descritas en la guía antes de activar cobros reales.

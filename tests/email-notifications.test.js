@@ -39,3 +39,20 @@ test('los avisos de envío y entrega sustituyen al cambio genérico', () => {
         type: 'CAMBIO_ESTADO', key: 'pedido:pedido-1:estado:PREPARANDO'
     });
 });
+
+test('el aviso de ganador incluye el número sin exponer datos privados', () => {
+    const rendered = notifications.renderOrderNotification({
+        tipo: 'RIFA_GANADOR',
+        datos: {
+            nombre: 'Cliente de prueba',
+            numero: 17,
+            titulo: 'Sorteo de regalos',
+            seleccionadoEn: '2026-10-27T20:00:00.000Z'
+        }
+    });
+
+    assert.match(rendered.subject, /Número 17/);
+    assert.match(rendered.htmlContent, /Número ganador: #17/);
+    assert.match(rendered.textContent, /#17/);
+    assert.doesNotMatch(rendered.htmlContent, /cliente@example\.test/);
+});

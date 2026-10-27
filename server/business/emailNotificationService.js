@@ -108,6 +108,44 @@ async function queueStatus(order, session) {
     return [await queue(event.type, order, event.key, session)];
 }
 
+async function queueRaffleWinner(entry, raffle, session) {
+    const email = normalizeEmail(entry?.clienteEmail);
+    const orderId = entry?.order?._id || entry?.order;
+    if (!entry?._id || !orderId || !email) return null;
+
+    const datos = {
+        tipo: 'RIFA_GANADOR',
+        nombre: text(entry.clienteNombre, 'Cliente'),
+        email,
+        numero: Number(entry.numero),
+        titulo: text(raffle?.titulo, 'Sorteo de regalos'),
+        seleccionadoEn: raffle?.ganador?.seleccionadoEn || new Date(),
+        numeroOrden: text(entry.order?.numeroOrden, 'Pedido')
+    };
+    const key = `rifa:${raffle?._id || 'principal'}:ganador:${entry._id}`;
+
+    try {
+        return await OrderEmailEvent.findOneAndUpdate(
+            { clave: key },
+            {
+                $setOnInsert: {
+                    clave: key,
+                    tipo: 'RIFA_GANADOR',
+                    order: orderId,
+                    destinatario: { nombre: datos.nombre, email },
+                    datos,
+                    estado: 'PENDIENTE',
+                    proximoIntento: new Date()
+                }
+            },
+            { upsert: true, new: true, session }
+        );
+    } catch (error) {
+        if (error.code === 11000) return OrderEmailEvent.findOne({ clave: key }).session(session || null);
+        throw error;
+    }
+}
+
 function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, character => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -122,6 +160,7 @@ function money(value) {
 
 function subjectFor(event) {
     const order = event.datos || {};
+    if (event.tipo === 'RIFA_GANADOR') return `¡Ganaste el sorteo! Número ${order.numero} - Tienda Galindez`;
     const number = order.numeroOrden || 'tu pedido';
     if (event.tipo === 'PEDIDO_RECIBIDO') return `Recibimos ${number} - Tienda Galindez`;
     if (event.tipo === 'AVISO_ENVIO') return `${number} va en camino - Tienda Galindez`;
@@ -131,6 +170,9 @@ function subjectFor(event) {
 
 function messageFor(event) {
     const data = event.datos || {};
+    if (event.tipo === 'RIFA_GANADOR') {
+        return `¡Felicitaciones! Tu número de participación #${data.numero} ganó el sorteo "${data.titulo || 'Sorteo de regalos'}".`;
+    }
     if (event.tipo === 'PEDIDO_RECIBIDO') {
         return data.estadoPago === 'PAGADO'
             ? 'Recibimos tu pedido y el pago fue registrado correctamente.'
@@ -146,6 +188,19 @@ function renderOrderNotification(event) {
     const data = event.datos || {};
     const subject = subjectFor(event);
     const greeting = escapeHtml(data.nombre || 'Cliente');
+
+    if (event.tipo === 'RIFA_GANADOR') {
+        const number = escapeHtml(data.numero || '—');
+        const title = escapeHtml(data.titulo || 'Sorteo de regalos');
+        const selectedAt = data.seleccionadoEn
+            ? new Date(data.seleccionadoEn).toLocaleString('es-CO')
+            : 'fecha pendiente de confirmar';
+        const safeDate = escapeHtml(selectedAt);
+        const htmlContent = `<!doctype html><html lang="es"><body style="font-family:Arial,sans-serif;color:#311b14;line-height:1.5"><main style="max-width:620px;margin:auto;padding:24px"><h2 style="color:#d85c32">Tienda Galindez</h2><p>Hola, ${greeting}.</p><h1 style="color:#7b2cbf">¡Felicitaciones!</h1><p>Tu número de participación fue seleccionado como ganador del sorteo <strong>${title}</strong>.</p><p style="font-size:24px"><strong>Número ganador: #${number}</strong></p><p>Selección realizada el ${safeDate}.</p><p>Conserva este correo y contacta a la tienda para coordinar la entrega del premio.</p><p>Consulta el resultado público en <a href="${escapeHtml((process.env.BASE_URL || 'http://localhost:3000') + '/sorteo')}">la página del sorteo</a>.</p></main></body></html>`;
+        const textContent = `Hola, ${data.nombre || 'Cliente'}.\n\n¡Felicitaciones! Tu número de participación #${data.numero} ganó el sorteo "${data.titulo || 'Sorteo de regalos'}".\nSelección realizada el ${selectedAt}.\n\nContacta a Tienda Galindez para coordinar la entrega del premio.`;
+        return { subject, htmlContent, textContent };
+    }
+
     const number = escapeHtml(data.numeroOrden || 'Pedido');
     const status = escapeHtml(data.estadoLabel || STATUS_LABELS[data.estado] || data.estado || 'Pendiente');
     const message = messageFor(event);
@@ -218,5 +273,6 @@ module.exports = {
     statusEvent,
     queueOrderReceived,
     queueStatus,
+    queueRaffleWinner,
     processPending
 };

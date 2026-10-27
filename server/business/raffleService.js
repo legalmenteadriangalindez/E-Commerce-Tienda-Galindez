@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Raffle = require('../model/raffle');
 const RaffleEntry = require('../model/raffleEntry');
 const adminPagination = require('../services/adminPagination');
+const emailNotifications = require('./emailNotificationService');
 
 const KEY = 'principal';
 const DEFAULTS = {
@@ -31,9 +32,17 @@ async function getOrCreate() {
 }
 
 async function publicConfig() {
-    return Raffle.findOne({ clave: KEY, activo: true })
-        .select('titulo descripcion montoMinimo imagenUrl')
+    return Raffle.findOne({
+        clave: KEY,
+        $or: [{ activo: true }, { 'ganador.numero': { $exists: true } }]
+    })
+        .select('titulo descripcion montoMinimo imagenUrl activo ganador.numero ganador.seleccionadoEn')
         .lean();
+}
+
+async function countEntries(raffleId) {
+    if (!raffleId || !mongoose.isObjectIdOrHexString(String(raffleId))) return 0;
+    return RaffleEntry.countDocuments({ raffle: raffleId });
 }
 
 function validUserId(userId) {
@@ -176,7 +185,10 @@ async function drawWinner() {
         };
         raffle.activo = false;
         await raffle.save({ session });
-        return winner;
+
+        const winnerEntry = await RaffleEntry.findById(winner._id).session(session);
+        await emailNotifications.queueRaffleWinner(winnerEntry, raffle, session);
+        return winnerEntry;
     });
 }
 
@@ -198,6 +210,7 @@ module.exports = {
     KEY,
     getOrCreate,
     publicConfig,
+    countEntries,
     updateConfig,
     adminData,
     entriesForUser,

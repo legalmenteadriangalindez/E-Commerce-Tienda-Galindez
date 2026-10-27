@@ -32,12 +32,13 @@ function logRaffle(event, req, extra = {}) {
 
 exports.publicIndex = async (req, res, next) => {
     try {
-        const activeRaffle = await raffle.publicConfig();
+        const publicRaffle = await raffle.publicConfig();
         const user = req.usuarioActual || req.session.user;
         return res.render('client/raffle/index', {
-            raffle: activeRaffle,
-            entries: activeRaffle && user
-                ? await raffle.entriesForUser(user._id, activeRaffle._id)
+            raffle: publicRaffle,
+            totalEntries: publicRaffle ? await raffle.countEntries(publicRaffle._id) : 0,
+            entries: publicRaffle && user
+                ? await raffle.entriesForUser(user._id, publicRaffle._id)
                 : [],
             user
         });

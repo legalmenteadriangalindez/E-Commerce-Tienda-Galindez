@@ -85,6 +85,21 @@ test('compras y pagos con transacciones reales en MongoDB temporal', {
             [1]
         );
     });
+    await t.test('el sorteo publica el número ganador y encola su aviso', async () => {
+        await reset(10);
+        const order = await make(app.users.owner);
+        await commerce.applyTransaction(tx(order));
+
+        const winner = await raffle.drawWinner();
+        assert.equal(winner.numero, 1);
+        assert.equal((await RaffleEntry.findOne({ order: order._id })).ganador, true);
+        const publicData = await raffle.publicConfig();
+        assert.equal(publicData.activo, false);
+        assert.equal(publicData.ganador.numero, winner.numero);
+        const winnerEmail = await EmailEvent.findOne({ tipo: 'RIFA_GANADOR' });
+        assert.equal(winnerEmail.destinatario.email, 'cliente@example.test');
+        assert.equal(winnerEmail.datos.numero, winner.numero);
+    });
     await t.test('rechazo libera la reserva una vez y un vencimiento no la libera otra vez', async () => {
         await reset(10); const order = await make(app.users.owner, 3); const transaction = tx(order, 'DECLINED');
         await commerce.applyTransaction(transaction); await commerce.applyTransaction(transaction);
