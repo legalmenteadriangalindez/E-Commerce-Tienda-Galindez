@@ -114,12 +114,14 @@ async function updateConfig(body, file) {
 async function adminData(query = {}) {
     const raffle = await getOrCreate();
     const { page, limit } = adminPagination.requested(query, 10);
-    const totalItems = await RaffleEntry.countDocuments({ raffle: raffle._id });
+    const filter = { raffle: raffle._id };
+    const totalItems = await RaffleEntry.countDocuments(filter);
     const pagination = adminPagination.metadata(page, limit, totalItems);
-    const entries = await RaffleEntry.find({ raffle: raffle._id })
+    const entries = await RaffleEntry.find(filter)
+        .select('numero clienteNombre clienteEmail montoCompra ganador createdAt usuario order')
         .populate('usuario', 'nombre email')
         .populate('order', 'numeroOrden total createdAt')
-        .sort({ numero: 1 })
+        .sort({ numero: 1, _id: 1 })
         .skip((pagination.page - 1) * limit)
         .limit(limit)
         .lean();

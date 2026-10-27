@@ -41,6 +41,7 @@ function buildPagination(req, metadata = {}) {
 
     return {
         currentPage,
+        limit,
         totalPages,
         totalItems,
         from: totalItems ? ((currentPage - 1) * limit) + 1 : 0,

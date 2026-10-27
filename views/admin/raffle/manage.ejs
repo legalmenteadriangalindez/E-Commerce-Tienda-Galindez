@@ -91,7 +91,21 @@
     </section>
 
     <section class="commerce-card">
-        <h2>Participaciones</h2>
+        <div class="raffle-entries-heading">
+            <div>
+                <h2>Participaciones</h2>
+                <p class="raffle-pagination-help">La lista se consulta directamente desde MongoDB y no está limitada a 500 registros.</p>
+            </div>
+            <form class="raffle-page-size" method="get" action="/admin/raffle">
+                <label for="raffle-limit">Filas por página</label>
+                <select id="raffle-limit" name="limit">
+                    <% for (const pageSize of [10, 25, 50]) { %>
+                        <option value="<%= pageSize %>" <%= Number(pagination.limit) === pageSize ? 'selected' : '' %>><%= pageSize %></option>
+                    <% } %>
+                </select>
+                <button type="submit">Aplicar</button>
+            </form>
+        </div>
         <% if (!entries.length) { %>
             <p>No hay participaciones todavía.</p>
         <% } else { %>
