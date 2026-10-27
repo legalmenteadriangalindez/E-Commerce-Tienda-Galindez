@@ -25,7 +25,19 @@ function validToken(expected, provided) {
 
 function requestOrigin(req) {
     const host = req.get('host');
-    return host ? `${req.protocol}://${host}` : '';
+    if (!host) return '';
+
+    // Render termina TLS en el proxy y reenvía la petición al proceso por HTTP.
+    // Leer el primer X-Forwarded-Proto evita rechazar formularios HTTPS legítimos.
+    const forwardedProto = String(req.get('x-forwarded-proto') || '')
+        .split(',')[0]
+        .trim()
+        .toLowerCase();
+    const protocol = ['http', 'https'].includes(forwardedProto)
+        ? forwardedProto
+        : req.protocol;
+
+    return `${protocol}://${host}`;
 }
 
 function allowedOrigin(req, origin) {
