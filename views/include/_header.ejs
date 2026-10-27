@@ -100,6 +100,9 @@
 
 <link rel="stylesheet" href="/css/commerce.css">
 <link rel="stylesheet" href="/css/raffle.css">
+<% if (typeof legalPage !== 'undefined' && legalPage) { %>
+<link rel="stylesheet" href="/css/legal.css">
+<% } %>
 <script nonce="<%= cspNonce %>" defer src="/js/commerce-ui.js"></script>
 </head>
 

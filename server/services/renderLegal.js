@@ -213,6 +213,7 @@ exports.page = key => (req, res, next) => {
     return res.render('client/legal/page', {
         policy: hydratedPolicy,
         policyKey: key,
+        legalPage: true,
         contact,
         legalPages,
         seoTitle: `${policy.title} | ${contact.businessName}`,
