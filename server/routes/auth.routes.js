@@ -5,6 +5,7 @@ const authController = require('../controller/auth_controller');
 const servicesLoginLogout = require('../services/renderLoginLogout');
 const confirmationCodeController = require('../controller/confirmationCodeController');
 const servicesRenderVerificationCode = require('../services/renderVerificationCode');
+const categoriasMiddleware = require('../middleware/categoriasMiddleware');
 const {
     loginLimiter,
     registrationLimiter,
@@ -25,8 +26,8 @@ router.post('/verify-email', verificationLimiter, confirmationCodeController.ver
 router.post('/resend-verification-code', resendLimiter, confirmationCodeController.resendVerificationCode);
 router.get('/verify-email', servicesRenderVerificationCode.renderVerificationCode);
 const resetPassword = require('../controller/passwordResetController');
-router.get('/forgot-password', resetPassword.requestForm);
+router.get('/forgot-password', categoriasMiddleware, resetPassword.requestForm);
 router.post('/forgot-password', resendLimiter, resetPassword.request);
-router.get('/reset-password', resetPassword.resetForm);
+router.get('/reset-password', categoriasMiddleware, resetPassword.resetForm);
 router.post('/reset-password', verificationLimiter, resetPassword.reset);
 module.exports = router;

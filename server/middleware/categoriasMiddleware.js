@@ -1,12 +1,13 @@
-const Categorydb = require('../model/categories');
+const categoryCache = require('../business/categoryCache');
 
 module.exports = async (req, res, next) => {
     try {
-        const categorias = await Categorydb.find();
-        res.locals.categorias = categorias;
+        res.locals.categorias = await categoryCache.get();
         next();
     } catch (error) {
         console.error("Error al cargar categorías:", error.message);
         return res.status(500).send("Error al cargar categorías");
     }
 };
+
+module.exports.invalidate = categoryCache.invalidate;

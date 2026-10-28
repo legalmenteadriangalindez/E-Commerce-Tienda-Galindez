@@ -16,7 +16,6 @@ const sessionConfig = require("./server/config/session");
 const csrfProtection = require("./server/middleware/csrfProtection");
 const cartMiddleware = require("./server/middleware/cartMiddleware");
 const sessionLogger = require("./server/middleware/sessionLogger");
-const categoriasMiddleware = require("./server/middleware/categoriasMiddleware");
 const raffleBanner = require("./server/middleware/raffleBanner");
 const appConfig = require("./server/config/appConfig");
 const { initializeModels } = require('./server/config/initializeModels');
@@ -59,7 +58,6 @@ app.use((req, res, next) => {
 app.use(morgan(':method :request-path :status :res[content-length] :response-time ms requestId=:request-id', { skip: req => req.path === '/healthz' }));
 app.use(cartMiddleware);
 app.use(sessionLogger);
-app.use(categoriasMiddleware);
 app.use(raffleBanner);
 app.use("/", require("./server/routes"));
 app.use((req, res) => res.status(404).render('error', {
