@@ -47,24 +47,57 @@ services:
       - key: NODE_ENV
         value: production
       - key: BASE_URL
-        sync: false
+        fromService:
+          name: E-Commerce-Tienda-Galindez
+          type: web
+          envVarKey: BASE_URL
       - key: MONGO_URI
-        sync: false
+        fromService:
+          name: E-Commerce-Tienda-Galindez
+          type: web
+          envVarKey: MONGO_URI
       - key: SESSION_SECRET
-        sync: false
+        fromService:
+          name: E-Commerce-Tienda-Galindez
+          type: web
+          envVarKey: SESSION_SECRET
       - key: BREVO_API_KEY
-        sync: false
+        fromService:
+          name: E-Commerce-Tienda-Galindez
+          type: web
+          envVarKey: BREVO_API_KEY
       - key: EMAIL_USER
-        sync: false
+        fromService:
+          name: E-Commerce-Tienda-Galindez
+          type: web
+          envVarKey: EMAIL_USER
       - key: PAYMENTS_ENABLED
-        value: "false"
+        fromService:
+          name: E-Commerce-Tienda-Galindez
+          type: web
+          envVarKey: PAYMENTS_ENABLED
       - key: WOMPI_ENV
-        value: sandbox
+        fromService:
+          name: E-Commerce-Tienda-Galindez
+          type: web
+          envVarKey: WOMPI_ENV
       - key: WOMPI_PUBLIC_KEY
-        sync: false
+        fromService:
+          name: E-Commerce-Tienda-Galindez
+          type: web
+          envVarKey: WOMPI_PUBLIC_KEY
       - key: WOMPI_PRIVATE_KEY
-        sync: false
+        fromService:
+          name: E-Commerce-Tienda-Galindez
+          type: web
+          envVarKey: WOMPI_PRIVATE_KEY
       - key: WOMPI_INTEGRITY_KEY
-        sync: false
+        fromService:
+          name: E-Commerce-Tienda-Galindez
+          type: web
+          envVarKey: WOMPI_INTEGRITY_KEY
       - key: WOMPI_EVENTS_KEY
-        sync: false
+        fromService:
+          name: E-Commerce-Tienda-Galindez
+          type: web
+          envVarKey: WOMPI_EVENTS_KEY

@@ -85,7 +85,7 @@ Configura además las cuatro claves `WOMPI_PUBLIC_KEY`, `WOMPI_PRIVATE_KEY`, `WO
 
 ### Mantenimiento programado
 
-El servicio web no ejecuta conciliaciones, vencimientos, limpieza de imágenes ni envío de la bandeja de correos. El segundo servicio de `render.yaml`, `tienda-galindez-maintenance`, ejecuta `npm run maintenance` cada minuto con la expresión `* * * * *` (UTC). Configúralo con los mismos valores de `MONGO_URI`, `BASE_URL`, `BREVO_API_KEY`, `EMAIL_USER` y las claves de Wompi del servicio web.
+El servicio web no ejecuta conciliaciones, vencimientos, limpieza de imágenes ni envío de la bandeja de correos. El segundo servicio de `render.yaml`, `tienda-galindez-maintenance`, ejecuta `npm run maintenance` cada minuto con la expresión `* * * * *` (UTC). Sus variables sensibles usan `fromService` para heredar los valores del servicio web existente `E-Commerce-Tienda-Galindez`; no las dupliques manualmente. Si el nombre de tu servicio es diferente, cambia ese nombre en las referencias antes de sincronizar el Blueprint.
 
 Para probarlo en local, ejecuta `npm run maintenance` con el `.env` apuntando a una base de datos de desarrollo. El proceso inicializa índices, valida que Atlas o un replica set estén disponibles, registra un resultado JSON en los logs y termina; si falla devuelve un código distinto de cero para que Render marque la ejecución como fallida. Render no solapa dos ejecuciones del mismo Cron Job.
 
