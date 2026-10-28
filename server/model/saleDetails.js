@@ -33,7 +33,9 @@ const saleDetailSchema = new mongoose.Schema({
     timestamps: true
 });
 
-saleDetailSchema.index({ venta: 1 });
+// El prefijo `venta` acelera los joins de analítica y el sufijo evita ordenar
+// en memoria cuando se consulta el detalle de una venta administrativa.
+saleDetailSchema.index({ venta: 1, createdAt: 1, _id: 1 });
 saleDetailSchema.index({ producto: 1, venta: 1 });
 
 module.exports = mongoose.model(

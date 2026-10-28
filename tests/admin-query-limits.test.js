@@ -51,7 +51,7 @@ test('el sorteo elige una posición aleatoria sin traer todas las participacione
 
 test('las agregaciones tienen índices para sus filtros y joins principales', () => {
     assert.match(read('server/model/sales.js'), /estadoPago: 1, createdAt: -1/);
-    assert.match(read('server/model/saleDetails.js'), /saleDetailSchema\.index\(\{ venta: 1 \}\)/);
+    assert.match(read('server/model/saleDetails.js'), /saleDetailSchema\.index\(\{ venta: 1, createdAt: 1, _id: 1 \}\)/);
     assert.match(read('server/model/product.js'), /schema\.index\(\{ stock: 1, nombre: 1 \}\)/);
     assert.match(read('server/model/provider.js'), /schema\.index\(\{ nombre: 1, _id: 1 \}\)/);
     assert.match(read('server/model/user.js'), /schema\.index\(\{ estado: 1, fechaRegistro: -1, _id: -1 \}\)/);
