@@ -132,6 +132,8 @@ El comando crea los cuatro roles (`SuperAdmin`, `Admin`, `Cliente` y `dealer`) y
 
 Si ya tienes una cuenta operativa y necesitas convertirla en la cuenta de emergencia, crea primero el rol `SuperAdmin` con este comando usando un correo nuevo y, después de verificar el acceso, cambia únicamente el `rol` de la cuenta elegida desde MongoDB Atlas o una tarea autorizada. Si lo haces manualmente en Atlas, incrementa también `authVersion` para revocar las sesiones anteriores. No envíes contraseñas ni URI de MongoDB al repositorio o al chat.
 
+La opción recomendada para una cuenta existente es configurar temporalmente `SUPERADMIN_EMAIL` y ejecutar `npm run promote:superadmin`. Solo acepta cuentas que ya sean `Admin` o `SuperAdmin`, no cambia la contraseña y revoca las sesiones incrementando `authVersion`. Elimina la variable después de usarla.
+
 ## 4. Probar Wompi antes de cobrar
 
 1. Configura claves sandbox y `PAYMENTS_ENABLED=true` en un entorno de prueba.

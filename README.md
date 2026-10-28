@@ -49,6 +49,7 @@ Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicació
 - Informe de ventas: `/admin-analytics?period=week` o `?period=month`.
 - Exportación de ventas: `/read-sales`, con filtros por fecha, estado de pago y canal, y descarga CSV para Excel, Power BI, Python o R.
 - Gestión de reseñas: `/admin/reviews`.
+- Seguridad de roles: `npm run seed:admin` crea el rol reservado `SuperAdmin`; para promover una cuenta `Admin` existente usa temporalmente `SUPERADMIN_EMAIL` y `npm run promote:superadmin`.
 - Pedidos del cliente: `/mis-pedidos`.
 - Correos de pedidos: confirmación, cambios de estado, aviso de envío y entrega se guardan en una bandeja durable y se envían mediante Brevo con reintentos automáticos.
 - Sorteo de regalos: cada pedido pagado elegible recibe un número; el ganador recibe un aviso por Brevo y el resultado público muestra el número, la fecha y el total de participaciones sin exponer datos personales.

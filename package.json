@@ -16,6 +16,7 @@
     "explain:queries": "node scripts/explain-queries.js",
     "migrate:money": "node scripts/migrate-money-to-cents.js",
     "seed:admin": "node scripts/seed-admin.js",
+    "promote:superadmin": "node scripts/promote-superadmin.js",
     "seed:local": "node scripts/seed-local.js"
   },
   "keywords": [
