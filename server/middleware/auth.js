@@ -64,18 +64,27 @@ const mongoose = require("mongoose");
 const Userdb = require("../model/user");
 const {
     ALL_PERMISSIONS,
+    ADMIN_PERMISSIONS,
     PERMISSIONS,
+    SYSTEM_ROLES,
     expandPermissions
 } = require("../config/permissions");
 
 function permissionsForRole(role) {
     const explicit = expandPermissions(role?.permisos);
 
-    // Compatibilidad con administradores creados antes de introducir la
-    // matriz de permisos. Se puede restringir el rol desde el panel una vez
-    // que sus permisos hayan sido guardados explícitamente.
-    if (role?.nombre === "Admin" && explicit.length === 0) {
+    // El rol separado de superadministrador no depende de que la colección
+    // tenga todavía la matriz materializada: siempre conserva acceso total.
+    if (role?.nombre === SYSTEM_ROLES.SUPER_ADMIN) {
         return [...ALL_PERMISSIONS];
+    }
+
+    // Compatibilidad con administradores antiguos, pero sin volver a conceder
+    // la capacidad de delegar roles. El permiso roles:manage es la frontera
+    // que diferencia al administrador operativo del SuperAdmin.
+    if (role?.nombre === SYSTEM_ROLES.ADMIN) {
+        const operational = explicit.filter(permission => permission !== PERMISSIONS.ROLES_MANAGE);
+        return operational.length ? operational : [...ADMIN_PERMISSIONS];
     }
 
     return explicit;
@@ -87,6 +96,13 @@ function hasPermission(usuario, permission) {
         permission === PERMISSIONS.ADMIN_ACCESS ||
         permissions.includes(PERMISSIONS.ADMIN_ACCESS)
     );
+}
+
+function isSuperAdmin(usuario) {
+    const roleName = typeof usuario?.rol === 'string'
+        ? usuario.rol
+        : usuario?.rol?.nombre;
+    return roleName === SYSTEM_ROLES.SUPER_ADMIN;
 }
 
 // Respuesta cuando no existe una sesión válida
@@ -236,17 +252,18 @@ function verificarAcceso(rolRequerido = null, api = false, permisoRequerido = nu
 exports.isLogged = verificarAcceso();
 exports.isLoggedApi = verificarAcceso(null, true);
 
-// Administrador en páginas EJS
-exports.isAdmin = verificarAcceso("Admin");
+// Administrador en páginas EJS/API: se basa en el permiso de acceso al panel
+// para incluir a SuperAdmin y a futuros roles administrativos personalizados.
+exports.isAdmin = verificarAcceso(null, false, PERMISSIONS.ADMIN_ACCESS);
 
-// Administrador en API
-exports.isAdminApi = verificarAcceso("Admin", true);
+exports.isAdminApi = verificarAcceso(null, true, PERMISSIONS.ADMIN_ACCESS);
 
 // Distribuidor
 exports.isDealer = verificarAcceso("dealer");
 
 exports.permissionsForRole = permissionsForRole;
 exports.hasPermission = hasPermission;
+exports.isSuperAdmin = isSuperAdmin;
 exports.requirePermission = (permission, api = false) =>
     verificarAcceso(null, api, permission);
 exports.requireAnyPermission = (permissions, api = false) =>

@@ -128,7 +128,9 @@ Si no tienes un administrador en esa base, configura temporalmente `INITIAL_ADMI
 npm run seed:admin
 ```
 
-El comando crea los tres roles y un administrador verificado; no cambia una cuenta existente ni restablece contraseñas. Retira `INITIAL_ADMIN_PASSWORD` después de usarlo. Si tu plan no tiene Shell, puedes ejecutarlo desde tu equipo apuntando temporalmente a esa base, y después volver a la URI de desarrollo.
+El comando crea los cuatro roles (`SuperAdmin`, `Admin`, `Cliente` y `dealer`) y, si el correo no existe, crea un administrador verificado con el rol reservado `SuperAdmin`; también normaliza `Admin` para que no tenga `roles:manage`. No cambia una cuenta existente ni restablece contraseñas. Retira `INITIAL_ADMIN_PASSWORD` después de usarlo. Si tu plan no tiene Shell, puedes ejecutarlo desde tu equipo apuntando temporalmente a esa base, y después volver a la URI de desarrollo.
+
+Si ya tienes una cuenta operativa y necesitas convertirla en la cuenta de emergencia, crea primero el rol `SuperAdmin` con este comando usando un correo nuevo y, después de verificar el acceso, cambia únicamente el `rol` de la cuenta elegida desde MongoDB Atlas o una tarea autorizada. Si lo haces manualmente en Atlas, incrementa también `authVersion` para revocar las sesiones anteriores. No envíes contraseñas ni URI de MongoDB al repositorio o al chat.
 
 ## 4. Probar Wompi antes de cobrar
 

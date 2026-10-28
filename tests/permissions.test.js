@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const {
     PERMISSIONS: P,
     ALL_PERMISSIONS,
+    ADMIN_PERMISSIONS,
     normalizePermissions,
     expandPermissions
 } = require('../server/config/permissions');
@@ -16,10 +17,12 @@ test('normaliza permisos, elimina duplicados y descarta valores desconocidos', (
     );
 });
 
-test('un Admin antiguo sin permisos explícitos conserva acceso completo', () => {
+test('un Admin antiguo conserva acceso operativo, pero no puede delegar roles', () => {
     const permissions = auth.permissionsForRole({ nombre: 'Admin', permisos: [] });
-    assert.deepEqual(permissions, ALL_PERMISSIONS);
+    assert.deepEqual(permissions, ADMIN_PERMISSIONS);
     assert.equal(auth.hasPermission({ rol: { nombre: 'Admin', permisos: [] } }, P.USERS_MANAGE), true);
+    assert.equal(auth.hasPermission({ rol: { nombre: 'Admin', permisos: [] } }, P.ROLES_MANAGE), false);
+    assert.equal(auth.hasPermission({ rol: { nombre: 'Admin', permisos: ALL_PERMISSIONS } }, P.ROLES_MANAGE), false);
 });
 
 test('un rol personalizado solo puede usar los módulos seleccionados', () => {

@@ -35,11 +35,11 @@
         <textarea name="descripcion" rows="3" maxlength="500"><%= rol.descripcion || '' %></textarea>
       </div>
 
-      <% const systemRole = ['Admin', 'Cliente', 'dealer'].includes(rol.nombre); %>
+      <% const systemRole = ['SuperAdmin', 'Admin', 'Cliente', 'dealer'].includes(rol.nombre); %>
       <div class="form-group">
         <label>Permisos</label>
         <% if (systemRole) { %>
-          <small>Los roles del sistema conservan sus permisos base para evitar bloquear el acceso de clientes, repartidores o administradores.</small>
+          <small>Este rol del sistema está protegido y no puede renombrarse ni modificar sus permisos desde el panel.</small>
         <% } else { %>
           <small>El acceso al panel se añade automáticamente cuando seleccionas cualquier permiso administrativo.</small>
         <% } %>
@@ -56,7 +56,11 @@
       </div>
 
       <div class="form-actions">
-        <button type="submit">Actualizar rol</button>
+        <% if (systemRole) { %>
+          <a href="/read-rol" class="btn btn-secondary">Volver a roles</a>
+        <% } else { %>
+          <button type="submit">Actualizar rol</button>
+        <% } %>
       </div>
 
     </form>

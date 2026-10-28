@@ -4,11 +4,29 @@ const Roldb = require('../model/rol');
 const accounts = require('../business/accountService');
 const bcrypt = require('bcrypt');
 const adminPagination = require('../services/adminPagination');
+const { hasPermission, isSuperAdmin } = require('../middleware/auth');
+const { PERMISSIONS: P, SYSTEM_ROLES } = require('../config/permissions');
 
 const mongoose = require("mongoose");
 
 const CAMPOS_USUARIO_ADMIN =
     "nombre email telefono genero direccion barrio ciudad puntoReferencia ubicacion rol estado fechaRegistro";
+
+function roleChangeError({ actor, targetId, currentRoleName, nextRoleName }) {
+    if (!hasPermission(actor, P.ROLES_MANAGE)) {
+        return "Se requiere el permiso roles:manage para cambiar roles.";
+    }
+    if (String(actor?._id || '') === String(targetId)) {
+        return "No puedes cambiar el rol de tu propia cuenta.";
+    }
+    if (currentRoleName === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(actor)) {
+        return "Solo un superadministrador puede modificar esta cuenta.";
+    }
+    if (nextRoleName === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(actor)) {
+        return "Solo un superadministrador puede asignar el rol SuperAdmin.";
+    }
+    return null;
+}
 
 // CREATE USER
 exports.create = async (req, res) => {
@@ -50,13 +68,35 @@ exports.create = async (req, res) => {
             }
         }
         
-        // Buscar rol cliente
-        const rolCliente = await Roldb.findOne({ nombre: "Cliente" });
+        // Buscar rol cliente. La creación administrativa puede asignar otro
+        // rol únicamente cuando el actor tiene roles:manage; por defecto una
+        // cuenta nueva siempre es Cliente.
+        const rolCliente = await Roldb.findOne({ nombre: SYSTEM_ROLES.CLIENT });
 
         if (!rolCliente) {
             return res.status(500).json({
                 message: "Rol Cliente no existe."
             });
+        }
+
+        let rolAsignado = rolCliente;
+        if (Object.prototype.hasOwnProperty.call(req.body, 'rol') && req.body.rol) {
+            if (!hasPermission(req.usuarioActual, P.ROLES_MANAGE)) {
+                return res.status(403).json({
+                    message: "Se requiere el permiso roles:manage para asignar un rol."
+                });
+            }
+            if (typeof req.body.rol !== 'string' || !mongoose.isValidObjectId(req.body.rol)) {
+                return res.status(400).json({ message: "El rol seleccionado no es válido." });
+            }
+            const requestedRole = await Roldb.findById(req.body.rol).select('nombre');
+            if (!requestedRole) return res.status(400).json({ message: "El rol seleccionado no existe." });
+            if (requestedRole.nombre === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(req.usuarioActual)) {
+                return res.status(403).json({
+                    message: "Solo un superadministrador puede asignar el rol SuperAdmin."
+                });
+            }
+            rolAsignado = requestedRole;
         }
 
         // Hash contraseña
@@ -73,7 +113,7 @@ exports.create = async (req, res) => {
             ciudad: ciudad || "Timbio",
             puntoReferencia,
             ubicacion,
-            rol: rolCliente._id,
+            rol: rolAsignado._id,
             estado: "Activo"
         });
 
@@ -117,10 +157,18 @@ exports.find = async (req, res) => {
                 });
             }
 
+            if (user.rol?.nombre === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(req.usuarioActual)) {
+                return res.status(404).json({ message: "Usuario no encontrado" });
+            }
+
             return res.json(user);
         }
 
         const filter = { estado: "Activo" };
+        if (!isSuperAdmin(req.usuarioActual)) {
+            const superRole = await Roldb.findOne({ nombre: SYSTEM_ROLES.SUPER_ADMIN }).select('_id').lean();
+            if (superRole) filter.rol = { $ne: superRole._id };
+        }
         const { page, limit } = adminPagination.requested(req.query, 10);
         const totalItems = await Userdb.countDocuments(filter);
         const pagination = adminPagination.metadata(page, limit, totalItems);
@@ -151,7 +199,30 @@ exports.update = async (req, res) => {
             return res.status(400).json({ message: "Datos vacíos, nada que actualizar." });
         }
 
-        // Solo permitir ciertos campos para actualizar
+        const id = req.params.id;
+        if (!mongoose.isValidObjectId(id)) {
+            return res.status(400).json({ message: "ID de usuario inválido." });
+        }
+
+        const current = await Userdb.findById(id).populate('rol', 'nombre');
+        if (!current) return res.status(404).json({ message: "Usuario no encontrado." });
+
+        const actor = req.usuarioActual;
+        const actorIsSuperAdmin = isSuperAdmin(actor);
+
+        // La cuenta de emergencia no puede ser editada por un administrador
+        // operativo, ni siquiera para desactivarla o cambiarle el correo.
+        if (current.rol?.nombre === SYSTEM_ROLES.SUPER_ADMIN && !actorIsSuperAdmin) {
+            return res.status(403).json({
+                message: "Solo un superadministrador puede modificar esta cuenta."
+            });
+        }
+
+        const roleFieldProvided = Object.prototype.hasOwnProperty.call(req.body, 'rol');
+        let roleChanged = false;
+
+        // Solo permitir ciertos campos para actualizar. `rol` se procesa por
+        // separado para que users:manage nunca implique delegar privilegios.
         const allowedFields = [
             'nombre',
             'telefono',
@@ -161,13 +232,35 @@ exports.update = async (req, res) => {
             'ciudad',
             'puntoReferencia',
             'ubicacion',
-            'estado',
-            'rol'
+            'estado'
         ];
         const updateData = {};
         for (let key of allowedFields) {
             if (req.body[key] !== undefined) updateData[key] = req.body[key];
         }
+
+        if (roleFieldProvided) {
+            if (typeof req.body.rol !== 'string' || !mongoose.isValidObjectId(req.body.rol)) {
+                return res.status(400).json({ message: "El rol seleccionado no es válido." });
+            }
+
+            const nextRole = await Roldb.findById(req.body.rol).select('nombre');
+            if (!nextRole) return res.status(400).json({ message: "El rol seleccionado no existe." });
+
+            const roleError = roleChangeError({
+                actor,
+                targetId: id,
+                currentRoleName: current.rol?.nombre,
+                nextRoleName: nextRole.nombre
+            });
+            if (roleError) {
+                return res.status(403).json({ message: roleError });
+            }
+
+            roleChanged = String(current.rol?._id || '') !== String(nextRole._id);
+            updateData.rol = nextRole._id;
+        }
+
         // Actualizar email
         if (req.body.email) {
             updateData.email = accounts.normalizeEmail(req.body.email);
@@ -184,30 +277,26 @@ exports.update = async (req, res) => {
 
             updateData.password = await bcrypt.hash(req.body.password, 10);
         }
-        // Normalizar email si se actualiza (opcional)
-        if (req.body.email) updateData.email = accounts.normalizeEmail(req.body.email);
+
         if (req.body.email && !updateData.email) return res.status(400).json({ message: 'Correo inválido.' });
-        if (updateData.email) {
-            const previous = await Userdb.findById(req.params.id).select('email');
-            if (previous && previous.email.toLowerCase() !== updateData.email) {
-                updateData.verified = false;
-                updateData.verificationCode = null;
-                updateData.verificationCodeHash = null;
-                updateData.verificationExpire = null;
-            }
+        if (updateData.email && current.email.toLowerCase() !== updateData.email) {
+            updateData.verified = false;
+            updateData.verificationCode = null;
+            updateData.verificationCodeHash = null;
+            updateData.verificationExpire = null;
         }
 
         const data = await Userdb.findByIdAndUpdate(
-    req.params.id,
-    { $set: updateData, ...((updateData.password || updateData.email) ? { $inc: { authVersion: 1 } } : {}) },
-    {
-        new: true,
-        runValidators: true
-    }
-)
-    .select(CAMPOS_USUARIO_ADMIN)
-    .populate("rol", "nombre");
-        
+            id,
+            { $set: updateData, ...((updateData.password || updateData.email || roleChanged) ? { $inc: { authVersion: 1 } } : {}) },
+            {
+                new: true,
+                runValidators: true
+            }
+        )
+            .select(CAMPOS_USUARIO_ADMIN)
+            .populate("rol", "nombre");
+
         if (!data) return res.status(404).json({ message: "Usuario no encontrado." });
 
         res.json(data);
@@ -236,6 +325,16 @@ exports.update_user = async (req, res) => {
 // DELETE USER (BORRADO LÓGICO)
 exports.delete = async (req, res) => {
     try {
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ message: "ID de usuario inválido." });
+        }
+
+        const target = await Userdb.findById(req.params.id).populate('rol', 'nombre');
+        if (!target) return res.status(404).json({ message: "Usuario no encontrado." });
+        if (target.rol?.nombre === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(req.usuarioActual)) {
+            return res.status(403).json({ message: "Solo un superadministrador puede desactivar esta cuenta." });
+        }
+
         const data = await Userdb.findByIdAndUpdate(
             req.params.id,
             { $set: { estado: "Inactivo" } },
@@ -259,14 +358,20 @@ exports.search = async (req, res) => {
             return res.json([]);
         }
 
-        const users = await Userdb.find({
+        const filter = {
             estado: "Activo",
             $or: [
                 { nombre: { $regex: search, $options: "i" } },
                 { email: { $regex: search, $options: "i" } },
                 { telefono: { $regex: search, $options: "i" } }
             ]
-        })
+        };
+        if (!isSuperAdmin(req.usuarioActual)) {
+            const superRole = await Roldb.findOne({ nombre: SYSTEM_ROLES.SUPER_ADMIN }).select('_id').lean();
+            if (superRole) filter.rol = { $ne: superRole._id };
+        }
+
+        const users = await Userdb.find(filter)
         .select(CAMPOS_USUARIO_ADMIN)
         .limit(10);
 
@@ -290,3 +395,5 @@ exports.getUserProfile = async (userId) => {
 
     return user;
 };
+
+exports.roleChangeError = roleChangeError;

@@ -39,22 +39,22 @@
           >
         </div>
         <!-- Rol -->
-        <div class="form-group">
-          <label>Rol</label>
+        <% if (canManageRoles) { %>
+          <div class="form-group">
+            <label>Rol</label>
 
-          <select name="rol">
-            <option value="">Seleccione...</option>
+            <select name="rol">
+              <option value="">Cliente (predeterminado)</option>
 
-            <% roles.forEach(rol => { %>
-
-              <option value="<%= rol._id %>">
-                <%= rol.nombre %>
-              </option>
-
-            <% }) %>
-
-          </select>
-        </div>
+              <% roles.forEach(rol => { %>
+                <option value="<%= rol._id %>">
+                  <%= rol.nombre %>
+                </option>
+              <% }) %>
+            </select>
+            <small>Asignar roles requiere el permiso roles:manage. SuperAdmin solo puede asignarlo otro SuperAdmin.</small>
+          </div>
+        <% } %>
         <!-- Teléfono -->
         <div class="form-group">
           <label>Teléfono</label>

@@ -42,14 +42,22 @@
         </td>
 
         <td>
-          <a href="/update-rol?id=<%= rol._id %>" class="btn btn-success">Editar</a>
+          <% if (['SuperAdmin', 'Admin', 'Cliente', 'dealer'].includes(rol.nombre)) { %>
+            <span class="text-muted">Protegido</span>
+          <% } else { %>
+            <a href="/update-rol?id=<%= rol._id %>" class="btn btn-success">Editar</a>
+          <% } %>
         </td>
 
         <td>
-          <form action="/delete-rol/<%= rol._id %>" method="POST" class="d-inline">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <button type="submit" class="btn btn-danger">Eliminar</button>
-          </form>
+          <% if (['SuperAdmin', 'Admin', 'Cliente', 'dealer'].includes(rol.nombre)) { %>
+            <span class="text-muted">Protegido</span>
+          <% } else { %>
+            <form action="/delete-rol/<%= rol._id %>" method="POST" class="d-inline">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="btn btn-danger">Eliminar</button>
+            </form>
+          <% } %>
         </td>
       </tr>
       <% }); %>

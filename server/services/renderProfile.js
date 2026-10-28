@@ -168,7 +168,7 @@ function obtenerVista(user, editar = false, adminView = false) {
     const rol = user.rol?.nombre;
 
     const carpeta =
-        adminView || rol === "Admin"
+        adminView || rol === "Admin" || rol === "SuperAdmin"
             ? "admin"
             : rol === "dealer"
                 ? "dealer"

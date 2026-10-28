@@ -7,6 +7,11 @@ dotenv.config();
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const catalogPagination = require('./catalogPagination');
+const { PERMISSIONS: P } = require('../config/permissions');
+
+function canManageRoles(res) {
+    return typeof res.locals.can === 'function' && res.locals.can(P.ROLES_MANAGE);
+}
 
 // Configuración para enviar la sesión a nuestra API
 function configApi(req) {
@@ -30,7 +35,8 @@ exports.create_user_form = async (req, res) => {
         );
 
         res.render('admin/users/add_user', {
-            roles: rolesRes.data.items || rolesRes.data || []
+            roles: rolesRes.data.items || rolesRes.data || [],
+            canManageRoles: canManageRoles(res)
         });
 
     } catch (err) {
@@ -123,7 +129,8 @@ exports.update_user = async (req, res) => {
 
         res.render('admin/users/update_user', {
             user: userRes.data,
-            roles: rolesRes.data.items || rolesRes.data || []
+            roles: rolesRes.data.items || rolesRes.data || [],
+            canManageRoles: canManageRoles(res)
         });
 
     } catch (err) {
@@ -148,9 +155,15 @@ exports.update_user_data = async (req, res) => {
             barrio: req.body.barrio,
             ciudad: req.body.ciudad,
             puntoReferencia: req.body.puntoReferencia,
-            estado: req.body.estado,
-            rol: req.body.rol
+            estado: req.body.estado
         };
+
+        // No enviar el campo si el actor no tiene roles:manage. El API vuelve
+        // a validar la autorización, por lo que ocultar el control no sustituye
+        // la protección del servidor.
+        if (Object.prototype.hasOwnProperty.call(req.body, 'rol')) {
+            body.rol = req.body.rol;
+        }
 
         // Solo actualizar la contraseña cuando se proporciona
         if (

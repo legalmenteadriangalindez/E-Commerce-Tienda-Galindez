@@ -126,23 +126,26 @@
       <div class="form-group">
         <label>Rol</label>
 
-        <select name="rol">
-
-          <% roles.forEach(rol => { %>
-
-            <option
-              value="<%= rol._id %>"
-              <%= user.rol && user.rol._id.toString() === rol._id.toString()
-                ? "selected"
-                : ""
-              %>
-            >
-              <%= rol.nombre %>
-            </option>
-
-          <% }) %>
-
-        </select>
+        <% const isOwnUser = authUser && String(authUser._id) === String(user._id); %>
+        <% if (canManageRoles && !isOwnUser) { %>
+          <select name="rol">
+            <% roles.forEach(rol => { %>
+              <option
+                value="<%= rol._id %>"
+                <%= user.rol && user.rol._id.toString() === rol._id.toString()
+                  ? "selected"
+                  : ""
+                %>
+              >
+                <%= rol.nombre %>
+              </option>
+            <% }) %>
+          </select>
+          <small>Cambiar roles requiere roles:manage. La cuenta SuperAdmin solo puede asignarla otro SuperAdmin.</small>
+        <% } else { %>
+          <input type="text" value="<%= user.rol?.nombre || 'Sin rol' %>" readonly>
+          <small><%= isOwnUser ? 'No puedes cambiar el rol de tu propia cuenta.' : 'Solo un usuario con roles:manage puede cambiar roles.' %></small>
+        <% } %>
       </div>
 
       </div>

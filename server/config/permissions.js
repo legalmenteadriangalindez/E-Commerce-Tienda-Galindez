@@ -18,6 +18,18 @@ const PERMISSIONS = Object.freeze({
     PROFILE_MANAGE: 'profile:manage'
 });
 
+// Roles reservados de la aplicación. No deben poder crearse, renombrarse ni
+// eliminarse desde el panel. `SuperAdmin` es la cuenta de emergencia y la
+// única que puede delegar o retirar ese nivel de acceso.
+const SYSTEM_ROLES = Object.freeze({
+    SUPER_ADMIN: 'SuperAdmin',
+    ADMIN: 'Admin',
+    CLIENT: 'Cliente',
+    DEALER: 'dealer'
+});
+
+const SYSTEM_ROLE_NAMES = Object.freeze(Object.values(SYSTEM_ROLES));
+
 const PERMISSION_KEYS = Object.freeze(Object.values(PERMISSIONS));
 
 const PERMISSION_LABELS = Object.freeze({
@@ -41,6 +53,12 @@ const PERMISSION_LABELS = Object.freeze({
 });
 
 const ALL_PERMISSIONS = Object.freeze([...PERMISSION_KEYS]);
+// El administrador operativo puede gestionar la tienda, pero no delegar
+// permisos. Esa frontera queda reservada a SuperAdmin o a un rol al que el
+// propio SuperAdmin haya concedido explícitamente roles:manage.
+const ADMIN_PERMISSIONS = Object.freeze(
+    ALL_PERMISSIONS.filter(permission => permission !== PERMISSIONS.ROLES_MANAGE)
+);
 
 const PERMISSION_IMPLICATIONS = Object.freeze({
     [PERMISSIONS.CATALOG_WRITE]: [PERMISSIONS.CATALOG_READ],
@@ -65,9 +83,12 @@ function expandPermissions(value) {
 
 module.exports = {
     PERMISSIONS,
+    SYSTEM_ROLES,
+    SYSTEM_ROLE_NAMES,
     PERMISSION_KEYS,
     PERMISSION_LABELS,
     ALL_PERMISSIONS,
+    ADMIN_PERMISSIONS,
     PERMISSION_IMPLICATIONS,
     normalizePermissions,
     expandPermissions
