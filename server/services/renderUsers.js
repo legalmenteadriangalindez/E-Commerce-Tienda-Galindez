@@ -30,7 +30,7 @@ exports.create_user_form = async (req, res) => {
         );
 
         res.render('admin/users/add_user', {
-            roles: rolesRes.data
+            roles: rolesRes.data.items || rolesRes.data || []
         });
 
     } catch (err) {
@@ -123,7 +123,7 @@ exports.update_user = async (req, res) => {
 
         res.render('admin/users/update_user', {
             user: userRes.data,
-            roles: rolesRes.data
+            roles: rolesRes.data.items || rolesRes.data || []
         });
 
     } catch (err) {

@@ -23,6 +23,7 @@ exports.saleDetailView = async (req, res) => {
             venta: id
         })
         .populate("producto")
+        .limit(200)
         .lean();
 
         res.render(

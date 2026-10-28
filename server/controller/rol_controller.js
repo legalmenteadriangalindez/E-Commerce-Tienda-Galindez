@@ -71,20 +71,15 @@ exports.find = async (req, res) => {
             return res.send(roleForResponse(rol));
         }
 
-        if (adminPagination.isAdminList(req.query)) {
-            const { page, limit } = adminPagination.requested(req.query, 10);
-            const totalItems = await Roldb.countDocuments();
-            const pagination = adminPagination.metadata(page, limit, totalItems);
-            const items = await Roldb.find()
-                .sort({ nombre: 1, _id: 1 })
-                .skip((pagination.page - 1) * limit)
-                .limit(limit)
-                .lean();
-            return res.send({ items: items.map(roleForResponse), pagination });
-        }
-
-        const roles = (await Roldb.find().sort({ nombre: 1, _id: 1 })).map(roleForResponse);
-        res.send(roles);
+        const { page, limit } = adminPagination.requested(req.query, 10);
+        const totalItems = await Roldb.countDocuments();
+        const pagination = adminPagination.metadata(page, limit, totalItems);
+        const items = await Roldb.find()
+            .sort({ nombre: 1, _id: 1 })
+            .skip((pagination.page - 1) * limit)
+            .limit(limit)
+            .lean();
+        res.send({ items: items.map(roleForResponse), pagination });
 
     } catch (err) {
         res.status(500).send(publicError(err));
@@ -130,11 +125,10 @@ exports.delete = async (req, res) => {
 
         const id = req.params.id;
 
-        const usuarios = await Userdb.find({ rol: id });
         const original = await Roldb.findById(id);
         if (original && ['Admin', 'Cliente', 'dealer'].includes(original.nombre)) return res.status(409).send('No se pueden eliminar los roles del sistema.');
 
-        if (usuarios.length > 0) {
+        if (await Userdb.exists({ rol: id })) {
             return res.status(400).send("No puedes eliminar este rol, tiene usuarios");
         }
 

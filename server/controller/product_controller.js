@@ -208,29 +208,21 @@ exports.find = async (req, res) => {
             return res.send(data);
         }
 
-        if (adminPagination.isAdminList(req.query)) {
-            const { page, limit } = adminPagination.requested(req.query, 10);
-            const totalItems = await Productdb.countDocuments();
-            const pagination = adminPagination.metadata(page, limit, totalItems);
-            const productos = await Productdb.find()
-                .populate('marca')
-                .populate('categoria')
-                .populate('proveedor')
-                .sort({ fechaIngreso: -1, _id: -1 })
-                .skip((pagination.page - 1) * limit)
-                .limit(limit)
-                .lean();
-            return res.json({
-                items: productos,
-                pagination
-            });
-        }
-
-        const data = await Productdb.find()
+        const { page, limit } = adminPagination.requested(req.query, 10);
+        const totalItems = await Productdb.countDocuments();
+        const pagination = adminPagination.metadata(page, limit, totalItems);
+        const productos = await Productdb.find()
             .populate('marca')
             .populate('categoria')
-            .populate('proveedor');
-        return res.send(data);
+            .populate('proveedor')
+            .sort({ fechaIngreso: -1, _id: -1 })
+            .skip((pagination.page - 1) * limit)
+            .limit(limit)
+            .lean();
+        return res.json({
+            items: productos,
+            pagination
+        });
     } catch (err) {
         return res.status(500).send(publicError(err));
     }
@@ -669,40 +661,40 @@ exports.getStockAlerts = async (req, res) => {
     try {
         const STOCK_CRITICO = 3;
         const STOCK_BAJO = 10;
-
-        const productos = await Productdb.find()
-            .select('nombre stock categoria')
-            .populate('categoria')
-            .lean();
-
-        const alertas = productos
-            .map(producto => {
-                let estado = "NORMAL";
-                let prioridad = 0;
-
-                if (producto.stock <= STOCK_CRITICO) {
-                    estado = "CRITICO";
-                    prioridad = 3;
-                } else if (producto.stock <= STOCK_BAJO) {
-                    estado = "BAJO";
-                    prioridad = 2;
+        const { page, limit } = adminPagination.requested(req.query, 10);
+        const filter = { stock: { $lte: STOCK_BAJO } };
+        const totalItems = await Productdb.countDocuments(filter);
+        const pagination = adminPagination.metadata(page, limit, totalItems);
+        const alertas = await Productdb.aggregate([
+            { $match: filter },
+            {
+                $addFields: {
+                    prioridad: { $cond: [{ $lte: ['$stock', STOCK_CRITICO] }, 3, 2] },
+                    estado: { $cond: [{ $lte: ['$stock', STOCK_CRITICO] }, 'CRITICO', 'BAJO'] }
                 }
-
-                return {
-                    id: producto._id,
-                    nombre: producto.nombre,
-                    stock: producto.stock,
-                    categoria: producto.categoria?.nombre || "Sin categoría",
-                    estado,
-                    prioridad
-                };
-            })
-            .filter(producto => producto.prioridad > 0)
-            .sort((a, b) => b.prioridad - a.prioridad);
+            },
+            { $sort: { prioridad: -1, stock: 1, nombre: 1, _id: 1 } },
+            { $skip: (pagination.page - 1) * limit },
+            { $limit: limit },
+            { $lookup: { from: require('../model/categories').collection.name, localField: 'categoria', foreignField: '_id', as: 'category' } },
+            { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
+            {
+                $project: {
+                    _id: 0,
+                    id: '$_id',
+                    nombre: 1,
+                    stock: 1,
+                    categoria: { $ifNull: ['$category.nombre', 'Sin categoría'] },
+                    estado: 1,
+                    prioridad: 1
+                }
+            }
+        ]);
 
         return res.status(200).send({
-            totalAlertas: alertas.length,
-            productos: alertas
+            totalAlertas: totalItems,
+            productos: alertas,
+            pagination
         });
 
     } catch (err) {

@@ -101,6 +101,7 @@ async function listAllPublic() {
         .populate('marca', 'nombre')
         .populate('categoria', 'nombre')
         .sort({ fechaIngreso: -1, _id: -1 })
+        .limit(100)
         .lean();
 }
 
@@ -119,6 +120,7 @@ async function listClothes() {
         .populate({ path: 'categoria', match: { nombre: /^ropa$/i }, select: 'nombre' })
         .populate('marca', 'nombre')
         .sort({ fechaIngreso: -1, _id: -1 })
+        .limit(100)
         .lean()
         .then(products => products.filter(product => product.categoria !== null));
 }

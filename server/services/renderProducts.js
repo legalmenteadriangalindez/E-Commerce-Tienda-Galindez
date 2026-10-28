@@ -93,11 +93,11 @@ exports.create_product_form = async (req, res) => {
 
         res.render('admin/products/create_producto', {
 
-            marcas: marcasRes.data || [],
+            marcas: marcasRes.data.items || marcasRes.data || [],
 
-            categorias: categoriasRes.data || [],
+            categorias: categoriasRes.data.items || categoriasRes.data || [],
 
-            proveedores: proveedoresRes.data || [],
+            proveedores: proveedoresRes.data.items || proveedoresRes.data || [],
         });
 
     } catch (err) {
@@ -155,9 +155,9 @@ exports.update_products = async (req, res) => {
             'admin/products/update_products',
             {
                 producto: producto,
-                marcas: marcasRes.data || [],
-                categorias: categoriasRes.data || [],
-                proveedores: proveedoresRes.data || []
+                marcas: marcasRes.data.items || marcasRes.data || [],
+                categorias: categoriasRes.data.items || categoriasRes.data || [],
+                proveedores: proveedoresRes.data.items || proveedoresRes.data || []
             }
         );
 
@@ -233,6 +233,10 @@ exports.read_stock = async (req, res) => {
         const response = await axios.get(
     `${BASE_URL}/api/productos/read-Stock`,
     {
+        params: {
+            page: req.query.page || 1,
+            limit: 10
+        },
         headers: {
             Cookie: req.headers.cookie || ""
         },
@@ -243,8 +247,8 @@ exports.read_stock = async (req, res) => {
         res.render('admin/analytics/stock', {
 
             stockAlerts: response.data.productos || [],
-
-            totalAlertas: response.data.totalAlertas || 0
+            totalAlertas: response.data.totalAlertas || 0,
+            pagination: catalogPagination.buildPagination(req, response.data.pagination || {})
 
         });
 
@@ -253,8 +257,8 @@ exports.read_stock = async (req, res) => {
         res.render('admin/analytics/stock', {
 
             stockAlerts: [],
-
-            totalAlertas: 0
+            totalAlertas: 0,
+            pagination: catalogPagination.buildPagination(req, {})
 
         });
     }

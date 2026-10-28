@@ -110,6 +110,7 @@ async function listDealers() {
     return Userdb.find({ rol: role._id, estado: 'Activo' })
         .select('nombre email telefono ciudad')
         .sort({ nombre: 1, _id: 1 })
+        .limit(50)
         .lean();
 }
 

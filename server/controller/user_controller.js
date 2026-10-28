@@ -121,25 +121,18 @@ exports.find = async (req, res) => {
         }
 
         const filter = { estado: "Activo" };
-        if (adminPagination.isAdminList(req.query)) {
-            const { page, limit } = adminPagination.requested(req.query, 10);
-            const totalItems = await Userdb.countDocuments(filter);
-            const pagination = adminPagination.metadata(page, limit, totalItems);
-            const items = await Userdb.find(filter)
-                .select(CAMPOS_USUARIO_ADMIN)
-                .populate("rol", "nombre")
-                .sort({ fechaRegistro: -1, _id: -1 })
-                .skip((pagination.page - 1) * limit)
-                .limit(limit)
-                .lean();
-            return res.json({ items, pagination });
-        }
-
+        const { page, limit } = adminPagination.requested(req.query, 10);
+        const totalItems = await Userdb.countDocuments(filter);
+        const pagination = adminPagination.metadata(page, limit, totalItems);
         const users = await Userdb.find(filter)
             .select(CAMPOS_USUARIO_ADMIN)
-            .populate("rol", "nombre");
+            .populate("rol", "nombre")
+            .sort({ fechaRegistro: -1, _id: -1 })
+            .skip((pagination.page - 1) * limit)
+            .limit(limit)
+            .lean();
 
-        return res.json(users);
+        return res.json({ items: users, pagination });
 
     } catch (error) {
         console.error("Error consultando usuarios:", error.message);

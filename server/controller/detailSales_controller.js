@@ -1,4 +1,5 @@
 const SaleDetaildb = require('../model/saleDetails');
+const adminPagination = require('../services/adminPagination');
 
 
 // CREATE (DESHABILITADO)
@@ -22,11 +23,18 @@ exports.find = async (req, res) => {
             });
         }
 
-        const detalles = await SaleDetaildb.find({ venta })
+        const { page, limit } = adminPagination.requested(req.query, 50);
+        const filter = { venta };
+        const totalItems = await SaleDetaildb.countDocuments(filter);
+        const pagination = adminPagination.metadata(page, limit, totalItems);
+        const detalles = await SaleDetaildb.find(filter)
             .populate('producto')
+            .sort({ createdAt: 1, _id: 1 })
+            .skip((pagination.page - 1) * limit)
+            .limit(limit)
             .lean();
 
-        res.send(detalles);
+        res.send({ items: detalles, pagination });
 
     } catch (error) {
         res.status(500).send({

@@ -39,12 +39,12 @@ async function getPage(query = {}) {
     const conditions = [];
 
     if (filters.producto) {
-        const products = await Productdb.find({ nombre: literalRegex(filters.producto) }).select('_id').lean();
+        const products = await Productdb.find({ nombre: literalRegex(filters.producto) }).select('_id').limit(200).lean();
         conditions.push({ producto: { $in: products.map(p => p._id) } });
     }
     if (filters.q) {
         const regex = literalRegex(filters.q);
-        const users = await Userdb.find({ nombre: regex }).select('_id').lean();
+        const users = await Userdb.find({ nombre: regex }).select('_id').limit(200).lean();
         conditions.push({ $or: [
             { comentario: regex },
             { 'respuestaTienda.texto': regex },

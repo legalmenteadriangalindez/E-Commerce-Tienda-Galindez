@@ -41,7 +41,9 @@ exports.find = async (req, res) => {
             return res.json({ items, pagination });
         }
 
-        return res.send(await Brand_db.find().sort({ nombre: 1, _id: 1 }));
+        // El listado público conserva su formato de array para las vistas,
+        // pero queda acotado para no permitir respuestas ilimitadas.
+        return res.send(await Brand_db.find().sort({ nombre: 1, _id: 1 }).limit(100).lean());
     } catch (err) {
         return res.status(500).send(publicError(err));
     }

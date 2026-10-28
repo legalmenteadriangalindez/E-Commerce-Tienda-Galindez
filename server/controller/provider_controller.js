@@ -32,43 +32,27 @@ exports.create = (req,res)=>{
 
 // FIND
 
-exports.find = (req, res)=>{
-
-    if(req.query.id){
-        const id = req.query.id;
-
-        Providerdb.findById(id)
-            .then(data =>{
-                if(!data){
-                    res.status(404).send({ message : "Proveedor no encontrado con id "+ id})
-                }else{
-                    res.send(data)
-                }
-            })
-            .catch(err =>{
-                res.status(500).send({ message: "Error retrieving proveedor with id " + id})
-            })
-
-    } else {
-        if (adminPagination.isAdminList(req.query)) {
-            const { page, limit } = adminPagination.requested(req.query, 10);
-            Providerdb.countDocuments().then(totalItems => {
-                const pagination = adminPagination.metadata(page, limit, totalItems);
-                return Providerdb.find()
-                    .sort({ nombre: 1, _id: 1 })
-                    .skip((pagination.page - 1) * limit)
-                    .limit(limit)
-                    .lean()
-                    .then(items => res.send({ items, pagination }));
-            }).catch(err => res.status(500).send({ message: err.message || "Error retrieving proveedores" }));
-            return;
+exports.find = async (req, res) => {
+    try {
+        if (req.query.id) {
+            const provider = await Providerdb.findById(req.query.id).lean();
+            if (!provider) return res.status(404).send({ message: "Proveedor no encontrado con id " + req.query.id });
+            return res.send(provider);
         }
 
-        Providerdb.find().sort({ nombre: 1, _id: 1 })
-            .then(provider => res.send(provider))
-            .catch(err => res.status(500).send({ message: err.message || "Error retrieving proveedores" }));
+        const { page, limit } = adminPagination.requested(req.query, 10);
+        const totalItems = await Providerdb.countDocuments();
+        const pagination = adminPagination.metadata(page, limit, totalItems);
+        const items = await Providerdb.find()
+            .sort({ nombre: 1, _id: 1 })
+            .skip((pagination.page - 1) * limit)
+            .limit(limit)
+            .lean();
+        return res.send({ items, pagination });
+    } catch (err) {
+        return res.status(500).send({ message: err.message || "Error retrieving proveedores" });
     }
-}
+};
 
 
 // UPDATE
@@ -125,9 +109,7 @@ exports.delete = async (req, res) => {
         }
 
         // 🔴 VALIDAR RELACIÓN CON PRODUCTOS
-        const productos = await Productdb.find({ proveedor: id });
-
-        if (productos.length > 0) {
+        if (await Productdb.exists({ proveedor: id })) {
             return res.status(400).send({
                 message: "No puedes eliminar este proveedor porque tiene productos asociados"
             });

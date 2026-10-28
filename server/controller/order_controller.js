@@ -20,19 +20,14 @@ exports.find = wrap(async (req, res) => {
         return res.json(order);
     }
     const filter = {};
-    if (adminPagination.isAdminList(req.query)) {
-        const { page, limit } = adminPagination.requested(req.query, 10);
-        const totalItems = await Order.countDocuments(filter);
-        const pagination = adminPagination.metadata(page, limit, totalItems);
-        const items = await populated(Order.find(filter)
-            .sort({ createdAt: -1, _id: -1 })
-            .skip((pagination.page - 1) * limit)
-            .limit(limit)).lean();
-        return res.json({ items, pagination });
-    }
-
-    const page = Math.max(1, Math.min(Number.parseInt(req.query.page, 10) || 1, 100000));
-    return res.json(await populated(Order.find(filter).sort({ createdAt: -1 }).skip((page - 1) * 100).limit(100)));
+    const { page, limit } = adminPagination.requested(req.query, 10);
+    const totalItems = await Order.countDocuments(filter);
+    const pagination = adminPagination.metadata(page, limit, totalItems);
+    const items = await populated(Order.find(filter)
+        .sort({ createdAt: -1, _id: -1 })
+        .skip((pagination.page - 1) * limit)
+        .limit(limit)).lean();
+    return res.json({ items, pagination });
 });
 exports.findOne = wrap(async (req, res) => {
     const order = await populated(Order.findById(id(req.params.id)));

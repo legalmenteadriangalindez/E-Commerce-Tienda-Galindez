@@ -3,7 +3,8 @@ const Saledb = require('../model/sales');
 const SaleDetaildb = require('../model/saleDetails');
 const adminPagination = require('../services/adminPagination');
 const salesCsv = require('../services/salesCsv');
-const money = require('../services/money');
+const analytics = require('../business/analyticsService');
+const MAX_DETAILS_PER_RESPONSE = 1000;
 
 exports.find = async (req, res) => {
     let filters;
@@ -18,20 +19,18 @@ exports.find = async (req, res) => {
     }
 
     try {
-        const paginationRequest = adminPagination.isAdminList(req.query)
-            ? adminPagination.requested(req.query, 10)
-            : null;
+        // Esta ruta está protegida por sales:read y siempre devuelve una
+        // página. Nunca se permite que /api/ventas cargue toda la colección.
+        const paginationRequest = adminPagination.requested(req.query, 10);
         const filter = await salesCsv.saleFindFilter(filters);
-        const totalItems = paginationRequest ? await Saledb.countDocuments(filter) : null;
-        const pagination = paginationRequest
-            ? adminPagination.metadata(paginationRequest.page, paginationRequest.limit, totalItems)
-            : null;
+        const totalItems = await Saledb.countDocuments(filter);
+        const pagination = adminPagination.metadata(paginationRequest.page, paginationRequest.limit, totalItems);
         const ventas = await Saledb.find(filter)
             .populate("cliente", "nombre email telefono")
             .populate("order", "numeroOrden canal estado")
             .sort({ createdAt: -1, _id: -1 })
-            .skip(pagination ? (pagination.page - 1) * paginationRequest.limit : 0)
-            .limit(pagination ? paginationRequest.limit : 0)
+            .skip((pagination.page - 1) * paginationRequest.limit)
+            .limit(paginationRequest.limit)
             .lean();
 
         const ventasIds = ventas.map(venta => venta._id);
@@ -40,6 +39,7 @@ exports.find = async (req, res) => {
             venta: { $in: ventasIds }
         })
         .populate("producto", "nombre precioVenta fotos")
+        .limit(MAX_DETAILS_PER_RESPONSE)
         .lean();
 
         const detallesMap = {};
@@ -59,7 +59,7 @@ exports.find = async (req, res) => {
             venta.detalles = detallesMap[ventaId] || [];
         }
 
-        return res.json(pagination ? { items: ventas, pagination } : ventas);
+        return res.json({ items: ventas, pagination });
 
     } catch (error) {
         console.error("ERROR OBTENIENDO VENTAS:", error);
@@ -146,10 +146,9 @@ exports.findOne = async (req, res) => {
         }
 
         // DETALLES + PRODUCTOS
-        const detalles = await SaleDetaildb.find({
-            venta: id
-        })
+        const detalles = await SaleDetaildb.find({ venta: id })
         .populate("producto", "nombre precioVenta fotos")
+            .limit(200)
         .lean();
 
         // AGREGAR DETALLES
@@ -179,6 +178,7 @@ exports.confirmacion = async (req, res) => {
         const detalles = await SaleDetaildb
             .find({ venta: ventaId })
             .populate("producto", "nombre precioVenta fotos")
+            .limit(200)
 
         res.render(
             "admin/payment/checkout_confirmation",
@@ -195,62 +195,13 @@ exports.confirmacion = async (req, res) => {
     }
 };
 
-// ganancias totales
+// Ganancias y rankings se calculan con agregaciones en MongoDB. Las versiones
+// antiguas hacían SaleDetail.find().populate() y retenían todas las filas en
+// memoria del proceso web.
 exports.getTotalProfit = async (req, res) => {
-
     try {
-
-        const detalles = await SaleDetaildb.find()
-            .populate('venta', 'estadoPago')
-            .populate('producto')
-            .lean();
-
-        let ingresosTotales = 0;
-        let costosTotales = 0;
-        let gananciasTotales = 0;
-
-        detalles.forEach(detalle => {
-            if (detalle.venta?.estadoPago !== 'PAGADO') return;
-
-            if (!detalle.producto) return;
-
-            const cantidad = detalle.cantidad;
-
-            const precioVentaCents = money.readCents(detalle.precioUnitarioCents, detalle.precioUnitario);
-            const precioCostoCents = money.readCents(
-                detalle.precioCostoUnitarioCents,
-                detalle.precioCostoUnitario ?? detalle.producto.precioCosto
-            );
-
-            const ingreso = money.fromCents(precioVentaCents * cantidad);
-
-            const costo = money.fromCents(precioCostoCents * cantidad);
-
-            const ganancia = ingreso - costo;
-
-            ingresosTotales += ingreso;
-
-            costosTotales += costo;
-
-            gananciasTotales += ganancia;
-        });
-
-        return res.status(200).json({
-
-            ingresosTotales,
-
-            costosTotales,
-
-            gananciasTotales,
-
-            margenPorcentaje:
-                ingresosTotales > 0
-                    ? ((gananciasTotales / ingresosTotales) * 100).toFixed(2)
-                    : 0
-        });
-
+        return res.status(200).json(await analytics.totalProfit());
     } catch (err) {
-
         return res.status(500).json({
             message: "Error calculando ganancias"
         });
@@ -258,43 +209,10 @@ exports.getTotalProfit = async (req, res) => {
 };
 
 
-// ganancias por producto 
+// Productos más vendidos (máximo 10 resultados).
 exports.getBestSellingProducts = async (req, res) => {
     try {
-        const detalles = await SaleDetaildb.find()
-            .populate('venta', 'estadoPago')
-            .populate('producto')
-            .lean();
-
-        const productosMap = {};
-
-        detalles.forEach(detalle => {
-            if (detalle.venta?.estadoPago !== 'PAGADO') return;
-            if (!detalle.producto) return;
-
-            const producto = detalle.producto;
-            const id = producto._id.toString();
-
-            if (!productosMap[id]) {
-                productosMap[id] = {
-                    productoId: id,
-                    nombre: producto.nombre,
-                    fotos: producto.fotos || [],
-                    unidadesVendidas: 0,
-                    ingresosGenerados: 0
-                };
-            }
-
-            productosMap[id].unidadesVendidas += detalle.cantidad;
-            productosMap[id].ingresosGenerados += money.display(detalle.subtotalCents, detalle.subtotal);
-        });
-
-        const resultado = Object.values(productosMap)
-            .sort((a, b) => b.unidadesVendidas - a.unidadesVendidas)
-            .slice(0, 10);
-
-        return res.status(200).json(resultado);
-
+        return res.status(200).json(await analytics.bestSellingProducts(10));
     } catch (error) {
         console.error(
             "ERROR OBTENIENDO PRODUCTOS MÁS VENDIDOS:",
@@ -312,54 +230,8 @@ exports.getBestSellingProducts = async (req, res) => {
 
 exports.getProfitByProduct = async (req, res) => {
     try {
-        const detalles = await SaleDetaildb.find()
-            .populate('venta', 'estadoPago')
-            .populate('producto')
-            .lean();
-
-        const productosMap = {};
-
-        detalles.forEach(detalle => {
-            if (detalle.venta?.estadoPago !== 'PAGADO') return;
-            if (!detalle.producto) return;
-
-            const producto = detalle.producto;
-            const id = producto._id.toString();
-
-            const cantidad = detalle.cantidad;
-            const precioVentaCents = money.readCents(detalle.precioUnitarioCents, detalle.precioUnitario);
-            const precioCostoCents = money.readCents(
-                detalle.precioCostoUnitarioCents,
-                detalle.precioCostoUnitario ?? producto.precioCosto ?? 0
-            );
-
-            const ingreso = money.fromCents(precioVentaCents * cantidad);
-            const costo = money.fromCents(precioCostoCents * cantidad);
-            const ganancia = ingreso - costo;
-
-            if (!productosMap[id]) {
-                productosMap[id] = {
-                    productoId: id,
-                    nombre: producto.nombre,
-                    fotos: producto.fotos || [],
-                    vendidos: 0,
-                    ingresos: 0,
-                    costos: 0,
-                    ganancias: 0
-                };
-            }
-
-            productosMap[id].vendidos += cantidad;
-            productosMap[id].ingresos += ingreso;
-            productosMap[id].costos += costo;
-            productosMap[id].ganancias += ganancia;
-        });
-
-        const resultado = Object.values(productosMap)
-            .sort((a, b) => b.ganancias - a.ganancias);
-
-        return res.status(200).json(resultado);
-
+        const requested = adminPagination.requested(req.query, 50);
+        return res.status(200).json(await analytics.profitByProduct(requested.limit));
     } catch (error) {
         console.error(
             "ERROR CALCULANDO GANANCIAS POR PRODUCTO:",

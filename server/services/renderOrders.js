@@ -37,9 +37,9 @@ const [productosRes, usuariosRes] = await Promise.all([
 
         res.render('admin/orders/create_order', {
 
-            productos: productosRes.data,
+            productos: productosRes.data.items || productosRes.data || [],
 
-            usuarios: usuariosRes.data
+            usuarios: usuariosRes.data.items || usuariosRes.data || []
         });
 
     } catch (err) {

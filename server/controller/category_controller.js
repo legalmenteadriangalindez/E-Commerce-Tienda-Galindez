@@ -43,20 +43,15 @@ exports.find = async (req, res) => {
             }
             return res.json(data);
         }
-        if (adminPagination.isAdminList(req.query)) {
-            const { page, limit } = adminPagination.requested(req.query, 10);
-            const totalItems = await Categorydb.countDocuments();
-            const pagination = adminPagination.metadata(page, limit, totalItems);
-            const items = await Categorydb.find()
-                .sort({ nombre: 1, _id: 1 })
-                .skip((pagination.page - 1) * limit)
-                .limit(limit)
-                .lean();
-            return res.json({ items, pagination });
-        }
-
-        const data = await Categorydb.find().sort({ nombre: 1, _id: 1 });
-        res.json(data);
+        const { page, limit } = adminPagination.requested(req.query, 10);
+        const totalItems = await Categorydb.countDocuments();
+        const pagination = adminPagination.metadata(page, limit, totalItems);
+        const items = await Categorydb.find()
+            .sort({ nombre: 1, _id: 1 })
+            .skip((pagination.page - 1) * limit)
+            .limit(limit)
+            .lean();
+        res.json({ items, pagination });
     } catch (err) {
         res.status(500).json({
             message: publicError(err)
@@ -92,9 +87,7 @@ exports.delete = async (req, res) => {
             });
         }
 
-        const productos = await Productdb.find({ categoria: req.params.id });
-
-        if (productos.length > 0) {
+        if (await Productdb.exists({ categoria: req.params.id })) {
             return res.status(400).json({
                 message: "No puedes eliminar esta categoría porque tiene productos asociados"
             });

@@ -62,6 +62,7 @@ async function entriesForUser(userId, raffleId) {
     return RaffleEntry.find(filter)
         .populate('order', 'numeroOrden total totalCents createdAt estado estadoPago')
         .sort({ numero: 1 })
+        .limit(100)
         .lean();
 }
 
@@ -83,6 +84,7 @@ async function entriesForOrders(userId, orderIds) {
 
     return RaffleEntry.find({ usuario: userId, order: { $in: ids } })
         .select('order numero ganador montoCompra montoCompraCents createdAt')
+        .limit(100)
         .lean();
 }
 
@@ -182,13 +184,19 @@ async function drawWinner() {
         if (!raffle) throw publicError('Todavía no existe una configuración de rifa.', 404);
         if (raffle.ganador?.entrada) throw publicError('Esta rifa ya tiene un ganador.', 409);
 
-        const entries = await RaffleEntry.find({ raffle: raffle._id })
+        const totalEntries = await RaffleEntry.countDocuments({ raffle: raffle._id }).session(session);
+        if (!totalEntries) throw publicError('No hay participaciones elegibles para sortear.', 409);
+
+        // Selecciona una posición aleatoria sin cargar todas las participaciones
+        // en memoria del proceso web.
+        const offset = crypto.randomInt(totalEntries);
+        const winner = await RaffleEntry.findOne({ raffle: raffle._id })
             .select('_id usuario numero')
+            .sort({ numero: 1, _id: 1 })
+            .skip(offset)
             .session(session)
             .lean();
-        if (!entries.length) throw publicError('No hay participaciones elegibles para sortear.', 409);
-
-        const winner = entries[crypto.randomInt(entries.length)];
+        if (!winner) throw publicError('No se pudo seleccionar una participación.', 409);
         await RaffleEntry.updateMany({ raffle: raffle._id }, { $set: { ganador: false } }, { session });
         await RaffleEntry.updateOne({ _id: winner._id }, { $set: { ganador: true } }, { session });
 

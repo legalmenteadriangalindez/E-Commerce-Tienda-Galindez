@@ -1,5 +1,6 @@
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;
+const MAX_PAGE = 100000;
 
 function positiveInteger(value, fallback) {
     const parsed = Number.parseInt(value, 10);
@@ -8,7 +9,7 @@ function positiveInteger(value, fallback) {
 
 function requested(query = {}, fallbackLimit = DEFAULT_LIMIT) {
     return {
-        page: positiveInteger(query.page, 1),
+        page: Math.min(positiveInteger(query.page, 1), MAX_PAGE),
         limit: Math.min(positiveInteger(query.limit, fallbackLimit), MAX_LIMIT)
     };
 }
@@ -25,4 +26,4 @@ function isAdminList(query = {}) {
     return String(query.adminList || '') === '1';
 }
 
-module.exports = { DEFAULT_LIMIT, MAX_LIMIT, requested, metadata, isAdminList };
+module.exports = { DEFAULT_LIMIT, MAX_LIMIT, MAX_PAGE, requested, metadata, isAdminList };
