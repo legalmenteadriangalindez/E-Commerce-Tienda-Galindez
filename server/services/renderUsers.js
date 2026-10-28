@@ -26,7 +26,7 @@ exports.create_user_form = async (req, res) => {
     try {
         const rolesRes = await axios.get(
             `${BASE_URL}/api/roles`,
-            configApi(req)
+            { ...configApi(req), params: { limit: 50 } }
         );
 
         res.render('admin/users/add_user', {
@@ -118,7 +118,7 @@ exports.update_user = async (req, res) => {
 
         const rolesRes = await axios.get(
             `${BASE_URL}/api/roles`,
-            configApi(req)
+            { ...configApi(req), params: { limit: 50 } }
         );
 
         res.render('admin/users/update_user', {

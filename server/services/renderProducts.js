@@ -83,8 +83,12 @@ exports.create_product_form = async (req, res) => {
         ] = await Promise.all([
 
             axios.get(`${BASE_URL}/api/marcas`),
-            axios.get(`${BASE_URL}/api/categorias`, internalApiConfig(req)),
-            axios.get(`${BASE_URL}/api/proveedores`, internalApiConfig(req))
+            axios.get(`${BASE_URL}/api/categorias`, {
+                ...internalApiConfig(req), params: { limit: 50 }
+            }),
+            axios.get(`${BASE_URL}/api/proveedores`, {
+                ...internalApiConfig(req), params: { limit: 50 }
+            })
             .catch(() => ({ data: [] }))
 
         ]);
@@ -147,8 +151,8 @@ exports.update_products = async (req, res) => {
             proveedoresRes
         ] = await Promise.all([
             axios.get(`${BASE_URL}/api/marcas`, apiConfig),
-            axios.get(`${BASE_URL}/api/categorias`, apiConfig),
-            axios.get(`${BASE_URL}/api/proveedores`, apiConfig)
+            axios.get(`${BASE_URL}/api/categorias`, { ...apiConfig, params: { limit: 50 } }),
+            axios.get(`${BASE_URL}/api/proveedores`, { ...apiConfig, params: { limit: 50 } })
         ]);
 
         return res.render(

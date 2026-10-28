@@ -27,11 +27,11 @@ exports.create_order_form = async (req, res) => {
 const [productosRes, usuariosRes] = await Promise.all([
     axios.get(
         `${BASE_URL}/api/productos`,
-        configApi(req)
+        { ...configApi(req), params: { limit: 50 } }
     ),
     axios.get(
         `${BASE_URL}/api/users`,
-        configApi(req)
+        { ...configApi(req), params: { limit: 50 } }
     )
 ]);
 
