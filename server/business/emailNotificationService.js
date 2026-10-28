@@ -1,5 +1,6 @@
 const OrderEmailEvent = require('../model/orderEmailEvent');
 const sendEmail = require('../config/sendEmail');
+const moneyService = require('../services/money');
 
 const MAX_ATTEMPTS = 8;
 const STALE_CLAIM_MS = 15 * 60 * 1000;
@@ -35,7 +36,7 @@ function snapshotOrder(order) {
         numeroOrden: text(source.numeroOrden, 'Pedido'),
         nombre: text(cliente.nombre, 'Cliente'),
         email: normalizeEmail(cliente.email),
-        total: Number.isFinite(Number(source.total)) ? Number(source.total) : 0,
+        total: moneyService.display(source.totalCents, source.total),
         estado: text(source.estado, 'PENDIENTE'),
         estadoPago: text(source.estadoPago, 'PENDIENTE'),
         direccion: {
@@ -48,8 +49,8 @@ function snapshotOrder(order) {
             ? source.productos.slice(0, 100).map(item => ({
                 nombre: text(item.nombre, 'Producto'),
                 cantidad: Number.isSafeInteger(Number(item.cantidad)) ? Number(item.cantidad) : 0,
-                precioUnitario: Number.isFinite(Number(item.precioUnitario)) ? Number(item.precioUnitario) : 0,
-                subtotal: Number.isFinite(Number(item.subtotal)) ? Number(item.subtotal) : 0
+                precioUnitario: moneyService.display(item.precioUnitarioCents, item.precioUnitario),
+                subtotal: moneyService.display(item.subtotalCents, item.subtotal)
             }))
             : []
     };

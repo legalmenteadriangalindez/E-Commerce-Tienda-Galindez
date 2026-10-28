@@ -4,6 +4,7 @@ const SaleDetaildb = require('../model/saleDetails');
 const Productdb = require('../model/product');
 const adminPagination = require('../services/adminPagination');
 const salesCsv = require('../services/salesCsv');
+const money = require('../services/money');
 
 // CREATE (CON TRANSACCIÓN REAL)
 exports.create = async (req, res) => {
@@ -18,7 +19,7 @@ exports.create = async (req, res) => {
             return res.status(400).send({ message: "Datos inválidos" });
         }
 
-        let total = 0;
+        let totalCents = 0;
         const detalles = [];
 
         // PROCESAMIENTO SEGURO
@@ -53,21 +54,37 @@ exports.create = async (req, res) => {
                 });
             }
 
-            const subtotal = producto.precioVenta * item.cantidad;
-            total += subtotal;
+            const precioUnitarioCents = money.readCents(producto.precioVentaCents, producto.precioVenta);
+            const subtotalCents = precioUnitarioCents * item.cantidad;
+            if (!Number.isSafeInteger(subtotalCents)) {
+                await session.abortTransaction();
+                return res.status(400).send({ message: "Importe fuera de rango" });
+            }
+            totalCents += subtotalCents;
 
             detalles.push({
                 producto: item.producto,
                 cantidad: item.cantidad,
-                precioUnitario: producto.precioVenta,
-                subtotal
+                precioUnitarioCents,
+                subtotalCents,
+                precioUnitario: money.fromCents(precioUnitarioCents),
+                subtotal: money.fromCents(subtotalCents)
             });
         }
 
         // CREAR VENTA
         const [venta] = await Saledb.create([{
             cliente,
-            total
+            totalCents,
+            subtotalCents: totalCents,
+            impuestosCents: 0,
+            costoEnvioCents: 0,
+            descuentoCents: 0,
+            total: money.fromCents(totalCents),
+            subtotal: money.fromCents(totalCents),
+            impuestos: 0,
+            costoEnvio: 0,
+            descuento: 0
         }], { session });
 
         // CREAR DETALLES EN BLOQUE (MÁS EFICIENTE)
@@ -345,7 +362,7 @@ exports.finalizarVenta = async (req, res) => {
             });
         }
 
-        let subtotal = 0;
+        let subtotalCents = 0;
         const detalles = [];
         const productosOrden = [];
 
@@ -366,24 +383,31 @@ exports.finalizarVenta = async (req, res) => {
                 });
             }
 
-            const subtotalProducto =
-                item.cantidad * producto.precioVenta;
+            const precioUnitarioCents = money.readCents(producto.precioVentaCents, producto.precioVenta);
+            const subtotalProductoCents = item.cantidad * precioUnitarioCents;
+            if (!Number.isSafeInteger(subtotalProductoCents)) {
+                return res.status(400).json({ ok: false, msg: "Importe fuera de rango" });
+            }
 
-            subtotal += subtotalProducto;
+            subtotalCents += subtotalProductoCents;
 
             productosOrden.push({
                 producto: producto._id,
                 nombre: producto.nombre,
                 cantidad: item.cantidad,
-                precioUnitario: producto.precioVenta,
-                subtotal: subtotalProducto
+                precioUnitarioCents,
+                subtotalCents: subtotalProductoCents,
+                precioUnitario: money.fromCents(precioUnitarioCents),
+                subtotal: money.fromCents(subtotalProductoCents)
             });
 
             detalles.push({
                 producto: producto._id,
                 cantidad: item.cantidad,
-                precioUnitario: producto.precioVenta,
-                subtotal: subtotalProducto
+                precioUnitarioCents,
+                subtotalCents: subtotalProductoCents,
+                precioUnitario: money.fromCents(precioUnitarioCents),
+                subtotal: money.fromCents(subtotalProductoCents)
             });
         }
 
@@ -402,13 +426,18 @@ exports.finalizarVenta = async (req, res) => {
 
             productos: productosOrden,
 
-            subtotal,
+            subtotalCents,
+            subtotal: money.fromCents(subtotalCents),
 
             impuestos: 0,
+            impuestosCents: 0,
 
             costoEnvio: 0,
+            costoEnvioCents: 0,
 
-            total: subtotal,
+            totalCents: subtotalCents,
+            total: money.fromCents(subtotalCents),
+            descuentoCents: 0,
 
             estado: "PENDIENTE"
         });
@@ -416,11 +445,16 @@ exports.finalizarVenta = async (req, res) => {
         const venta = await Saledb.create({
             cliente,
             order: orden._id,
-            subtotal,
+            subtotalCents,
+            subtotal: money.fromCents(subtotalCents),
             impuestos: 0,
+            impuestosCents: 0,
             costoEnvio: 0,
+            costoEnvioCents: 0,
             descuento: 0,
-            total: subtotal,
+            descuentoCents: 0,
+            totalCents: subtotalCents,
+            total: money.fromCents(subtotalCents),
             estadoPago: "PENDIENTE"
         });
 
@@ -513,13 +547,15 @@ exports.getTotalProfit = async (req, res) => {
 
             const cantidad = detalle.cantidad;
 
-            const precioVenta = detalle.precioUnitario;
+            const precioVentaCents = money.readCents(detalle.precioUnitarioCents, detalle.precioUnitario);
+            const precioCostoCents = money.readCents(
+                detalle.precioCostoUnitarioCents,
+                detalle.precioCostoUnitario ?? detalle.producto.precioCosto
+            );
 
-            const precioCosto = detalle.precioCostoUnitario ?? detalle.producto.precioCosto;
+            const ingreso = money.fromCents(precioVentaCents * cantidad);
 
-            const ingreso = precioVenta * cantidad;
-
-            const costo = precioCosto * cantidad;
+            const costo = money.fromCents(precioCostoCents * cantidad);
 
             const ganancia = ingreso - costo;
 
@@ -581,7 +617,7 @@ exports.getBestSellingProducts = async (req, res) => {
             }
 
             productosMap[id].unidadesVendidas += detalle.cantidad;
-            productosMap[id].ingresosGenerados += detalle.subtotal;
+            productosMap[id].ingresosGenerados += money.display(detalle.subtotalCents, detalle.subtotal);
         });
 
         const resultado = Object.values(productosMap)
@@ -622,11 +658,14 @@ exports.getProfitByProduct = async (req, res) => {
             const id = producto._id.toString();
 
             const cantidad = detalle.cantidad;
-            const precioVenta = detalle.precioUnitario;
-            const precioCosto = detalle.precioCostoUnitario ?? producto.precioCosto ?? 0;
+            const precioVentaCents = money.readCents(detalle.precioUnitarioCents, detalle.precioUnitario);
+            const precioCostoCents = money.readCents(
+                detalle.precioCostoUnitarioCents,
+                detalle.precioCostoUnitario ?? producto.precioCosto ?? 0
+            );
 
-            const ingreso = precioVenta * cantidad;
-            const costo = precioCosto * cantidad;
+            const ingreso = money.fromCents(precioVentaCents * cantidad);
+            const costo = money.fromCents(precioCostoCents * cantidad);
             const ganancia = ingreso - costo;
 
             if (!productosMap[id]) {

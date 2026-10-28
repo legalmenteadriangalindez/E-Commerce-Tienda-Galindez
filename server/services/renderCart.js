@@ -2,6 +2,7 @@ const { publicError, errorStatus } = require('./publicError');
 const axios = require('axios');
 const mongoose = require("mongoose");
 const Ordendb = require('../model/order');
+const money = require('./money');
 const crypto = require("crypto");
 const dotenv = require('dotenv');
 
@@ -13,10 +14,11 @@ exports.car = async (req, res) => {
     try {
 
         const cart = req.session.cart || [];
-           const subtotal = cart.reduce(
-            (acc, item) => acc + (item.precio * item.cantidad),
+           const subtotalCents = cart.reduce(
+            (acc, item) => acc + money.readCents(item.precioCents, item.precio) * item.cantidad,
             0
         );
+        const subtotal = money.fromCents(subtotalCents);
         return res.render('client/cart/cart', {
             productosCarrito: cart,
             user: req.session.user,

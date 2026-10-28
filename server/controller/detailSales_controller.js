@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const SaleDetaildb = require('../model/saleDetails');
 const Saledb = require('../model/sales');
 const Productdb = require('../model/product');
+const money = require('../services/money');
 
 
 // CREATE (DESHABILITADO)
@@ -82,12 +83,18 @@ exports.delete = async (req, res) => {
             { session }
         );
 
-        // 🔄 ACTUALIZAR TOTAL DE LA VENTA
-        await Saledb.updateOne(
-            { _id: detalle.venta },
-            { $inc: { total: -detalle.subtotal } },
-            { session }
-        );
+        // Mantener el total monetario en centavos; el campo antiguo queda
+        // sincronizado para las vistas históricas.
+        const venta = await Saledb.findById(detalle.venta).session(session);
+        if (!venta) {
+            await session.abortTransaction();
+            return res.status(404).send({ message: "Venta no encontrada" });
+        }
+        const subtotalCents = money.readCents(detalle.subtotalCents, detalle.subtotal);
+        const totalCents = money.readCents(venta.totalCents, venta.total);
+        venta.totalCents = Math.max(0, totalCents - subtotalCents);
+        venta.total = money.fromCents(venta.totalCents);
+        await venta.save({ session });
 
         // 🗑️ ELIMINAR DETALLE
         await SaleDetaildb.findByIdAndDelete(id).session(session);

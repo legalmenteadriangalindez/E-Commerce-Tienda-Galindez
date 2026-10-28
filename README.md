@@ -59,3 +59,5 @@ Nunca subas `.env`, `config.env`, contraseñas, claves ni `node_modules`. Las pr
 
 El informe de ventas usa únicamente ventas pagadas y permite comparar los últimos 7 o 30 días contra el periodo anterior. Muestra ingresos, pedidos, unidades, ticket promedio, ganancia bruta estimada, margen, tendencia diaria, canales, productos y categorías con mejor resultado, productos sin rotación y alertas de inventario. La ganancia no incluye gastos de envío, comisiones de pasarela ni obligaciones tributarias.
 
+Los nuevos importes se calculan y persisten como enteros de centavos (`totalCents`, `subtotalCents`, `precioUnitarioCents` y `precioVentaCents`). Para una base existente, ejecuta `npm run migrate:money` en modo diagnóstico y, después de respaldar y revisar el resultado, repite con `MONEY_MIGRATION_APPLY=true`.
+

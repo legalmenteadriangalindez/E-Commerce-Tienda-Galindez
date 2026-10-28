@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { integerCentsPath } = require('../services/money');
 
 var schema = new mongoose.Schema({
 
@@ -34,11 +35,19 @@ precioCosto: {
     min: [0, "El precio de costo no puede ser negativo"]
 },
 
+// Fuente de verdad monetaria para nuevos registros. `precioCosto` se conserva
+// temporalmente como valor legible en COP para compatibilidad con vistas y
+// documentos anteriores a la migración.
+precioCostoCents: integerCentsPath(),
+
 precioVenta: {
     type: Number,
     required: true,
     min: [0, "El precio de venta no puede ser negativo"]
 },
+
+// 1 COP = 100 centavos. Evita operar precios con punto flotante.
+precioVentaCents: integerCentsPath(),
 
 stock: {
     type: Number,

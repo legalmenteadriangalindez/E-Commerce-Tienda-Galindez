@@ -39,6 +39,26 @@ CSV_EXPORT_MAX_ROWS=100000
 
 Los importes son COP. El servidor trata los precios del catálogo como precios finales con impuestos incluidos. Valida esta política y los costes de envío con los responsables del negocio antes de vender; el software no determina las obligaciones tributarias ni emite facturación electrónica.
 
+### Importe monetario y migración
+
+Los nuevos pedidos, ventas, detalles y precios de catálogo calculan y guardan sus importes en enteros de centavos (`totalCents`, `subtotalCents`, `precioUnitarioCents`, `precioVentaCents`, etc.). Los campos anteriores en COP se conservan temporalmente para que las vistas y el historial existente sigan siendo legibles; no deben usarse para nuevas operaciones financieras.
+
+Antes de activar cobros en una base existente, haz una copia de seguridad y ejecuta primero el diagnóstico:
+
+```powershell
+npm run migrate:money
+```
+
+Si el resultado es correcto, aplica el backfill explícitamente:
+
+```powershell
+$env:MONEY_MIGRATION_APPLY = "true"
+npm run migrate:money
+Remove-Item Env:MONEY_MIGRATION_APPLY
+```
+
+El comando es idempotente, no elimina campos antiguos y muestra cuántos documentos revisó y actualizó. Verifica una muestra de pedidos, ventas y productos y conserva la copia de seguridad antes de operar.
+
 ## 2. Qué cambió
 
 | Área | Comportamiento |

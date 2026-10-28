@@ -1,4 +1,5 @@
 const Order = require('../model/order');
+const money = require('./money');
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_MAX_ROWS = 100000;
@@ -189,10 +190,15 @@ function aggregatePipeline(filters) {
                 createdAt: 1,
                 estadoPago: 1,
                 subtotal: 1,
+                subtotalCents: 1,
                 impuestos: 1,
+                impuestosCents: 1,
                 costoEnvio: 1,
+                costoEnvioCents: 1,
                 descuento: 1,
+                descuentoCents: 1,
                 total: 1,
+                totalCents: 1,
                 orderNumber: '$order.numeroOrden',
                 orderStatus: '$order.estado',
                 channel: '$order.canal',
@@ -204,8 +210,11 @@ function aggregatePipeline(filters) {
                 categoryName: '$category.nombre',
                 quantity: '$detail.cantidad',
                 unitPrice: '$detail.precioUnitario',
+                unitPriceCents: '$detail.precioUnitarioCents',
                 lineSubtotal: '$detail.subtotal',
-                unitCost: { $ifNull: ['$detail.precioCostoUnitario', '$product.precioCosto'] }
+                lineSubtotalCents: '$detail.subtotalCents',
+                unitCost: { $ifNull: ['$detail.precioCostoUnitario', '$product.precioCosto'] },
+                unitCostCents: { $ifNull: ['$detail.precioCostoUnitarioCents', '$product.precioCostoCents'] }
             }
         }
     );
@@ -229,9 +238,28 @@ function dateValue(value) {
 
 function rowValues(row) {
     const quantity = number(row.quantity);
-    const lineSubtotal = number(row.lineSubtotal);
-    const unitCost = number(row.unitCost);
-    const cost = unitCost * quantity;
+    const legacyCents = value => {
+        try { return money.toCents(value || 0); } catch { return 0; }
+    };
+    const lineSubtotalCents = row.lineSubtotalCents !== undefined && row.lineSubtotalCents !== null
+        ? money.assertCents(row.lineSubtotalCents)
+        : legacyCents(row.lineSubtotal);
+    const unitPriceCents = row.unitPriceCents !== undefined && row.unitPriceCents !== null
+        ? money.assertCents(row.unitPriceCents)
+        : legacyCents(row.unitPrice);
+    const unitCostCents = row.unitCostCents !== undefined && row.unitCostCents !== null
+        ? money.assertCents(row.unitCostCents)
+        : legacyCents(row.unitCost);
+    const costCents = unitCostCents * quantity;
+    const lineSubtotal = money.fromCents(lineSubtotalCents);
+    const unitPrice = money.fromCents(unitPriceCents);
+    const unitCost = money.fromCents(unitCostCents);
+    const cost = money.fromCents(costCents);
+    const grossProfit = money.fromSignedCents(lineSubtotalCents - costCents);
+
+    const amount = (centsField, legacyField) => centsField !== undefined && centsField !== null
+        ? money.fromCents(money.assertCents(centsField))
+        : money.fromCents(legacyCents(legacyField));
 
     return [
         row._id,
@@ -247,16 +275,16 @@ function rowValues(row) {
         row.productName || 'Producto histórico',
         row.categoryName || 'Sin categoría',
         quantity,
-        number(row.unitPrice),
+        unitPrice,
         lineSubtotal,
         unitCost,
         cost,
-        lineSubtotal - cost,
-        number(row.subtotal),
-        number(row.impuestos),
-        number(row.costoEnvio),
-        number(row.descuento),
-        number(row.total)
+        grossProfit,
+        amount(row.subtotalCents, row.subtotal),
+        amount(row.impuestosCents, row.impuestos),
+        amount(row.costoEnvioCents, row.costoEnvio),
+        amount(row.descuentoCents, row.descuento),
+        amount(row.totalCents, row.total)
     ];
 }
 

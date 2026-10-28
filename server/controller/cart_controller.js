@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Product = require('../model/product');
 const Order = require('../model/order');
 const commerce = require('../business/commerceService');
+const money = require('../services/money');
 const { verificarFirmaWompi } = require('../business/wompiService');
 const save = req => new Promise((resolve, reject) => req.session.save(error => error ? reject(error) : resolve()));
 const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
@@ -21,7 +22,9 @@ exports.add_to_carrito = wrap(async (req, res) => {
     if (prior) prior.cantidad += cantidad;
     else {
         if (cart.length >= 100) throw new commerce.CommerceError('El carrito admite hasta 100 productos distintos.');
-        cart.push({ _id: productoId, productoId, nombre: product.nombre, precio: product.precioVenta,
+        cart.push({ _id: productoId, productoId, nombre: product.nombre,
+            precio: money.display(product.precioVentaCents, product.precioVenta),
+            precioCents: money.readCents(product.precioVentaCents, product.precioVenta),
             cantidad, foto: product.fotos?.[0] || '/assets/img/default.jpg', categoria: product.categoria?.nombre || '' });
     }
     req.session.cart = cart; invalidate(req); await save(req);

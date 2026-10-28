@@ -52,6 +52,17 @@ test('escapa CSV y calcula costo y ganancia por línea', () => {
 
     assert.equal(values[16], 18000);
     assert.equal(values[17], 12000);
+
+    const centsValues = salesCsv.rowValues({
+        _id: 'venta-cents', quantity: 3,
+        unitPriceCents: 12345, lineSubtotalCents: 37035,
+        unitCostCents: 10000, subtotalCents: 37035,
+        impuestosCents: 0, costoEnvioCents: 500,
+        descuentoCents: 0, totalCents: 37535
+    });
+    assert.equal(centsValues[13], 123.45);
+    assert.equal(centsValues[16], 300);
+    assert.equal(centsValues[17], 70.35);
     assert.match(salesCsv.row({
         _id: 'venta-1',
         orderNumber: 'ORD-1',

@@ -3,6 +3,7 @@ const Detail = require('../model/saleDetails');
 const Product = require('../model/product');
 const Order = require('../model/order');
 const Category = require('../model/categories');
+const money = require('../services/money');
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const TIME_ZONE = 'America/Bogota';
@@ -53,6 +54,10 @@ function number(value) {
     return Number(value || 0);
 }
 
+function amount(centsValue, legacyValue = 0) {
+    return money.display(centsValue, legacyValue);
+}
+
 function percentChange(current, previous) {
     if (!previous) return current ? null : 0;
     return Number((((current - previous) / previous) * 100).toFixed(1));
@@ -84,11 +89,11 @@ function emptyMetrics() {
 function summarizeRows(rows) {
     const metrics = rows.reduce((result, row) => {
         result.orders += 1;
-        result.revenue += number(row.total);
-        result.productRevenue += number(row.productRevenue);
-        result.shipping += number(row.shipping);
+        result.revenue += amount(row.totalCents, row.total);
+        result.productRevenue += amount(row.productRevenueCents, row.productRevenue);
+        result.shipping += amount(row.shippingCents, row.shipping);
         result.units += number(row.units);
-        result.costs += number(row.costs);
+        result.costs += amount(row.costsCents, row.costs);
         return result;
     }, emptyMetrics());
 
@@ -114,17 +119,39 @@ async function paidSaleRows(start, end) {
         {
             $group: {
                 _id: '$_id',
-                total: { $first: '$total' },
-                shipping: { $first: '$costoEnvio' },
+                totalCents: {
+                    $first: {
+                        $ifNull: ['$totalCents', { $multiply: [{ $ifNull: ['$total', 0] }, 100] }]
+                    }
+                },
+                shippingCents: {
+                    $first: {
+                        $ifNull: ['$costoEnvioCents', { $multiply: [{ $ifNull: ['$costoEnvio', 0] }, 100] }]
+                    }
+                },
                 createdAt: { $first: '$createdAt' },
                 channel: { $first: { $ifNull: ['$order.canal', 'SIN_CANAL'] } },
-                productRevenue: { $sum: { $ifNull: ['$details.subtotal', 0] } },
+                productRevenueCents: {
+                    $sum: {
+                        $ifNull: ['$details.subtotalCents', { $multiply: [{ $ifNull: ['$details.subtotal', 0] }, 100] }]
+                    }
+                },
                 units: { $sum: { $ifNull: ['$details.cantidad', 0] } },
-                costs: {
+                costsCents: {
                     $sum: {
                         $multiply: [
                             { $ifNull: ['$details.cantidad', 0] },
-                            { $ifNull: ['$details.precioCostoUnitario', { $ifNull: ['$product.precioCosto', 0] }] }
+                            {
+                                $ifNull: [
+                                    '$details.precioCostoUnitarioCents',
+                                    {
+                                        $ifNull: [
+                                            '$product.precioCostoCents',
+                                            { $multiply: [{ $ifNull: ['$details.precioCostoUnitario', { $ifNull: ['$product.precioCosto', 0] }] }, 100] }
+                                        ]
+                                    }
+                                ]
+                            }
                         ]
                     }
                 },
@@ -134,11 +161,23 @@ async function paidSaleRows(start, end) {
                         name: { $ifNull: ['$product.nombre', 'Producto histórico'] },
                         categoryId: '$product.categoria',
                         units: { $ifNull: ['$details.cantidad', 0] },
-                        revenue: { $ifNull: ['$details.subtotal', 0] },
-                        costs: {
+                        revenueCents: {
+                            $ifNull: ['$details.subtotalCents', { $multiply: [{ $ifNull: ['$details.subtotal', 0] }, 100] }]
+                        },
+                        costsCents: {
                             $multiply: [
                                 { $ifNull: ['$details.cantidad', 0] },
-                                { $ifNull: ['$details.precioCostoUnitario', { $ifNull: ['$product.precioCosto', 0] }] }
+                                {
+                                    $ifNull: [
+                                        '$details.precioCostoUnitarioCents',
+                                        {
+                                            $ifNull: [
+                                                '$product.precioCostoCents',
+                                                { $multiply: [{ $ifNull: ['$details.precioCostoUnitario', { $ifNull: ['$product.precioCosto', 0] }] }, 100] }
+                                            ]
+                                        }
+                                    ]
+                                }
                             ]
                         }
                     }
@@ -166,8 +205,8 @@ function groupItems(rows) {
                 margenPorcentaje: 0
             };
             product.unidades += number(item.units);
-            product.ingresos += number(item.revenue);
-            product.costos += number(item.costs);
+            product.ingresos += amount(item.revenueCents, item.revenue);
+            product.costos += amount(item.costsCents, item.costs);
             product.ganancia = product.ingresos - product.costos;
             product.margenPorcentaje = product.ingresos > 0
                 ? Number(((product.ganancia / product.ingresos) * 100).toFixed(1))
@@ -184,8 +223,8 @@ function groupItems(rows) {
                 ganancia: 0
             };
             category.unidades += number(item.units);
-            category.ingresos += number(item.revenue);
-            category.costos += number(item.costs);
+            category.ingresos += amount(item.revenueCents, item.revenue);
+            category.costos += amount(item.costsCents, item.costs);
             category.ganancia = category.ingresos - category.costos;
             categories.set(categoryId, category);
         }
@@ -200,9 +239,9 @@ function trend(rows) {
         const key = dayKey(row.createdAt);
         const current = days.get(key) || { key, label: dateLabel(row.createdAt), orders: 0, revenue: 0, units: 0, grossProfit: 0 };
         current.orders += 1;
-        current.revenue += number(row.total);
+        current.revenue += amount(row.totalCents, row.total);
         current.units += number(row.units);
-        current.grossProfit += number(row.productRevenue) - number(row.costs);
+        current.grossProfit += amount(row.productRevenueCents, row.productRevenue) - amount(row.costsCents, row.costs);
         days.set(key, current);
     }
     return [...days.values()].sort((a, b) => a.key.localeCompare(b.key));
@@ -214,7 +253,7 @@ function channelBreakdown(rows) {
         const name = row.channel === 'CAJA' ? 'Caja' : row.channel === 'WOMPI' ? 'Wompi' : 'Sin canal';
         const current = channels.get(name) || { nombre: name, pedidos: 0, ingresos: 0 };
         current.pedidos += 1;
-        current.ingresos += number(row.total);
+        current.ingresos += amount(row.totalCents, row.total);
         channels.set(name, current);
     }
     return [...channels.values()].sort((a, b) => b.ingresos - a.ingresos);

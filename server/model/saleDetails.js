@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { integerCentsPath } = require('../services/money');
 
 const saleDetailSchema = new mongoose.Schema({
 
@@ -20,11 +21,14 @@ const saleDetailSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    precioUnitarioCents: integerCentsPath(),
     precioCostoUnitario: Number,
+    precioCostoUnitarioCents: integerCentsPath(),
     subtotal: {
         type: Number,
         required: true
-    }
+    },
+    subtotalCents: integerCentsPath()
 }, {
     timestamps: true
 });

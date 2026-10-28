@@ -4,12 +4,14 @@ const Raffle = require('../model/raffle');
 const RaffleEntry = require('../model/raffleEntry');
 const adminPagination = require('../services/adminPagination');
 const emailNotifications = require('./emailNotificationService');
+const money = require('../services/money');
 
 const KEY = 'principal';
 const DEFAULTS = {
     clave: KEY,
     activo: false,
     montoMinimo: 100000,
+    montoMinimoCents: 10000000,
     titulo: 'Sorteo de regalos',
     descripcion: 'Compra el monto mínimo y participa en el próximo sorteo.',
     imagenUrl: '',
@@ -36,7 +38,7 @@ async function publicConfig() {
         clave: KEY,
         $or: [{ activo: true }, { 'ganador.numero': { $exists: true } }]
     })
-        .select('titulo descripcion montoMinimo imagenUrl activo ganador.numero ganador.seleccionadoEn')
+        .select('titulo descripcion montoMinimo montoMinimoCents imagenUrl activo ganador.numero ganador.seleccionadoEn')
         .lean();
 }
 
@@ -58,7 +60,7 @@ async function entriesForUser(userId, raffleId) {
     }
 
     return RaffleEntry.find(filter)
-        .populate('order', 'numeroOrden total createdAt estado estadoPago')
+        .populate('order', 'numeroOrden total totalCents createdAt estado estadoPago')
         .sort({ numero: 1 })
         .lean();
 }
@@ -67,7 +69,7 @@ async function entryForOrder(orderId, userId) {
     if (!validUserId(userId) || !mongoose.isObjectIdOrHexString(String(orderId))) return null;
 
     return RaffleEntry.findOne({ order: orderId, usuario: userId })
-        .populate('order', 'numeroOrden total createdAt estado estadoPago')
+        .populate('order', 'numeroOrden total totalCents createdAt estado estadoPago')
         .lean();
 }
 
@@ -80,15 +82,21 @@ async function entriesForOrders(userId, orderIds) {
     if (!ids.length) return [];
 
     return RaffleEntry.find({ usuario: userId, order: { $in: ids } })
-        .select('order numero ganador montoCompra createdAt')
+        .select('order numero ganador montoCompra montoCompraCents createdAt')
         .lean();
 }
 
 async function updateConfig(body, file) {
-    const montoMinimo = Number(body.montoMinimo);
-    if (!Number.isSafeInteger(montoMinimo) || montoMinimo < 0 || montoMinimo > 100000000) {
-        throw publicError('El monto mínimo debe ser un número entero entre 0 y 100.000.000 COP.');
+    let montoMinimoCents;
+    try {
+        montoMinimoCents = money.toCents(body.montoMinimo);
+    } catch {
+        throw publicError('El monto mínimo debe ser un importe válido entre 0 y 100.000.000 COP.');
     }
+    if (montoMinimoCents > 10000000000) {
+        throw publicError('El monto mínimo debe ser un importe válido entre 0 y 100.000.000 COP.');
+    }
+    const montoMinimo = money.fromCents(montoMinimoCents);
 
     const titulo = typeof body.titulo === 'string' ? body.titulo.trim() : '';
     const descripcion = typeof body.descripcion === 'string' ? body.descripcion.trim() : '';
@@ -99,6 +107,7 @@ async function updateConfig(body, file) {
     const previousImage = raffle.imagenUrl || '';
     raffle.activo = ['1', 'true', 'si', 'on'].includes(String(body.activo || '').toLowerCase());
     raffle.montoMinimo = montoMinimo;
+    raffle.montoMinimoCents = montoMinimoCents;
     raffle.titulo = titulo;
     raffle.descripcion = descripcion;
     if (body.quitarImagen === 'si') raffle.imagenUrl = '';
@@ -118,9 +127,9 @@ async function adminData(query = {}) {
     const totalItems = await RaffleEntry.countDocuments(filter);
     const pagination = adminPagination.metadata(page, limit, totalItems);
     const entries = await RaffleEntry.find(filter)
-        .select('numero clienteNombre clienteEmail montoCompra ganador createdAt usuario order')
+        .select('numero clienteNombre clienteEmail montoCompra montoCompraCents ganador createdAt usuario order')
         .populate('usuario', 'nombre email')
-        .populate('order', 'numeroOrden total createdAt')
+        .populate('order', 'numeroOrden total totalCents createdAt')
         .sort({ numero: 1, _id: 1 })
         .skip((pagination.page - 1) * limit)
         .limit(limit)
@@ -129,13 +138,16 @@ async function adminData(query = {}) {
 }
 
 async function recordEligibleOrder(order, session) {
-    if (!order?._id || Number(order.total) < 0) return null;
+    if (!order?._id) return null;
+    const totalCents = money.readCents(order.totalCents, order.total);
 
     const existing = await RaffleEntry.findOne({ order: order._id }).session(session);
     if (existing) return existing;
 
     const raffle = await Raffle.findOne({ clave: KEY, activo: true }).session(session);
-    if (!raffle || raffle.ganador?.entrada || Number(order.total) < raffle.montoMinimo) return null;
+    if (!raffle) return null;
+    const minimumCents = money.readCents(raffle.montoMinimoCents, raffle.montoMinimo);
+    if (raffle.ganador?.entrada || totalCents < minimumCents) return null;
 
     const reserved = await Raffle.findOneAndUpdate(
         { _id: raffle._id, activo: true, 'ganador.entrada': { $exists: false } },
@@ -151,7 +163,8 @@ async function recordEligibleOrder(order, session) {
             usuario: order.usuario,
             order: order._id,
             numero,
-            montoCompra: order.total,
+            montoCompraCents: totalCents,
+            montoCompra: money.fromCents(totalCents),
             clienteNombre: order.cliente?.nombre || 'Cliente',
             clienteEmail: order.cliente?.email || '',
             ganador: false

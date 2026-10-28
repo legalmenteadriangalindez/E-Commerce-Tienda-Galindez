@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { integerCentsPath } = require('../services/money');
 
 const trackingSchema = new mongoose.Schema({
     evento: {
@@ -93,12 +94,15 @@ const orderSchema = new mongoose.Schema({
                 type: Number,
                 required: true
             },
+            precioUnitarioCents: integerCentsPath(),
             precioCostoUnitario: Number,
+            precioCostoUnitarioCents: integerCentsPath(),
 
             subtotal: {
                 type: Number,
                 required: true
-            }
+            },
+            subtotalCents: integerCentsPath()
         }
     ],
 
@@ -107,26 +111,31 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    subtotalCents: integerCentsPath(),
 
     impuestos: {
         type: Number,
         default: 0
     },
+    impuestosCents: integerCentsPath({ default: 0 }),
 
     costoEnvio: {
         type: Number,
         default: 0
     },
+    costoEnvioCents: integerCentsPath({ default: 0 }),
 
     total: {
         type: Number,
         required: true
     },
+    totalCents: integerCentsPath(),
     descuento: {
         type: Number,
         default: 0,
         min: 0
     },
+    descuentoCents: integerCentsPath({ default: 0 }),
     // ESTADO DEL PAGO
     estadoPago: {
        type: String,

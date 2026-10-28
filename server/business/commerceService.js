@@ -10,18 +10,17 @@ const wompi = require('./wompiService');
 const raffle = require('./raffleService');
 const emailNotifications = require('./emailNotificationService');
 const delivery = require('./deliveryService');
+const money = require('../services/money');
 
 class CommerceError extends Error {
     constructor(message, status = 400) { super(message); this.status = status; this.expose = true; }
 }
 function cents(value) {
-    const number = Number(value);
-    const result = Math.round(number * 100);
-    if (!Number.isFinite(number) || number < 0 || !Number.isSafeInteger(result) ||
-        Math.abs(number * 100 - result) > 0.00001) {
-        throw new CommerceError('El precio debe ser positivo y tener como máximo dos decimales.');
+    try {
+        return money.toCents(value);
+    } catch (error) {
+        throw new CommerceError(error.message);
     }
-    return result;
 }
 function textField(value, label, max, required = true) {
     if (value === undefined && !required) return '';
@@ -65,7 +64,20 @@ function totals(subtotalCents) {
     const shipping = subtotalCents >= freeAt ? 0 : cents(process.env.SHIPPING_PRICE || '5000');
     if (!Number.isSafeInteger(subtotalCents + shipping)) throw new CommerceError('Total fuera de rango.');
     // Los precios publicados incluyen los impuestos aplicables; no se añaden tasas inventadas.
-    return { subtotal: subtotalCents / 100, costoEnvio: shipping / 100, impuestos: 0, descuento: 0, total: (subtotalCents + shipping) / 100 };
+    const total = subtotalCents + shipping;
+    return {
+        subtotalCents,
+        impuestosCents: 0,
+        costoEnvioCents: shipping,
+        descuentoCents: 0,
+        totalCents: total,
+        // Compatibilidad temporal con las vistas y documentos históricos.
+        subtotal: money.fromCents(subtotalCents),
+        impuestos: 0,
+        costoEnvio: money.fromCents(shipping),
+        descuento: 0,
+        total: money.fromCents(total)
+    };
 }
 async function quote(cart, session) {
     const productos = [];
@@ -74,11 +86,14 @@ async function quote(cart, session) {
         const product = await Product.findById(item.productoId).session(session || null);
         if (!product) throw new CommerceError('Un producto ya no está disponible.', 409);
         if (product.stock < item.cantidad) throw new CommerceError(`Stock insuficiente para ${product.nombre}.`, 409);
-        const price = cents(product.precioVenta);
+        const price = money.readCents(product.precioVentaCents, product.precioVenta);
+        const cost = money.readCents(product.precioCostoCents, product.precioCosto);
         const line = price * item.cantidad;
         if (!Number.isSafeInteger(line)) throw new CommerceError('Importe fuera de rango.');
         productos.push({ producto: product._id, nombre: product.nombre, cantidad: item.cantidad,
-            precioUnitario: price / 100, precioCostoUnitario: cents(product.precioCosto) / 100, subtotal: line / 100 });
+            precioUnitarioCents: price, precioCostoUnitarioCents: cost, subtotalCents: line,
+            // Compatibilidad temporal para la sesión, API y vistas existentes.
+            precioUnitario: money.fromCents(price), precioCostoUnitario: money.fromCents(cost), subtotal: money.fromCents(line) });
         subtotal += line;
     }
     return { productos, ...totals(subtotal) };
@@ -105,11 +120,22 @@ async function recordSale(order, session) {
         return;
     }
     const [sale] = await Sale.create([{
-        cliente: order.usuario, order: order._id, subtotal: order.subtotal, impuestos: order.impuestos,
-        costoEnvio: order.costoEnvio, descuento: order.descuento, total: order.total, estadoPago: 'PAGADO'
+        cliente: order.usuario, order: order._id,
+        subtotalCents: money.readCents(order.subtotalCents, order.subtotal),
+        impuestosCents: money.readCents(order.impuestosCents, order.impuestos),
+        costoEnvioCents: money.readCents(order.costoEnvioCents, order.costoEnvio),
+        descuentoCents: money.readCents(order.descuentoCents, order.descuento),
+        totalCents: money.readCents(order.totalCents, order.total),
+        // Compatibilidad temporal para reportes y vistas.
+        subtotal: order.subtotal, impuestos: order.impuestos,
+        costoEnvio: order.costoEnvio, descuento: order.descuento, total: order.total,
+        estadoPago: 'PAGADO'
     }], { session });
     await SaleDetail.insertMany(order.productos.map(item => ({
         venta: sale._id, producto: item.producto, cantidad: item.cantidad,
+        precioUnitarioCents: money.readCents(item.precioUnitarioCents, item.precioUnitario),
+        precioCostoUnitarioCents: money.readCents(item.precioCostoUnitarioCents, item.precioCostoUnitario),
+        subtotalCents: money.readCents(item.subtotalCents, item.subtotal),
         precioUnitario: item.precioUnitario, precioCostoUnitario: item.precioCostoUnitario, subtotal: item.subtotal
     })), { session });
 }
@@ -129,10 +155,10 @@ async function createOrder({ userId, cart, body, key, channel = 'WOMPI' }) {
                 throw new CommerceError('Tienes un pago pendiente. Consulta Mis pedidos antes de iniciar otro.', 409);
             }
             const priced = await quote(cart, session);
-            if (body.totalCotizado !== undefined && cents(body.totalCotizado) !== cents(priced.total)) {
+            if (body.totalCotizado !== undefined && cents(body.totalCotizado) !== priced.totalCents) {
                 throw new CommerceError('El precio cambió. Recarga el formulario para revisar el nuevo total.', 409);
             }
-            if (priced.total <= 0) throw new CommerceError('El total debe ser mayor que cero.');
+            if (priced.totalCents <= 0) throw new CommerceError('El total debe ser mayor que cero.');
             await debit(priced.productos, session);
             [order] = await Order.create([{
                 ...data, ...priced, usuario: userId, claveCheckout, canal: channel,
@@ -166,7 +192,7 @@ function checkoutUrl(order) {
         throw new CommerceError('Este intento de pago terminó. Revisa el estado en Mis pedidos.', 409);
     }
     const expiration = order.reservaHasta.toISOString();
-    const amount = cents(order.total);
+    const amount = money.readCents(order.totalCents, order.total);
     const signature = crypto.createHash('sha256').update(`${order.numeroOrden}${amount}COP${expiration}${process.env.WOMPI_INTEGRITY_KEY}`).digest('hex');
     const url = new URL('https://checkout.wompi.co/p/');
     Object.entries({ 'public-key': process.env.WOMPI_PUBLIC_KEY, currency: 'COP', 'amount-in-cents': String(amount),
@@ -198,7 +224,7 @@ async function applyTransaction(transaction) {
         event.amountInCents = transaction.amount_in_cents;
         event.currency = transaction.currency;
         const order = await Order.findOne({ numeroOrden: transaction.reference }).session(session);
-        if (!order || transaction.currency !== 'COP' || transaction.amount_in_cents !== cents(order.total)) {
+        if (!order || transaction.currency !== 'COP' || transaction.amount_in_cents !== money.readCents(order.totalCents, order.total)) {
             event.estado = 'REVISION'; event.detalle = 'Referencia, moneda o importe no coincide.';
             await event.save({ session }); return;
         }

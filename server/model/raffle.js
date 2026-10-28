@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
+const { integerCentsPath } = require('../services/money');
 
 const raffleSchema = new mongoose.Schema({
     clave: { type: String, required: true, unique: true, default: 'principal' },
     activo: { type: Boolean, default: false },
     montoMinimo: { type: Number, min: 0, max: 100000000, default: 100000 },
+    montoMinimoCents: integerCentsPath(),
     titulo: { type: String, trim: true, maxlength: 120, default: 'Sorteo de regalos' },
     descripcion: { type: String, trim: true, maxlength: 500, default: 'Compra el monto mínimo y participa en el próximo sorteo.' },
     imagenUrl: { type: String, default: '' },

@@ -8,6 +8,7 @@ const fs = require('fs');
 const media = require('../business/mediaService'); 
 const catalog = require('../business/catalogService');
 const adminPagination = require('../services/adminPagination');
+const money = require('../services/money');
 
 
 
@@ -75,9 +76,18 @@ exports.create = async (req, res) => {
             });
         }
 
-        // Convertir a número
-        const costo = Number(precioCosto);
-        const venta = Number(precioVenta);
+        // Los formularios reciben COP; persistimos los nuevos campos como
+        // enteros de centavos y dejamos los campos antiguos como display.
+        let costoCents;
+        let ventaCents;
+        try {
+            costoCents = money.toCents(precioCosto);
+            ventaCents = money.toCents(precioVenta);
+        } catch (error) {
+            return res.status(400).send({ message: error.message });
+        }
+        const costo = money.fromCents(costoCents);
+        const venta = money.fromCents(ventaCents);
         const cantidad = Number(stock);
 
         // Validar números
@@ -105,7 +115,7 @@ if (!Number.isInteger(cantidad)) {
 }
         
         // Validar precio de venta
-        if (venta < costo) {
+        if (ventaCents < costoCents) {
             return res.status(400).send({
                 message: "El precio de venta no puede ser menor al costo"
             });
@@ -163,6 +173,8 @@ if (!marcaExiste) {
             descripcion: descripcion?.trim() || "",
             precioCosto: costo,
             precioVenta: venta,
+            precioCostoCents: costoCents,
+            precioVentaCents: ventaCents,
             stock: cantidad,
             categoria,
             marca,
@@ -331,27 +343,28 @@ exports.update = async (req, res) => {
             });
         }
 
-        const nuevoPrecioVenta = req.body.precioVenta !== undefined
-            ? Number(req.body.precioVenta)
-            : product.precioVenta;
-
-        const nuevoCosto = req.body.precioCosto !== undefined
-            ? Number(req.body.precioCosto)
-            : product.precioCosto;
-
-        if (!Number.isFinite(nuevoPrecioVenta) || !Number.isFinite(nuevoCosto)) {
+        let nuevoPrecioVentaCents;
+        let nuevoCostoCents;
+        try {
+            nuevoPrecioVentaCents = req.body.precioVenta !== undefined
+                ? money.toCents(req.body.precioVenta)
+                : money.readCents(product.precioVentaCents, product.precioVenta);
+            nuevoCostoCents = req.body.precioCosto !== undefined
+                ? money.toCents(req.body.precioCosto)
+                : money.readCents(product.precioCostoCents, product.precioCosto);
+        } catch (error) {
             return res.status(400).send({
-                message: "El precio de venta y el costo deben ser números válidos"
+                message: error.message
             });
         }
 
-        if (nuevoPrecioVenta < 0 || nuevoCosto < 0) {
+        if (nuevoPrecioVentaCents < 0 || nuevoCostoCents < 0) {
             return res.status(400).send({
                 message: "Los precios no pueden ser negativos"
             });
         }
 
-        if (nuevoPrecioVenta < nuevoCosto) {
+        if (nuevoPrecioVentaCents < nuevoCostoCents) {
             return res.status(400).send({
                 message: "El precio de venta no puede ser menor al costo"
             });
@@ -542,8 +555,10 @@ const updated = await Productdb.findOneAndUpdate(
             nombre: req.body.nombre?.trim() || product.nombre,
             descripcion:
                 req.body.descripcion?.trim() ?? product.descripcion,
-            precioCosto: nuevoCosto,
-            precioVenta: nuevoPrecioVenta,
+            precioCosto: money.fromCents(nuevoCostoCents),
+            precioVenta: money.fromCents(nuevoPrecioVentaCents),
+            precioCostoCents: nuevoCostoCents,
+            precioVentaCents: nuevoPrecioVentaCents,
             stock: nuevoStock,
             categoria: nuevaCategoria,
             marca: nuevaMarca,

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { integerCentsPath } = require('../services/money');
 
 const raffleEntrySchema = new mongoose.Schema({
     raffle: { type: mongoose.Schema.Types.ObjectId, ref: 'raffledb', required: true },
@@ -6,6 +7,7 @@ const raffleEntrySchema = new mongoose.Schema({
     order: { type: mongoose.Schema.Types.ObjectId, ref: 'orderdb', required: true },
     numero: { type: Number, required: true, min: 1 },
     montoCompra: { type: Number, required: true, min: 0 },
+    montoCompraCents: integerCentsPath(),
     clienteNombre: { type: String, required: true, maxlength: 120 },
     clienteEmail: { type: String, required: true, maxlength: 254 },
     ganador: { type: Boolean, default: false }
