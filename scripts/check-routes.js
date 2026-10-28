@@ -21,6 +21,19 @@ try {
         }
     }
     require("../server/routes");
+    // Cargar también cada módulo de rutas individual. Así un archivo que no
+    // esté montado en routes/index.js no puede ocultar imports rotos.
+    const routesDirectory = path.join(root, 'server', 'routes');
+    const indexSource = fs.readFileSync(path.join(routesDirectory, 'index.js'), 'utf8');
+    for (const entry of fs.readdirSync(routesDirectory, { withFileTypes: true })) {
+        if (!entry.isFile() || !entry.name.endsWith('.routes.js') || entry.name === 'index.routes.js') continue;
+        const routePath = path.join(routesDirectory, entry.name);
+        require(routePath);
+        const moduleName = './' + entry.name.slice(0, -3);
+        if (!indexSource.includes(moduleName)) {
+            throw new Error(`El módulo de rutas ${entry.name} existe pero no está montado en server/routes/index.js.`);
+        }
+    }
     console.log(`Sintaxis y plantillas comprobadas (${files.length} archivos). Las rutas se cargaron correctamente.`);
 } catch (error) {
     console.error("No se pudieron cargar las rutas:", error);
