@@ -309,6 +309,10 @@
 
                 <!-- PERFIL -->
 
+                <% const headerUser = (typeof authUser !== 'undefined' && authUser)
+                    || (typeof sessionUser !== 'undefined' && sessionUser)
+                    || null; %>
+
                 <div class="dropdown">
 
                     <a
@@ -321,32 +325,42 @@
 
                     <ul class="dropdown-menu dropdown-menu-end">
 
-                        <li>
+                        <% if (headerUser && headerUser._id) { %>
+                            <li>
+                                <a class="dropdown-item" href="/perfil">
+                                    <i class="bi bi-person"></i>
+                                    Mi cuenta
+                                </a>
+                            </li>
 
-                            <a
-                                class="dropdown-item"
-                                href="/perfil"
-                            >
-                                <i class="bi bi-person"></i>
-                                Mi cuenta
-                            </a>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
 
-                        </li>
-
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item" href="/mis-pedidos">Mis pedidos</a>
-                            <form action="/logout" method="POST">
-                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                <button type="submit" class="dropdown-item text-danger">
-                                    <i class="bi bi-box-arrow-right"></i>
-                                    Cerrar sesión
-                                </button>
-                            </form>
-                        </li>
+                            <li>
+                                <a class="dropdown-item" href="/mis-pedidos">Mis pedidos</a>
+                                <form action="/logout" method="POST">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="bi bi-box-arrow-right"></i>
+                                        Cerrar sesión
+                                    </button>
+                                </form>
+                            </li>
+                        <% } else { %>
+                            <li>
+                                <a class="dropdown-item" href="/login">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    Iniciar sesión
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/register">
+                                    <i class="bi bi-person-plus"></i>
+                                    Crear cuenta
+                                </a>
+                            </li>
+                        <% } %>
 
                     </ul>
 

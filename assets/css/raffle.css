@@ -2,7 +2,8 @@
     position: fixed;
     top: 78px;
     right: 14px;
-    z-index: 1040;
+    /* Debe quedar por debajo del navbar y sus menús desplegables. */
+    z-index: 900;
     width: 148px;
     overflow: hidden;
     color: #fff;

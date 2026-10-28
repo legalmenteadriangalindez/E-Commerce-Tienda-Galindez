@@ -11,6 +11,8 @@
     background-color: var(--primary-dark);
     border-bottom: 3px solid var(--accent-orange);
     padding: 12px 24px;
+    position: relative;
+    z-index: 1030;
 }
 
 /* ================= BRAND ================= */
@@ -115,6 +117,7 @@
     border-radius: 12px;
     padding: 6px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    z-index: 1060;
 }
 
 /* ================= TABLET ================= */

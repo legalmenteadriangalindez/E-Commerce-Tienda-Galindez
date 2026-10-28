@@ -48,6 +48,13 @@ app.get("/healthz", (req, res) => {
 app.use(sessionConfig);
 appConfig(app);
 app.use(csrfProtection);
+// El encabezado se reutiliza en páginas públicas y protegidas. Exponer una
+// referencia segura de la sesión permite mostrar opciones distintas sin
+// consultar la base de datos en cada página pública.
+app.use((req, res, next) => {
+    res.locals.sessionUser = req.session?.user || null;
+    next();
+});
 // No registrar query strings: pueden contener correos o enlaces de recuperación.
 app.use(morgan(':method :request-path :status :res[content-length] :response-time ms requestId=:request-id', { skip: req => req.path === '/healthz' }));
 app.use(cartMiddleware);
