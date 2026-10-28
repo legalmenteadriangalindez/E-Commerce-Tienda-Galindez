@@ -19,7 +19,7 @@ const sessionLogger = require("./server/middleware/sessionLogger");
 const categoriasMiddleware = require("./server/middleware/categoriasMiddleware");
 const raffleBanner = require("./server/middleware/raffleBanner");
 const appConfig = require("./server/config/appConfig");
-const emailNotifications = require('./server/business/emailNotificationService');
+const { initializeModels } = require('./server/config/initializeModels');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -68,36 +68,16 @@ app.use((req, res) => res.status(404).render('error', {
 app.use(require('./server/middleware/errorHandler'));
 
 let httpServer;
-let maintenanceTimer;
-let maintenanceRunning = false;
-async function maintenance() {
-    if (maintenanceRunning) return;
-    maintenanceRunning = true;
-    try {
-        await require('./server/business/commerceService').runMaintenance();
-        await require('./server/business/mediaService').cleanup();
-        await emailNotifications.processPending();
-    } catch { console.error('No se completó el mantenimiento. Se reintentará.'); }
-    finally { maintenanceRunning = false; }
-}
 
 async function startServer() {
     await connectDB();
-    await Promise.all([
-        require('./server/model/order'), require('./server/model/sales'),
-        require('./server/model/paymentEvent'), require('./server/model/review'),
-        require('./server/model/raffle'), require('./server/model/raffleEntry'),
-        require('./server/model/rateLimitBucket'), require('./server/model/orderEmailEvent')
-    ].map(model => model.init()));
+    await initializeModels();
     const topology = await mongoose.connection.db.admin().command({ hello: 1 });
     if (!topology.setName && topology.msg !== 'isdbgrid') throw new Error('Usa MongoDB Atlas o un replica set: las compras requieren transacciones.');
-    maintenanceTimer = setInterval(maintenance, 60000);
-    maintenanceTimer.unref();
 
     return new Promise((resolve, reject) => {
         httpServer = app.listen(PORT, () => {
             console.log(`Servidor listo en ${BASE_URL}`);
-            void maintenance();
             resolve(httpServer);
         });
 
@@ -108,7 +88,6 @@ async function startServer() {
 async function shutdown(signal) {
     console.log(`Cerrando servidor (${signal})`);
 
-    clearInterval(maintenanceTimer);
     const deadline = setTimeout(() => process.exit(1), 15000);
     deadline.unref();
     if (httpServer) {

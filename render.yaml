@@ -32,3 +32,39 @@ services:
         sync: false
       - key: WOMPI_EVENTS_KEY
         sync: false
+
+  # Las tareas periódicas se ejecutan fuera del proceso web. Render evita
+  # solapamientos de un mismo Cron Job y lo inicia con la misma rama.
+  - type: cron
+    name: tienda-galindez-maintenance
+    runtime: node
+    schedule: "* * * * *"
+    buildCommand: npm ci --omit=dev && npm run check
+    startCommand: npm run maintenance
+    envVars:
+      - key: NODE_VERSION
+        value: 22.23.4
+      - key: NODE_ENV
+        value: production
+      - key: BASE_URL
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: PAYMENTS_ENABLED
+        value: "false"
+      - key: WOMPI_ENV
+        value: sandbox
+      - key: WOMPI_PUBLIC_KEY
+        sync: false
+      - key: WOMPI_PRIVATE_KEY
+        sync: false
+      - key: WOMPI_INTEGRITY_KEY
+        sync: false
+      - key: WOMPI_EVENTS_KEY
+        sync: false

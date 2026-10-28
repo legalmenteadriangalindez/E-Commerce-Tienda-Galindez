@@ -45,7 +45,7 @@ Los importes son COP. El servidor trata los precios del catálogo como precios f
 | --- | --- |
 | Compra | Precios consultados en MongoDB, cálculo en centavos, cantidades enteras y protección contra doble clic. |
 | Inventario | Reserva atómica al crear la orden; una unidad no puede venderse a dos compradores. |
-| Vencimiento | La reserva dura 30 minutos. El servidor revisa vencimientos cada minuto mientras está activo. Un pago conocido que sigue pendiente conserva su reserva hasta conciliación. |
+| Vencimiento | La reserva dura 30 minutos. El Cron de mantenimiento revisa vencimientos cada minuto. Un pago conocido que sigue pendiente conserva su reserva hasta conciliación. |
 | Wompi | Firma del webhook, consulta privada al proveedor y comparación de referencia, importe y moneda. Bandeja de eventos persistente y reintentos. |
 | Correo de pedidos | Confirmación de pedido, cambios de estado, aviso de envío y entrega. Los eventos se guardan en MongoDB, se envían por Brevo y se reintentan si el proveedor falla. |
 | Sorteo | Cada pedido pagado que cumple el monto recibe un número único. Al seleccionar ganador se encola un aviso por Brevo y `/sorteo` publica el número ganador, la fecha y el total de participaciones, sin nombres ni correos. |
@@ -83,13 +83,19 @@ El archivo `render.yaml` permite crear un servicio Node. Para tu servicio ya exi
 
 Configura además las cuatro claves `WOMPI_PUBLIC_KEY`, `WOMPI_PRIVATE_KEY`, `WOMPI_INTEGRITY_KEY` y `WOMPI_EVENTS_KEY` del mismo entorno. No uses `LOCAL_ADMIN_PASSWORD` en Render. No subas `.env`, `config.env` ni `node_modules` a Git.
 
+### Mantenimiento programado
+
+El servicio web no ejecuta conciliaciones, vencimientos, limpieza de imágenes ni envío de la bandeja de correos. El segundo servicio de `render.yaml`, `tienda-galindez-maintenance`, ejecuta `npm run maintenance` cada minuto con la expresión `* * * * *` (UTC). Configúralo con los mismos valores de `MONGO_URI`, `BASE_URL`, `BREVO_API_KEY`, `EMAIL_USER` y las claves de Wompi del servicio web.
+
+Para probarlo en local, ejecuta `npm run maintenance` con el `.env` apuntando a una base de datos de desarrollo. El proceso inicializa índices, valida que Atlas o un replica set estén disponibles, registra un resultado JSON en los logs y termina; si falla devuelve un código distinto de cero para que Render marque la ejecución como fallida. Render no solapa dos ejecuciones del mismo Cron Job.
+
 El proceso falla de forma explícita si faltan variables esenciales o si intentas usar el secreto local de ejemplo en producción. Revisa **Logs** si `/healthz` devuelve error. El inicio exige Atlas o un replica set: MongoDB independiente no ofrece las transacciones que necesita la tienda.
 
 ### Diagnóstico temporal de formularios CSRF
 
 Si un formulario con imagen devuelve `403`, configura temporalmente `CSRF_DEBUG_LOGS=true` en Render y reproduce la operación. Los logs mostrarán la ruta, `requestId`, presencia y longitud de los tokens, cookie de sesión, origen y etapa del parser; nunca imprimen el token ni la cookie. La página HTML del error también muestra esos metadatos y el encabezado `X-CSRF-Reason`. Después de identificar el problema, vuelve a `false` o elimina la variable.
 
-Para operación continua, el servicio debe mantenerse activo. Las instancias que se suspenden no ejecutan el mantenimiento durante la suspensión; esto puede retrasar reservas y conciliaciones. Revisa también memoria, almacenamiento de Atlas y límites del plan. Las imágenes nuevas consumen espacio de MongoDB, no del disco efímero de Render.
+El servicio web puede suspenderse sin detener estas tareas: el Cron de Render las ejecuta por separado. Revisa también memoria, almacenamiento de Atlas y límites del plan. Las imágenes nuevas consumen espacio de MongoDB, no del disco efímero de Render.
 
 Si no tienes un administrador en esa base, configura temporalmente `INITIAL_ADMIN_EMAIL` y `INITIAL_ADMIN_PASSWORD` y ejecuta desde un entorno autorizado:
 

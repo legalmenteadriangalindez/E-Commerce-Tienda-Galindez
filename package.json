@@ -10,6 +10,7 @@
     "test": "npm run check && node --test tests/*.test.js",
     "test:integration": "node scripts/run-integration-tests.js",
     "check:production": "node scripts/check-production.js",
+    "maintenance": "node scripts/run-maintenance.js",
     "payments:reconcile": "node scripts/reconcile-payments.js",
     "audit:data": "node scripts/audit-data.js",
     "seed:admin": "node scripts/seed-admin.js",

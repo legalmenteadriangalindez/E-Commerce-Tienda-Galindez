@@ -27,10 +27,13 @@ Los pagos están desactivados inicialmente. Para probarlos, configura las cuatro
 npm run check
 npm test
 npm run test:integration
+npm run maintenance
 npm audit --omit=dev
 ```
 
 `check` valida JavaScript, plantillas y carga de rutas. `test` omite integraciones si no hay servidor temporal. `test:integration` inicia su propio MongoDB temporal; requiere `mongod` en PATH o la variable `MONGOD_BINARY`. No utiliza tu base de desarrollo o producción.
+
+El proceso web no ejecuta tareas periódicas. En Render, `render.yaml` define el Cron Job `tienda-galindez-maintenance`, que ejecuta `npm run maintenance` cada minuto. En local puedes ejecutarlo manualmente después de configurar `MONGO_URI`.
 
 ## Producción
 
