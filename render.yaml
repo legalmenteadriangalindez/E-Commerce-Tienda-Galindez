@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: tienda-galindez
+    name: E-Commerce-Tienda-Galindez
     runtime: node
     buildCommand: npm ci --omit=dev && npm run check
     startCommand: npm start
