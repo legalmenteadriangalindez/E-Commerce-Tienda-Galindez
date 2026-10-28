@@ -18,6 +18,9 @@
     <section class="raffle-admin-grid">
         <article class="commerce-card">
             <h2>Configuración</h2>
+            <% if (!isCurrentRound || raffle.estadoRonda === 'FINALIZADA') { %>
+                <p class="raffle-pagination-help">Esta ronda es histórica o finalizada y está protegida contra cambios.</p>
+            <% } else { %>
             <form action="/admin/raffle" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
@@ -57,12 +60,14 @@
 
                 <button type="submit">Guardar configuración</button>
             </form>
+            <% } %>
         </article>
 
         <article class="commerce-card">
             <h2>Estado del sorteo</h2>
             <dl class="raffle-summary">
-                <div><dt>Estado</dt><dd><%= raffle.activo ? 'Activo' : 'Inactivo' %></dd></div>
+                <div><dt>Ronda</dt><dd>#<%= raffle.numeroRonda %></dd></div>
+                <div><dt>Estado</dt><dd><%= raffle.estadoRonda === 'FINALIZADA' ? 'Finalizada' : raffle.activo ? 'Activa' : 'Inactiva' %></dd></div>
                 <div><dt>Participaciones</dt><dd><%= pagination.totalItems %></dd></div>
                 <div><dt>Próximo número</dt><dd><%= raffle.siguienteNumero %></dd></div>
                 <div><dt>Ganador</dt><dd><%= raffle.ganador?.numero ? 'Número ' + raffle.ganador.numero : 'Pendiente' %></dd></div>
@@ -70,7 +75,7 @@
 
             <% if (raffle.ganador?.numero) { %>
                 <p class="commerce-notice">La participación ganadora es el número <strong><%= raffle.ganador.numero %></strong>. Revisa al cliente en la tabla.</p>
-            <% } else if (entries.length) { %>
+            <% } else if (isCurrentRound && raffle.estadoRonda === 'ACTIVA' && entries.length) { %>
                 <form action="/admin/raffle/draw" method="post">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <label class="raffle-confirm"><input type="checkbox" name="confirmar" value="si" required> Confirmo que voy a seleccionar un ganador al azar.</label>
@@ -80,10 +85,10 @@
                 <p>Aún no hay compras pagadas que cumplan el monto mínimo.</p>
             <% } %>
 
-            <% if (entries.length || raffle.ganador?.numero) { %>
+            <% if (isCurrentRound && (entries.length || raffle.ganador?.numero)) { %>
                 <form action="/admin/raffle/reset" method="post" class="raffle-reset-form">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                    <label class="raffle-confirm"><input type="checkbox" name="confirmar" value="si" required> Confirmo que iniciaré una nueva rifa y eliminaré las participaciones actuales.</label>
+                    <label class="raffle-confirm"><input type="checkbox" name="confirmar" value="si" required> Confirmo que iniciaré una nueva ronda. Las participaciones actuales se conservarán en el historial.</label>
                     <button type="submit" class="raffle-danger">Reiniciar rifa</button>
                 </form>
             <% } %>
@@ -94,9 +99,10 @@
         <div class="raffle-entries-heading">
             <div>
                 <h2>Participaciones</h2>
-                <p class="raffle-pagination-help">La lista se consulta directamente desde MongoDB y no está limitada a 500 registros.</p>
+                <p class="raffle-pagination-help">Ronda #<%= raffle.numeroRonda %>. Las rondas anteriores permanecen disponibles en modo de solo lectura.</p>
             </div>
             <form class="raffle-page-size" method="get" action="/admin/raffle">
+                <input type="hidden" name="ronda" value="<%= selectedRoundId %>">
                 <label for="raffle-limit">Filas por página</label>
                 <select id="raffle-limit" name="limit">
                     <% for (const pageSize of [10, 25, 50]) { %>
@@ -128,5 +134,21 @@
         <% } %>
         <%- include('../../include/_adminPagination', { pagination, label: 'participaciones' }) %>
     </section>
+
+    <% if (rounds && rounds.length > 1) { %>
+        <section class="commerce-card">
+            <h2>Historial de rondas</h2>
+            <p class="raffle-pagination-help">Las participaciones y resultados de una ronda finalizada no se modifican al iniciar la siguiente.</p>
+            <div class="raffle-round-history">
+                <% rounds.forEach(round => { %>
+                    <a class="raffle-round-history__item <%= String(round._id) === String(selectedRoundId) ? 'is-current' : '' %>" href="/admin/raffle?ronda=<%= round._id %>">
+                        <strong>Ronda #<%= round.numeroRonda %></strong>
+                        <span><%= round.estadoRonda === 'FINALIZADA' ? 'Finalizada' : round.activo ? 'Activa' : 'Inactiva' %> · <%= round.totalEntries %> participaciones</span>
+                        <% if (round.ganador?.numero) { %><span>Ganador #<%= round.ganador.numero %></span><% } %>
+                    </a>
+                <% }) %>
+            </div>
+        </section>
+    <% } %>
 </main>
 <%- include('../../include/_footerAdmin') %>

@@ -100,6 +100,25 @@ test('compras y pagos con transacciones reales en MongoDB temporal', {
         assert.equal(winnerEmail.destinatario.email, 'cliente@example.test');
         assert.equal(winnerEmail.datos.numero, winner.numero);
     });
+    await t.test('reiniciar crea una ronda nueva y conserva el historial anterior', async () => {
+        await reset(10);
+        const order = await make(app.users.owner);
+        await commerce.applyTransaction(tx(order));
+        const previousRound = await Raffle.findOne({ clave: 'principal' });
+        const previousEntry = await RaffleEntry.findOne({ order: order._id });
+        await raffle.drawWinner();
+
+        const nextRound = await raffle.resetRaffle();
+        assert.equal(nextRound.numeroRonda, previousRound.numeroRonda + 1);
+        assert.equal(nextRound.estadoRonda, 'ACTIVA');
+        assert.equal(nextRound.siguienteNumero, 1);
+
+        const historical = await Raffle.findById(previousRound._id);
+        assert.equal(historical.estadoRonda, 'FINALIZADA');
+        assert.equal(await RaffleEntry.countDocuments({ raffle: previousRound._id }), 1);
+        assert.equal((await RaffleEntry.findById(previousEntry._id)).ganador, true);
+        assert.equal((await raffle.publicConfig()).ganador.numero, previousEntry.numero);
+    });
     await t.test('rechazo libera la reserva una vez y un vencimiento no la libera otra vez', async () => {
         await reset(10); const order = await make(app.users.owner, 3); const transaction = tx(order, 'DECLINED');
         await commerce.applyTransaction(transaction); await commerce.applyTransaction(transaction);

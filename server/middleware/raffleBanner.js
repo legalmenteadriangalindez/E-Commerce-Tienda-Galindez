@@ -5,7 +5,8 @@ let expiresAt = 0;
 
 async function load() {
     if (Date.now() < expiresAt) return cached;
-    cached = await Raffle.findOne({ clave: 'principal', activo: true })
+    cached = await Raffle.findOne({ clave: 'principal', estadoRonda: 'ACTIVA', activo: true })
+        .sort({ numeroRonda: -1, _id: -1 })
         .select('titulo descripcion montoMinimo imagenUrl')
         .lean();
     expiresAt = Date.now() + 15000;

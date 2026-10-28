@@ -2,7 +2,13 @@ const mongoose = require('mongoose');
 const { integerCentsPath } = require('../services/money');
 
 const raffleSchema = new mongoose.Schema({
-    clave: { type: String, required: true, unique: true, default: 'principal' },
+    // Cada documento representa una ronda. `clave` identifica la promoción
+    // y `numeroRonda` permite conservar todas sus ediciones históricas.
+    clave: { type: String, required: true, default: 'principal' },
+    numeroRonda: { type: Number, required: true, min: 1, default: 1 },
+    estadoRonda: { type: String, enum: ['ACTIVA', 'FINALIZADA'], default: 'ACTIVA' },
+    finalizadaEn: Date,
+    motivoFinalizacion: { type: String, maxlength: 80 },
     activo: { type: Boolean, default: false },
     montoMinimo: { type: Number, min: 0, max: 100000000, default: 100000 },
     montoMinimoCents: integerCentsPath(),
@@ -17,5 +23,8 @@ const raffleSchema = new mongoose.Schema({
         seleccionadoEn: Date
     }
 }, { timestamps: true });
+
+raffleSchema.index({ clave: 1, numeroRonda: 1 }, { unique: true });
+raffleSchema.index({ clave: 1, estadoRonda: 1, numeroRonda: -1 });
 
 module.exports = mongoose.model('raffledb', raffleSchema);

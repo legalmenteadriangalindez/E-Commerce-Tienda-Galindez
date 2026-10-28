@@ -11,6 +11,7 @@
                 <p class="raffle-eyebrow"><%= raffle.activo ? 'Promoción activa' : 'Sorteo finalizado' %></p>
                 <h1><%= raffle.titulo %></h1>
                 <p><%= raffle.descripcion %></p>
+                <p class="raffle-public-note">Ronda #<%= raffle.numeroRonda %></p>
                 <strong>Compra mínima: $ <%= Number(raffle.montoMinimo).toLocaleString('es-CO') %> COP</strong>
                 <% if (raffle.activo) { %>
                     <p class="raffle-public-note">Cada pedido pagado que cumpla el monto recibe una participación única.</p>
@@ -32,6 +33,17 @@
             </section>
         <% } %>
 
+        <% if (raffle.ultimoGanador?.numero) { %>
+            <section class="raffle-public-result" aria-labelledby="raffle-last-result-title">
+                <p class="raffle-eyebrow">Resultado anterior</p>
+                <h2 id="raffle-last-result-title">Ronda #<%= raffle.ultimoGanador.numeroRonda %>: número ganador <strong>#<%= raffle.ultimoGanador.numero %></strong></h2>
+                <% if (raffle.ultimoGanador.seleccionadoEn) { %>
+                    <p>Seleccionado el <%= new Date(raffle.ultimoGanador.seleccionadoEn).toLocaleString('es-CO') %>.</p>
+                <% } %>
+                <p class="raffle-public-note">El resultado se conserva como referencia pública aunque ya haya comenzado una nueva ronda.</p>
+            </section>
+        <% } %>
+
         <% if (user && entries.length) { %>
             <section class="commerce-card raffle-my-entries" aria-labelledby="raffle-my-entries-title">
                 <div class="raffle-section-heading">
@@ -47,7 +59,7 @@
                         <% entries.forEach(entry => { %>
                             <article class="raffle-entry-card <%= entry.ganador ? 'is-winner' : '' %>">
                                 <div>
-                                    <p class="raffle-entry-label"><%= entry.ganador ? 'Número ganador' : 'Número de participación' %></p>
+                                    <p class="raffle-entry-label"><%= entry.ganador ? 'Número ganador' : 'Número de participación' %> · Ronda #<%= entry.raffle?.numeroRonda || raffle.numeroRonda %></p>
                                     <strong class="raffle-entry-number">#<%= entry.numero %></strong>
                                 </div>
                                 <p class="raffle-entry-order">

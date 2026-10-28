@@ -11,7 +11,7 @@
       <p><%= new Date(order.createdAt).toLocaleString('es-CO') %> · $<%= order.total.toLocaleString('es-CO') %> COP</p>
       <p>Pago: <strong><%= order.estadoPago %></strong> · Pedido: <strong><%= order.estado %></strong></p>
       <% if (raffleEntry) { %>
-        <p class="raffle-order-number">Rifa: <strong>número #<%= raffleEntry.numero %></strong></p>
+        <p class="raffle-order-number">Rifa ronda #<%= raffleEntry.raffle?.numeroRonda || 'histórica' %>: <strong>número #<%= raffleEntry.numero %></strong></p>
       <% } %>
     </article>
   <% }) %>

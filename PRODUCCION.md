@@ -68,8 +68,8 @@ El comando es idempotente, no elimina campos antiguos y muestra cuántos documen
 | Vencimiento | La reserva dura 30 minutos. El Cron de mantenimiento revisa vencimientos cada minuto. Un pago conocido que sigue pendiente conserva su reserva hasta conciliación. |
 | Wompi | Firma del webhook, consulta privada al proveedor y comparación de referencia, importe y moneda. Bandeja de eventos persistente y reintentos. |
 | Correo de pedidos | Confirmación de pedido, cambios de estado, aviso de envío y entrega. Los eventos se guardan en MongoDB, se envían por Brevo y se reintentan si el proveedor falla. |
-| Sorteo | Cada pedido pagado que cumple el monto recibe un número único. Al seleccionar ganador se encola un aviso por Brevo y `/sorteo` publica el número ganador, la fecha y el total de participaciones, sin nombres ni correos. |
-| Participaciones | El panel administrativo consulta las participaciones por páginas desde MongoDB y permite elegir 10, 25 o 50 filas; no carga ni limita la lista a 500 registros. |
+| Sorteo | Cada pedido pagado que cumple el monto recibe un número único dentro de una ronda. Al seleccionar ganador se encola un aviso por Brevo y `/sorteo` publica el número ganador, la fecha y el total de participaciones, sin nombres ni correos. |
+| Participaciones | El panel administrativo consulta las participaciones por páginas desde MongoDB y permite elegir 10, 25 o 50 filas; no carga ni limita la lista a 500 registros. Al reiniciar, la ronda anterior queda cerrada y sus participaciones se conservan en modo histórico. El ganador se obtiene con `$sample` en MongoDB, sin cargar la colección en Node. |
 | Reparto | El administrador asigna pedidos pagados desde `/admin/delivery`. El repartidor solo puede consultar y avanzar los pedidos asignados; el cliente ve el historial público de entrega en `/mis-pedidos`. |
 | Cobro tardío o duplicado | El cobro queda registrado y se muestra una incidencia. No se envía automáticamente un pedido sin reserva confirmada. |
 | Caja | Registrar un pedido no lo marca como pagado. Un administrador confirma expresamente que recibió el dinero. |

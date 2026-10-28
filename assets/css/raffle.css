@@ -90,6 +90,10 @@
 .raffle-table { width:100%; border-collapse:collapse; }
 .raffle-table th, .raffle-table td { padding:10px 8px; border-bottom:1px solid #edf0f2; text-align:left; vertical-align:top; }
 .raffle-table th { color:#65717c; font-size:.82rem; }
+.raffle-round-history { display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:10px; margin-top:14px; }
+.raffle-round-history__item { display:flex; flex-direction:column; gap:4px; padding:12px; border:1px solid #eadce8; border-radius:10px; color:#321642; background:#fff; text-decoration:none; }
+.raffle-round-history__item span { color:#65717c; font-size:.78rem; line-height:1.35; }
+.raffle-round-history__item.is-current { border-color:#7b2cbf; box-shadow:0 0 0 2px rgba(123,44,191,.12); }
 @media (prefers-reduced-motion: reduce) { .raffle-floating-card { animation:none; } }
 @media (max-width:760px) {
     .raffle-floating-card { top:70px; right:8px; width:128px; }

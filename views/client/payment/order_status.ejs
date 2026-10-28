@@ -29,7 +29,7 @@
       <div>
         <p class="raffle-entry-label"><%= raffleEntry.ganador ? '¡Número ganador!' : 'Participación confirmada' %></p>
         <h2>Tu número: <strong class="raffle-entry-number">#<%= raffleEntry.numero %></strong></h2>
-        <p>Este número corresponde al pedido <strong><%= order.numeroOrden %></strong>.</p>
+        <p>Este número corresponde al pedido <strong><%= order.numeroOrden %></strong>, ronda #<%= raffleEntry.raffle?.numeroRonda || 'histórica' %>.</p>
       </div>
       <a class="raffle-entry-link" href="/sorteo">Ver rifa</a>
     </section>

@@ -16,5 +16,6 @@ const raffleEntrySchema = new mongoose.Schema({
 raffleEntrySchema.index({ raffle: 1, order: 1 }, { unique: true });
 raffleEntrySchema.index({ raffle: 1, numero: 1 }, { unique: true });
 raffleEntrySchema.index({ raffle: 1, createdAt: -1 });
+raffleEntrySchema.index({ raffle: 1, ganador: 1 });
 
 module.exports = mongoose.model('raffleentrydb', raffleEntrySchema);

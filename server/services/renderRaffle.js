@@ -16,20 +16,6 @@ function logRaffle(event, req, extra = {}) {
     }));
 }
 
-function logRaffle(event, req, extra = {}) {
-    console.info(JSON.stringify({
-        event,
-        requestId: req.requestId,
-        method: req.method,
-        path: req.path,
-        fields: req.body && typeof req.body === 'object' ? Object.keys(req.body) : [],
-        filePresent: Boolean(req.file),
-        fileMimeType: req.file?.mimetype || undefined,
-        fileSize: Number.isFinite(req.file?.size) ? req.file.size : undefined,
-        ...extra
-    }));
-}
-
 exports.publicIndex = async (req, res, next) => {
     try {
         const publicRaffle = await raffle.publicConfig();
@@ -38,7 +24,7 @@ exports.publicIndex = async (req, res, next) => {
             raffle: publicRaffle,
             totalEntries: publicRaffle ? await raffle.countEntries(publicRaffle._id) : 0,
             entries: publicRaffle && user
-                ? await raffle.entriesForUser(user._id, publicRaffle._id)
+                ? await raffle.entriesForUser(user._id)
                 : [],
             user
         });
@@ -113,7 +99,7 @@ exports.reset = async (req, res, next) => {
         if (req.body.confirmar !== 'si') throw new Error('Confirma el reinicio antes de continuar.');
         await raffle.resetRaffle();
         banner.clearCache();
-        req.session.raffleNotice = 'Participaciones reiniciadas. Configura y activa una nueva rifa.';
+        req.session.raffleNotice = 'Nueva ronda creada. Las participaciones anteriores se conservaron en el historial.';
         return res.redirect(303, '/admin/raffle');
     } catch (error) {
         return next(error);

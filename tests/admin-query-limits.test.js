@@ -41,11 +41,12 @@ test('los listados administrativos principales usan skip y limit', () => {
     }
 });
 
-test('el sorteo elige una posición aleatoria sin traer todas las participaciones', () => {
+test('el sorteo elige una participación con MongoDB sin traer toda la ronda', () => {
     const raffle = read('server/business/raffleService.js');
-    assert.match(raffle, /RaffleEntry\.countDocuments\(\{ raffle: raffle\._id \}\)/);
-    assert.match(raffle, /crypto\.randomInt\(totalEntries\)/);
-    assert.match(raffle, /\.skip\(offset\)/);
+    assert.match(raffle, /RaffleEntry\.aggregate\(\[/);
+    assert.match(raffle, /\$sample: \{ size: 1 \}/);
+    assert.doesNotMatch(raffle, /crypto\.randomInt/);
+    assert.doesNotMatch(raffle, /\.skip\(offset\)/);
     assert.doesNotMatch(raffle, /const entries = await RaffleEntry\.find\(\{ raffle: raffle\._id \}\)/);
 });
 
