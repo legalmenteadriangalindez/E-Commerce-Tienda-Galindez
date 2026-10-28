@@ -224,6 +224,8 @@ const orderSchema = new mongoose.Schema({
 orderSchema.index({ usuario: 1 });
 orderSchema.index({ estado: 1 });
 orderSchema.index({ createdAt: -1 });
+orderSchema.index({ createdAt: -1, _id: -1 });
+orderSchema.index({ canal: 1, _id: 1 });
 orderSchema.index({ inventario: 1, reservaHasta: 1 });
 orderSchema.index({ repartidor: 1, estado: 1, createdAt: -1 });
 orderSchema.index({ usuario: 1, canal: 1 }, { unique: true,

@@ -92,8 +92,8 @@ function dateMatch(start, end) {
     return match;
 }
 
-async function aggregateTotals(start, end) {
-    const rows = await Sale.aggregate([
+function totalsPipeline(start, end) {
+    return [
         { $match: dateMatch(start, end) },
         { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
         { $unwind: { path: '$details', preserveNullAndEmptyArrays: true } },
@@ -121,7 +121,11 @@ async function aggregateTotals(start, end) {
             }
         },
         { $project: { _id: 0 } }
-    ]);
+    ];
+}
+
+async function aggregateTotals(start, end) {
+    const rows = await Sale.aggregate(totalsPipeline(start, end));
     return rows[0] || {
         orders: 0,
         totalCents: 0,
@@ -132,11 +136,11 @@ async function aggregateTotals(start, end) {
     };
 }
 
-async function aggregateProductRows(start, end, limit = PRODUCT_LIMIT, sortBy = 'units') {
+function productRowsPipeline(start, end, limit = PRODUCT_LIMIT, sortBy = 'units') {
     const sort = sortBy === 'profit'
         ? { profitCents: -1, unidades: -1, _id: 1 }
         : { unidades: -1, ingresosCents: -1, _id: 1 };
-    return Sale.aggregate([
+    return [
         { $match: dateMatch(start, end) },
         { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
         { $unwind: '$details' },
@@ -160,11 +164,15 @@ async function aggregateProductRows(start, end, limit = PRODUCT_LIMIT, sortBy = 
         { $sort: sort },
         { $limit: Math.max(1, Math.min(Number(limit) || PRODUCT_LIMIT, ALL_TIME_PRODUCT_LIMIT)) },
         { $project: { _id: 0, productoId: '$_id', nombre: 1, fotos: 1, unidades: 1, ingresosCents: 1, costosCents: 1, profitCents: 1 } }
-    ]);
+    ];
 }
 
-async function aggregateCategoryRows(start, end, limit = CATEGORY_LIMIT) {
-    return Sale.aggregate([
+async function aggregateProductRows(start, end, limit = PRODUCT_LIMIT, sortBy = 'units') {
+    return Sale.aggregate(productRowsPipeline(start, end, limit, sortBy));
+}
+
+function categoryRowsPipeline(start, end, limit = CATEGORY_LIMIT) {
+    return [
         { $match: dateMatch(start, end) },
         { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
         { $unwind: '$details' },
@@ -181,11 +189,15 @@ async function aggregateCategoryRows(start, end, limit = CATEGORY_LIMIT) {
         { $sort: { ingresosCents: -1, unidades: -1, _id: 1 } },
         { $limit: Math.max(1, Math.min(Number(limit) || CATEGORY_LIMIT, CATEGORY_LIMIT)) },
         { $project: { _id: 0, categoriaId: '$_id', unidades: 1, ingresosCents: 1, costosCents: 1 } }
-    ]);
+    ];
 }
 
-async function aggregateChannels(start, end) {
-    const rows = await Sale.aggregate([
+async function aggregateCategoryRows(start, end, limit = CATEGORY_LIMIT) {
+    return Sale.aggregate(categoryRowsPipeline(start, end, limit));
+}
+
+function channelsPipeline(start, end) {
+    return [
         { $match: dateMatch(start, end) },
         { $lookup: { from: Order.collection.name, localField: 'order', foreignField: '_id', as: 'order' } },
         { $unwind: { path: '$order', preserveNullAndEmptyArrays: true } },
@@ -199,7 +211,11 @@ async function aggregateChannels(start, end) {
         { $sort: { ingresosCents: -1, pedidos: -1, _id: 1 } },
         { $limit: CHANNEL_LIMIT },
         { $project: { _id: 0, nombre: '$_id', pedidos: 1, ingresosCents: 1 } }
-    ]);
+    ];
+}
+
+async function aggregateChannels(start, end) {
+    const rows = await Sale.aggregate(channelsPipeline(start, end));
     return rows.map(row => ({
         nombre: row.nombre === 'CAJA' ? 'Caja' : row.nombre === 'WOMPI' ? 'Wompi' : 'Sin canal',
         pedidos: Number(row.pedidos || 0),
@@ -207,8 +223,8 @@ async function aggregateChannels(start, end) {
     }));
 }
 
-async function aggregateTrend(start, end) {
-    const rows = await Sale.aggregate([
+function trendPipeline(start, end) {
+    return [
         { $match: dateMatch(start, end) },
         { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
         { $unwind: { path: '$details', preserveNullAndEmptyArrays: true } },
@@ -238,7 +254,11 @@ async function aggregateTrend(start, end) {
         { $sort: { _id: 1 } },
         { $limit: TREND_LIMIT },
         { $project: { _id: 0, key: '$_id', createdAt: 1, orders: 1, revenueCents: 1, units: 1, grossProfitCents: 1 } }
-    ]);
+    ];
+}
+
+async function aggregateTrend(start, end) {
+    const rows = await Sale.aggregate(trendPipeline(start, end));
     return rows.map(row => ({
         key: row.key,
         label: dateLabel(row.createdAt),
@@ -249,15 +269,66 @@ async function aggregateTrend(start, end) {
     }));
 }
 
-async function soldProductIds(start, end) {
-    const rows = await Sale.aggregate([
+function soldProductIdsPipeline(start, end) {
+    return [
         { $match: dateMatch(start, end) },
         { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
         { $unwind: '$details' },
         { $group: { _id: '$details.producto' } },
         { $project: { _id: 0, productId: '$_id' } }
-    ]);
+    ];
+}
+
+async function soldProductIds(start, end) {
+    const rows = await Sale.aggregate(soldProductIdsPipeline(start, end));
     return rows.map(row => row.productId).filter(Boolean);
+}
+
+function explainStageNames(value, names = []) {
+    if (!value || typeof value !== 'object') return names;
+    if (typeof value.stage === 'string') names.push(value.stage);
+    for (const child of Object.values(value)) explainStageNames(child, names);
+    return names;
+}
+
+function summarizeExplain(explain) {
+    const cursor = Array.isArray(explain?.stages)
+        ? explain.stages.find(stage => stage.$cursor)?.$cursor
+        : explain;
+    const executionStats = cursor?.executionStats || explain?.executionStats || {};
+    const winningPlan = cursor?.queryPlanner?.winningPlan || executionStats.executionStages;
+    const stages = [...new Set(explainStageNames(winningPlan))];
+    return {
+        winningStages: stages,
+        usesCollectionScan: stages.includes('COLLSCAN'),
+        totalDocsExamined: executionStats.totalDocsExamined ?? null,
+        totalKeysExamined: executionStats.totalKeysExamined ?? null,
+        nReturned: executionStats.nReturned ?? null
+    };
+}
+
+/**
+ * Diagnóstico reproducible para revisar los planes de las agregaciones de
+ * analítica. No se ejecuta en cada petición web; se lanza bajo demanda con
+ * `npm run explain:queries` contra una base de datos de prueba o producción.
+ */
+async function explainAnalytics(value = 'month', now = new Date()) {
+    const range = periodRange(value, now);
+    const definitions = [
+        ['analytics.totals', totalsPipeline(range.start, range.end)],
+        ['analytics.products', productRowsPipeline(range.start, range.end, PRODUCT_LIMIT)],
+        ['analytics.categories', categoryRowsPipeline(range.start, range.end, CATEGORY_LIMIT)],
+        ['analytics.channels', channelsPipeline(range.start, range.end)],
+        ['analytics.trend', trendPipeline(range.start, range.end)],
+        ['analytics.sold-product-ids', soldProductIdsPipeline(range.start, range.end)]
+    ];
+    const results = await Promise.all(definitions.map(async ([name, pipeline]) => {
+        const explain = await Sale.aggregate(pipeline)
+            .allowDiskUse(true)
+            .explain('executionStats');
+        return { name, ...summarizeExplain(explain) };
+    }));
+    return { period: range.key, results };
 }
 
 function metricsFromTotals(totals) {
@@ -458,6 +529,8 @@ module.exports = {
     totalProfit,
     bestSellingProducts,
     profitByProduct,
+    explainAnalytics,
+    summarizeExplain,
     periodRange,
     periodConfig,
     percentChange,

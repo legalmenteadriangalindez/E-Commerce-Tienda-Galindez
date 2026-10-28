@@ -13,6 +13,7 @@
     "maintenance": "node scripts/run-maintenance.js",
     "payments:reconcile": "node scripts/reconcile-payments.js",
     "audit:data": "node scripts/audit-data.js",
+    "explain:queries": "node scripts/explain-queries.js",
     "migrate:money": "node scripts/migrate-money-to-cents.js",
     "seed:admin": "node scripts/seed-admin.js",
     "seed:local": "node scripts/seed-local.js"

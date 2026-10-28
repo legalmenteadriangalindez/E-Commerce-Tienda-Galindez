@@ -88,6 +88,9 @@ var schema = new mongoose.Schema({
     }
 });
 
+schema.index({ estado: 1, fechaRegistro: -1, _id: -1 });
+schema.index({ rol: 1, estado: 1 });
+
 const Userdb = mongoose.model('userdb', schema);
 
 module.exports = Userdb;

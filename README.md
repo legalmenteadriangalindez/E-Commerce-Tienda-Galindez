@@ -44,6 +44,7 @@ Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicació
 - Configuración de Render en `render.yaml`.
 - Comprobación de variables: `npm run check:production`.
 - Auditoría de datos anteriores, de solo lectura: `npm run audit:data`.
+- Revisión de planes MongoDB: `npm run explain:queries` con `MONGO_URI` apuntando a una base de desarrollo o a una copia de producción. El informe usa `executionStats` para las analíticas y listados administrativos; activa `EXPLAIN_FAIL_ON_COLLSCAN=true` para hacer fallar la revisión si aparece un escaneo completo.
 - Gestión de pagos: `/admin/payments`.
 - Informe de ventas: `/admin-analytics?period=week` o `?period=month`.
 - Exportación de ventas: `/read-sales`, con filtros por fecha, estado de pago y canal, y descarga CSV para Excel, Power BI, Python o R.

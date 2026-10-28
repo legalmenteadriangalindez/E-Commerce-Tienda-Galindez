@@ -53,4 +53,13 @@ test('las agregaciones tienen índices para sus filtros y joins principales', ()
     assert.match(read('server/model/sales.js'), /estadoPago: 1, createdAt: -1/);
     assert.match(read('server/model/saleDetails.js'), /saleDetailSchema\.index\(\{ venta: 1 \}\)/);
     assert.match(read('server/model/product.js'), /schema\.index\(\{ stock: 1, nombre: 1 \}\)/);
+    assert.match(read('server/model/provider.js'), /schema\.index\(\{ nombre: 1, _id: 1 \}\)/);
+    assert.match(read('server/model/user.js'), /schema\.index\(\{ estado: 1, fechaRegistro: -1, _id: -1 \}\)/);
+    assert.match(read('server/model/order.js'), /orderSchema\.index\(\{ createdAt: -1, _id: -1 \}\)/);
+});
+
+test('existe un diagnóstico explain reproducible para analíticas y listados', () => {
+    assert.match(read('server/business/analyticsService.js'), /async function explainAnalytics/);
+    assert.match(read('server/business/analyticsService.js'), /\.explain\('executionStats'\)/);
+    assert.match(read('scripts/explain-queries.js'), /EXPLAIN_FAIL_ON_COLLSCAN/);
 });

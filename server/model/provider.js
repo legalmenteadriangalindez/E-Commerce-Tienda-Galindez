@@ -29,6 +29,8 @@ var schema = new mongoose.Schema({
 
 });
 
+schema.index({ nombre: 1, _id: 1 });
+
 const Providerdb = mongoose.model('providerdb', schema);
 
 module.exports = Providerdb;

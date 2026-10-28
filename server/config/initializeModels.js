@@ -3,6 +3,13 @@
 const models = Object.freeze([
     require('../model/order'),
     require('../model/sales'),
+    require('../model/saleDetails'),
+    require('../model/product'),
+    require('../model/categories'),
+    require('../model/brands'),
+    require('../model/provider'),
+    require('../model/rol'),
+    require('../model/user'),
     require('../model/paymentEvent'),
     require('../model/review'),
     require('../model/raffle'),

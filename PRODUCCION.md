@@ -160,6 +160,21 @@ No introduzcas tarjetas reales durante las pruebas sandbox. La aplicación usa e
 
 ## 6. Pruebas y mantenimiento
 
+### Índices y planes de consulta
+
+El arranque inicializa los índices de ventas, detalles, productos, stock,
+usuarios, pedidos y proveedores. Para revisar los planes sobre datos reales sin
+modificar documentos, ejecuta:
+
+```bash
+MONGO_URI="<base-de-desarrollo-o-copia>" npm run explain:queries
+```
+
+El comando usa `explain("executionStats")` en las agregaciones de analítica y
+en los listados administrativos. Si quieres convertir un `COLLSCAN` en un
+fallo de la revisión, añade `EXPLAIN_FAIL_ON_COLLSCAN=true`. No ejecutes este
+diagnóstico contra producción sin una ventana de lectura autorizada.
+
 ```text
 npm run check
 npm test
