@@ -64,5 +64,6 @@ saleSchema.index(
     { order: 1 },
     { unique: true }
 );
+saleSchema.index({ estadoPago: 1, createdAt: -1 });
 
 module.exports = mongoose.model('saledb', saleSchema);

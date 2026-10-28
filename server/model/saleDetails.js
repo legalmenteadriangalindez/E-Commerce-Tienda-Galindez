@@ -33,6 +33,9 @@ const saleDetailSchema = new mongoose.Schema({
     timestamps: true
 });
 
+saleDetailSchema.index({ venta: 1 });
+saleDetailSchema.index({ producto: 1, venta: 1 });
+
 module.exports = mongoose.model(
     'SaleDetaildb',
     saleDetailSchema

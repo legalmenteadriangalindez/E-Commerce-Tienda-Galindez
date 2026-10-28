@@ -66,6 +66,11 @@ stock: {
 
 })
 
+schema.index({ fechaIngreso: -1, _id: -1 });
+schema.index({ stock: 1, nombre: 1 });
+schema.index({ categoria: 1, fechaIngreso: -1 });
+schema.index({ marca: 1, fechaIngreso: -1 });
+
 const Productdb = mongoose.model('productdb', schema);
 
 module.exports = Productdb;

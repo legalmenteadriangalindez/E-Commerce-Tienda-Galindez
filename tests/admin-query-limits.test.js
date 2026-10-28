@@ -48,3 +48,9 @@ test('el sorteo elige una posición aleatoria sin traer todas las participacione
     assert.match(raffle, /\.skip\(offset\)/);
     assert.doesNotMatch(raffle, /const entries = await RaffleEntry\.find\(\{ raffle: raffle\._id \}\)/);
 });
+
+test('las agregaciones tienen índices para sus filtros y joins principales', () => {
+    assert.match(read('server/model/sales.js'), /estadoPago: 1, createdAt: -1/);
+    assert.match(read('server/model/saleDetails.js'), /saleDetailSchema\.index\(\{ venta: 1 \}\)/);
+    assert.match(read('server/model/product.js'), /schema\.index\(\{ stock: 1, nombre: 1 \}\)/);
+});
