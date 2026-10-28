@@ -155,7 +155,7 @@
                   <input
                     type="file"
                     name="foto_<%= index %>"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/webp"
                   >
 
                   <label class="delete-check">
@@ -187,11 +187,13 @@
 
           <h3>Agregar nuevas imágenes</h3>
 
+          <small class="text-muted">JPG, PNG o WEBP; máximo 2 MB por imagen y 4 imágenes por solicitud.</small>
+
           <input
             type="file"
             name="nuevasFotos"
             multiple
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp"
           >
 
         </div>

@@ -3,6 +3,9 @@ const sharp = require('sharp');
 const { pipeline } = require('node:stream/promises');
 const { Readable } = require('node:stream');
 
+const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
+const MAX_IMAGE_PIXELS = 8_000_000;
+
 function bucket() {
     if (!mongoose.connection.db) throw new Error('Base de datos no disponible');
     return new mongoose.mongo.GridFSBucket(mongoose.connection.db, { bucketName: 'media' });
@@ -14,12 +17,15 @@ function idFromUrl(url) {
 async function storeImage(file) {
     let buffer;
     try {
-        const instance = sharp(file.buffer, { limitInputPixels: 16000000, animated: false, failOn: 'warning' });
+        if (!Buffer.isBuffer(file?.buffer) || file.buffer.length > MAX_IMAGE_BYTES) {
+            throw new Error('Tamaño de imagen no permitido');
+        }
+        const instance = sharp(file.buffer, { limitInputPixels: MAX_IMAGE_PIXELS, animated: false, failOn: 'warning' });
         const metadata = await instance.metadata();
         if (!['jpeg', 'png', 'webp'].includes(metadata.format) || (metadata.pages || 1) > 1) throw new Error('Formato inválido');
         buffer = await instance.rotate().resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
     } catch {
-        const error = new Error('La imagen debe ser JPG, PNG o WEBP válida, de hasta 16 megapíxeles.');
+        const error = new Error('La imagen debe ser JPG, PNG o WEBP válida, de hasta 2 MB y 8 megapíxeles.');
         error.status = 400; error.expose = true; throw error;
     }
     const stream = bucket().openUploadStream('imagen.webp', { metadata: { contentType: 'image/webp' } });
@@ -55,4 +61,7 @@ async function serve(req, res, next) {
         await pipeline(bucket().openDownloadStream(id), res);
     } catch (error) { if (!res.headersSent) next(error); else res.destroy(); }
 }
-module.exports = { storeImage, removeUnused, cleanup, serve, bucket, idFromUrl };
+module.exports = {
+    storeImage, removeUnused, cleanup, serve, bucket, idFromUrl,
+    limits: Object.freeze({ maxImageBytes: MAX_IMAGE_BYTES, maxImagePixels: MAX_IMAGE_PIXELS })
+};
