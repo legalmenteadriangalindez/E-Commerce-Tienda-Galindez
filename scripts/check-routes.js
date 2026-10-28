@@ -12,7 +12,7 @@ try {
             else if (/\.(js|ejs)$/.test(entry.name)) files.push(absolute);
         }
     }
-    for (const directory of ['server', 'scripts', 'assets/js', 'public/js', 'views', 'tests']) walk(path.join(root, directory));
+    for (const directory of ['server', 'scripts', 'migrations', 'assets/js', 'public/js', 'views', 'tests']) walk(path.join(root, directory));
     files.push(path.join(root, 'server.js'));
     for (const file of files) {
         if (file.endsWith('.ejs')) require('ejs').compile(fs.readFileSync(file, 'utf8'), { filename: file });

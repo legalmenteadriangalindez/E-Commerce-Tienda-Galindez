@@ -18,7 +18,7 @@ const cartMiddleware = require("./server/middleware/cartMiddleware");
 const sessionLogger = require("./server/middleware/sessionLogger");
 const raffleBanner = require("./server/middleware/raffleBanner");
 const appConfig = require("./server/config/appConfig");
-const { initializeModels } = require('./server/config/initializeModels');
+const { runMigrations } = require('./server/database/migrationRunner');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -69,7 +69,9 @@ let httpServer;
 
 async function startServer() {
     await connectDB();
-    await initializeModels();
+    // La estructura de MongoDB se actualiza mediante migraciones versionadas.
+    // Esto permite mantener autoIndex desactivado en producción.
+    await runMigrations({ db: mongoose.connection.db });
     const topology = await mongoose.connection.db.admin().command({ hello: 1 });
     if (!topology.setName && topology.msg !== 'isdbgrid') throw new Error('Usa MongoDB Atlas o un replica set: las compras requieren transacciones.');
 

@@ -108,7 +108,7 @@ Configura además las cuatro claves `WOMPI_PUBLIC_KEY`, `WOMPI_PRIVATE_KEY`, `WO
 
 El servicio web no ejecuta conciliaciones, vencimientos, limpieza de imágenes ni envío de la bandeja de correos. El segundo servicio de `render.yaml`, `tienda-galindez-maintenance`, ejecuta `npm run maintenance` cada minuto con la expresión `* * * * *` (UTC). Sus variables sensibles usan `fromService` para heredar los valores del servicio web existente `E-Commerce-Tienda-Galindez`; no las dupliques manualmente. Si el nombre de tu servicio es diferente, cambia ese nombre en las referencias antes de sincronizar el Blueprint.
 
-Para probarlo en local, ejecuta `npm run maintenance` con el `.env` apuntando a una base de datos de desarrollo. El proceso inicializa índices, valida que Atlas o un replica set estén disponibles, registra un resultado JSON en los logs y termina; si falla devuelve un código distinto de cero para que Render marque la ejecución como fallida. Render no solapa dos ejecuciones del mismo Cron Job.
+Para probarlo en local, ejecuta `npm run maintenance` con el `.env` apuntando a una base de datos de desarrollo. El proceso aplica las migraciones pendientes, valida que Atlas o un replica set estén disponibles, registra un resultado JSON en los logs y termina; si falla devuelve un código distinto de cero para que Render marque la ejecución como fallida. Render no solapa dos ejecuciones del mismo Cron Job.
 
 El proceso falla de forma explícita si faltan variables esenciales o si intentas usar el secreto local de ejemplo en producción. Revisa **Logs** si `/healthz` devuelve error. El inicio exige Atlas o un replica set: MongoDB independiente no ofrece las transacciones que necesita la tienda.
 
@@ -166,9 +166,30 @@ No introduzcas tarjetas reales durante las pruebas sandbox. La aplicación usa e
 
 ### Índices y planes de consulta
 
-El arranque inicializa los índices de ventas, detalles, productos, stock,
-usuarios, pedidos y proveedores. Para revisar los planes sobre datos reales sin
-modificar documentos, ejecuta:
+El arranque aplica las migraciones versionadas pendientes y deja `autoIndex` de
+Mongoose desactivado en producción. La migración inicial crea los índices de
+ventas, detalles, productos, stock, usuarios, pedidos y proveedores; las
+ejecuciones se registran en `schema_migrations` y usan un bloqueo distribuido.
+Para consultar el estado sin aplicar cambios:
+
+```bash
+npm run migrate:status
+npm run migrate:dry-run
+```
+
+Para aplicar una migración pendiente desde un entorno autorizado:
+
+```bash
+npm run migrate
+```
+
+No edites una migración que ya se haya aplicado. Añade un archivo nuevo con un
+identificador ordenado (`YYYYMMDDNNNN-nombre.js`). El proceso verifica el
+checksum de cada archivo y se detiene si detecta que una migración aplicada fue
+modificada. Antes de crear un índice único en una base existente, respalda y
+revisa los duplicados; la aplicación no borra índices automáticamente.
+
+Para revisar los planes sobre datos reales sin modificar documentos, ejecuta:
 
 ```bash
 MONGO_URI="<base-de-desarrollo-o-copia>" npm run explain:queries

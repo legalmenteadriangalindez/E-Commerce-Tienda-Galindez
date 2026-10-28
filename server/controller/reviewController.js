@@ -75,8 +75,8 @@ exports.create = async (req, res) => {
             return respond(req, res, 409, 'Ya publicaste una reseña para este producto. Puedes editarla.', productId);
         }
 
-        // Esperar al índice evita duplicados ante dos envíos simultáneos.
-        await Reviewdb.init();
+        // El índice único lo administra la migración de esquema, no la
+        // solicitud individual. Así autoIndex puede permanecer desactivado.
         await Reviewdb.create({ producto: productId, usuario: userId, ...input });
         return respond(req, res, 201, 'Tu reseña se publicó correctamente.', productId);
     } catch (error) {

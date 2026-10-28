@@ -6,6 +6,7 @@ const Role = require('../server/model/rol');
 const User = require('../server/model/user');
 const accounts = require('../server/business/accountService');
 const { ALL_PERMISSIONS, ADMIN_PERMISSIONS, SYSTEM_ROLES } = require('../server/config/permissions');
+const { runMigrations } = require('../server/database/migrationRunner');
 
 async function main() {
     const email = accounts.normalizeEmail(process.env.SUPERADMIN_EMAIL);
@@ -13,7 +14,7 @@ async function main() {
 
     await require('../server/database/connection')();
     try {
-        await Promise.all([Role.init(), User.init()]);
+        await runMigrations({ db: mongoose.connection.db });
         await Role.updateOne(
             { nombre: SYSTEM_ROLES.SUPER_ADMIN },
             { $set: { descripcion: 'Superadministrador de la tienda', permisos: ALL_PERMISSIONS } },

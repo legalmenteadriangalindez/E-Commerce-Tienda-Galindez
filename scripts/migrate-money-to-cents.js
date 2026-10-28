@@ -5,6 +5,8 @@
 const path = require('node:path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const mongoose = require('mongoose');
+const connectDB = require('../server/database/connection');
+const { runMigrations } = require('../server/database/migrationRunner');
 const money = require('../server/services/money');
 
 const BATCH_SIZE = 500;
@@ -87,8 +89,9 @@ async function migrateCollection(collection, apply) {
 async function main() {
     const apply = String(process.env.MONEY_MIGRATION_APPLY || '').toLowerCase() === 'true';
     if (!process.env.MONGO_URI) throw new Error('Configura MONGO_URI antes de ejecutar la migración.');
-    await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 15000 });
+    await connectDB();
     try {
+        await runMigrations({ db: mongoose.connection.db });
         const result = {};
         for (const collection of collections) {
             result[collection.name] = await migrateCollection(collection, apply);

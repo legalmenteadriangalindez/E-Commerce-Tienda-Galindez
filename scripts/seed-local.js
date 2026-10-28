@@ -3,6 +3,8 @@ require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const connectDB = require("../server/database/connection");
+const { runMigrations } = require("../server/database/migrationRunner");
 const Userdb = require("../server/model/user");
 const Roldb = require("../server/model/rol");
 const { ALL_PERMISSIONS, ADMIN_PERMISSIONS, SYSTEM_ROLES } = require("../server/config/permissions");
@@ -83,9 +85,8 @@ async function main() {
         throw new Error("Configura MONGO_URI en .env antes de continuar.");
     }
 
-    await mongoose.connect(process.env.MONGO_URI, {
-        serverSelectionTimeoutMS: 15000
-    });
+    await connectDB();
+    await runMigrations({ db: mongoose.connection.db });
 
     await crearRolesLocales();
     await crearAdministradorLocal();

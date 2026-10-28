@@ -4,7 +4,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const mongoose = require('mongoose');
 const connectDB = require('../server/database/connection');
 const { validateEnvironment } = require('../server/config/production');
-const { initializeModels } = require('../server/config/initializeModels');
+const { runMigrations } = require('../server/database/migrationRunner');
 
 async function runMaintenanceCycle(dependencies = {}) {
     const commerce = dependencies.commerce || require('../server/business/commerceService');
@@ -33,7 +33,7 @@ async function main() {
 
     try {
         await connectDB();
-        await initializeModels();
+        await runMigrations({ db: mongoose.connection.db });
         await verifyTransactionalTopology();
         const result = await runMaintenanceCycle();
         console.log(JSON.stringify({ event: 'maintenance_completed', ...result }));

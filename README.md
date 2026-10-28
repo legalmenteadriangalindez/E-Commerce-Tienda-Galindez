@@ -33,6 +33,26 @@ npm audit --omit=dev
 
 `check` valida JavaScript, plantillas y carga de rutas. `test` omite integraciones si no hay servidor temporal. `test:integration` inicia su propio MongoDB temporal; requiere `mongod` en PATH o la variable `MONGOD_BINARY`. No utiliza tu base de desarrollo o producción.
 
+### Migraciones de MongoDB
+
+Los índices y cambios de estructura se aplican mediante migraciones versionadas en
+`migrations/`. El servidor ejecuta las migraciones pendientes antes de escuchar
+peticiones y registra cada versión en `schema_migrations`; un bloqueo distribuido
+evita que dos instancias las ejecuten a la vez. No edites una migración que ya
+aparezca como aplicada: crea otro archivo con el siguiente identificador.
+
+```bash
+npm run migrate:status   # consulta aplicadas y pendientes
+npm run migrate:dry-run # comprueba el estado sin aplicar cambios
+npm run migrate         # aplica las pendientes
+```
+
+En producción `autoIndex` de Mongoose queda desactivado. Los índices se crean o
+verifican con `npm run migrate`, sin bloquear cada arranque con `model.init()`.
+Si una migración de índice encuentra datos duplicados u opciones incompatibles,
+se detiene y debe corregirse con una operación revisada; no elimina índices de
+forma automática.
+
 El proceso web no ejecuta tareas periódicas. En Render, `render.yaml` define el Cron Job `tienda-galindez-maintenance`, que ejecuta `npm run maintenance` cada minuto. En local puedes ejecutarlo manualmente después de configurar `MONGO_URI`.
 
 Las vistas públicas de catálogo consultan directamente `server/business/catalogService.js`, que también utiliza la API pública. No hacen peticiones Axios al propio dominio ni dependen de `BASE_URL` para cargar productos; `BASE_URL` se reserva para enlaces públicos, SEO e integraciones externas.

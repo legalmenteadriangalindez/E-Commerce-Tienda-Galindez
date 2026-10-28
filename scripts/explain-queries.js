@@ -16,6 +16,7 @@ const Category = require('../server/model/categories');
 const Provider = require('../server/model/provider');
 const Role = require('../server/model/rol');
 const User = require('../server/model/user');
+const { runMigrations } = require('../server/database/migrationRunner');
 
 const ADMIN_LIMIT = 10;
 
@@ -54,11 +55,9 @@ async function main() {
 
     try {
         await connectDB();
-        // init() crea/verifica los índices declarados por los esquemas antes
-        // de medir los planes. No elimina índices existentes.
-        await Promise.all([
-            Sale, Detail, Product, Order, Category, Provider, Role, User
-        ].map(model => model.init()));
+        // Las migraciones crean/verifican los índices antes de medir los
+        // planes. No elimina índices existentes.
+        await runMigrations({ db: mongoose.connection.db });
 
         const range = analytics.periodRange(process.env.EXPLAIN_PERIOD || 'month');
         const [analyticsExplain, adminExplain] = await Promise.all([
