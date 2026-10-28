@@ -165,36 +165,6 @@ exports.findOne = async (req, res) => {
     }
 };
 
-exports.confirmacion = async (req, res) => {
-
-    try{
-
-        const ventaId = req.params.id;
-
-        const venta = await Saledb
-            .findById(ventaId)
-            .populate("cliente", "nombre email telefono")
-
-        const detalles = await SaleDetaildb
-            .find({ venta: ventaId })
-            .populate("producto", "nombre precioVenta fotos")
-            .limit(200)
-
-        res.render(
-            "admin/payment/checkout_confirmation",
-            {
-                venta,
-                detalles,
-                user: req.session.user
-            }
-        );
-
-    }catch(err){
-
-        res.redirect("/carrito");
-    }
-};
-
 // Ganancias y rankings se calculan con agregaciones en MongoDB. Las versiones
 // antiguas hacían SaleDetail.find().populate() y retenían todas las filas en
 // memoria del proceso web.

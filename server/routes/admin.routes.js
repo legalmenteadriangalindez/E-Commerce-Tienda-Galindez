@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isLogged, requirePermission } = require('../middleware/auth');
+const { requirePermission } = require('../middleware/auth');
 const { PERMISSIONS: P } = require('../config/permissions');
 
 const servicesRenderCategory = require('../services/renderCategories');
@@ -19,8 +19,6 @@ const servicesRenderRaffle = require('../services/renderRaffle');
 const servicesRenderDelivery = require('../services/renderDelivery');
 
 const brandController = require('../controller/brand_controller');
-const saleController = require('../controller/sale_controller');
-const cartController = require('../controller/cart_controller');
 const upload = require('../middleware/upload');
 const csrfProtection = require('../middleware/csrfProtection');
 

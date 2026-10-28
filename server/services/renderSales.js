@@ -20,25 +20,6 @@ function configApi(req) {
 
 
 
-// ==================== FORM CREAR ====================
-exports.create_sale_form = async (req, res) => {
-    try {
-        const [productos, users] = await Promise.all([
-            axios.get(`${BASE_URL}/productos`),
-            axios.get(`${BASE_URL}/users`)
-        ]);
-
-        res.render('create_ventas', {
-            productos: productos.data,
-            users: users.data
-        });
-
-    } catch (error) {
-        res.status(errorStatus(error)).send(publicError(error));
-    }
-};
-
-
 // ==================== LISTAR ====================
 exports.sales = async (req, res) => {
     try {
@@ -82,21 +63,6 @@ exports.sales = async (req, res) => {
 };
 
 
-// ==================== VER 1 ====================
-exports.view_sale = async (req, res) => {
-    try {
-        const response = await axios.get(`${BASE_URL}/ventas/${req.query.id}`);
-
-        res.render('admin/sales/view_sale', {
-            sale: response.data
-        });
-
-    } catch (error) {
-        res.status(errorStatus(error)).send(publicError(error));
-    }
-};
-
-
 // ==================== DETALLES ====================
 exports.saleDetailView = async (req, res) => {
 
@@ -129,27 +95,6 @@ const response = await axios.get(
 
         res.status(500).send(publicError(error));
     }
-};
-
-
-// GANANCIAS TOTALES
-exports.total_profit = async (req, res) => {
-
-    try {
-
-        const response = await axios.get(`${BASE_URL}/api/ventas/analytics/total-profit`,configApi(req));
-
-        res.render(
-            'admin/analytics/total_profit',
-            {
-                profit: response.data
-            }
-        );
-
-        } catch (err) {
-           console.error("Error consultando ganancias:", err.message);
-           return res.status(502).send("No se pudieron consultar las ganancias");
-        }
 };
 
 
