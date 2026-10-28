@@ -150,8 +150,14 @@ test('descarga las ventas CSV desde HTTP usando una agregación de MongoDB real'
     assert.match(response.headers.get('content-disposition') || '', /attachment; filename="ventas\.csv"/);
     assert.equal(response.headers.get('x-export-row-limit'), String(salesCsv.maxRows()));
 
-    const csv = await response.text();
-    assert.ok(csv.startsWith('\uFEFF' + salesCsv.header()));
+    const csvBytes = Buffer.from(await response.arrayBuffer());
+    assert.deepEqual(
+        [...csvBytes.subarray(0, 3)],
+        [0xef, 0xbb, 0xbf]
+    );
+
+    const csv = csvBytes.subarray(3).toString('utf8');
+    assert.ok(csv.startsWith(salesCsv.header()));
     assert.match(csv, /ORD-CSV-001/);
     assert.match(csv, /Caf(?:é|\u00e9) de prueba/);
     assert.match(csv, /24000/);
