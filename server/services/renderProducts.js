@@ -3,6 +3,7 @@ const axios = require('axios');
 const dotenv = require('dotenv');
 const internalApiConfig = require('./internalApiConfig');
 const reviewService = require('../business/reviewService');
+const catalog = require('../business/catalogService');
 const catalogPagination = require('./catalogPagination');
 
 dotenv.config();
@@ -17,11 +18,11 @@ exports.product_detail = async (req, res) => {
     }
 
     try {
-        const [productRes, reviewUser] = await Promise.all([
-            axios.get(BASE_URL + '/api/productos/catalogo/' + encodeURIComponent(id)),
+        const [product, reviewUser] = await Promise.all([
+            catalog.findPublicOne(id),
             reviewService.getViewer(req.session?.user)
         ]);
-        const product = productRes.data;
+        if (!product) return res.status(404).send('Producto no encontrado');
         const reviewData = await reviewService.getPage(id, req.query.reviewPage, reviewUser?._id);
         const reviewFeedback = req.session?.reviewFeedback?.productId === id
             ? req.session.reviewFeedback

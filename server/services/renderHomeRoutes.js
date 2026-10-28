@@ -1,32 +1,19 @@
-const axios = require('axios');
-const dotenv = require('dotenv');
+const catalog = require('../business/catalogService');
 const catalogPagination = require('./catalogPagination');
-
-dotenv.config();
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 // Página principal
 exports.homeRoutes = async (req, res) => {
     try {
-        const response = await axios.get(
-            `${BASE_URL}/api/productos/catalogo/pagina`,
-            {
-                params: {
-                    page: req.query.page,
-                    limit: catalogPagination.PRODUCTS_PER_PAGE
-                }
-            }
-        );
-
-        if (!Array.isArray(response.data?.productos)) {
-            throw new TypeError('La respuesta del catálogo no es válida');
-        }
+        const data = await catalog.listPublic({
+            page: req.query.page,
+            limit: catalogPagination.PRODUCTS_PER_PAGE
+        });
 
         return res.render('client/home/index', {
-            productos: response.data.productos,
+            productos: data.productos,
             pagination: catalogPagination.buildPagination(
                 req,
-                response.data.pagination
+                data.pagination
             )
         });
     } catch (error) {
@@ -55,24 +42,19 @@ exports.search = async (req, res) => {
     }
 
     try {
-        const response = await axios.get(
-            `${BASE_URL}/api/productos/catalogo/pagina`,
-            {
-                params: {
-                    page: req.query.page,
-                    limit: catalogPagination.PRODUCTS_PER_PAGE,
-                    search,
-                    available: 'true'
-                }
-            }
-        );
+        const data = await catalog.listPublic({
+            page: req.query.page,
+            limit: catalogPagination.PRODUCTS_PER_PAGE,
+            search,
+            available: true
+        });
 
         return res.render('client/products/search_products', {
-            productos: response.data.productos,
+            productos: data.productos,
             search,
             pagination: catalogPagination.buildPagination(
                 req,
-                response.data.pagination
+                data.pagination
             )
         });
     } catch (error) {

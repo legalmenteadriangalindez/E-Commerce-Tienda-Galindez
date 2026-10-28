@@ -35,6 +35,8 @@ npm audit --omit=dev
 
 El proceso web no ejecuta tareas periódicas. En Render, `render.yaml` define el Cron Job `tienda-galindez-maintenance`, que ejecuta `npm run maintenance` cada minuto. En local puedes ejecutarlo manualmente después de configurar `MONGO_URI`.
 
+Las vistas públicas de catálogo consultan directamente `server/business/catalogService.js`, que también utiliza la API pública. No hacen peticiones Axios al propio dominio ni dependen de `BASE_URL` para cargar productos; `BASE_URL` se reserva para enlaces públicos, SEO e integraciones externas.
+
 ## Producción
 
 Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicación de esta actualización, variables de Render, pruebas de pagos, imágenes, administrador inicial, pedidos anteriores, copias de seguridad y límites de la implementación.

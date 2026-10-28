@@ -1,29 +1,20 @@
-const axios = require('axios');
-const dotenv = require('dotenv');
+const catalog = require('../business/catalogService');
 const catalogPagination = require('./catalogPagination');
-
-dotenv.config();
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 // Promociones
 exports.promotions = async (req, res) => {
     try {
-        const response = await axios.get(
-            `${BASE_URL}/api/productos/catalogo/pagina`,
-            {
-                params: {
-                    page: req.query.page,
-                    limit: catalogPagination.PRODUCTS_PER_PAGE,
-                    stockMin: 20
-                }
-            }
-        );
+        const data = await catalog.listPublic({
+            page: req.query.page,
+            limit: catalogPagination.PRODUCTS_PER_PAGE,
+            stockMin: 20
+        });
 
         return res.render('client/promotions/promotions', {
-            productos: response.data.productos,
+            productos: data.productos,
             pagination: catalogPagination.buildPagination(
                 req,
-                response.data.pagination
+                data.pagination
             )
         });
     } catch (error) {

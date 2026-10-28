@@ -97,6 +97,10 @@ Si un formulario con imagen devuelve `403`, configura temporalmente `CSRF_DEBUG_
 
 El servicio web puede suspenderse sin detener estas tareas: el Cron de Render las ejecuta por separado. Revisa también memoria, almacenamiento de Atlas y límites del plan. Las imágenes nuevas consumen espacio de MongoDB, no del disco efímero de Render.
 
+### Renderizado y API interna
+
+Las páginas públicas de catálogo, búsqueda, categorías, marcas, promociones, detalle y sitemap reutilizan `server/business/catalogService.js` directamente. Esto evita llamadas Axios al dominio público desde el propio servidor, reduce latencia y evita duplicar autenticación de sesión. La API `/api/productos` sigue disponible para el navegador y consumidores externos; ambas capas comparten el mismo servicio y contrato de datos.
+
 Si no tienes un administrador en esa base, configura temporalmente `INITIAL_ADMIN_EMAIL` y `INITIAL_ADMIN_PASSWORD` y ejecuta desde un entorno autorizado:
 
 ```text

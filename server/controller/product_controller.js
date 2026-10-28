@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
 const media = require('../business/mediaService'); 
+const catalog = require('../business/catalogService');
 const adminPagination = require('../services/adminPagination');
 
 
@@ -226,11 +227,7 @@ exports.find = async (req, res) => {
 // Catálogo público: no devuelve costo ni proveedor.
 exports.findPublic = async (req, res) => {
     try {
-        const productos = await Productdb.find()
-            .select('nombre descripcion fotos marca categoria precioVenta stock fechaIngreso')
-            .populate('marca', 'nombre')
-            .populate('categoria', 'nombre')
-            .lean();
+        const productos = await catalog.listAllPublic();
 
         return res.status(200).json(productos);
     } catch (error) {
@@ -245,111 +242,12 @@ exports.findPublic = async (req, res) => {
 // cargar todos los productos en memoria en cada solicitud.
 exports.findPublicPaginated = async (req, res) => {
     try {
-        const parsePositiveInteger = (value, fallback) => {
-            const parsed = Number.parseInt(value, 10);
-            return Number.isSafeInteger(parsed) && parsed > 0
-                ? parsed
-                : fallback;
-        };
-
-        const escapeRegex = value =>
-            value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-        const pageRequested = parsePositiveInteger(req.query.page, 1);
-        const limit = Math.min(
-            parsePositiveInteger(req.query.limit, 12),
-            48
-        );
-        const filter = {};
-
-        const categoryName = typeof req.query.category === 'string'
-            ? req.query.category.trim().slice(0, 100)
-            : '';
-        const brandName = typeof req.query.brand === 'string'
-            ? req.query.brand.trim().slice(0, 100)
-            : '';
-        const search = typeof req.query.search === 'string'
-            ? req.query.search.trim().slice(0, 100)
-            : '';
-
-        const [category, brand] = await Promise.all([
-            categoryName
-                ? Categorydb.findOne({
-                    nombre: new RegExp(`^${escapeRegex(categoryName)}$`, 'i')
-                }).select('_id').lean()
-                : null,
-            brandName
-                ? Branddb.findOne({
-                    nombre: new RegExp(`^${escapeRegex(brandName)}$`, 'i')
-                }).select('_id').lean()
-                : null
-        ]);
-
-        // Si el nombre no existe, devolver una página vacía sin exponer datos.
-        if (categoryName && !category) {
-            return res.status(200).json({
-                productos: [],
-                pagination: {
-                    page: 1,
-                    limit,
-                    totalItems: 0,
-                    totalPages: 0
-                }
-            });
-        }
-
-        if (brandName && !brand) {
-            return res.status(200).json({
-                productos: [],
-                pagination: {
-                    page: 1,
-                    limit,
-                    totalItems: 0,
-                    totalPages: 0
-                }
-            });
-        }
-
-        if (category) filter.categoria = category._id;
-        if (brand) filter.marca = brand._id;
-        if (search) filter.nombre = new RegExp(escapeRegex(search), 'i');
-
-        if (req.query.available === 'true') {
-            filter.stock = { $gt: 0 };
-        }
-
-        if (req.query.stockMin !== undefined) {
-            const stockMin = Number(req.query.stockMin);
-            if (!Number.isFinite(stockMin) || stockMin < 0) {
-                return res.status(400).json({
-                    message: 'El filtro de inventario no es válido'
-                });
-            }
-            filter.stock = { ...(filter.stock || {}), $gt: stockMin };
-        }
-
-        const totalItems = await Productdb.countDocuments(filter);
-        const totalPages = Math.ceil(totalItems / limit);
-        const page = Math.min(pageRequested, totalPages || 1);
-        const productos = await Productdb.find(filter)
-            .select('nombre descripcion fotos marca categoria precioVenta stock fechaIngreso')
-            .populate('marca', 'nombre')
-            .populate('categoria', 'nombre')
-            .sort({ fechaIngreso: -1, _id: -1 })
-            .skip((page - 1) * limit)
-            .limit(limit)
-            .lean();
-
-        return res.status(200).json({
-            productos,
-            pagination: {
-                page,
-                limit,
-                totalItems,
-                totalPages
-            }
-        });
+        const data = await catalog.listPublic(req.query);
+        return res.status(200).json(data);
     } catch (error) {
+        if (error instanceof catalog.CatalogError) {
+            return res.status(error.status).json({ message: error.message });
+        }
         console.error('Error listando una página del catálogo público:', error);
         return res.status(500).json({
             message: 'No se pudo cargar el catálogo de productos'
@@ -360,17 +258,7 @@ exports.findPublicPaginated = async (req, res) => {
 // Detalle público con los campos necesarios para la vista de producto.
 exports.findPublicOne = async (req, res) => {
     try {
-        const { id } = req.params;
-
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(404).json({ message: 'Producto no encontrado' });
-        }
-
-        const producto = await Productdb.findById(id)
-            .select('nombre descripcion fotos marca categoria precioVenta stock fechaIngreso')
-            .populate('marca', 'nombre')
-            .populate('categoria', 'nombre')
-            .lean();
+        const producto = await catalog.findPublicOne(req.params.id);
 
         if (!producto) {
             return res.status(404).json({ message: 'Producto no encontrado' });
@@ -419,19 +307,7 @@ exports.findOne = async (req, res) => {
 
 exports.findByCategoryRopa = async (req, res) => {
     try {
-        const productos = await Productdb.find()
-            .select('nombre descripcion fotos marca categoria precioVenta stock fechaIngreso')
-            .populate({
-                path: 'categoria',
-                match: { nombre: /^ropa$/i },
-                select: 'nombre'
-            })
-            .populate('marca', 'nombre')
-            .lean();
-
-        const productosRopa = productos.filter(
-            producto => producto.categoria !== null
-        );
+        const productosRopa = await catalog.listClothes();
 
         return res.status(200).json(productosRopa);
 

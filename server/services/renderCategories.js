@@ -1,5 +1,6 @@
 const { publicError, errorStatus } = require('./publicError');
 const axios = require('axios');
+const catalog = require('../business/catalogService');
 const dotenv = require('dotenv');
 const internalApiConfig = require('./internalApiConfig');
 const catalogPagination = require('./catalogPagination');
@@ -34,16 +35,11 @@ exports.category = async (req, res) => {
 
         const nombreCategoria = req.params.nombre;
 
-        const response = await axios.get(
-            `${BASE_URL}/api/productos/catalogo/pagina`,
-            {
-                params: {
-                    page: req.query.page,
-                    limit: catalogPagination.PRODUCTS_PER_PAGE,
-                    category: nombreCategoria
-                }
-            }
-        );
+        const data = await catalog.listPublic({
+            page: req.query.page,
+            limit: catalogPagination.PRODUCTS_PER_PAGE,
+            category: nombreCategoria
+        });
 
         const categoria = {
             nombre: nombreCategoria
@@ -65,10 +61,10 @@ exports.category = async (req, res) => {
         return res.render(
             'client/categories/categories',
             {
-                productos: response.data.productos,
+                productos: data.productos,
                 pagination: catalogPagination.buildPagination(
                     req,
-                    response.data.pagination
+                    data.pagination
                 ),
                 categoria,
 

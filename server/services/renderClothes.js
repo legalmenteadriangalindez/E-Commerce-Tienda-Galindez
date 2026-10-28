@@ -1,27 +1,20 @@
-const axios = require("axios");
+const catalog = require('../business/catalogService');
 const catalogPagination = require('./catalogPagination');
-
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 
 exports.renderClothes = async (req, res) => {
     try {
-        const response = await axios.get(
-            `${BASE_URL}/api/productos/catalogo/pagina`,
-            {
-                params: {
-                    page: req.query.page,
-                    limit: catalogPagination.PRODUCTS_PER_PAGE,
-                    category: 'Ropa'
-                }
-            }
-        );
+        const data = await catalog.listPublic({
+            page: req.query.page,
+            limit: catalogPagination.PRODUCTS_PER_PAGE,
+            category: 'Ropa'
+        });
 
         res.render('client/clothes/clothes', {
-            products: response.data.productos,
+            products: data.productos,
             pagination: catalogPagination.buildPagination(
                 req,
-                response.data.pagination
+                data.pagination
             )
         });
     } catch (error) {

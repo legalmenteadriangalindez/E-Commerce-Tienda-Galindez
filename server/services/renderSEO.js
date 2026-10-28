@@ -1,5 +1,5 @@
-const axios = require('axios');
 const dotenv = require('dotenv');
+const catalog = require('../business/catalogService');
 
 dotenv.config();
 
@@ -17,12 +17,9 @@ exports.sitemap = async (req, res) => {
 
     try {
 
-        // Obtener productos desde nuestra API
-        const productosResponse = await axios.get(
-            `${BASE_URL}/api/productos/catalogo`
-        );
-
-        const productos = productosResponse.data || [];
+        // Reutilizar el servicio de catálogo evita una llamada HTTP al propio
+        // dominio mientras se genera el sitemap.
+        const productos = await catalog.listAllPublic();
 
 
         // ----------------------------------------------

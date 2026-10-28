@@ -1,5 +1,6 @@
 const { publicError, errorStatus } = require('./publicError');
 const axios = require('axios');
+const catalog = require('../business/catalogService');
 const dotenv = require('dotenv');
 const internalApiConfig = require('./internalApiConfig');
 const catalogPagination = require('./catalogPagination');
@@ -76,23 +77,18 @@ exports.delete_brand = (req, res) => {
 
 exports.Productbrands = async (req, res) => {
     try {
-        const response = await axios.get(
-            `${BASE_URL}/api/productos/catalogo/pagina`,
-            {
-                params: {
-                    page: req.query.page,
-                    limit: catalogPagination.PRODUCTS_PER_PAGE,
-                    brand: req.params.marca
-                }
-            }
-        );
+        const data = await catalog.listPublic({
+            page: req.query.page,
+            limit: catalogPagination.PRODUCTS_PER_PAGE,
+            brand: req.params.marca
+        });
 
         return res.render('client/products/Product_brands', {
-            products: response.data.productos,
+            products: data.productos,
             marca: req.params.marca,
             pagination: catalogPagination.buildPagination(
                 req,
-                response.data.pagination
+                data.pagination
             )
         });
     } catch (error) {
