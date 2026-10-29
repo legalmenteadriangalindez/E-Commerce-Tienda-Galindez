@@ -1,8 +1,35 @@
 'use strict';
 const money = (value) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value);
-const moneyCents = (value) => money(Math.max(0, Math.round(Number(value) || 0)) / 100);
+const DEFAULT_IMAGE = '/assets/img/default.jpg';
 const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content || '';
 const input = (id) => document.getElementById(id);
+
+function productImage(product) {
+    return Array.isArray(product?.fotos) && product.fotos[0] ? product.fotos[0] : DEFAULT_IMAGE;
+}
+
+function createImage(src, alt, className) {
+    const image = document.createElement('img');
+    image.src = src || DEFAULT_IMAGE;
+    image.alt = alt || 'Producto';
+    image.className = className;
+    image.loading = 'lazy';
+    image.addEventListener('error', () => {
+        if (image.dataset.fallbackApplied) return;
+        image.dataset.fallbackApplied = 'true';
+        image.src = DEFAULT_IMAGE;
+    });
+    return image;
+}
+
+function statusMessage(container, message, className = 'search-message') {
+    container.replaceChildren();
+    const status = document.createElement('p');
+    status.className = className;
+    status.textContent = message;
+    container.appendChild(status);
+}
+
 async function request(path, body) {
     const response = await fetch(path, {
         method: body === undefined ? 'GET' : 'POST',
@@ -14,32 +41,64 @@ async function request(path, body) {
     return data;
 }
 let searchTimer;
+let searchRequestId = 0;
 input('buscarProducto').addEventListener('input', (event) => {
     clearTimeout(searchTimer);
+    const requestId = ++searchRequestId;
     const search = event.target.value.trim();
-    input('resultadosBusqueda').replaceChildren();
+    const results = input('resultadosBusqueda');
+    results.replaceChildren();
     if (search.length < 2) return;
     searchTimer = setTimeout(async () => {
+        statusMessage(results, 'Buscando productos…', 'search-message search-message--loading');
         try {
             const response = await request('/api/productos/search?search=' + encodeURIComponent(search));
+            if (requestId !== searchRequestId) return;
             const products = response.data || response.items || [];
-            const results = input('resultadosBusqueda');
             results.replaceChildren();
+            if (!products.length) {
+                statusMessage(results, 'No encontramos productos disponibles con ese nombre.');
+                return;
+            }
             for (const product of products) {
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'search-item';
-                button.textContent = product.nombre + ' · ' + money(product.precioVenta);
+                button.setAttribute('aria-label', `Seleccionar ${product.nombre}`);
+
+                const imageWrapper = document.createElement('span');
+                imageWrapper.className = 'search-item__image';
+                imageWrapper.appendChild(createImage(productImage(product), product.nombre, 'search-item__image-content'));
+
+                const details = document.createElement('span');
+                details.className = 'search-item__details';
+
+                const name = document.createElement('strong');
+                name.className = 'search-item__name';
+                name.textContent = product.nombre;
+
+                const stock = document.createElement('span');
+                stock.className = 'search-item__stock';
+                stock.textContent = `${product.stock} ${product.stock === 1 ? 'unidad disponible' : 'unidades disponibles'}`;
+
+                details.append(name, stock);
+
+                const price = document.createElement('span');
+                price.className = 'search-item__price';
+                price.textContent = money(product.precioVenta);
+
+                button.append(imageWrapper, details, price);
                 button.addEventListener('click', () => {
                     input('productoId').value = product._id;
                     input('productoNombre').value = product.nombre;
                     input('precio').value = product.precioVenta;
+                    input('buscarProducto').value = product.nombre;
                     results.replaceChildren();
                 });
                 results.appendChild(button);
             }
         } catch (error) {
-            input('resultadosBusqueda').textContent = error.message;
+            if (requestId === searchRequestId) statusMessage(results, error.message, 'search-message search-message--error');
         }
     }, 250);
 });
@@ -48,16 +107,40 @@ async function cargarCarrito() {
     const list = input('listaProductos');
     list.replaceChildren();
     input('productosHidden').replaceChildren();
+    let subtotal = 0;
     for (const item of data.cart) {
         const row = document.createElement('div');
         row.className = 'order-item';
-        const label = document.createElement('p');
-        const precioCents = Number(item.precioCents ?? Math.round(Number(item.precio) * 100));
-        label.textContent = item.nombre + ' × ' + item.cantidad + ' · ' + moneyCents(precioCents * item.cantidad);
+        const imageWrapper = document.createElement('div');
+        imageWrapper.className = 'order-item-image';
+        imageWrapper.appendChild(createImage(item.foto, item.nombre, 'order-item-image__content'));
+
+        const details = document.createElement('div');
+        details.className = 'order-item-info';
+
+        const title = document.createElement('h4');
+        title.textContent = item.nombre;
+
+        const quantity = document.createElement('p');
+        quantity.className = 'order-item-meta';
+        quantity.textContent = `${item.cantidad} ${item.cantidad === 1 ? 'unidad' : 'unidades'} · ${money(item.precio)} c/u`;
+
+        details.append(title, quantity);
+
+        const lineTotal = document.createElement('div');
+        lineTotal.className = 'order-item-price';
+        lineTotal.textContent = money(Number(item.precio) * Number(item.cantidad));
+
         const remove = document.createElement('button');
         remove.type = 'button';
         remove.className = 'delete-item-btn';
-        remove.textContent = 'Quitar';
+        remove.setAttribute('aria-label', `Quitar ${item.nombre} de la venta`);
+        const removeIcon = document.createElement('i');
+        removeIcon.className = 'fas fa-trash-alt';
+        removeIcon.setAttribute('aria-hidden', 'true');
+        const removeLabel = document.createElement('span');
+        removeLabel.textContent = 'Quitar';
+        remove.append(removeIcon, removeLabel);
         remove.addEventListener('click', async () => {
             try {
                 await request('/carrito/remove', { productoId: item.productoId });
@@ -66,33 +149,19 @@ async function cargarCarrito() {
                 alert(error.message);
             }
         });
-        row.append(label, remove);
+        row.append(imageWrapper, details, lineTotal, remove);
         list.appendChild(row);
+        subtotal += Number(item.precio) * Number(item.cantidad);
     }
-    if (!data.cart.length) list.textContent = 'Agrega productos a la venta.';
-    const fallbackSubtotalCents = data.cart.reduce(
-        (total, item) => total + Number(item.precioCents ?? Math.round(Number(item.precio) * 100)) * item.cantidad,
-        0
-    );
-    const subtotalCents = Number(data.subtotalCents ?? fallbackSubtotalCents);
-    const summary = input('billingSummary');
-    const shippingPriceCents = Number(summary?.dataset.shippingPriceCents || 0);
-    const freeShippingFromCents = Number(summary?.dataset.freeShippingFromCents || 0);
-    const shippingCents = Number(
-        data.costoEnvioCents ?? (subtotalCents === 0 || subtotalCents >= freeShippingFromCents ? 0 : shippingPriceCents)
-    );
-    const totalCents = Number(data.totalCents ?? subtotalCents + shippingCents);
-    input('subtotal').textContent = moneyCents(subtotalCents);
+    if (!data.cart.length) {
+        const empty = document.createElement('p');
+        empty.className = 'empty-cart';
+        empty.textContent = 'Agrega productos a la venta.';
+        list.appendChild(empty);
+    }
+    input('subtotal').textContent = money(subtotal);
     input('iva').textContent = 'Incluidos';
-    input('shipping').textContent = shippingCents === 0 ? 'Gratis' : moneyCents(shippingCents);
-    input('total').textContent = moneyCents(totalCents);
-    const hint = input('shippingHint');
-    if (hint) {
-        hint.textContent =
-            shippingCents === 0
-                ? 'Este pedido tiene envío gratis.'
-                : `Envío gratis desde ${moneyCents(freeShippingFromCents)}.`;
-    }
+    input('total').textContent = money(subtotal) + ' + envío, si aplica';
 }
 async function agregarProducto() {
     const productoId = input('productoId').value;
