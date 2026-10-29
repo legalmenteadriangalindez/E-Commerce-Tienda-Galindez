@@ -104,6 +104,12 @@ El archivo `render.yaml` permite crear un servicio Node. Para tu servicio ya exi
 | PAYMENTS_ENABLED | `false` hasta completar las pruebas de pago |
 | WOMPI_ENV | `sandbox` para pruebas, `production` para cobros reales |
 
+Si despliegas con el `Dockerfile`, la imagen usa `npm ci --omit=dev`, ejecuta el
+proceso con el usuario sin privilegios `node`, comprueba `/healthz` mediante un
+`HEALTHCHECK` interno y declara `SIGTERM` para permitir el cierre ordenado de
+MongoDB y las sesiones. El contexto también excluye `.env`, `.git`, `node_modules`
+y logs mediante `.dockerignore`.
+
 Configura además las cuatro claves `WOMPI_PUBLIC_KEY`, `WOMPI_PRIVATE_KEY`, `WOMPI_INTEGRITY_KEY` y `WOMPI_EVENTS_KEY` del mismo entorno. No uses `LOCAL_ADMIN_PASSWORD` en Render. No subas `.env`, `config.env` ni `node_modules` a Git.
 
 ### Mantenimiento programado

@@ -27,6 +27,7 @@ const files = [
     'server/services/apiResponse.js',
     'server/validation/schemas.js',
     'tests/api-contract.test.js',
+    'tests/dockerfile-hardening.test.js',
     'scripts/format-files.js',
     'tests/commerce-write-path.test.js',
 ];

@@ -43,6 +43,12 @@ los controladores. `message`, `items` y otros campos de primer nivel se conserva
 temporalmente como alias para clientes antiguos; las integraciones nuevas deben
 leer `data` y `error`.
 
+La imagen Docker de producción instala únicamente dependencias de producción,
+ejecuta Node con el usuario sin privilegios `node`, incluye un `HEALTHCHECK`
+contra `/healthz` y usa `SIGTERM` para cerrar el servidor de forma ordenada.
+Render puede seguir usando el servicio Node definido en `render.yaml`; el
+Dockerfile queda disponible para despliegues basados en contenedor.
+
 ESLint y Prettier se ejecutan en cada cambio mediante GitHub Actions para Node 22
 y 24. `npm run format` corrige automáticamente los archivos mantenidos por el
 proyecto y `npm run format:check` comprueba que no queden cambios de formato.
