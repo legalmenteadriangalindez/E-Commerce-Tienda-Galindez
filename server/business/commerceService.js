@@ -101,7 +101,7 @@ function shippingPolicy() {
 function shippingForSubtotal(subtotalCents) {
     if (!Number.isSafeInteger(subtotalCents) || subtotalCents < 0) throw new CommerceError('Subtotal fuera de rango.');
     const { freeAtCents, priceCents } = shippingPolicy();
-    const shippingCents = subtotalCents >= freeAtCents ? 0 : priceCents;
+    const shippingCents = subtotalCents === 0 || subtotalCents >= freeAtCents ? 0 : priceCents;
     return {
         freeAtCents,
         priceCents,

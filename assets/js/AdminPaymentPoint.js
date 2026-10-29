@@ -79,7 +79,7 @@ async function cargarCarrito() {
     const shippingPriceCents = Number(summary?.dataset.shippingPriceCents || 0);
     const freeShippingFromCents = Number(summary?.dataset.freeShippingFromCents || 0);
     const shippingCents = Number(
-        data.costoEnvioCents ?? (subtotalCents >= freeShippingFromCents ? 0 : shippingPriceCents)
+        data.costoEnvioCents ?? (subtotalCents === 0 || subtotalCents >= freeShippingFromCents ? 0 : shippingPriceCents)
     );
     const totalCents = Number(data.totalCents ?? subtotalCents + shippingCents);
     input('subtotal').textContent = moneyCents(subtotalCents);

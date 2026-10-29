@@ -61,7 +61,49 @@ exports.remove_from_carrito = wrap(async (req, res) => {
     req.session.cart = (req.session.cart || []).filter((item) => item.productoId !== req.body.productoId);
     invalidate(req);
     await save(req);
-    res.json({ success: true, message: 'Producto eliminado', cart: req.session.cart });
+    const subtotalCents = req.session.cart.reduce(
+        (acc, item) => acc + money.readCents(item.precioCents, item.precio) * Number(item.cantidad || 0),
+        0
+    );
+    res.json({
+        success: true,
+        message: 'Producto eliminado',
+        cart: req.session.cart,
+        ...commerce.totals(subtotalCents),
+    });
+});
+async function updateCartQuantities(req) {
+    const products = commerce.normalizedCart(req.body.productos);
+    const cart = req.session.cart || [];
+    for (const item of products) {
+        if (!cart.some((old) => old.productoId === item.productoId))
+            throw new commerce.CommerceError('Producto fuera del carrito.');
+    }
+    const updated = cart.map((item) => ({
+        ...item,
+        cantidad: products.find((product) => product.productoId === item.productoId)?.cantidad || item.cantidad,
+    }));
+    const priced = await commerce.quote(updated);
+    const pricedById = new Map(priced.productos.map((item) => [String(item.producto), item]));
+    req.session.cart = updated.map((item) => {
+        const current = pricedById.get(String(item.productoId));
+        return current
+            ? {
+                  ...item,
+                  nombre: current.nombre,
+                  precio: current.precioUnitario,
+                  precioCents: current.precioUnitarioCents,
+                  cantidad: current.cantidad,
+              }
+            : item;
+    });
+    invalidate(req);
+    await save(req);
+    return { cart: req.session.cart, ...priced };
+}
+exports.update_carrito = wrap(async (req, res) => {
+    const updated = await updateCartQuantities(req);
+    res.json({ success: true, message: 'Despensa actualizada', ...updated });
 });
 exports.checkout = wrap(async (req, res) => {
     const paymentMethod = commerce.normalizePaymentMethod(req.body.metodoPago, 'WOMPI');
@@ -119,20 +161,7 @@ exports.checkout_admin = wrap(async (req, res) => {
     res.redirect(303, '/admin/payments?order=' + order._id);
 });
 exports.payment_point = wrap(async (req, res) => {
-    const products = commerce.normalizedCart(req.body.productos);
-    const cart = req.session.cart || [];
-    for (const item of products) {
-        if (!cart.some((old) => old.productoId === item.productoId))
-            throw new commerce.CommerceError('Producto fuera del carrito.');
-    }
-    const updated = cart.map((item) => ({
-        ...item,
-        cantidad: products.find((p) => p.productoId === item.productoId)?.cantidad || item.cantidad,
-    }));
-    await commerce.quote(updated);
-    req.session.cart = updated;
-    invalidate(req);
-    await save(req);
+    await updateCartQuantities(req);
     res.redirect(303, '/payment-point');
 });
 exports.wompiWebhook = wrap(async (req, res) => {

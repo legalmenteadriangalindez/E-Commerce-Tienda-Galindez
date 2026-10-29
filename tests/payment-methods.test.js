@@ -26,6 +26,7 @@ test('calcula el envío y el total según el umbral configurado', () => {
     process.env.FREE_SHIPPING_FROM = '30000';
     try {
         assert.deepEqual(commerce.shippingPolicy(), { priceCents: 500000, freeAtCents: 3000000 });
+        assert.equal(commerce.shippingForSubtotal(0).shippingCents, 0);
         assert.deepEqual(commerce.shippingForSubtotal(2999900), {
             priceCents: 500000,
             freeAtCents: 3000000,
