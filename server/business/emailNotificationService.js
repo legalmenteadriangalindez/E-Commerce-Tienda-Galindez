@@ -1,6 +1,7 @@
 const OrderEmailEvent = require('../model/orderEmailEvent');
 const sendEmail = require('../config/sendEmail');
 const moneyService = require('../services/money');
+const { renderInvoicePdf } = require('../services/invoicePdf');
 
 const MAX_ATTEMPTS = 8;
 const STALE_CLAIM_MS = 15 * 60 * 1000;
@@ -17,6 +18,15 @@ function text(value, fallback = '') {
     return typeof value === 'string' ? value.slice(0, 1000) : fallback;
 }
 
+function safeFilename(value) {
+    return (
+        String(value || 'pedido')
+            .replace(/[^a-zA-Z0-9_-]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .slice(0, 80) || 'pedido'
+    );
+}
+
 function snapshotOrder(order) {
     const source = typeof order?.toObject === 'function' ? order.toObject({ depopulate: true }) : order || {};
     const cliente = source.cliente || {};
@@ -26,6 +36,11 @@ function snapshotOrder(order) {
         numeroOrden: text(source.numeroOrden, 'Pedido'),
         nombre: text(cliente.nombre, 'Cliente'),
         email: normalizeEmail(cliente.email),
+        fecha: source.createdAt ? new Date(source.createdAt).toISOString() : new Date().toISOString(),
+        subtotal: moneyService.display(source.subtotalCents, source.subtotal),
+        impuestos: moneyService.display(source.impuestosCents, source.impuestos),
+        costoEnvio: moneyService.display(source.costoEnvioCents, source.costoEnvio),
+        descuento: moneyService.display(source.descuentoCents, source.descuento),
         total: moneyService.display(source.totalCents, source.total),
         estado: text(source.estado, 'PENDIENTE'),
         estadoPago: text(source.estadoPago, 'PENDIENTE'),
@@ -86,6 +101,10 @@ async function queueOrderReceived(order, session) {
     return queue('PEDIDO_RECIBIDO', order, `pedido:${order._id}:recibido`, session);
 }
 
+async function queueInvoice(order, session) {
+    return queue('FACTURA_PEDIDO', order, `pedido:${order._id}:factura`, session);
+}
+
 function statusEvent(state, orderId) {
     if (state === 'ENVIADA') return { type: 'AVISO_ENVIO', key: `pedido:${orderId}:envio` };
     if (state === 'ENTREGADA') return { type: 'AVISO_ENTREGA', key: `pedido:${orderId}:entrega` };
@@ -138,6 +157,20 @@ async function queueRaffleWinner(entry, raffle, session) {
     }
 }
 
+async function buildNotification(event) {
+    const notification = renderOrderNotification(event);
+    if (event?.tipo !== 'FACTURA_PEDIDO') return notification;
+
+    const pdf = await renderInvoicePdf(event.datos);
+    notification.attachment = [
+        {
+            content: pdf.toString('base64'),
+            name: `factura-${safeFilename(event.datos?.numeroOrden)}.pdf`,
+        },
+    ];
+    return notification;
+}
+
 async function processPending(limit = 10) {
     const now = new Date();
     await OrderEmailEvent.updateMany(
@@ -160,7 +193,8 @@ async function processPending(limit = 10) {
 
         processed += 1;
         try {
-            const result = await sendEmail.sendOrderNotification(event, renderOrderNotification(event));
+            const notification = await buildNotification(event);
+            const result = await sendEmail.sendOrderNotification(event, notification);
             await OrderEmailEvent.updateOne(
                 { _id: event._id, estado: 'ENVIANDO' },
                 {
@@ -207,8 +241,10 @@ module.exports = {
     STATUS_LABELS,
     snapshotOrder,
     renderOrderNotification,
+    buildNotification,
     statusEvent,
     queueOrderReceived,
+    queueInvoice,
     queueStatus,
     queueRaffleWinner,
     processPending,

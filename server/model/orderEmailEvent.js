@@ -7,7 +7,14 @@ const schema = new mongoose.Schema(
         clave: { type: String, required: true, unique: true },
         tipo: {
             type: String,
-            enum: ['PEDIDO_RECIBIDO', 'CAMBIO_ESTADO', 'AVISO_ENVIO', 'AVISO_ENTREGA', 'RIFA_GANADOR'],
+            enum: [
+                'PEDIDO_RECIBIDO',
+                'FACTURA_PEDIDO',
+                'CAMBIO_ESTADO',
+                'AVISO_ENVIO',
+                'AVISO_ENTREGA',
+                'RIFA_GANADOR',
+            ],
             required: true,
         },
         order: { type: mongoose.Schema.Types.ObjectId, ref: 'orderdb', required: true },

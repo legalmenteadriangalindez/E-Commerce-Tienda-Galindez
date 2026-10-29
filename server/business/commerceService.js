@@ -99,13 +99,12 @@ function shippingPolicy() {
     return {
         freeAtCents: policy.freeShippingFromCents,
         priceCents: policy.shippingPriceCents,
-        freeShippingFromCents: policy.freeShippingFromCents,
-        shippingPriceCents: policy.shippingPriceCents,
     };
 }
 function shippingForSubtotal(subtotalCents, policy = shippingPolicy()) {
     if (!Number.isSafeInteger(subtotalCents) || subtotalCents < 0) throw new CommerceError('Subtotal fuera de rango.');
-    const { freeAtCents, priceCents } = policy;
+    const freeAtCents = policy.freeAtCents ?? policy.freeShippingFromCents;
+    const priceCents = policy.priceCents ?? policy.shippingPriceCents;
     const shippingCents = subtotalCents === 0 || subtotalCents >= freeAtCents ? 0 : priceCents;
     return {
         freeAtCents,
@@ -191,6 +190,7 @@ async function recordSale(order, session) {
         existing.estadoPago = 'PAGADO';
         existing.metodoPago = order.metodoPago;
         await existing.save({ session });
+        await emailNotifications.queueInvoice(order, session);
         return;
     }
     const [sale] = await Sale.create(
@@ -229,6 +229,7 @@ async function recordSale(order, session) {
         })),
         { session }
     );
+    await emailNotifications.queueInvoice(order, session);
 }
 async function createOrder({ userId, cart, body, key, channel = 'WOMPI' }) {
     if (typeof key !== 'string' || !/^[\da-f-]{36}$/i.test(key))

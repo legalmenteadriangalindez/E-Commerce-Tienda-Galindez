@@ -86,5 +86,8 @@ module.exports.sendOrderNotification = async (event, notification) => {
         subject: notification.subject,
         htmlContent: notification.htmlContent,
         textContent: notification.textContent,
+        ...(Array.isArray(notification.attachment) && notification.attachment.length
+            ? { attachment: notification.attachment }
+            : {}),
     });
 };
