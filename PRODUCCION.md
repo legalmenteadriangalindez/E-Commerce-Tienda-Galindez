@@ -92,8 +92,11 @@ El archivo `render.yaml` permite crear un servicio Node. Para tu servicio ya exi
 
 | Opción | Valor |
 | --- | --- |
-| Build Command | `npm ci --omit=dev && npm run check` |
-| Start Command | `npm start` |
+| Runtime | `docker` |
+| Dockerfile | `./Dockerfile` |
+| Docker Context | `.` |
+| Docker Command | Usa el `CMD` del Dockerfile (`node server.js`) |
+| Auto Deploy | `After CI Checks Pass` |
 | Health Check Path | `/healthz` |
 | NODE_ENV | `production` |
 | NODE_VERSION | `22.23.4` o una revisión posterior compatible de la rama 22 |
@@ -114,7 +117,14 @@ Configura además las cuatro claves `WOMPI_PUBLIC_KEY`, `WOMPI_PRIVATE_KEY`, `WO
 
 ### Mantenimiento programado
 
-El servicio web no ejecuta conciliaciones, vencimientos, limpieza de imágenes ni envío de la bandeja de correos. El segundo servicio de `render.yaml`, `tienda-galindez-maintenance`, ejecuta `npm run maintenance` cada minuto con la expresión `* * * * *` (UTC). Sus variables sensibles usan `fromService` para heredar los valores del servicio web existente `E-Commerce-Tienda-Galindez`; no las dupliques manualmente. Si el nombre de tu servicio es diferente, cambia ese nombre en las referencias antes de sincronizar el Blueprint.
+El servicio web no ejecuta conciliaciones, vencimientos, limpieza de imágenes ni envío de la bandeja de correos. El segundo servicio de `render.yaml`, `tienda-galindez-maintenance`, usa la misma imagen Docker y ejecuta `npm run maintenance` cada minuto con la expresión `* * * * *` (UTC). Sus variables sensibles usan `fromService` para heredar los valores del servicio web existente `E-Commerce-Tienda-Galindez`; no las dupliques manualmente. Si el nombre de tu servicio es diferente, cambia ese nombre en las referencias antes de sincronizar el Blueprint.
+
+Después de modificar `render.yaml`, sincroniza el Blueprint desde Render. La
+configuración declarativa no cambia por sí sola un servicio existente. Verifica
+que el servicio web muestre `Health Check Path: /healthz` y que exista el Cron
+Job `tienda-galindez-maintenance` con sus variables heredadas. No crees el Cron
+Job con valores vacíos para `MONGO_URI`, `SESSION_SECRET`, `BREVO_API_KEY` o
+`EMAIL_USER`.
 
 Para probarlo en local, ejecuta `npm run maintenance` con el `.env` apuntando a una base de datos de desarrollo. El proceso aplica las migraciones pendientes, valida que Atlas o un replica set estén disponibles, registra un resultado JSON en los logs y termina; si falla devuelve un código distinto de cero para que Render marque la ejecución como fallida. Render no solapa dos ejecuciones del mismo Cron Job.
 

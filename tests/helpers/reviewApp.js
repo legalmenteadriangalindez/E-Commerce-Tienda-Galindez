@@ -78,10 +78,10 @@ async function startReviewApp(uri, configure) {
     app.get('/api/productos/catalogo/:id', require('../../server/controller/product_controller').findPublicOne);
     app.get('/Detalles/:id', require('../../server/services/renderProducts').product_detail);
     if (configure) await configure(app, users);
-    app.use((error, req, res, next) => {
-        console.error(error);
-        res.status(500).send('Error en la aplicación de pruebas');
-    });
+    // Usa el mismo contrato de errores que el servidor real. El manejador
+    // anterior convertía RequestValidationError (400) en 500 y ocultaba los
+    // detalles que las pruebas de integración necesitan comprobar.
+    app.use(require('../../server/middleware/errorHandler'));
 
     async function actor(name) {
         const response = await fetch(origin + '/_test/session/' + name);

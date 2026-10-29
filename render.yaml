@@ -1,9 +1,10 @@
 services:
   - type: web
     name: E-Commerce-Tienda-Galindez
-    runtime: node
-    buildCommand: npm ci --omit=dev && npm run check
-    startCommand: npm start
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: checksPass
     healthCheckPath: /healthz
     envVars:
       - key: NODE_VERSION
@@ -37,10 +38,12 @@ services:
   # solapamientos de un mismo Cron Job y lo inicia con la misma rama.
   - type: cron
     name: tienda-galindez-maintenance
-    runtime: node
+    runtime: docker
     schedule: "* * * * *"
-    buildCommand: npm ci --omit=dev && npm run check
-    startCommand: npm run maintenance
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: npm run maintenance
+    autoDeployTrigger: checksPass
     envVars:
       - key: NODE_VERSION
         value: 22.23.4

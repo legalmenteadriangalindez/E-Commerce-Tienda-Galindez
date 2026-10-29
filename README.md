@@ -81,7 +81,7 @@ Las vistas públicas de catálogo consultan directamente `server/business/catalo
 
 Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicación de esta actualización, variables de Render, pruebas de pagos, imágenes, administrador inicial, pedidos anteriores, copias de seguridad y límites de la implementación.
 
-- Configuración de Render en `render.yaml`.
+- Configuración de Render en `render.yaml`: servicio web Docker con health check `/healthz`, despliegue después de CI y Cron Job de mantenimiento.
 - Comprobación de variables: `npm run check:production`.
 - Auditoría de datos anteriores, de solo lectura: `npm run audit:data`.
 - Revisión de planes MongoDB: `npm run explain:queries` con `MONGO_URI` apuntando a una base de desarrollo o a una copia de producción. El informe usa `executionStats` para las analíticas y listados administrativos; activa `EXPLAIN_FAIL_ON_COLLSCAN=true` para hacer fallar la revisión si aparece un escaneo completo.

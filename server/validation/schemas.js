@@ -12,7 +12,10 @@ const optionalText = (max = 200) => text(max).optional();
 const passthrough = (shape) => z.object(shape).passthrough();
 
 const pagination = passthrough({
-    page: z.coerce.number().int().min(1).max(100000).optional(),
+    // Los controladores normalizan páginas menores que uno a la primera
+    // página. Aceptamos esos valores para conservar la compatibilidad de los
+    // enlaces existentes sin permitir números arbitrariamente grandes.
+    page: z.coerce.number().int().min(-100000).max(100000).optional(),
     limit: z.coerce.number().int().min(1).max(100).optional(),
 });
 
