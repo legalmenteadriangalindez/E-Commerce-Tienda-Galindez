@@ -16,7 +16,7 @@ const PERMISSIONS = Object.freeze({
     PROVIDERS_MANAGE: 'providers:manage',
     USERS_MANAGE: 'users:manage',
     ROLES_MANAGE: 'roles:manage',
-    PROFILE_MANAGE: 'profile:manage'
+    PROFILE_MANAGE: 'profile:manage',
 });
 
 // Roles reservados de la aplicación. No deben poder crearse, renombrarse ni
@@ -26,7 +26,7 @@ const SYSTEM_ROLES = Object.freeze({
     SUPER_ADMIN: 'SuperAdmin',
     ADMIN: 'Admin',
     CLIENT: 'Cliente',
-    DEALER: 'dealer'
+    DEALER: 'dealer',
 });
 
 const SYSTEM_ROLE_NAMES = Object.freeze(Object.values(SYSTEM_ROLES));
@@ -51,7 +51,7 @@ const PERMISSION_LABELS = Object.freeze({
     [PERMISSIONS.PROVIDERS_MANAGE]: 'Gestionar proveedores',
     [PERMISSIONS.USERS_MANAGE]: 'Gestionar usuarios',
     [PERMISSIONS.ROLES_MANAGE]: 'Gestionar roles y permisos',
-    [PERMISSIONS.PROFILE_MANAGE]: 'Gestionar el perfil administrativo'
+    [PERMISSIONS.PROFILE_MANAGE]: 'Gestionar el perfil administrativo',
 });
 
 const ALL_PERMISSIONS = Object.freeze([...PERMISSION_KEYS]);
@@ -59,18 +59,18 @@ const ALL_PERMISSIONS = Object.freeze([...PERMISSION_KEYS]);
 // permisos. Esa frontera queda reservada a SuperAdmin o a un rol al que el
 // propio SuperAdmin haya concedido explícitamente roles:manage.
 const ADMIN_PERMISSIONS = Object.freeze(
-    ALL_PERMISSIONS.filter(permission => permission !== PERMISSIONS.ROLES_MANAGE)
+    ALL_PERMISSIONS.filter((permission) => permission !== PERMISSIONS.ROLES_MANAGE)
 );
 
 const PERMISSION_IMPLICATIONS = Object.freeze({
     [PERMISSIONS.CATALOG_WRITE]: [PERMISSIONS.CATALOG_READ],
     [PERMISSIONS.ORDERS_MANAGE]: [PERMISSIONS.ORDERS_READ],
-    [PERMISSIONS.PAYMENTS_MANAGE]: [PERMISSIONS.PAYMENTS_READ]
+    [PERMISSIONS.PAYMENTS_MANAGE]: [PERMISSIONS.PAYMENTS_READ],
 });
 
 function normalizePermissions(value) {
     const values = Array.isArray(value) ? value : [value];
-    return [...new Set(values.filter(permission => PERMISSION_KEYS.includes(permission)))];
+    return [...new Set(values.filter((permission) => PERMISSION_KEYS.includes(permission)))];
 }
 
 function expandPermissions(value) {
@@ -93,5 +93,5 @@ module.exports = {
     ADMIN_PERMISSIONS,
     PERMISSION_IMPLICATIONS,
     normalizePermissions,
-    expandPermissions
+    expandPermissions,
 };

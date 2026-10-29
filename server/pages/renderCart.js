@@ -14,8 +14,8 @@ exports.car = async (req, res) => {
             (acc, item) => acc + money.readCents(item.precioCents, item.precio) * item.cantidad,
             0
         );
-        const summary = commerce.totals(subtotalCents);
-        const shipping = commerce.shippingPolicy();
+        const shipping = await commerce.loadShippingPolicy();
+        const summary = commerce.totals(subtotalCents, shipping);
         const suggested = await catalog.listPublic({
             page: 1,
             limit: 6,
@@ -29,8 +29,8 @@ exports.car = async (req, res) => {
             productSearch,
             user: req.session.user,
             ...summary,
-            shippingPriceCents: shipping.priceCents,
-            freeShippingFromCents: shipping.freeAtCents,
+            shippingPriceCents: shipping.shippingPriceCents,
+            freeShippingFromCents: shipping.freeShippingFromCents,
         });
     } catch (err) {
         return res.status(500).send(publicError(err));

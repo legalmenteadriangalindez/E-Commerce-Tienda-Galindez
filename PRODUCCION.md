@@ -61,29 +61,28 @@ El comando es idempotente, no elimina campos antiguos y muestra cuántos documen
 
 ## 2. Qué cambió
 
-| Área | Comportamiento |
-| --- | --- |
-| Compra | Precios consultados en MongoDB, cálculo en centavos, cantidades enteras y protección contra doble clic. |
-| Inventario | Reserva atómica al crear la orden; una unidad no puede venderse a dos compradores. |
-| Vencimiento | La reserva dura 30 minutos. El Cron de mantenimiento revisa vencimientos cada minuto. Un pago conocido que sigue pendiente conserva su reserva hasta conciliación. |
-| Wompi | Firma del webhook, consulta privada al proveedor y comparación de referencia, importe y moneda. Bandeja de eventos persistente y reintentos. |
-| Correo de pedidos | Confirmación de pedido, cambios de estado, aviso de envío y entrega. Los eventos se guardan en MongoDB, se envían por Brevo y se reintentan si el proveedor falla. |
-| Sorteo | Cada pedido pagado que cumple el monto recibe un número único dentro de una ronda. Al seleccionar ganador se encola un aviso por Brevo y `/sorteo` publica el número ganador, la fecha y el total de participaciones, sin nombres ni correos. |
-| Participaciones | El panel administrativo consulta las participaciones por páginas desde MongoDB y permite elegir 10, 25 o 50 filas; no carga ni limita la lista a 500 registros. Al reiniciar, la ronda anterior queda cerrada y sus participaciones se conservan en modo histórico. El ganador se obtiene con `$sample` en MongoDB, sin cargar la colección en Node. |
-| Reparto | El administrador asigna pedidos pagados desde `/admin/delivery`. El repartidor solo puede consultar y avanzar los pedidos asignados; el cliente ve el historial público de entrega en `/mis-pedidos`. |
-| Cobro tardío o duplicado | El cobro queda registrado y se muestra una incidencia. No se envía automáticamente un pedido sin reserva confirmada. |
-| Caja | Registrar un pedido no lo marca como pagado. Un administrador confirma expresamente que recibió el dinero. |
-| Cliente | `/mis-pedidos` y consulta del estado del pago y entrega. El carrito no se vacía al abrir Wompi. |
-| Administración | `/admin/payments` para caja, incidencias y conciliación por ID de Wompi; `/admin-analytics?period=week` o `?period=month` para decisiones de ventas. |
-| Envíos | `/admin/settings/shipping` permite cambiar el costo estándar y el monto mínimo para envío gratis. La configuración se persiste en MongoDB y se aplica al carrito, checkout y punto de pago administrativo. |
-| Exportación | `/read-sales` permite filtrar por fechas, estado de pago y canal, y descargar `/api/ventas/export.csv` con una fila por producto vendido. |
-| Integridad contable | La única ruta de escritura de pedidos, ventas y detalles es `commerceService`. Los controladores antiguos de venta/detalle son de solo lectura y sus operaciones directas de crear, editar o eliminar están bloqueadas con `409`. |
-| Entrega | Solo permite PAGADA → PREPARANDO → ENVIADA → ENTREGADA, con pago y stock confirmados. El administrador asigna el repartidor y el repartidor solo actualiza pedidos que le pertenecen. |
-| Archivos | Nuevas fotos en MongoDB GridFS, convertidas a WEBP, sin metadatos y con límites de tamaño. Las fotos incluidas en Git siguen funcionando. |
-| Cuentas | Contraseñas nuevas de al menos 12 caracteres, códigos con hash y consumo atómico, recuperación por enlace de un uso y revocación de sesiones. |
-| Seguridad | CSRF también con archivos, límites de intentos en MongoDB, CSP con nonce, cookies seguras y errores sin detalles internos. |
-| Contrato API | `/api` y las rutas JSON del carrito responden `{ success, data, error, requestId }`; los errores de validación incluyen detalles por campo sin exponer datos internos. |
-| Calidad | ESLint, Prettier y las pruebas se ejecutan obligatoriamente en GitHub Actions para Node 22 y 24 antes de aceptar cambios en `main`. |
+| Área                     | Comportamiento                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Compra                   | Precios consultados en MongoDB, cálculo en centavos, cantidades enteras y protección contra doble clic.                                                                                                                                                                                                                                              |
+| Inventario               | Reserva atómica al crear la orden; una unidad no puede venderse a dos compradores.                                                                                                                                                                                                                                                                   |
+| Vencimiento              | La reserva dura 30 minutos. El Cron de mantenimiento revisa vencimientos cada minuto. Un pago conocido que sigue pendiente conserva su reserva hasta conciliación.                                                                                                                                                                                   |
+| Wompi                    | Firma del webhook, consulta privada al proveedor y comparación de referencia, importe y moneda. Bandeja de eventos persistente y reintentos.                                                                                                                                                                                                         |
+| Correo de pedidos        | Confirmación de pedido, cambios de estado, aviso de envío y entrega. Los eventos se guardan en MongoDB, se envían por Brevo y se reintentan si el proveedor falla.                                                                                                                                                                                   |
+| Sorteo                   | Cada pedido pagado que cumple el monto recibe un número único dentro de una ronda. Al seleccionar ganador se encola un aviso por Brevo y `/sorteo` publica el número ganador, la fecha y el total de participaciones, sin nombres ni correos.                                                                                                        |
+| Participaciones          | El panel administrativo consulta las participaciones por páginas desde MongoDB y permite elegir 10, 25 o 50 filas; no carga ni limita la lista a 500 registros. Al reiniciar, la ronda anterior queda cerrada y sus participaciones se conservan en modo histórico. El ganador se obtiene con `$sample` en MongoDB, sin cargar la colección en Node. |
+| Reparto                  | El administrador asigna pedidos pagados desde `/admin/delivery`. El repartidor solo puede consultar y avanzar los pedidos asignados; el cliente ve el historial público de entrega en `/mis-pedidos`.                                                                                                                                                |
+| Cobro tardío o duplicado | El cobro queda registrado y se muestra una incidencia. No se envía automáticamente un pedido sin reserva confirmada.                                                                                                                                                                                                                                 |
+| Caja                     | Registrar un pedido no lo marca como pagado. Un administrador confirma expresamente que recibió el dinero.                                                                                                                                                                                                                                           |
+| Cliente                  | `/mis-pedidos` y consulta del estado del pago y entrega. El carrito no se vacía al abrir Wompi.                                                                                                                                                                                                                                                      |
+| Administración           | `/admin/payments` para caja, incidencias y conciliación por ID de Wompi; `/admin-analytics?period=week` o `?period=month` para decisiones de ventas.                                                                                                                                                                                                 |
+| Exportación              | `/read-sales` permite filtrar por fechas, estado de pago y canal, y descargar `/api/ventas/export.csv` con una fila por producto vendido.                                                                                                                                                                                                            |
+| Integridad contable      | La única ruta de escritura de pedidos, ventas y detalles es `commerceService`. Los controladores antiguos de venta/detalle son de solo lectura y sus operaciones directas de crear, editar o eliminar están bloqueadas con `409`.                                                                                                                    |
+| Entrega                  | Solo permite PAGADA → PREPARANDO → ENVIADA → ENTREGADA, con pago y stock confirmados. El administrador asigna el repartidor y el repartidor solo actualiza pedidos que le pertenecen.                                                                                                                                                                |
+| Archivos                 | Nuevas fotos en MongoDB GridFS, convertidas a WEBP, sin metadatos y con límites de tamaño. Las fotos incluidas en Git siguen funcionando.                                                                                                                                                                                                            |
+| Cuentas                  | Contraseñas nuevas de al menos 12 caracteres, códigos con hash y consumo atómico, recuperación por enlace de un uso y revocación de sesiones.                                                                                                                                                                                                        |
+| Seguridad                | CSRF también con archivos, límites de intentos en MongoDB, CSP con nonce, cookies seguras y errores sin detalles internos.                                                                                                                                                                                                                           |
+| Contrato API             | `/api` y las rutas JSON del carrito responden `{ success, data, error, requestId }`; los errores de validación incluyen detalles por campo sin exponer datos internos.                                                                                                                                                                               |
+| Calidad                  | ESLint, Prettier y las pruebas se ejecutan obligatoriamente en GitHub Actions para Node 22 y 24 antes de aceptar cambios en `main`.                                                                                                                                                                                                                  |
 
 El repartidor tiene acceso únicamente a los pedidos pagados que el administrador le asignó. Desde `/admin/delivery`, el administrador puede asignar, reasignar o retirar una asignación antes de que el pedido salga en camino. El repartidor puede registrar `PREPARANDO`, `ENVIADA` y `ENTREGADA`, y añadir una nota visible para el cliente.
 
@@ -91,22 +90,22 @@ El repartidor tiene acceso únicamente a los pedidos pagados que el administrado
 
 El archivo `render.yaml` permite crear un servicio Node. Para tu servicio ya existente, revisa manualmente:
 
-| Opción | Valor |
-| --- | --- |
-| Runtime | `docker` |
-| Dockerfile | `./Dockerfile` |
-| Docker Context | `.` |
-| Docker Command | Usa el `CMD` del Dockerfile (`node server.js`) |
-| Auto Deploy | `After CI Checks Pass` |
-| Health Check Path | `/healthz` |
-| NODE_ENV | `production` |
-| NODE_VERSION | `22.23.4` o una revisión posterior compatible de la rama 22 |
-| BASE_URL | Tu origen HTTPS público, sin rutas ni barra final |
-| MONGO_URI | URI de Atlas con base exclusiva de producción |
-| SESSION_SECRET | Secreto aleatorio distinto del local, de al menos 32 caracteres |
-| BREVO_API_KEY / EMAIL_USER | Clave válida y remitente verificado |
-| PAYMENTS_ENABLED | `false` hasta completar las pruebas de pago |
-| WOMPI_ENV | `sandbox` para pruebas, `production` para cobros reales |
+| Opción                     | Valor                                                           |
+| -------------------------- | --------------------------------------------------------------- |
+| Runtime                    | `docker`                                                        |
+| Dockerfile                 | `./Dockerfile`                                                  |
+| Docker Context             | `.`                                                             |
+| Docker Command             | Usa el `CMD` del Dockerfile (`node server.js`)                  |
+| Auto Deploy                | `After CI Checks Pass`                                          |
+| Health Check Path          | `/healthz`                                                      |
+| NODE_ENV                   | `production`                                                    |
+| NODE_VERSION               | `22.23.4` o una revisión posterior compatible de la rama 22     |
+| BASE_URL                   | Tu origen HTTPS público, sin rutas ni barra final               |
+| MONGO_URI                  | URI de Atlas con base exclusiva de producción                   |
+| SESSION_SECRET             | Secreto aleatorio distinto del local, de al menos 32 caracteres |
+| BREVO_API_KEY / EMAIL_USER | Clave válida y remitente verificado                             |
+| PAYMENTS_ENABLED           | `false` hasta completar las pruebas de pago                     |
+| WOMPI_ENV                  | `sandbox` para pruebas, `production` para cobros reales         |
 
 Si despliegas con el `Dockerfile`, la imagen usa `npm ci --omit=dev`, ejecuta el
 proceso con el usuario sin privilegios `node`, comprueba `/healthz` mediante un
@@ -163,11 +162,12 @@ La opción recomendada para una cuenta existente es configurar temporalmente `SU
 5. Verifica que el retorno muestra el estado del servidor. Volver del checkout, por sí solo, no confirma una compra.
 6. Comprueba una reserva vencida y un evento que llegue tarde. La incidencia debe quedar visible para la tienda.
 7. Configura las claves de producción, cambia `WOMPI_ENV` y ejecuta `npm run check:production`. Este comando valida variables; **no certifica** pagos, correo, restauración ni requisitos legales.
-8. Realiza una compra real controlada y autorizada, comprueba el cobro en Wompi, el pedido, la entrega y el procedimiento de devolución.
+8. Prueba también un pedido contra entrega: debe aparecer en reparto, el dealer debe avanzar el estado y confirmar el efectivo antes de marcarlo como entregado.
+9. Realiza una compra real controlada y autorizada, comprueba el cobro en Wompi, el pedido, la entrega y el procedimiento de devolución.
 
 Configura en Brevo un remitente verificado y prueba en este orden: creación de pedido, pago confirmado, cambio a preparación, envío y entrega. En local, si no configuras `BREVO_API_KEY` y `EMAIL_USER`, los correos se registran de forma segura en la terminal. En producción, un evento que no pueda enviarse queda en la bandeja de MongoDB y se reintenta con espera progresiva; revisa los logs `order_email_failed` si supera los intentos permitidos.
 
-No introduzcas tarjetas reales durante las pruebas sandbox. La aplicación usa el checkout alojado de Wompi y no guarda tarjetas.
+No introduzcas tarjetas reales durante las pruebas sandbox. La aplicación usa el checkout alojado de Wompi y no guarda tarjetas. La opción de tarjeta o Nequi abre el checkout de Wompi; la disponibilidad de Nequi depende de que esté habilitado para el comercio. El medio confirmado se conserva con la respuesta del webhook.
 
 ## 5. Atender incidencias y pedidos anteriores
 
@@ -177,7 +177,7 @@ No introduzcas tarjetas reales durante las pruebas sandbox. La aplicación usa e
 - **Devoluciones:** esta versión no mueve dinero para reembolsar. Primero efectúa y verifica la devolución total con el proveedor; después usa «Disponibilidad o devolución ya realizada» en el pedido y registra el motivo y comprobante. Solo marca reponer unidades si están físicamente disponibles en la tienda. El sistema evita registrar la misma devolución dos veces y excluye esas ventas de los indicadores. Las devoluciones parciales requieren gestión externa y no están modeladas por esta versión.
 - **Pedidos antiguos:** se conservan, pero no se adivina si su inventario ya fue descontado. Ejecuta `npm run audit:data` antes del lanzamiento. Los pedidos sin el nuevo estado de inventario requieren revisión del historial antes de incorporarlos al nuevo flujo; no los corrijas con actualizaciones masivas sin cotejar pagos y stock.
 - **Informe de ventas:** usa ventas con estado `PAGADO`, compara los últimos 7 o 30 días con el periodo anterior y muestra ingresos, ticket promedio, margen bruto estimado, canales, productos, categorías, stock bajo y productos sin rotación. La ganancia se calcula con el costo guardado en cada detalle; no incluye comisión de Wompi, costos reales de envío ni obligaciones tributarias.
-- **Exportación CSV:** desde `/read-sales` filtra el rango, estado y canal antes de pulsar «Exportar CSV». El archivo incluye pedido, fecha, cliente, producto, cantidad, precios, costos, envío, descuento, total y ganancia bruta por línea. El límite configurable es `CSV_EXPORT_MAX_ROWS` (100.000 por defecto); si necesitas periodos mayores, exporta por rangos de fecha.
+- **Exportación CSV:** desde `/read-sales` filtra el rango, estado y canal antes de pulsar «Exportar CSV». El archivo incluye pedido, fecha, cliente, producto, cantidad, precios, costos, envío, descuento, total, medio de pago y ganancia bruta por línea. El límite configurable es `CSV_EXPORT_MAX_ROWS` (100.000 por defecto); si necesitas periodos mayores, exporta por rangos de fecha.
 - **Códigos de verificación antiguos:** solicita un código nuevo después de actualizar, ya que ahora se guardan hashes.
 - **Imágenes antiguas que solo existían en Render:** expórtalas antes del despliegue y vuelve a subirlas desde el administrador. Un archivo perdido en el disco anterior no puede recuperarse con esta actualización.
 
@@ -190,10 +190,10 @@ exitosa tiene esta forma:
 
 ```json
 {
-  "success": true,
-  "data": { "items": [] },
-  "error": null,
-  "requestId": "..."
+    "success": true,
+    "data": { "items": [] },
+    "error": null,
+    "requestId": "..."
 }
 ```
 
@@ -278,4 +278,3 @@ El servidor cierra conexiones al recibir la señal de parada. Supervisa `/health
 Las páginas públicas de privacidad, términos de compra, envíos, cambios y devoluciones y reclamaciones están disponibles en `/privacidad`, `/terminos`, `/envios`, `/cambios-devoluciones` y `/reclamaciones`. Antes de abrir ventas, completa los datos configurables (`LEGAL_*`) con la identificación y contacto reales del negocio y valida los textos con asesoría legal/contable cuando corresponda.
 
 Referencia técnica: [Render](https://render.com/docs/node-version), [persistencia en Render](https://render.com/docs/disks), [checkout Wompi](https://docs.wompi.co/en/docs/colombia/widget-checkout-web/), [eventos Wompi](https://docs.wompi.co/en/docs/colombia/eventos/), [seguimiento de transacciones](https://docs.wompi.co/en/docs/colombia/seguimiento-de-transacciones/).
-

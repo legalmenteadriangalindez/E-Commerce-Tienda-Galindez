@@ -171,7 +171,7 @@ async function cargarCarrito() {
     input('shipping').classList.toggle('shipping-value--free', shippingValue === 0 && data.cart.length > 0);
     input('total').textContent = money(totalValue);
 
-    const shippingMessage = input('shippingMessage');
+    const shippingMessage = input('shippingMessage') || input('shippingHint');
     const freeFrom = Number(shippingPolicy.freeShippingFrom);
     if (shippingMessage && Number.isFinite(freeFrom) && data.cart.length) {
         shippingMessage.textContent = shippingValue === 0

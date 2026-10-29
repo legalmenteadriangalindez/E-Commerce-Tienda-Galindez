@@ -9,7 +9,7 @@ async function up({ db }) {
 }
 
 module.exports = {
-    id: '202610290001-store-settings',
+    id: '202610290002-store-settings',
     description: 'Crea el índice único para las configuraciones de la tienda.',
     indexes,
     up,

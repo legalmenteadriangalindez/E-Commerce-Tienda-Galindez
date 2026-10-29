@@ -25,7 +25,6 @@ const models = [
     require('../server/model/raffleEntry'),
     require('../server/model/rateLimitBucket'),
     require('../server/model/orderEmailEvent'),
-    require('../server/model/storeSetting')
 ];
 
 function fakeDb() {
@@ -44,7 +43,12 @@ function fakeDb() {
             return {
                 async createIndex(keys, options = {}) {
                     indexes.push({ name, keys, options });
-                    return options.name || Object.entries(keys).map(([key, direction]) => `${key}_${direction}`).join('_');
+                    return (
+                        options.name ||
+                        Object.entries(keys)
+                            .map(([key, direction]) => `${key}_${direction}`)
+                            .join('_')
+                    );
                 },
                 find() {
                     return { toArray: async () => [...documents.values()] };
@@ -87,16 +91,19 @@ function fakeDb() {
                         return { deletedCount: 1 };
                     }
                     return { deletedCount: 0 };
-                }
+                },
             };
-        }
+        },
     };
 }
 
 test('las migraciones están ordenadas, versionadas y tienen checksum', () => {
     const migrations = loadMigrations();
     assert.ok(migrations.length >= 1);
-    assert.deepEqual(migrations.map(migration => migration.id), [...migrations].map(migration => migration.id).sort());
+    assert.deepEqual(
+        migrations.map((migration) => migration.id),
+        [...migrations].map((migration) => migration.id).sort()
+    );
     for (const migration of migrations) {
         assert.match(migration.id, /^\d{12}-[a-z0-9-]+$/);
         assert.match(migration.checksum, /^[a-f0-9]{64}$/);
@@ -105,8 +112,11 @@ test('las migraciones están ordenadas, versionadas y tienen checksum', () => {
 });
 
 test('cada índice declarado por un modelo tiene una migración explícita', () => {
-    const declared = new Set(loadMigrations().flatMap(migration => migration.indexes || [])
-        .map(([collection, keys, options = {}]) => JSON.stringify({ collection, keys, options })));
+    const declared = new Set(
+        loadMigrations()
+            .flatMap((migration) => migration.indexes || [])
+            .map(([collection, keys, options = {}]) => JSON.stringify({ collection, keys, options }))
+    );
 
     for (const model of models) {
         for (const [keys, options = {}] of model.schema.indexes()) {
@@ -121,10 +131,13 @@ test('cada índice declarado por un modelo tiene una migración explícita', () 
 test('las migraciones se aplican una vez y detectan archivos modificados', async () => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'tienda-migrations-'));
     const file = path.join(directory, '202610280002-test-migration.js');
-    fs.writeFileSync(file, [
-        "'use strict';",
-        "module.exports = { id: '202610280002-test-migration', description: 'Prueba', up: async ({ db }) => { await db.collection('fixture').insertOne({ _id: 'once' }); } };"
-    ].join('\n'));
+    fs.writeFileSync(
+        file,
+        [
+            "'use strict';",
+            "module.exports = { id: '202610280002-test-migration', description: 'Prueba', up: async ({ db }) => { await db.collection('fixture').insertOne({ _id: 'once' }); } };",
+        ].join('\n')
+    );
 
     const db = fakeDb();
     const first = await runMigrations({ db, migrationsDir: directory, logger: { log() {} } });
