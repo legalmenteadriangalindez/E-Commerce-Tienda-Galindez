@@ -4,22 +4,20 @@
 
 <link rel="stylesheet" href="/assets/css/car.css">
 
+<div class="container">
+    <h1>Carrito de Compras</h1>
+</div>
+
+<p>
+    Revisa los productos que has agregado a tu carrito
+    de compras y realiza el checkout cuando estés listo.
+</p>
+
 <main
   class="main-cart"
-  data-shipping-price-cents="<%= shippingPriceCents %>"
-  data-free-shipping-from-cents="<%= freeShippingFromCents %>"
+  data-free-shipping-from="<%= shippingPolicy.freeShippingFrom %>"
+  data-shipping-price="<%= shippingPolicy.shippingPrice %>"
 >
-
-  <header class="cart-page-header">
-    <div class="cart-page-icon" aria-hidden="true">
-      <i class="fas fa-shopping-cart"></i>
-    </div>
-    <div>
-      <p class="cart-eyebrow">Compra fácil y segura</p>
-      <h1>Tu despensa</h1>
-      <p class="cart-page-subtitle">Revisa tus productos, ajusta las cantidades y continúa con el pago.</p>
-    </div>
-  </header>
 
   <div class="cart-wrapper">
 
@@ -28,106 +26,13 @@
 
       <header class="cart-header">
 
-        <div>
-          <p class="cart-eyebrow">Tu compra</p>
-          <h2>Productos seleccionados</h2>
-        </div>
+        <h1>Tu Despensa</h1>
 
-        <div class="cart-header-actions">
-          <span class="badge" id="cartCount">
-            <%= cartItemCount %> <%= cartItemCount === 1 ? 'artículo' : 'artículos' %>
-          </span>
-          <button
-            type="button"
-            class="continue-shopping"
-            data-cart-action="toggle-catalog"
-            aria-controls="cartAddProducts"
-            aria-expanded="<%= productosCarrito.length === 0 || productSearch ? 'true' : 'false' %>"
-          >
-            <i class="fas fa-plus" aria-hidden="true"></i>
-            Agregar productos
-          </button>
-        </div>
+        <span class="badge">
+          <%= productosCarrito.length %> Articulo(s)
+        </span>
 
       </header>
-
-      <p class="cart-status" id="cartStatus" role="status" aria-live="polite"></p>
-
-      <section
-        class="cart-add-products"
-        id="cartAddProducts"
-        <%= productosCarrito.length === 0 || productSearch ? '' : 'hidden' %>
-      >
-        <div class="cart-add-products-header">
-          <div>
-            <p class="cart-eyebrow">Añade algo más</p>
-            <h3>Completa tu compra</h3>
-          </div>
-          <% if (productosCarrito.length > 0) { %>
-            <button
-              type="button"
-              class="cart-add-products-close"
-              data-cart-action="close-catalog"
-              aria-label="Cerrar productos sugeridos"
-            >
-              <i class="fas fa-times" aria-hidden="true"></i>
-            </button>
-          <% } %>
-        </div>
-
-        <form class="cart-product-search" action="/view_cart" method="GET">
-          <label for="cartProductSearch">Buscar otro producto</label>
-          <div class="cart-product-search-control">
-            <i class="fas fa-search" aria-hidden="true"></i>
-            <input
-              id="cartProductSearch"
-              name="productSearch"
-              type="search"
-              value="<%= productSearch %>"
-              placeholder="Ej. arroz, leche o jabón"
-              minlength="2"
-              maxlength="100"
-              autocomplete="off"
-            >
-            <button type="submit">Buscar</button>
-          </div>
-        </form>
-
-        <div class="suggested-products">
-          <% if (productosSugeridos.length === 0) { %>
-            <p class="suggested-products-empty">
-              No encontramos productos disponibles con esa búsqueda.
-              <a href="/view_cart">Ver sugerencias</a>
-            </p>
-          <% } else { %>
-            <% productosSugeridos.forEach((producto) => { %>
-              <% const alreadyInCart = productosCarrito.some((item) => String(item.productoId) === String(producto._id)); %>
-              <article class="suggested-product">
-                <img
-                  src="<%= producto.fotos?.[0] || '/assets/img/default.jpg' %>"
-                  alt="<%= producto.nombre %>"
-                  loading="lazy"
-                >
-                <div class="suggested-product-info">
-                  <h4><%= producto.nombre %></h4>
-                  <p><%= producto.categoria?.nombre || 'Producto disponible' %></p>
-                  <strong>$<%= Number(producto.precioVenta || 0).toLocaleString('es-CO') %></strong>
-                </div>
-                <button
-                  type="button"
-                  class="suggested-product-add"
-                  data-cart-action="add-product"
-                  data-product-id="<%= producto._id %>"
-                  <%= alreadyInCart ? 'disabled' : '' %>
-                >
-                  <i class="fas <%= alreadyInCart ? 'fa-check' : 'fa-plus' %>" aria-hidden="true"></i>
-                  <span><%= alreadyInCart ? 'En la despensa' : 'Agregar' %></span>
-                </button>
-              </article>
-            <% }) %>
-          <% } %>
-        </div>
-      </section>
 
       <!-- FORMULARIO -->
       <form
@@ -137,40 +42,23 @@
       >
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-        <% if (productosCarrito.length > 0) { %>
-          <div class="product-list-heading" aria-hidden="true">
-            <span>Producto</span>
-            <span>Cantidad</span>
-            <span>Total</span>
-          </div>
-        <% } %>
-
         <div class="product-list">
 
-          <% if (productosCarrito.length === 0) { %>
+          <% if(productosCarrito.length === 0){ %>
 
-              <div class="empty-cart">
-                <span class="empty-cart-icon" aria-hidden="true"><i class="fas fa-shopping-cart"></i></span>
-                <h2>Tu despensa está vacía</h2>
-                <p>Agrega productos para comenzar tu compra.</p>
-                <a href="/" class="continue-shopping continue-shopping--primary">Ver productos</a>
-              </div>
+              <p>Tu carrito está vacío.</p>
 
           <% } %>
 
           <% productosCarrito.forEach((producto, index) => { %>
 
-          <article
-            class="product-card"
-            data-price="<%= producto.precio %>"
-            data-price-cents="<%= producto.precioCents || Math.round(Number(producto.precio) * 100) %>"
-          >
+          <article class="product-card" data-price="<%= producto.precio %>">
 
             <!-- Imagen -->
             <div class="img-container">
 
-              <img
-                src="<%= producto.foto || '/assets/img/default.jpg' %>"
+              <img 
+                src="<%= producto.foto || '/assets/img/default.jpg' %>" 
                 alt="<%= producto.nombre %>"
               >
 
@@ -194,44 +82,26 @@
               value="<%= producto.productoId %>"
             >
 
-            <div class="quantity-picker" aria-label="Cantidad de <%= producto.nombre %>">
-              <button
-                type="button"
-                class="quantity-btn quantity-btn--minus"
-                data-cart-action="decrease"
-                aria-label="Disminuir cantidad de <%= producto.nombre %>"
-              ><span aria-hidden="true">−</span></button>
-              <input
-                type="number"
-                name="productos[<%= index %>][cantidad]"
-                value="<%= producto.cantidad %>"
-                min="1"
-                max="999"
-                inputmode="numeric"
-                class="quantity-input"
-                aria-label="Cantidad de <%= producto.nombre %>"
-              >
-              <button
-                type="button"
-                class="quantity-btn quantity-btn--plus"
-                data-cart-action="increase"
-                aria-label="Aumentar cantidad de <%= producto.nombre %>"
-              ><span aria-hidden="true">+</span></button>
-            </div>
+            <!-- Cantidad -->
 
-            <p class="price item-total">
-              $<%= Number(producto.precio * producto.cantidad).toLocaleString('es-CO') %>
-            </p>
+<div class="quantity-picker">
 
-            <button
-              type="button"
-              class="remove-btn"
-              data-cart-action="remove"
-              aria-label="Eliminar <%= producto.nombre %> de la despensa"
-              title="Eliminar producto"
-            >
-              <i class="fas fa-trash-alt" aria-hidden="true"></i>
-            </button>
+  <input
+    type="number"
+    name="productos[<%= index %>][cantidad]"
+    value="<%= producto.cantidad %>"
+    min="1"
+    max="99"
+    class="form-control text-center fw-bold"
+  >
+
+</div>
+            <!-- Precio -->
+          <p class="price item-total">
+
+            $<%= (producto.precio * producto.cantidad).toFixed(2) %>
+
+          </p>
 
           </article>
 
@@ -275,8 +145,10 @@
             Envío
           </span>
 
-          <span class="text-sumary free" id="shipping">
-            <%= costoEnvio === 0 ? 'Gratis' : '$' + Number(costoEnvio).toLocaleString('es-CO') %>
+          <span class="text-sumary <%= productosCarrito.length && costoEnvio === 0 ? 'free' : '' %>" id="shipping">
+            <%= productosCarrito.length && costoEnvio > 0
+                ? '$' + costoEnvio.toLocaleString('es-CO')
+                : productosCarrito.length ? 'Gratis' : '—' %>
           </span>
 
         </div>
@@ -293,32 +165,24 @@
           class="text-sumary total-amount"
           id="total"
         >
-          $<%= Number(total).toLocaleString('es-CO') %>
+          $<%= subtotal.toFixed(2) %>
         </span>
-
-        <small class="shipping-hint" id="shippingHint">
-          Envío gratis desde $<%= Number(freeShippingFromCents / 100).toLocaleString('es-CO') %>.
-        </small>
 
         </div>
 
-        <% if (productosCarrito.length > 0) { %>
-          <button
-            type="button"
-            class="update-cart-btn"
-            data-cart-action="save"
-          >
-            <i class="fas fa-sync-alt" aria-hidden="true"></i>
-            Actualizar despensa
-          </button>
-        <% } %>
+        <p id="shippingMessage" class="shipping-message">
+          <%= productosCarrito.length && costoEnvio === 0
+              ? 'Envío gratis aplicado.'
+              : productosCarrito.length
+                  ? 'El costo de envío se suma al total.'
+                  : 'Agrega productos para calcular el envío.' %>
+        </p>
 
         <!-- BOTÓN -->
         <button
           type="submit"
           form="cartForm"
           class="pay-btn"
-          <%= productosCarrito.length === 0 ? 'disabled' : '' %>
         >
 
           <i class="fas fa-lock"></i>

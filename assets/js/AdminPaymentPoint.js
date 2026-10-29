@@ -159,9 +159,27 @@ async function cargarCarrito() {
         empty.textContent = 'Agrega productos a la venta.';
         list.appendChild(empty);
     }
-    input('subtotal').textContent = money(subtotal);
+    const quote = data.quote || {};
+    const shippingPolicy = data.shippingPolicy || {};
+    const subtotalValue = Number.isFinite(Number(quote.subtotal)) ? Number(quote.subtotal) : subtotal;
+    const shippingValue = data.cart.length && Number.isFinite(Number(quote.costoEnvio)) ? Number(quote.costoEnvio) : 0;
+    const totalValue = data.cart.length && Number.isFinite(Number(quote.total)) ? Number(quote.total) : subtotalValue;
+
+    input('subtotal').textContent = money(subtotalValue);
     input('iva').textContent = 'Incluidos';
-    input('total').textContent = money(subtotal) + ' + envío, si aplica';
+    input('shipping').textContent = shippingValue > 0 ? money(shippingValue) : data.cart.length ? 'Gratis' : '—';
+    input('shipping').classList.toggle('shipping-value--free', shippingValue === 0 && data.cart.length > 0);
+    input('total').textContent = money(totalValue);
+
+    const shippingMessage = input('shippingMessage');
+    const freeFrom = Number(shippingPolicy.freeShippingFrom);
+    if (shippingMessage && Number.isFinite(freeFrom) && data.cart.length) {
+        shippingMessage.textContent = shippingValue === 0
+            ? `Envío gratis aplicado por compras desde ${money(freeFrom)}.`
+            : `Envío gratis desde ${money(freeFrom)}.`;
+    } else if (shippingMessage) {
+        shippingMessage.textContent = 'Agrega productos para calcular el envío.';
+    }
 }
 async function agregarProducto() {
     const productoId = input('productoId').value;

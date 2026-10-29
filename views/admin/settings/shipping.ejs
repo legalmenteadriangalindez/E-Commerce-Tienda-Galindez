@@ -1,0 +1,54 @@
+<%- include('../../include/_headerAdmin') %>
+<link rel="stylesheet" href="/assets/css/admin-settings.css">
+
+<main class="admin-settings-page">
+    <section class="admin-settings-heading">
+        <div>
+            <p class="admin-settings-eyebrow">Configuración de la tienda</p>
+            <h1>Envíos y tarifas</h1>
+            <p>Define cuánto se cobra por el envío y desde qué monto queda gratis para los pedidos nuevos.</p>
+        </div>
+        <a class="admin-settings-back" href="/billing-point">Volver al punto de pago</a>
+    </section>
+
+    <% if (notice) { %>
+        <p class="admin-settings-notice" role="status"><%= notice %></p>
+    <% } %>
+
+    <section class="admin-settings-card">
+        <div class="admin-settings-card__icon" aria-hidden="true"><i class="fas fa-truck"></i></div>
+        <div class="admin-settings-card__content">
+            <h2>Regla de envío</h2>
+            <p class="admin-settings-help">Los importes se guardan en COP y se aplican al recalcular el carrito. Los pedidos ya creados no cambian.</p>
+
+            <form action="/admin/settings/shipping" method="post" class="admin-settings-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                <label class="admin-settings-field">
+                    <span>Monto mínimo para envío gratis (COP)</span>
+                    <input type="number" name="freeShippingFrom" min="0" max="100000000" step="1" required value="<%= shipping.freeShippingFrom %>">
+                    <small>Si el subtotal alcanza este valor, el envío será gratis.</small>
+                </label>
+
+                <label class="admin-settings-field">
+                    <span>Costo de envío cuando no se alcanza el mínimo (COP)</span>
+                    <input type="number" name="shippingPrice" min="0" max="100000000" step="1" required value="<%= shipping.shippingPrice %>">
+                    <small>Se sumará al total de pedidos por debajo del monto mínimo.</small>
+                </label>
+
+                <div class="admin-settings-preview" aria-live="polite">
+                    <strong>Configuración actual</strong>
+                    <span>Envío estándar: $<%= shipping.shippingPrice.toLocaleString('es-CO') %></span>
+                    <span>Envío gratis desde: $<%= shipping.freeShippingFrom.toLocaleString('es-CO') %></span>
+                </div>
+
+                <button type="submit" class="admin-settings-submit">
+                    <i class="fas fa-save" aria-hidden="true"></i>
+                    Guardar configuración
+                </button>
+            </form>
+        </div>
+    </section>
+</main>
+
+<%- include('../../include/_footerAdmin') %>

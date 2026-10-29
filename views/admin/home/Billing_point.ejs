@@ -1,7 +1,7 @@
 <!-- include header -->
 <%- include('../../include/_headerAdmin') %>
 
-<link rel="stylesheet" href="/assets/css/payment_point.css">
+<link rel="stylesheet" href="/assets/css/payment_point.css"> 
 <link rel="stylesheet" href="/assets/css/Add_product_billing_point.css">
 
 <form id="billingForm" action="/payment_point" method="POST">
@@ -14,14 +14,14 @@
         <h1>
             <i class="fas fa-cash-register"></i>
             Punto de Facturación
-
+                    
         </h1>
 
         <div class="badge-secure">
             <i class="fas fa-store"></i>
             Modo cajero · Venta directa
         </div>
-
+        
     </div>
 
     <div class="checkout-grid">
@@ -35,7 +35,7 @@
             </div>
 
             <!-- BUSCADOR -->
-            <div class="input-group field-relative">
+            <div class="input-group" style="position: relative;">
 
                 <label>Buscar producto</label>
 
@@ -108,8 +108,8 @@
             <!-- BOTON AGREGAR -->
             <button
                 type="button"
-                class="pay-btn action-spaced"
-
+                class="pay-btn"
+                style="margin-top:10px"
                 data-commerce-action="add"
             >
 
@@ -140,12 +140,7 @@
         </div>
 
         <!-- COLUMNA DERECHA -->
-        <div
-            class="summary-card"
-            id="billingSummary"
-            data-shipping-price-cents="<%= shippingPriceCents %>"
-            data-free-shipping-from-cents="<%= freeShippingFromCents %>"
-        >
+        <div class="summary-card">
 
             <div class="section-title">
 
@@ -178,11 +173,15 @@
 
                 <span>Envío</span>
 
-                <span id="shipping">
-                    Gratis
+                <span id="shipping" class="shipping-value" aria-live="polite">
+                    —
                 </span>
 
             </div>
+
+            <p id="shippingMessage" class="shipping-message" aria-live="polite">
+                El costo de envío se actualizará según el monto de la venta.
+            </p>
 
             <div class="summary-line total">
 
@@ -193,10 +192,6 @@
                 </span>
 
             </div>
-
-            <small class="shipping-hint" id="shippingHint">
-                Envío gratis desde $<%= Number(freeShippingFromCents / 100).toLocaleString('es-CO') %>.
-            </small>
 
             <div class="divider"></div>
 
@@ -215,8 +210,8 @@
             <!-- CANCELAR -->
             <button
                 type="button"
-                class="btn-outline action-wide"
-
+                class="btn-outline"
+                style="width:100%; margin-top:10px;"
                 data-commerce-action="cancel"
             >
 

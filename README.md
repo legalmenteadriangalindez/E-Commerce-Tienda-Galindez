@@ -19,7 +19,7 @@ npm run dev
 
 Abre http://localhost:3000. El correo se muestra en la terminal local si no configuraste Brevo. Para crear el administrador local, completa `LOCAL_ADMIN_EMAIL` y `LOCAL_ADMIN_PASSWORD` y repite `npm run seed:local`.
 
-Los pagos en línea están desactivados inicialmente. Para probar tarjeta o Nequi con el Checkout Web de Wompi, configura las cuatro claves sandbox y `PAYMENTS_ENABLED=true`. El efectivo contra entrega funciona sin activar Wompi; desde el punto de pago administrativo también puedes registrar efectivo en caja.
+Los pagos están desactivados inicialmente. Para probarlos, configura las cuatro claves de Wompi sandbox y `PAYMENTS_ENABLED=true`.
 
 ## Validación
 
@@ -86,6 +86,7 @@ Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicació
 - Auditoría de datos anteriores, de solo lectura: `npm run audit:data`.
 - Revisión de planes MongoDB: `npm run explain:queries` con `MONGO_URI` apuntando a una base de desarrollo o a una copia de producción. El informe usa `executionStats` para las analíticas y listados administrativos; activa `EXPLAIN_FAIL_ON_COLLSCAN=true` para hacer fallar la revisión si aparece un escaneo completo.
 - Gestión de pagos: `/admin/payments`.
+- Tarifas de envío: desde `/admin/settings/shipping` un administrador puede cambiar el costo estándar y el monto mínimo para obtener envío gratis. El valor se guarda en MongoDB y se aplica al recalcular los carritos; `SHIPPING_PRICE` y `FREE_SHIPPING_FROM` quedan como valores iniciales de respaldo.
 - Informe de ventas: `/admin-analytics?period=week` o `?period=month`.
 - Exportación de ventas: `/read-sales`, con filtros por fecha, estado de pago y canal, y descarga CSV para Excel, Power BI, Python o R.
 - Gestión de reseñas: `/admin/reviews`.
@@ -94,7 +95,7 @@ Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicació
 - Correos de pedidos: confirmación, cambios de estado, aviso de envío y entrega se guardan en una bandeja durable y se envían mediante Brevo con reintentos automáticos.
 - Sorteo de regalos: cada pedido pagado elegible recibe un número dentro de una ronda inmutable; al reiniciar se conserva el historial y se crea una ronda nueva. El ganador recibe un aviso por Brevo y el resultado público muestra el número, la fecha y el total de participaciones sin exponer datos personales.
 - Participaciones administrativas: la tabla usa paginación en MongoDB y permite consultar 10, 25 o 50 filas por página sin el límite anterior de 500 registros.
-- Reparto y seguimiento: el administrador asigna pedidos pagados o contra entrega a usuarios con rol `dealer`; cada repartidor ve únicamente sus entregas, confirma el efectivo al entregar y el cliente consulta una línea de tiempo desde `/mis-pedidos`.
+- Reparto y seguimiento: el administrador asigna pedidos pagados a usuarios con rol `dealer`; cada repartidor ve únicamente sus entregas y el cliente consulta una línea de tiempo desde `/mis-pedidos`.
 - Permisos por rol: `SuperAdmin` es el rol reservado con todos los permisos y puede delegar o retirar ese nivel. `Admin` es el administrador operativo: conserva los módulos de la tienda, pero no `roles:manage`; las cuentas nuevas de los scripts de preparación se crean como `SuperAdmin`. Desde `/create-rol` y `/read-rol` puedes crear roles personalizados y seleccionar módulos como catálogo, pedidos, pagos, analítica, reseñas, rifa, reparto, usuarios o proveedores. Los permisos se guardan en `roledb.permisos`, se comprueban en páginas y API, y el menú oculta las opciones no autorizadas. `users:manage` no permite cambiar roles: para ello se requiere `roles:manage`, nunca se puede cambiar el rol propio y solo `SuperAdmin` puede asignar o modificar una cuenta `SuperAdmin`.
 
 Nunca subas `.env`, `config.env`, contraseñas, claves ni `node_modules`. Las pruebas automatizadas usan datos temporales y transacciones simuladas del proveedor: completa las pruebas externas descritas en la guía antes de activar cobros reales.
@@ -104,3 +105,4 @@ El informe de ventas usa únicamente ventas pagadas y permite comparar los últi
 Los nuevos importes se calculan y persisten como enteros de centavos (`totalCents`, `subtotalCents`, `precioUnitarioCents` y `precioVentaCents`). Para una base existente, ejecuta `npm run migrate:money` en modo diagnóstico y, después de respaldar y revisar el resultado, repite con `MONEY_MIGRATION_APPLY=true`.
 
 La escritura de pedidos, ventas y detalles está centralizada en `server/business/commerceService.js`. El controlador de ventas y los detalles son de solo lectura; los endpoints antiguos de creación, edición y eliminación responden `409` y no pueden modificar inventario ni totales. Esto mantiene una única transacción para reserva, confirmación de pago, venta y sus detalles.
+
