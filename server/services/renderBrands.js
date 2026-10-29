@@ -4,6 +4,7 @@ const catalog = require('../business/catalogService');
 const dotenv = require('dotenv');
 const internalApiConfig = require('./internalApiConfig');
 const catalogPagination = require('./catalogPagination');
+const { unwrapApiData, unwrapApiList } = require('./apiResponse');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
@@ -13,7 +14,7 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 exports.brands = (req, res) => {
     axios.get(`${BASE_URL}/api/marcas`)
         .then(response => {
-            res.render('client/brands/brands', { brands: response.data });
+            res.render('client/brands/brands', { brands: unwrapApiList(response) });
         })
         .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };
@@ -47,7 +48,7 @@ exports.read_brands = (req, res) => {
         }
     })
         .then(response => {
-            const payload = response.data;
+            const payload = unwrapApiData(response);
             res.render('admin/brands/read_brands', {
                 brands: payload.items || payload,
                 pagination: catalogPagination.buildPagination(req, payload.pagination || {
@@ -62,7 +63,7 @@ exports.read_brands = (req, res) => {
 exports.update_brand = (req, res) => {
     axios.get(`${BASE_URL}/api/marcas`, { params: { id: req.query.id }})
         .then(response => {
-            res.render('admin/brands/update_brands', { brand: response.data });
+            res.render('admin/brands/update_brands', { brand: unwrapApiData(response) });
         })
         .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };

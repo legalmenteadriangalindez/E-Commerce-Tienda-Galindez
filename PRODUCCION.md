@@ -81,6 +81,8 @@ El comando es idempotente, no elimina campos antiguos y muestra cuántos documen
 | Archivos | Nuevas fotos en MongoDB GridFS, convertidas a WEBP, sin metadatos y con límites de tamaño. Las fotos incluidas en Git siguen funcionando. |
 | Cuentas | Contraseñas nuevas de al menos 12 caracteres, códigos con hash y consumo atómico, recuperación por enlace de un uso y revocación de sesiones. |
 | Seguridad | CSRF también con archivos, límites de intentos en MongoDB, CSP con nonce, cookies seguras y errores sin detalles internos. |
+| Contrato API | `/api` y las rutas JSON del carrito responden `{ success, data, error, requestId }`; los errores de validación incluyen detalles por campo sin exponer datos internos. |
+| Calidad | ESLint, Prettier y las pruebas se ejecutan obligatoriamente en GitHub Actions para Node 22 y 24 antes de aceptar cambios en `main`. |
 
 El repartidor tiene acceso únicamente a los pedidos pagados que el administrador le asignó. Desde `/admin/delivery`, el administrador puede asignar, reasignar o retirar una asignación antes de que el pedido salga en camino. El repartidor puede registrar `PREPARANDO`, `ENVIADA` y `ENTREGADA`, y añadir una nota visible para el cliente.
 
@@ -163,6 +165,51 @@ No introduzcas tarjetas reales durante las pruebas sandbox. La aplicación usa e
 - **Imágenes antiguas que solo existían en Render:** expórtalas antes del despliegue y vuelve a subirlas desde el administrador. Un archivo perdido en el disco anterior no puede recuperarse con esta actualización.
 
 ## 6. Pruebas y mantenimiento
+
+### Contrato y validación de API
+
+Las rutas JSON pasan por `server/middleware/apiContract.js`. Una respuesta
+exitosa tiene esta forma:
+
+```json
+{
+  "success": true,
+  "data": { "items": [] },
+  "error": null,
+  "requestId": "..."
+}
+```
+
+Una respuesta rechazada usa `success: false`, `data: null` y un objeto `error`
+con `code`, `message` y, cuando la entrada no cumple el esquema, `details`.
+Cada `requestId` puede buscarse en los logs de Render. Los validadores de
+`server/validation/schemas.js` usan Zod para comprobar identificadores,
+paginación, autenticación, carrito, pedidos, reseñas y operaciones
+administrativas antes de ejecutar la lógica de negocio.
+
+Los alias de compatibilidad en el primer nivel se mantendrán mientras los
+clientes externos migran a `data`; no deben usarse para nuevas integraciones.
+
+### Linting y formato
+
+Antes de subir cambios ejecuta:
+
+```bash
+npm ci
+npm run lint
+npm run format:check
+npm test
+```
+
+Para corregir automáticamente el formato de los archivos mantenidos:
+
+```bash
+npm run format
+```
+
+El flujo `.github/workflows/node.js.yml` repite ESLint, Prettier y las pruebas
+para Node 22 y Node 24. El trabajo debe terminar correctamente antes de mezclar
+una solicitud en `main`.
 
 ### Índices y planes de consulta
 

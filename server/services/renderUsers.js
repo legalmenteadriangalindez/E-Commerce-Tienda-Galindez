@@ -8,6 +8,7 @@ dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const catalogPagination = require('./catalogPagination');
 const { PERMISSIONS: P } = require('../config/permissions');
+const { unwrapApiData } = require('./apiResponse');
 
 function canManageRoles(res) {
     return typeof res.locals.can === 'function' && res.locals.can(P.ROLES_MANAGE);
@@ -35,7 +36,7 @@ exports.create_user_form = async (req, res) => {
         );
 
         res.render('admin/users/add_user', {
-            roles: rolesRes.data.items || rolesRes.data || [],
+            roles: unwrapApiData(rolesRes)?.items || unwrapApiData(rolesRes) || [],
             canManageRoles: canManageRoles(res)
         });
 
@@ -92,7 +93,7 @@ exports.read_users = async (req, res) => {
             }
         );
 
-        const payload = response.data;
+        const payload = unwrapApiData(response);
         return res.render("admin/users/read_users", {
             users: payload.items || payload,
             pagination: catalogPagination.buildPagination(req, payload.pagination || {
@@ -128,8 +129,8 @@ exports.update_user = async (req, res) => {
         );
 
         res.render('admin/users/update_user', {
-            user: userRes.data,
-            roles: rolesRes.data.items || rolesRes.data || [],
+            user: unwrapApiData(userRes),
+            roles: unwrapApiData(rolesRes)?.items || unwrapApiData(rolesRes) || [],
             canManageRoles: canManageRoles(res)
         });
 

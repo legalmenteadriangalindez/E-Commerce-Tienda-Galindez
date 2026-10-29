@@ -5,6 +5,7 @@ const internalApiConfig = require('./internalApiConfig');
 const reviewService = require('../business/reviewService');
 const catalog = require('../business/catalogService');
 const catalogPagination = require('./catalogPagination');
+const { unwrapApiData } = require('./apiResponse');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
@@ -97,11 +98,11 @@ exports.create_product_form = async (req, res) => {
 
         res.render('admin/products/create_producto', {
 
-            marcas: marcasRes.data.items || marcasRes.data || [],
+            marcas: unwrapApiData(marcasRes)?.items || unwrapApiData(marcasRes) || [],
 
-            categorias: categoriasRes.data.items || categoriasRes.data || [],
+            categorias: unwrapApiData(categoriasRes)?.items || unwrapApiData(categoriasRes) || [],
 
-            proveedores: proveedoresRes.data.items || proveedoresRes.data || [],
+            proveedores: unwrapApiData(proveedoresRes)?.items || unwrapApiData(proveedoresRes) || [],
         });
 
     } catch (err) {
@@ -139,7 +140,7 @@ exports.update_products = async (req, res) => {
             apiConfig
         );
 
-        const producto = productoResponse.data;
+        const producto = unwrapApiData(productoResponse);
 
         if (!producto) {
             return res.status(404).send("Producto no encontrado");
@@ -159,9 +160,9 @@ exports.update_products = async (req, res) => {
             'admin/products/update_products',
             {
                 producto: producto,
-                marcas: marcasRes.data.items || marcasRes.data || [],
-                categorias: categoriasRes.data.items || categoriasRes.data || [],
-                proveedores: proveedoresRes.data.items || proveedoresRes.data || []
+                marcas: unwrapApiData(marcasRes)?.items || unwrapApiData(marcasRes) || [],
+                categorias: unwrapApiData(categoriasRes)?.items || unwrapApiData(categoriasRes) || [],
+                proveedores: unwrapApiData(proveedoresRes)?.items || unwrapApiData(proveedoresRes) || []
             }
         );
 
@@ -185,7 +186,7 @@ exports.read_products = (req, res) => {
                timeout: 10000
         })
         .then(response => {
-            const payload = response.data;
+            const payload = unwrapApiData(response);
             res.render('admin/products/read_products', {
                 productos: payload.items || payload,
                 pagination: catalogPagination.buildPagination(req, payload.pagination || {
@@ -250,9 +251,9 @@ exports.read_stock = async (req, res) => {
 
         res.render('admin/analytics/stock', {
 
-            stockAlerts: response.data.productos || [],
-            totalAlertas: response.data.totalAlertas || 0,
-            pagination: catalogPagination.buildPagination(req, response.data.pagination || {})
+            stockAlerts: unwrapApiData(response)?.productos || [],
+            totalAlertas: unwrapApiData(response)?.totalAlertas || 0,
+            pagination: catalogPagination.buildPagination(req, unwrapApiData(response)?.pagination || {})
 
         });
 

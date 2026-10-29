@@ -20,7 +20,8 @@ input('buscarProducto').addEventListener('input', event => {
     if (search.length < 2) return;
     searchTimer = setTimeout(async () => {
         try {
-            const products = await request('/api/productos/search?search=' + encodeURIComponent(search));
+            const response = await request('/api/productos/search?search=' + encodeURIComponent(search));
+            const products = response.data || response.items || [];
             const results = input('resultadosBusqueda');
             results.replaceChildren();
             for (const product of products) {

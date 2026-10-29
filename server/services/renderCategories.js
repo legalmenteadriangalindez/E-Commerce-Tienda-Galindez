@@ -4,6 +4,7 @@ const catalog = require('../business/catalogService');
 const dotenv = require('dotenv');
 const internalApiConfig = require('./internalApiConfig');
 const catalogPagination = require('./catalogPagination');
+const { unwrapApiData } = require('./apiResponse');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
@@ -116,7 +117,7 @@ exports.read_categories = (req, res) => {
         }
     })
         .then(response => {
-            const payload = response.data;
+            const payload = unwrapApiData(response);
             res.render('admin/categories/read_categories', {
                 categories: payload.items || payload,
                 pagination: catalogPagination.buildPagination(req, payload.pagination || {
@@ -133,7 +134,7 @@ exports.update_category = (req, res) => {
     axios.get(`${BASE_URL}/api/categorias/${req.query.id}`)
         .then(response => {
             
-            const category = response.data;
+            const category = unwrapApiData(response);
 
             res.render('admin/categories/update_category', { category });
 

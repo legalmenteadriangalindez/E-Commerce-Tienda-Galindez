@@ -7,23 +7,24 @@ const adminPagination = require('../services/adminPagination');
 const { hasPermission, isSuperAdmin } = require('../middleware/auth');
 const { PERMISSIONS: P, SYSTEM_ROLES } = require('../config/permissions');
 
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const axios = require('axios');
 
 const CAMPOS_USUARIO_ADMIN =
-    "nombre email telefono genero direccion barrio ciudad puntoReferencia ubicacion rol estado fechaRegistro";
+    'nombre email telefono genero direccion barrio ciudad puntoReferencia ubicacion rol estado fechaRegistro';
 
 function roleChangeError({ actor, targetId, currentRoleName, nextRoleName }) {
     if (!hasPermission(actor, P.ROLES_MANAGE)) {
-        return "Se requiere el permiso roles:manage para cambiar roles.";
+        return 'Se requiere el permiso roles:manage para cambiar roles.';
     }
     if (String(actor?._id || '') === String(targetId)) {
-        return "No puedes cambiar el rol de tu propia cuenta.";
+        return 'No puedes cambiar el rol de tu propia cuenta.';
     }
     if (currentRoleName === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(actor)) {
-        return "Solo un superadministrador puede modificar esta cuenta.";
+        return 'Solo un superadministrador puede modificar esta cuenta.';
     }
     if (nextRoleName === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(actor)) {
-        return "Solo un superadministrador puede asignar el rol SuperAdmin.";
+        return 'Solo un superadministrador puede asignar el rol SuperAdmin.';
     }
     return null;
 }
@@ -31,43 +32,45 @@ function roleChangeError({ actor, targetId, currentRoleName, nextRoleName }) {
 // CREATE USER
 exports.create = async (req, res) => {
     try {
-        
-        let { nombre, email,password, telefono, direccion, genero, barrio, ciudad, puntoReferencia, ubicacion } = req.body;
+        let { nombre, email, password, telefono, direccion, genero, barrio, ciudad, puntoReferencia, ubicacion } =
+            req.body;
 
         // Validar campos obligatorios
         if (!nombre || !email || !telefono || !direccion || !password) {
             return res.status(400).json({
-                message: "Nombre, email, teléfono, dirección y contraseña son obligatorios."
+                message: 'Nombre, email, teléfono, dirección y contraseña son obligatorios.',
             });
         }
         if (!accounts.validPassword(password)) {
             return res.status(400).json({
-                message: "La contraseña debe tener al menos 12 caracteres (máximo 72 bytes)."
+                message: 'La contraseña debe tener al menos 12 caracteres (máximo 72 bytes).',
             });
         }
         // Normalizar email
         email = accounts.normalizeEmail(email);
-        
+
         // Validar formato de email simple
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            return res.status(400).json({ message: "Email inválido." });
+            return res.status(400).json({ message: 'Email inválido.' });
         }
 
         // Validar teléfono simple (solo números y mínimo 7 dígitos)
         const telefonoRegex = /^\d{7,15}$/;
         if (!telefonoRegex.test(telefono)) {
-            return res.status(400).json({ message: "Teléfono inválido. Debe tener solo números y al menos 7 dígitos." });
+            return res
+                .status(400)
+                .json({ message: 'Teléfono inválido. Debe tener solo números y al menos 7 dígitos.' });
         }
 
         // Validar ubicación
         if (ubicacion) {
             const { lat, lng } = ubicacion;
             if (lat == null || lng == null) {
-                return res.status(400).json({ message: "Ubicación incompleta. Debe incluir lat y lng." });
+                return res.status(400).json({ message: 'Ubicación incompleta. Debe incluir lat y lng.' });
             }
         }
-        
+
         // Buscar rol cliente. La creación administrativa puede asignar otro
         // rol únicamente cuando el actor tiene roles:manage; por defecto una
         // cuenta nueva siempre es Cliente.
@@ -75,7 +78,7 @@ exports.create = async (req, res) => {
 
         if (!rolCliente) {
             return res.status(500).json({
-                message: "Rol Cliente no existe."
+                message: 'Rol Cliente no existe.',
             });
         }
 
@@ -83,17 +86,17 @@ exports.create = async (req, res) => {
         if (Object.prototype.hasOwnProperty.call(req.body, 'rol') && req.body.rol) {
             if (!hasPermission(req.usuarioActual, P.ROLES_MANAGE)) {
                 return res.status(403).json({
-                    message: "Se requiere el permiso roles:manage para asignar un rol."
+                    message: 'Se requiere el permiso roles:manage para asignar un rol.',
                 });
             }
             if (typeof req.body.rol !== 'string' || !mongoose.isValidObjectId(req.body.rol)) {
-                return res.status(400).json({ message: "El rol seleccionado no es válido." });
+                return res.status(400).json({ message: 'El rol seleccionado no es válido.' });
             }
             const requestedRole = await Roldb.findById(req.body.rol).select('nombre');
-            if (!requestedRole) return res.status(400).json({ message: "El rol seleccionado no existe." });
+            if (!requestedRole) return res.status(400).json({ message: 'El rol seleccionado no existe.' });
             if (requestedRole.nombre === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(req.usuarioActual)) {
                 return res.status(403).json({
-                    message: "Solo un superadministrador puede asignar el rol SuperAdmin."
+                    message: 'Solo un superadministrador puede asignar el rol SuperAdmin.',
                 });
             }
             rolAsignado = requestedRole;
@@ -110,25 +113,24 @@ exports.create = async (req, res) => {
             genero,
             direccion,
             barrio,
-            ciudad: ciudad || "Timbio",
+            ciudad: ciudad || 'Timbio',
             puntoReferencia,
             ubicacion,
             rol: rolAsignado._id,
-            estado: "Activo"
+            estado: 'Activo',
         });
 
         const data = await user.save();
-const userResponse = data.toObject();
+        const userResponse = data.toObject();
 
-delete userResponse.password;
-delete userResponse.verificationCode;
-delete userResponse.verificationExpire;
+        delete userResponse.password;
+        delete userResponse.verificationCode;
+        delete userResponse.verificationExpire;
 
-return res.status(201).json(userResponse);
-
+        return res.status(201).json(userResponse);
     } catch (err) {
         if (err.code === 11000) {
-            return res.status(400).json({ message: "El email ya existe." });
+            return res.status(400).json({ message: 'El email ya existe.' });
         }
         res.status(500).json({ message: publicError(err) });
     }
@@ -136,35 +138,31 @@ return res.status(201).json(userResponse);
 
 // FIND USERS
 
-
 exports.find = async (req, res) => {
     try {
         if (req.params.id) {
-
             if (!mongoose.isValidObjectId(req.params.id)) {
                 return res.status(400).json({
-                    message: "ID de usuario inválido"
+                    message: 'ID de usuario inválido',
                 });
             }
 
-            const user = await Userdb.findById(req.params.id)
-                .select(CAMPOS_USUARIO_ADMIN)
-                .populate("rol", "nombre");
+            const user = await Userdb.findById(req.params.id).select(CAMPOS_USUARIO_ADMIN).populate('rol', 'nombre');
 
             if (!user) {
                 return res.status(404).json({
-                    message: "Usuario no encontrado"
+                    message: 'Usuario no encontrado',
                 });
             }
 
             if (user.rol?.nombre === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(req.usuarioActual)) {
-                return res.status(404).json({ message: "Usuario no encontrado" });
+                return res.status(404).json({ message: 'Usuario no encontrado' });
             }
 
             return res.json(user);
         }
 
-        const filter = { estado: "Activo" };
+        const filter = { estado: 'Activo' };
         if (!isSuperAdmin(req.usuarioActual)) {
             const superRole = await Roldb.findOne({ nombre: SYSTEM_ROLES.SUPER_ADMIN }).select('_id').lean();
             if (superRole) filter.rol = { $ne: superRole._id };
@@ -174,38 +172,36 @@ exports.find = async (req, res) => {
         const pagination = adminPagination.metadata(page, limit, totalItems);
         const users = await Userdb.find(filter)
             .select(CAMPOS_USUARIO_ADMIN)
-            .populate("rol", "nombre")
+            .populate('rol', 'nombre')
             .sort({ fechaRegistro: -1, _id: -1 })
             .skip((pagination.page - 1) * limit)
             .limit(limit)
             .lean();
 
         return res.json({ items: users, pagination });
-
     } catch (error) {
-        console.error("Error consultando usuarios:", error.message);
+        console.error('Error consultando usuarios:', error.message);
 
         return res.status(500).json({
-            message: "No se pudieron consultar los usuarios"
+            message: 'No se pudieron consultar los usuarios',
         });
     }
 };
-
 
 // UPDATE USER
 exports.update = async (req, res) => {
     try {
         if (!req.body || Object.keys(req.body).length === 0) {
-            return res.status(400).json({ message: "Datos vacíos, nada que actualizar." });
+            return res.status(400).json({ message: 'Datos vacíos, nada que actualizar.' });
         }
 
         const id = req.params.id;
         if (!mongoose.isValidObjectId(id)) {
-            return res.status(400).json({ message: "ID de usuario inválido." });
+            return res.status(400).json({ message: 'ID de usuario inválido.' });
         }
 
         const current = await Userdb.findById(id).populate('rol', 'nombre');
-        if (!current) return res.status(404).json({ message: "Usuario no encontrado." });
+        if (!current) return res.status(404).json({ message: 'Usuario no encontrado.' });
 
         const actor = req.usuarioActual;
         const actorIsSuperAdmin = isSuperAdmin(actor);
@@ -214,7 +210,7 @@ exports.update = async (req, res) => {
         // operativo, ni siquiera para desactivarla o cambiarle el correo.
         if (current.rol?.nombre === SYSTEM_ROLES.SUPER_ADMIN && !actorIsSuperAdmin) {
             return res.status(403).json({
-                message: "Solo un superadministrador puede modificar esta cuenta."
+                message: 'Solo un superadministrador puede modificar esta cuenta.',
             });
         }
 
@@ -232,7 +228,7 @@ exports.update = async (req, res) => {
             'ciudad',
             'puntoReferencia',
             'ubicacion',
-            'estado'
+            'estado',
         ];
         const updateData = {};
         for (let key of allowedFields) {
@@ -241,17 +237,17 @@ exports.update = async (req, res) => {
 
         if (roleFieldProvided) {
             if (typeof req.body.rol !== 'string' || !mongoose.isValidObjectId(req.body.rol)) {
-                return res.status(400).json({ message: "El rol seleccionado no es válido." });
+                return res.status(400).json({ message: 'El rol seleccionado no es válido.' });
             }
 
             const nextRole = await Roldb.findById(req.body.rol).select('nombre');
-            if (!nextRole) return res.status(400).json({ message: "El rol seleccionado no existe." });
+            if (!nextRole) return res.status(400).json({ message: 'El rol seleccionado no existe.' });
 
             const roleError = roleChangeError({
                 actor,
                 targetId: id,
                 currentRoleName: current.rol?.nombre,
-                nextRoleName: nextRole.nombre
+                nextRoleName: nextRole.nombre,
             });
             if (roleError) {
                 return res.status(403).json({ message: roleError });
@@ -267,11 +263,10 @@ exports.update = async (req, res) => {
         }
 
         // Actualizar contraseña si viene
-        if (req.body.password && req.body.password.trim() !== "") {
-
+        if (req.body.password && req.body.password.trim() !== '') {
             if (!accounts.validPassword(req.body.password)) {
                 return res.status(400).json({
-                    message: "La contraseña debe tener al menos 12 caracteres (máximo 72 bytes)."
+                    message: 'La contraseña debe tener al menos 12 caracteres (máximo 72 bytes).',
                 });
             }
 
@@ -288,16 +283,19 @@ exports.update = async (req, res) => {
 
         const data = await Userdb.findByIdAndUpdate(
             id,
-            { $set: updateData, ...((updateData.password || updateData.email || roleChanged) ? { $inc: { authVersion: 1 } } : {}) },
+            {
+                $set: updateData,
+                ...(updateData.password || updateData.email || roleChanged ? { $inc: { authVersion: 1 } } : {}),
+            },
             {
                 new: true,
-                runValidators: true
+                runValidators: true,
             }
         )
             .select(CAMPOS_USUARIO_ADMIN)
-            .populate("rol", "nombre");
+            .populate('rol', 'nombre');
 
-        if (!data) return res.status(404).json({ message: "Usuario no encontrado." });
+        if (!data) return res.status(404).json({ message: 'Usuario no encontrado.' });
 
         res.json(data);
     } catch (err) {
@@ -307,7 +305,6 @@ exports.update = async (req, res) => {
 
 exports.update_user = async (req, res) => {
     try {
-
         const id = req.params.id;
 
         const response = await axios.get(`http://localhost:3000/api/users/${id}`);
@@ -315,9 +312,7 @@ exports.update_user = async (req, res) => {
         const user = response.data;
 
         res.render('update_user', { user });
-
     } catch (err) {
-        
         res.status(errorStatus(err)).send(publicError(err));
     }
 };
@@ -326,62 +321,53 @@ exports.update_user = async (req, res) => {
 exports.delete = async (req, res) => {
     try {
         if (!mongoose.isValidObjectId(req.params.id)) {
-            return res.status(400).json({ message: "ID de usuario inválido." });
+            return res.status(400).json({ message: 'ID de usuario inválido.' });
         }
 
         const target = await Userdb.findById(req.params.id).populate('rol', 'nombre');
-        if (!target) return res.status(404).json({ message: "Usuario no encontrado." });
+        if (!target) return res.status(404).json({ message: 'Usuario no encontrado.' });
         if (target.rol?.nombre === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(req.usuarioActual)) {
-            return res.status(403).json({ message: "Solo un superadministrador puede desactivar esta cuenta." });
+            return res.status(403).json({ message: 'Solo un superadministrador puede desactivar esta cuenta.' });
         }
 
-        const data = await Userdb.findByIdAndUpdate(
-            req.params.id,
-            { $set: { estado: "Inactivo" } },
-            { new: true }
-        );
-        if (!data) return res.status(404).json({ message: "Usuario no encontrado." });
+        const data = await Userdb.findByIdAndUpdate(req.params.id, { $set: { estado: 'Inactivo' } }, { new: true });
+        if (!data) return res.status(404).json({ message: 'Usuario no encontrado.' });
 
-        res.json({ message: "Usuario marcado como inactivo." });
+        res.json({ message: 'Usuario marcado como inactivo.' });
     } catch (err) {
         res.status(500).json({ message: publicError(err) });
     }
 };
 
-
 // SEARCH USERS (NUEVO)
 exports.search = async (req, res) => {
     try {
-        const search = (req.query.search || "").trim();
+        const search = (req.query.search || '').trim();
 
         if (!search) {
             return res.json([]);
         }
 
         const filter = {
-            estado: "Activo",
+            estado: 'Activo',
             $or: [
-                { nombre: { $regex: search, $options: "i" } },
-                { email: { $regex: search, $options: "i" } },
-                { telefono: { $regex: search, $options: "i" } }
-            ]
+                { nombre: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+                { telefono: { $regex: search, $options: 'i' } },
+            ],
         };
         if (!isSuperAdmin(req.usuarioActual)) {
             const superRole = await Roldb.findOne({ nombre: SYSTEM_ROLES.SUPER_ADMIN }).select('_id').lean();
             if (superRole) filter.rol = { $ne: superRole._id };
         }
 
-        const users = await Userdb.find(filter)
-        .select(CAMPOS_USUARIO_ADMIN)
-        .limit(10);
+        const users = await Userdb.find(filter).select(CAMPOS_USUARIO_ADMIN).limit(10);
 
         return res.json(users);
-
     } catch (err) {
-        
         return res.status(500).json({
-            message: "Error buscando usuarios",
-            error: err.message
+            message: 'Error buscando usuarios',
+            error: err.message,
         });
     }
 };

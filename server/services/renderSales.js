@@ -7,6 +7,7 @@ dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const catalogPagination = require('./catalogPagination');
 const salesCsv = require('./salesCsv');
+const { unwrapApiData } = require('./apiResponse');
 
 
 function configApi(req) {
@@ -40,7 +41,7 @@ exports.sales = async (req, res) => {
             }
         });
 
-        const payload = response.data;
+        const payload = unwrapApiData(response);
         res.render('admin/sales/read_sales', {
            sales: payload.items || payload,
            pagination: catalogPagination.buildPagination(req, payload.pagination || {
@@ -81,7 +82,7 @@ const response = await axios.get(
     configApi(req)
 );
 
-        const venta = response.data;
+        const venta = unwrapApiData(response);
 
         res.render(
             "admin/sales/read_detailsSales",
@@ -108,7 +109,7 @@ exports.profit_margins = async (req, res) => {
         res.render(
             'admin/analytics/profit_margins',
             {
-                products: response.data || []
+                products: unwrapApiData(response) || []
             }
         );
 
@@ -133,7 +134,7 @@ exports.best_selling_products = async (req, res) => {
         res.render(
             'admin/analytics/best_selling_products',
             {
-                products: response.data || []
+                products: unwrapApiData(response) || []
             }
         );
 

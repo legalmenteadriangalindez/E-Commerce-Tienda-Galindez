@@ -4,6 +4,7 @@ const axios = require('axios');
 const dotenv = require('dotenv');
 const internalApiConfig = require('./internalApiConfig');
 const catalogPagination = require('./catalogPagination');
+const { unwrapApiData } = require('./apiResponse');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
@@ -35,7 +36,7 @@ exports.read_providers = (req, res) => {
         }
     })
         .then(response => {
-            const payload = response.data;
+            const payload = unwrapApiData(response);
             res.render('admin/providers/read_providers', {
                 providers: payload.items || payload,
                 pagination: catalogPagination.buildPagination(req, payload.pagination || {
@@ -51,7 +52,7 @@ exports.edit_provider_form = async (req, res) => {
     try {
         const id = req.query.id; // ejemplo: /update-proveedor?id=123
         const response = await axios.get(`${BASE_URL}/api/proveedores/${id}`, internalApiConfig(req));
-        const provider = response.data;
+        const provider = unwrapApiData(response);
         res.render('admin/providers/update_provider', { provider }); // renderiza el EJS con los datos
     } catch (err) {
         
@@ -80,7 +81,7 @@ exports.update_provider_data = async (req, res) => {
 exports.update_provider = (req, res) => {
     axios.get(`${BASE_URL}/api/proveedores`, { params: { id: req.query.id }})
         .then(response => {
-            res.render('admin/providers/update_provider', { provider: response.data });
+            res.render('admin/providers/update_provider', { provider: unwrapApiData(response) });
         })
         .catch(err => res.status(errorStatus(err)).send(publicError(err)));
 };

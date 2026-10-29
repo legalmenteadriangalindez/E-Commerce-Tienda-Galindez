@@ -1,8 +1,9 @@
 function publicError(error) {
     if (error?.expose && typeof error.message === 'string') return error.message.slice(0, 500);
     const status = error?.response?.status;
-    const message = error?.response?.data?.message;
-    if ([400, 401, 403, 404, 409, 422, 429].includes(status) && typeof message === 'string') return message.slice(0, 500);
+    const message = error?.response?.data?.error?.message || error?.response?.data?.message;
+    if ([400, 401, 403, 404, 409, 422, 429].includes(status) && typeof message === 'string')
+        return message.slice(0, 500);
     return 'No se pudo completar la solicitud. Inténtalo de nuevo.';
 }
 function errorStatus(error) {

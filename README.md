@@ -25,6 +25,8 @@ Los pagos están desactivados inicialmente. Para probarlos, configura las cuatro
 
 ```text
 npm run check
+npm run lint
+npm run format:check
 npm test
 npm run test:integration
 npm run maintenance
@@ -32,6 +34,18 @@ npm audit --omit=dev
 ```
 
 `check` valida JavaScript, plantillas y carga de rutas. `test` omite integraciones si no hay servidor temporal. `test:integration` inicia su propio MongoDB temporal; requiere `mongod` en PATH o la variable `MONGOD_BINARY`. No utiliza tu base de desarrollo o producción.
+
+Las respuestas JSON de `/api` y de las rutas auxiliares JSON del carrito usan el
+contrato `{ success, data, error, requestId }`. En errores, `error` contiene un
+código, un mensaje seguro y, cuando corresponde, detalles de validación. Las
+entradas de las rutas principales se validan con esquemas Zod antes de llegar a
+los controladores. `message`, `items` y otros campos de primer nivel se conservan
+temporalmente como alias para clientes antiguos; las integraciones nuevas deben
+leer `data` y `error`.
+
+ESLint y Prettier se ejecutan en cada cambio mediante GitHub Actions para Node 22
+y 24. `npm run format` corrige automáticamente los archivos mantenidos por el
+proyecto y `npm run format:check` comprueba que no queden cambios de formato.
 
 ### Migraciones de MongoDB
 

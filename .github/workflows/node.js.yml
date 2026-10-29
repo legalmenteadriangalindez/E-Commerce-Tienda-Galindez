@@ -10,6 +10,28 @@ concurrency:
   group: tienda-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  quality:
+    name: Calidad y formato (Node ${{ matrix.node }})
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - name: Instalar dependencias de desarrollo
+        run: npm ci
+      - name: ESLint
+        run: npm run lint
+      - name: Formato Prettier
+        run: npm run format:check
+      - name: Pruebas unitarias y de rutas
+        run: npm test
   verify:
     runs-on: ubuntu-22.04
     timeout-minutes: 15

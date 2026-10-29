@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const catalogPagination = require('./catalogPagination');
+const { unwrapApiData } = require('./apiResponse');
 
 // Configuración para peticiones a nuestra propia API
 function configApi(req) {
@@ -37,9 +38,9 @@ const [productosRes, usuariosRes] = await Promise.all([
 
         res.render('admin/orders/create_order', {
 
-            productos: productosRes.data.items || productosRes.data || [],
+            productos: unwrapApiData(productosRes)?.items || unwrapApiData(productosRes) || [],
 
-            usuarios: usuariosRes.data.items || usuariosRes.data || []
+            usuarios: unwrapApiData(usuariosRes)?.items || unwrapApiData(usuariosRes) || []
         });
 
     } catch (err) {
@@ -66,7 +67,7 @@ axios.get(
 
         .then(response => {
 
-            const payload = response.data;
+            const payload = unwrapApiData(response);
             res.render('admin/orders/read_orders', {
                 orders: payload.items || payload,
                 pagination: catalogPagination.buildPagination(req, payload.pagination || {
@@ -95,7 +96,7 @@ const response = await axios.get(
 
         res.render('admin/orders/update_order', {
 
-            order: response.data
+            order: unwrapApiData(response)
         });
 
     } catch (err) {
@@ -166,7 +167,7 @@ exports.detail_order = (req, res) => {
 
         res.render('admin/orders/detail_orders', {
 
-            order: response.data.data
+            order: unwrapApiData(response)
         });
     })
 

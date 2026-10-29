@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const internalApiConfig = require('./internalApiConfig');
 const catalogPagination = require('./catalogPagination');
 const { PERMISSION_KEYS, PERMISSION_LABELS } = require('../config/permissions');
+const { unwrapApiData } = require('./apiResponse');
 
 dotenv.config();
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
@@ -27,7 +28,7 @@ exports.read_roles = (req, res) => {
         }
     })
         .then(response => {
-            const payload = response.data;
+            const payload = unwrapApiData(response);
             res.render('admin/rols/read_rols', {
                 roles: payload.items || payload,
                 permissionLabels: PERMISSION_LABELS,
@@ -43,11 +44,12 @@ exports.read_roles = (req, res) => {
 exports.update_rol = (req, res) => {
     axios.get(`${BASE_URL}/api/roles?id=${req.query.id}`, internalApiConfig(req))
         .then(response => {
+            const rol = unwrapApiData(response);
             res.render('admin/rols/update_roles', {
-                rol: response.data,
+                rol,
                 permissionKeys: PERMISSION_KEYS,
                 permissionLabels: PERMISSION_LABELS,
-                selectedPermissions: response.data.permisos || []
+                selectedPermissions: rol.permisos || []
             });
         })
         .catch(err => res.status(errorStatus(err)).send(publicError(err)));

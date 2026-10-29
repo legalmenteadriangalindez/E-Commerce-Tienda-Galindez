@@ -5,17 +5,18 @@ const { isLogged, requirePermission } = require('../middleware/auth');
 const { PERMISSIONS: P } = require('../config/permissions');
 
 const cartController = require('../controller/cart_controller');
-
+const { validate } = require('../middleware/validateRequest');
+const schemas = require('../validation/schemas');
 
 // API
 // agregar producto
-router.post('/add',isLogged, cartController.add_to_carrito);
-router.post('/remove', isLogged, cartController.remove_from_carrito);
-router.post('/checkout', isLogged, cartController.checkout);
+router.post('/add', isLogged, validate(schemas.cartAdd), cartController.add_to_carrito);
+router.post('/remove', isLogged, validate(schemas.cartRemove), cartController.remove_from_carrito);
+router.post('/checkout', isLogged, validate(schemas.cartCheckout), cartController.checkout);
 router.post('/pay/:id', isLogged, cartController.retryPayment);
 router.post('/checkout_admin', requirePermission(P.PAYMENTS_MANAGE), cartController.checkout_admin);
-router.post('/payment_point', isLogged, cartController.payment_point);
-router.get('/get_carrito',isLogged, cartController.get_carrito)
-router.post('/get_wompi_webhook', cartController.wompiWebhook)
+router.post('/payment_point', isLogged, validate(schemas.paymentPoint), cartController.payment_point);
+router.get('/get_carrito', isLogged, cartController.get_carrito);
+router.post('/get_wompi_webhook', cartController.wompiWebhook);
 
 module.exports = router;

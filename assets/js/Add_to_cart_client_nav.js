@@ -19,8 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await res.json();
             const cartCount = document.getElementById('cart-count');
-            if (cartCount && Array.isArray(data.cart)) {
-                const total = data.cart.reduce(
+            const payload = data.data || data;
+            if (cartCount && Array.isArray(payload.cart)) {
+                const total = payload.cart.reduce(
                     (acc, item) => acc + item.cantidad,
                     0
                 );
