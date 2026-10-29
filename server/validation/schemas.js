@@ -94,14 +94,26 @@ const user = passthrough({
 const orderUpdate = passthrough({ estado: z.string().trim().min(1).max(40) });
 const review = passthrough({
     producto: objectId.optional(),
-    calificacion: z.coerce.number().int().min(1).max(5).optional(),
+    // Las peticiones de formularios llegan como texto, pero no debemos
+    // convertir arrays, booleanos o valores como "1e0" en una calificación
+    // válida antes de que el controlador pueda rechazarlos.
+    calificacion: z
+        .union([z.number().int().min(1).max(5), z.string().regex(/^[1-5]$/, 'La calificación debe ser de 1 a 5.')])
+        .optional(),
     comentario: text(1000).optional(),
 });
 const adminReview = passthrough({
     texto: optionalText(1000),
     motivo: optionalText(500),
     oculta: z.union([z.boolean(), z.enum(['true', 'false'])]).optional(),
-    version: z.coerce.number().int().min(0).max(Number.MAX_SAFE_INTEGER).optional(),
+    // El número de versión también puede llegar como texto desde un
+    // formulario, pero solo se aceptan enteros decimales explícitos.
+    version: z
+        .union([
+            z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
+            z.string().regex(/^\d{1,16}$/, 'La versión debe ser un entero.'),
+        ])
+        .optional(),
     _csrf: optionalText(200),
     returnTo: optionalText(500),
 });
