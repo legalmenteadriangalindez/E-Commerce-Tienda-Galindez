@@ -140,7 +140,12 @@
         </div>
 
         <!-- COLUMNA DERECHA -->
-        <div class="summary-card">
+        <div
+            class="summary-card"
+            id="billingSummary"
+            data-shipping-price-cents="<%= shippingPriceCents %>"
+            data-free-shipping-from-cents="<%= freeShippingFromCents %>"
+        >
 
             <div class="section-title">
 
@@ -169,6 +174,16 @@
 
             </div>
 
+            <div class="summary-line">
+
+                <span>Envío</span>
+
+                <span id="shipping">
+                    Gratis
+                </span>
+
+            </div>
+
             <div class="summary-line total">
 
                 <span>Total</span>
@@ -178,6 +193,10 @@
                 </span>
 
             </div>
+
+            <small class="shipping-hint" id="shippingHint">
+                Envío gratis desde $<%= Number(freeShippingFromCents / 100).toLocaleString('es-CO') %>.
+            </small>
 
             <div class="divider"></div>
 

@@ -78,6 +78,14 @@ button {
     height: fit-content;
 }
 
+.shipping-hint {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--primary-dark);
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
 /* títulos sección */
 .section-title {
     font-size: 1.4rem;

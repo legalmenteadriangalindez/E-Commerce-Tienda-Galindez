@@ -174,7 +174,12 @@
                 </div>
             </div>
 
-            <div class="summary-card">
+            <div
+                class="summary-card checkout-summary"
+                data-subtotal-cents="<%= subtotalCents %>"
+                data-shipping-price-cents="<%= shippingPriceCents %>"
+                data-free-shipping-from-cents="<%= freeShippingFromCents || 0 %>"
+            >
                 <div class="section-title">
                     <i class="fas fa-bag-shopping"></i>
                     <span>Tu pedido</span>
@@ -214,15 +219,15 @@
 
                 <div class="summary-line text-sumary">
                     <span>Subtotal</span>
-                    <span>
+                    <span id="checkoutSubtotal">
                         $<%= Number(subtotal).toLocaleString('es-CO') %>
                     </span>
                 </div>
 
                 <div class="summary-line text-sumary">
                     <span>Envío</span>
-                    <span>
-                        $<%= Number(costoEnvio).toLocaleString('es-CO') %>
+                    <span id="checkoutShipping">
+                        <%= costoEnvio === 0 ? 'Gratis' : '$' + Number(costoEnvio).toLocaleString('es-CO') %>
                     </span>
                 </div>
 
@@ -231,10 +236,14 @@
 
                 <div class="summary-line total text-sumary">
                     <span>Total a pagar</span>
-                    <span>
+                    <span id="checkoutTotal">
                         $<%= Number(total).toLocaleString('es-CO') %>
                     </span>
                 </div>
+
+                <small class="shipping-hint">
+                    El envío se recalcula automáticamente según el subtotal del pedido.
+                </small>
 
                 <button type="submit" class="pay-btn">
                     <i class="fas fa-lock"></i>

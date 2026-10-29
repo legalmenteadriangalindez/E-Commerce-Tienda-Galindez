@@ -13,7 +13,11 @@
     de compras y realiza el checkout cuando estés listo.
 </p>
 
-<main class="main-cart">
+<main
+  class="main-cart"
+  data-shipping-price-cents="<%= shippingPriceCents %>"
+  data-free-shipping-from-cents="<%= freeShippingFromCents %>"
+>
 
   <div class="cart-wrapper">
 
@@ -48,7 +52,11 @@
 
           <% productosCarrito.forEach((producto, index) => { %>
 
-          <article class="product-card" data-price="<%= producto.precio %>">
+          <article
+            class="product-card"
+            data-price="<%= producto.precio %>"
+            data-price-cents="<%= producto.precioCents || Math.round(Number(producto.precio) * 100) %>"
+          >
 
             <!-- Imagen -->
             <div class="img-container">
@@ -95,7 +103,7 @@
             <!-- Precio -->
           <p class="price item-total">
 
-            $<%= (producto.precio * producto.cantidad).toFixed(2) %>
+          $<%= Number(producto.precio * producto.cantidad).toLocaleString('es-CO') %>
 
           </p>
 
@@ -141,8 +149,8 @@
             Envío
           </span>
 
-          <span class="text-sumary free">
-            Gratis
+          <span class="text-sumary free" id="shipping">
+            <%= costoEnvio === 0 ? 'Gratis' : '$' + Number(costoEnvio).toLocaleString('es-CO') %>
           </span>
 
         </div>
@@ -159,8 +167,12 @@
           class="text-sumary total-amount"
           id="total"
         >
-          $<%= subtotal.toFixed(2) %>
+          $<%= Number(total).toLocaleString('es-CO') %>
         </span>
+
+        <small class="shipping-hint" id="shippingHint">
+          Envío gratis desde $<%= Number(freeShippingFromCents / 100).toLocaleString('es-CO') %>.
+        </small>
 
         </div>
 

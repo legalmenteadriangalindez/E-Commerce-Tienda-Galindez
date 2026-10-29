@@ -93,9 +93,24 @@ function normalizedCart(cart) {
         return { productoId: id, cantidad };
     });
 }
+function shippingPolicy() {
+    const freeAtCents = cents(process.env.FREE_SHIPPING_FROM || '30000');
+    const priceCents = cents(process.env.SHIPPING_PRICE || '5000');
+    return { freeAtCents, priceCents };
+}
+function shippingForSubtotal(subtotalCents) {
+    if (!Number.isSafeInteger(subtotalCents) || subtotalCents < 0) throw new CommerceError('Subtotal fuera de rango.');
+    const { freeAtCents, priceCents } = shippingPolicy();
+    const shippingCents = subtotalCents >= freeAtCents ? 0 : priceCents;
+    return {
+        freeAtCents,
+        priceCents,
+        shippingCents,
+        isFree: shippingCents === 0,
+    };
+}
 function totals(subtotalCents) {
-    const freeAt = cents(process.env.FREE_SHIPPING_FROM || '30000');
-    const shipping = subtotalCents >= freeAt ? 0 : cents(process.env.SHIPPING_PRICE || '5000');
+    const { shippingCents: shipping } = shippingForSubtotal(subtotalCents);
     if (!Number.isSafeInteger(subtotalCents + shipping)) throw new CommerceError('Total fuera de rango.');
     // Los precios publicados incluyen los impuestos aplicables; no se añaden tasas inventadas.
     const total = subtotalCents + shipping;
@@ -682,9 +697,11 @@ module.exports = {
     WOMPI_METHODS,
     normalizePaymentMethod,
     isCashOnDelivery,
+    shippingPolicy,
+    shippingForSubtotal,
+    totals,
     cents,
     quote,
-    totals,
     normalizedCart,
     customerData,
     createOrder,

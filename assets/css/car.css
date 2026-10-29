@@ -519,6 +519,14 @@ body {
     font-size: 0.95rem;
 }
 
+.shipping-hint {
+    display: block;
+    margin-top: 0.35rem;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
 /* =========================================================
    ENVÍO GRATIS
    ========================================================= */

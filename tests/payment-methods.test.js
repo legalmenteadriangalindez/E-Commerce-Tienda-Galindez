@@ -19,6 +19,39 @@ test('normaliza los medios de pago del cliente y del punto de venta', () => {
     assert.throws(() => commerce.normalizePaymentMethod('transferencia', 'WOMPI'), /medio de pago válido/i);
 });
 
+test('calcula el envío y el total según el umbral configurado', () => {
+    const previousShipping = process.env.SHIPPING_PRICE;
+    const previousFreeShipping = process.env.FREE_SHIPPING_FROM;
+    process.env.SHIPPING_PRICE = '5000';
+    process.env.FREE_SHIPPING_FROM = '30000';
+    try {
+        assert.deepEqual(commerce.shippingPolicy(), { priceCents: 500000, freeAtCents: 3000000 });
+        assert.deepEqual(commerce.shippingForSubtotal(2999900), {
+            priceCents: 500000,
+            freeAtCents: 3000000,
+            shippingCents: 500000,
+            isFree: false,
+        });
+        assert.deepEqual(commerce.totals(3000000), {
+            subtotalCents: 3000000,
+            impuestosCents: 0,
+            costoEnvioCents: 0,
+            descuentoCents: 0,
+            totalCents: 3000000,
+            subtotal: 30000,
+            impuestos: 0,
+            costoEnvio: 0,
+            descuento: 0,
+            total: 30000,
+        });
+    } finally {
+        if (previousShipping === undefined) delete process.env.SHIPPING_PRICE;
+        else process.env.SHIPPING_PRICE = previousShipping;
+        if (previousFreeShipping === undefined) delete process.env.FREE_SHIPPING_FROM;
+        else process.env.FREE_SHIPPING_FROM = previousFreeShipping;
+    }
+});
+
 test('el filtro de reparto incluye contra entrega sin mezclar pedidos no cobrados de Wompi', () => {
     const all = delivery.baseDeliveryFilter();
     const cash = all.$or.find((part) => part.metodoPago === 'CASH_ON_DELIVERY');

@@ -43,8 +43,19 @@ exports.add_to_carrito = wrap(async (req, res) => {
     await save(req);
     res.json({ success: true, message: 'Se agregó el producto al carrito', cart });
 });
-exports.get_carrito = (req, res) =>
-    res.json({ success: true, totalItems: (req.session.cart || []).length, cart: req.session.cart || [] });
+exports.get_carrito = (req, res) => {
+    const cart = req.session.cart || [];
+    const subtotalCents = cart.reduce(
+        (acc, item) => acc + money.readCents(item.precioCents, item.precio) * Number(item.cantidad || 0),
+        0
+    );
+    return res.json({
+        success: true,
+        totalItems: cart.length,
+        cart,
+        ...commerce.totals(subtotalCents),
+    });
+};
 exports.remove_from_carrito = wrap(async (req, res) => {
     if (!mongoose.isObjectIdOrHexString(req.body.productoId)) throw new commerce.CommerceError('Producto inválido.');
     req.session.cart = (req.session.cart || []).filter((item) => item.productoId !== req.body.productoId);

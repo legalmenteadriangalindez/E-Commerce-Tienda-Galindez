@@ -36,11 +36,14 @@ exports.checkout = (admin) =>
         if (prior) delete req.session[keyName];
         req.session[keyName] ||= crypto.randomUUID();
         const priced = await commerce.quote(cart);
+        const shipping = commerce.shippingPolicy();
         await saveSession(req);
         res.render(admin ? 'admin/payment/payment_point' : 'client/payment/payment_point', {
             user: req.usuarioActual || req.session.user,
             productosCarrito: priced.productos.map((item) => ({ ...item, precio: item.precioUnitario })),
             ...priced,
+            shippingPriceCents: shipping.priceCents,
+            freeShippingFromCents: shipping.freeAtCents,
             claveCheckout: req.session.claveCheckout,
             claveIdempotenciaCaja: req.session.claveIdempotenciaCaja,
             paymentMethods: admin

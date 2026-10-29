@@ -1,5 +1,6 @@
 'use strict';
 const money = (value) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value);
+const moneyCents = (value) => money(Math.max(0, Math.round(Number(value) || 0)) / 100);
 const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content || '';
 const input = (id) => document.getElementById(id);
 async function request(path, body) {
@@ -47,12 +48,12 @@ async function cargarCarrito() {
     const list = input('listaProductos');
     list.replaceChildren();
     input('productosHidden').replaceChildren();
-    let subtotal = 0;
     for (const item of data.cart) {
         const row = document.createElement('div');
         row.className = 'order-item';
         const label = document.createElement('p');
-        label.textContent = item.nombre + ' × ' + item.cantidad + ' · ' + money(item.precio * item.cantidad);
+        const precioCents = Number(item.precioCents ?? Math.round(Number(item.precio) * 100));
+        label.textContent = item.nombre + ' × ' + item.cantidad + ' · ' + moneyCents(precioCents * item.cantidad);
         const remove = document.createElement('button');
         remove.type = 'button';
         remove.className = 'delete-item-btn';
@@ -67,12 +68,31 @@ async function cargarCarrito() {
         });
         row.append(label, remove);
         list.appendChild(row);
-        subtotal += Number(item.precio) * Number(item.cantidad);
     }
     if (!data.cart.length) list.textContent = 'Agrega productos a la venta.';
-    input('subtotal').textContent = money(subtotal);
+    const fallbackSubtotalCents = data.cart.reduce(
+        (total, item) => total + Number(item.precioCents ?? Math.round(Number(item.precio) * 100)) * item.cantidad,
+        0
+    );
+    const subtotalCents = Number(data.subtotalCents ?? fallbackSubtotalCents);
+    const summary = input('billingSummary');
+    const shippingPriceCents = Number(summary?.dataset.shippingPriceCents || 0);
+    const freeShippingFromCents = Number(summary?.dataset.freeShippingFromCents || 0);
+    const shippingCents = Number(
+        data.costoEnvioCents ?? (subtotalCents >= freeShippingFromCents ? 0 : shippingPriceCents)
+    );
+    const totalCents = Number(data.totalCents ?? subtotalCents + shippingCents);
+    input('subtotal').textContent = moneyCents(subtotalCents);
     input('iva').textContent = 'Incluidos';
-    input('total').textContent = money(subtotal) + ' + envío, si aplica';
+    input('shipping').textContent = shippingCents === 0 ? 'Gratis' : moneyCents(shippingCents);
+    input('total').textContent = moneyCents(totalCents);
+    const hint = input('shippingHint');
+    if (hint) {
+        hint.textContent =
+            shippingCents === 0
+                ? 'Este pedido tiene envío gratis.'
+                : `Envío gratis desde ${moneyCents(freeShippingFromCents)}.`;
+    }
 }
 async function agregarProducto() {
     const productoId = input('productoId').value;

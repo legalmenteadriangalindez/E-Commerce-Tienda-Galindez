@@ -1,5 +1,6 @@
 const { publicError } = require('../services/publicError');
 const Ordendb = require('../model/order');
+const commerce = require('../business/commerceService');
 const money = require('../services/money');
 
 // RENDER CART
@@ -10,11 +11,14 @@ exports.car = async (req, res) => {
             (acc, item) => acc + money.readCents(item.precioCents, item.precio) * item.cantidad,
             0
         );
-        const subtotal = money.fromCents(subtotalCents);
+        const summary = commerce.totals(subtotalCents);
+        const shipping = commerce.shippingPolicy();
         return res.render('client/cart/cart', {
             productosCarrito: cart,
             user: req.session.user,
-            subtotal,
+            ...summary,
+            shippingPriceCents: shipping.priceCents,
+            freeShippingFromCents: shipping.freeAtCents,
         });
     } catch (err) {
         return res.status(500).send(publicError(err));
