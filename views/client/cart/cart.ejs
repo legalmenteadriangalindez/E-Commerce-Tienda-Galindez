@@ -4,20 +4,22 @@
 
 <link rel="stylesheet" href="/assets/css/car.css">
 
-<div class="container">
-    <h1>Carrito de Compras</h1>
-</div>
-
-<p>
-    Revisa los productos que has agregado a tu carrito
-    de compras y realiza el checkout cuando estés listo.
-</p>
-
 <main
   class="main-cart"
   data-shipping-price-cents="<%= shippingPriceCents %>"
   data-free-shipping-from-cents="<%= freeShippingFromCents %>"
 >
+
+  <header class="cart-page-header">
+    <div class="cart-page-icon" aria-hidden="true">
+      <i class="fas fa-basket-shopping"></i>
+    </div>
+    <div>
+      <p class="cart-eyebrow">Compra fácil y segura</p>
+      <h1>Tu despensa</h1>
+      <p class="cart-page-subtitle">Revisa tus productos, ajusta las cantidades y continúa con el pago.</p>
+    </div>
+  </header>
 
   <div class="cart-wrapper">
 
@@ -28,7 +30,7 @@
 
         <div>
           <p class="cart-eyebrow">Tu compra</p>
-          <h1>Tu Despensa</h1>
+          <h2>Productos seleccionados</h2>
         </div>
 
         <div class="cart-header-actions">
@@ -52,6 +54,14 @@
         method="POST"
       >
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+        <% if (productosCarrito.length > 0) { %>
+          <div class="product-list-heading" aria-hidden="true">
+            <span>Producto</span>
+            <span>Cantidad</span>
+            <span>Total</span>
+          </div>
+        <% } %>
 
         <div class="product-list">
 
@@ -108,7 +118,7 @@
                 class="quantity-btn quantity-btn--minus"
                 data-cart-action="decrease"
                 aria-label="Disminuir cantidad de <%= producto.nombre %>"
-              >−</button>
+              ><span aria-hidden="true">−</span></button>
               <input
                 type="number"
                 name="productos[<%= index %>][cantidad]"
@@ -124,7 +134,7 @@
                 class="quantity-btn quantity-btn--plus"
                 data-cart-action="increase"
                 aria-label="Aumentar cantidad de <%= producto.nombre %>"
-              >+</button>
+              ><span aria-hidden="true">+</span></button>
             </div>
 
             <p class="price item-total">
