@@ -37,6 +37,7 @@ exports.adminIndex = wrap(async (req, res) => {
         statuses: delivery.DELIVERY_STATES,
         statusLabels: delivery.STATUS_LABELS,
         pagination: catalogPagination.buildPagination(req, result),
+        notice,
     });
 });
 
