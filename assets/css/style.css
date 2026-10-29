@@ -1,83 +1,47 @@
 /* ===========================================================  */
 /* Reset básico */
-*{
+* {
     box-sizing: border-box;
 }
 
 html,
-body{
-    margin:0;
-    padding:0;
-    width:100%;
-    overflow-x:hidden;
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
 }
 
-.container{
+.container {
     width: 100%;
-    background-color: rgb(255, 255, 255); 
+    background-color: rgb(255, 255, 255);
     display: flex;
-} 
+}
 
-.container div{
-
+.container div {
     flex: 1;
-} 
+}
 
-.pay-link{
-  text-decoration: none;
-  color: inherit;
+.pay-link {
+    text-decoration: none;
+    color: inherit;
 }
 
 /* read productos  */
-.descripcion-corta{
-    max-width: 200px;     
-    white-space: nowrap;   
-    overflow: hidden;      
-    text-overflow: ellipsis; 
+.descripcion-corta {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.text-sumary{
-color: var(--primary-dark);
+.text-sumary {
+    color: var(--primary-dark);
 }
 
-.cantidad{
+.cantidad {
     margin-left: 27%;
     margin-right: 27%;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* agregar usuarios  */

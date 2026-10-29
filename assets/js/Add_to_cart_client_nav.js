@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-
     document.addEventListener('click', async (e) => {
-
         const btn = e.target.closest('.add-to-cart-btn');
         if (!btn) return;
         const productoId = btn.dataset.id;
@@ -11,25 +9,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': csrfToken
+                    'X-CSRF-Token': csrfToken,
                 },
                 credentials: 'include',
-                body: JSON.stringify({ productoId, cantidad: 1 })
+                body: JSON.stringify({ productoId, cantidad: 1 }),
             });
 
             const data = await res.json();
             const cartCount = document.getElementById('cart-count');
             const payload = data.data || data;
             if (cartCount && Array.isArray(payload.cart)) {
-                const total = payload.cart.reduce(
-                    (acc, item) => acc + item.cantidad,
-                    0
-                );
-                cartCount.textContent = total;  
+                const total = payload.cart.reduce((acc, item) => acc + item.cantidad, 0);
+                cartCount.textContent = total;
             }
         } catch (err) {
-            console.error("ERROR:", err);
+            console.error('ERROR:', err);
         }
     });
-
 });

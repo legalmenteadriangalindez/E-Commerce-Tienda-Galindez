@@ -1,7 +1,7 @@
 <!-- include header -->
 <%- include('../../include/_headerAdmin') %>
 
-<link rel="stylesheet" href="/assets/css/payment_point.css"> 
+<link rel="stylesheet" href="/assets/css/payment_point.css">
 <link rel="stylesheet" href="/assets/css/Add_product_billing_point.css">
 
 <form id="billingForm" action="/payment_point" method="POST">
@@ -14,14 +14,14 @@
         <h1>
             <i class="fas fa-cash-register"></i>
             Punto de Facturación
-                    
+
         </h1>
 
         <div class="badge-secure">
             <i class="fas fa-store"></i>
             Modo cajero · Venta directa
         </div>
-        
+
     </div>
 
     <div class="checkout-grid">
@@ -35,7 +35,7 @@
             </div>
 
             <!-- BUSCADOR -->
-            <div class="input-group" style="position: relative;">
+            <div class="input-group field-relative">
 
                 <label>Buscar producto</label>
 
@@ -108,8 +108,8 @@
             <!-- BOTON AGREGAR -->
             <button
                 type="button"
-                class="pay-btn"
-                style="margin-top:10px"
+                class="pay-btn action-spaced"
+
                 data-commerce-action="add"
             >
 
@@ -196,8 +196,8 @@
             <!-- CANCELAR -->
             <button
                 type="button"
-                class="btn-outline"
-                style="width:100%; margin-top:10px;"
+                class="btn-outline action-wide"
+
                 data-commerce-action="cancel"
             >
 

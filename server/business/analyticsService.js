@@ -9,7 +9,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const TIME_ZONE = 'America/Bogota';
 const PERIODS = {
     week: { key: 'week', label: 'Últimos 7 días', days: 7 },
-    month: { key: 'month', label: 'Últimos 30 días', days: 30 }
+    month: { key: 'month', label: 'Últimos 30 días', days: 30 },
 };
 const PRODUCT_LIMIT = 10;
 const CATEGORY_LIMIT = 8;
@@ -34,7 +34,7 @@ function dateLabel(date) {
     return new Intl.DateTimeFormat('es-CO', {
         timeZone: TIME_ZONE,
         day: '2-digit',
-        month: 'short'
+        month: 'short',
     }).format(new Date(date));
 }
 
@@ -43,10 +43,7 @@ function moneyCents(path, legacyPath) {
     // en COP. La conversión se hace dentro de MongoDB para no cargar detalles
     // ni hacer aritmética financiera sobre Number en Node.
     return {
-        $ifNull: [
-            path,
-            { $round: [{ $multiply: [{ $ifNull: [legacyPath, 0] }, 100] }, 0] }
-        ]
+        $ifNull: [path, { $round: [{ $multiply: [{ $ifNull: [legacyPath, 0] }, 100] }, 0] }],
     };
 }
 
@@ -58,27 +55,30 @@ function detailCostUnitCents() {
                 $ifNull: [
                     '$product.precioCostoCents',
                     {
-                        $round: [{
-                            $multiply: [{
-                                $ifNull: [
-                                    '$details.precioCostoUnitario',
-                                    { $ifNull: ['$product.precioCosto', 0] }
-                                ]
-                            }, 100]
-                        }, 0]
-                    }
-                ]
-            }
-        ]
+                        $round: [
+                            {
+                                $multiply: [
+                                    {
+                                        $ifNull: [
+                                            '$details.precioCostoUnitario',
+                                            { $ifNull: ['$product.precioCosto', 0] },
+                                        ],
+                                    },
+                                    100,
+                                ],
+                            },
+                            0,
+                        ],
+                    },
+                ],
+            },
+        ],
     };
 }
 
 function detailCostCents() {
     return {
-        $multiply: [
-            { $ifNull: ['$details.cantidad', 0] },
-            detailCostUnitCents()
-        ]
+        $multiply: [{ $ifNull: ['$details.cantidad', 0] }, detailCostUnitCents()],
     };
 }
 
@@ -97,7 +97,14 @@ function totalsPipeline(start, end) {
         { $match: dateMatch(start, end) },
         { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
         { $unwind: { path: '$details', preserveNullAndEmptyArrays: true } },
-        { $lookup: { from: Product.collection.name, localField: 'details.producto', foreignField: '_id', as: 'product' } },
+        {
+            $lookup: {
+                from: Product.collection.name,
+                localField: 'details.producto',
+                foreignField: '_id',
+                as: 'product',
+            },
+        },
         { $unwind: { path: '$product', preserveNullAndEmptyArrays: true } },
         {
             $group: {
@@ -106,8 +113,8 @@ function totalsPipeline(start, end) {
                 shippingCents: { $first: moneyCents('$costoEnvioCents', '$costoEnvio') },
                 productRevenueCents: { $sum: moneyCents('$details.subtotalCents', '$details.subtotal') },
                 units: { $sum: { $ifNull: ['$details.cantidad', 0] } },
-                costsCents: { $sum: detailCostCents() }
-            }
+                costsCents: { $sum: detailCostCents() },
+            },
         },
         {
             $group: {
@@ -117,34 +124,42 @@ function totalsPipeline(start, end) {
                 shippingCents: { $sum: '$shippingCents' },
                 productRevenueCents: { $sum: '$productRevenueCents' },
                 units: { $sum: '$units' },
-                costsCents: { $sum: '$costsCents' }
-            }
+                costsCents: { $sum: '$costsCents' },
+            },
         },
-        { $project: { _id: 0 } }
+        { $project: { _id: 0 } },
     ];
 }
 
 async function aggregateTotals(start, end) {
     const rows = await Sale.aggregate(totalsPipeline(start, end));
-    return rows[0] || {
-        orders: 0,
-        totalCents: 0,
-        shippingCents: 0,
-        productRevenueCents: 0,
-        units: 0,
-        costsCents: 0
-    };
+    return (
+        rows[0] || {
+            orders: 0,
+            totalCents: 0,
+            shippingCents: 0,
+            productRevenueCents: 0,
+            units: 0,
+            costsCents: 0,
+        }
+    );
 }
 
 function productRowsPipeline(start, end, limit = PRODUCT_LIMIT, sortBy = 'units') {
-    const sort = sortBy === 'profit'
-        ? { profitCents: -1, unidades: -1, _id: 1 }
-        : { unidades: -1, ingresosCents: -1, _id: 1 };
+    const sort =
+        sortBy === 'profit' ? { profitCents: -1, unidades: -1, _id: 1 } : { unidades: -1, ingresosCents: -1, _id: 1 };
     return [
         { $match: dateMatch(start, end) },
         { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
         { $unwind: '$details' },
-        { $lookup: { from: Product.collection.name, localField: 'details.producto', foreignField: '_id', as: 'product' } },
+        {
+            $lookup: {
+                from: Product.collection.name,
+                localField: 'details.producto',
+                foreignField: '_id',
+                as: 'product',
+            },
+        },
         { $unwind: { path: '$product', preserveNullAndEmptyArrays: false } },
         {
             $group: {
@@ -153,17 +168,28 @@ function productRowsPipeline(start, end, limit = PRODUCT_LIMIT, sortBy = 'units'
                 fotos: { $first: { $ifNull: ['$product.fotos', []] } },
                 unidades: { $sum: { $ifNull: ['$details.cantidad', 0] } },
                 ingresosCents: { $sum: moneyCents('$details.subtotalCents', '$details.subtotal') },
-                costosCents: { $sum: detailCostCents() }
-            }
+                costosCents: { $sum: detailCostCents() },
+            },
         },
         {
             $addFields: {
-                profitCents: { $subtract: ['$ingresosCents', '$costosCents'] }
-            }
+                profitCents: { $subtract: ['$ingresosCents', '$costosCents'] },
+            },
         },
         { $sort: sort },
         { $limit: Math.max(1, Math.min(Number(limit) || PRODUCT_LIMIT, ALL_TIME_PRODUCT_LIMIT)) },
-        { $project: { _id: 0, productoId: '$_id', nombre: 1, fotos: 1, unidades: 1, ingresosCents: 1, costosCents: 1, profitCents: 1 } }
+        {
+            $project: {
+                _id: 0,
+                productoId: '$_id',
+                nombre: 1,
+                fotos: 1,
+                unidades: 1,
+                ingresosCents: 1,
+                costosCents: 1,
+                profitCents: 1,
+            },
+        },
     ];
 }
 
@@ -176,19 +202,26 @@ function categoryRowsPipeline(start, end, limit = CATEGORY_LIMIT) {
         { $match: dateMatch(start, end) },
         { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
         { $unwind: '$details' },
-        { $lookup: { from: Product.collection.name, localField: 'details.producto', foreignField: '_id', as: 'product' } },
+        {
+            $lookup: {
+                from: Product.collection.name,
+                localField: 'details.producto',
+                foreignField: '_id',
+                as: 'product',
+            },
+        },
         { $unwind: { path: '$product', preserveNullAndEmptyArrays: false } },
         {
             $group: {
                 _id: { $ifNull: ['$product.categoria', 'SIN_CATEGORIA'] },
                 unidades: { $sum: { $ifNull: ['$details.cantidad', 0] } },
                 ingresosCents: { $sum: moneyCents('$details.subtotalCents', '$details.subtotal') },
-                costosCents: { $sum: detailCostCents() }
-            }
+                costosCents: { $sum: detailCostCents() },
+            },
         },
         { $sort: { ingresosCents: -1, unidades: -1, _id: 1 } },
         { $limit: Math.max(1, Math.min(Number(limit) || CATEGORY_LIMIT, CATEGORY_LIMIT)) },
-        { $project: { _id: 0, categoriaId: '$_id', unidades: 1, ingresosCents: 1, costosCents: 1 } }
+        { $project: { _id: 0, categoriaId: '$_id', unidades: 1, ingresosCents: 1, costosCents: 1 } },
     ];
 }
 
@@ -205,21 +238,28 @@ function channelsPipeline(start, end) {
             $group: {
                 _id: { $ifNull: ['$order.canal', 'SIN_CANAL'] },
                 pedidos: { $sum: 1 },
-                ingresosCents: { $sum: moneyCents('$totalCents', '$total') }
-            }
+                ingresosCents: { $sum: moneyCents('$totalCents', '$total') },
+            },
         },
         { $sort: { ingresosCents: -1, pedidos: -1, _id: 1 } },
         { $limit: CHANNEL_LIMIT },
-        { $project: { _id: 0, nombre: '$_id', pedidos: 1, ingresosCents: 1 } }
+        { $project: { _id: 0, nombre: '$_id', pedidos: 1, ingresosCents: 1 } },
     ];
 }
 
 async function aggregateChannels(start, end) {
     const rows = await Sale.aggregate(channelsPipeline(start, end));
-    return rows.map(row => ({
-        nombre: row.nombre === 'CAJA' ? 'Caja' : row.nombre === 'WOMPI' ? 'Wompi' : 'Sin canal',
+    return rows.map((row) => ({
+        nombre:
+            row.nombre === 'CAJA'
+                ? 'Caja'
+                : row.nombre === 'WOMPI'
+                  ? 'Wompi'
+                  : row.nombre === 'WEB'
+                    ? 'Tienda online'
+                    : 'Sin canal',
         pedidos: Number(row.pedidos || 0),
-        ingresos: money.fromCents(Number(row.ingresosCents || 0))
+        ingresos: money.fromCents(Number(row.ingresosCents || 0)),
     }));
 }
 
@@ -228,7 +268,14 @@ function trendPipeline(start, end) {
         { $match: dateMatch(start, end) },
         { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
         { $unwind: { path: '$details', preserveNullAndEmptyArrays: true } },
-        { $lookup: { from: Product.collection.name, localField: 'details.producto', foreignField: '_id', as: 'product' } },
+        {
+            $lookup: {
+                from: Product.collection.name,
+                localField: 'details.producto',
+                foreignField: '_id',
+                as: 'product',
+            },
+        },
         { $unwind: { path: '$product', preserveNullAndEmptyArrays: true } },
         {
             $group: {
@@ -238,8 +285,8 @@ function trendPipeline(start, end) {
                 totalCents: { $first: moneyCents('$totalCents', '$total') },
                 productRevenueCents: { $sum: moneyCents('$details.subtotalCents', '$details.subtotal') },
                 units: { $sum: { $ifNull: ['$details.cantidad', 0] } },
-                costsCents: { $sum: detailCostCents() }
-            }
+                costsCents: { $sum: detailCostCents() },
+            },
         },
         {
             $group: {
@@ -248,24 +295,24 @@ function trendPipeline(start, end) {
                 orders: { $sum: 1 },
                 revenueCents: { $sum: '$totalCents' },
                 units: { $sum: '$units' },
-                grossProfitCents: { $sum: { $subtract: ['$productRevenueCents', '$costsCents'] } }
-            }
+                grossProfitCents: { $sum: { $subtract: ['$productRevenueCents', '$costsCents'] } },
+            },
         },
         { $sort: { _id: 1 } },
         { $limit: TREND_LIMIT },
-        { $project: { _id: 0, key: '$_id', createdAt: 1, orders: 1, revenueCents: 1, units: 1, grossProfitCents: 1 } }
+        { $project: { _id: 0, key: '$_id', createdAt: 1, orders: 1, revenueCents: 1, units: 1, grossProfitCents: 1 } },
     ];
 }
 
 async function aggregateTrend(start, end) {
     const rows = await Sale.aggregate(trendPipeline(start, end));
-    return rows.map(row => ({
+    return rows.map((row) => ({
         key: row.key,
         label: dateLabel(row.createdAt),
         orders: Number(row.orders || 0),
         revenue: money.fromCents(Number(row.revenueCents || 0)),
         units: Number(row.units || 0),
-        grossProfit: money.fromSignedCents(Number(row.grossProfitCents || 0))
+        grossProfit: money.fromSignedCents(Number(row.grossProfitCents || 0)),
     }));
 }
 
@@ -275,13 +322,13 @@ function soldProductIdsPipeline(start, end) {
         { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
         { $unwind: '$details' },
         { $group: { _id: '$details.producto' } },
-        { $project: { _id: 0, productId: '$_id' } }
+        { $project: { _id: 0, productId: '$_id' } },
     ];
 }
 
 async function soldProductIds(start, end) {
     const rows = await Sale.aggregate(soldProductIdsPipeline(start, end));
-    return rows.map(row => row.productId).filter(Boolean);
+    return rows.map((row) => row.productId).filter(Boolean);
 }
 
 function explainStageNames(value, names = []) {
@@ -292,9 +339,7 @@ function explainStageNames(value, names = []) {
 }
 
 function summarizeExplain(explain) {
-    const cursor = Array.isArray(explain?.stages)
-        ? explain.stages.find(stage => stage.$cursor)?.$cursor
-        : explain;
+    const cursor = Array.isArray(explain?.stages) ? explain.stages.find((stage) => stage.$cursor)?.$cursor : explain;
     const executionStats = cursor?.executionStats || explain?.executionStats || {};
     const winningPlan = cursor?.queryPlanner?.winningPlan || executionStats.executionStages;
     const stages = [...new Set(explainStageNames(winningPlan))];
@@ -303,7 +348,7 @@ function summarizeExplain(explain) {
         usesCollectionScan: stages.includes('COLLSCAN'),
         totalDocsExamined: executionStats.totalDocsExamined ?? null,
         totalKeysExamined: executionStats.totalKeysExamined ?? null,
-        nReturned: executionStats.nReturned ?? null
+        nReturned: executionStats.nReturned ?? null,
     };
 }
 
@@ -320,14 +365,14 @@ async function explainAnalytics(value = 'month', now = new Date()) {
         ['analytics.categories', categoryRowsPipeline(range.start, range.end, CATEGORY_LIMIT)],
         ['analytics.channels', channelsPipeline(range.start, range.end)],
         ['analytics.trend', trendPipeline(range.start, range.end)],
-        ['analytics.sold-product-ids', soldProductIdsPipeline(range.start, range.end)]
+        ['analytics.sold-product-ids', soldProductIdsPipeline(range.start, range.end)],
     ];
-    const results = await Promise.all(definitions.map(async ([name, pipeline]) => {
-        const explain = await Sale.aggregate(pipeline)
-            .allowDiskUse(true)
-            .explain('executionStats');
-        return { name, ...summarizeExplain(explain) };
-    }));
+    const results = await Promise.all(
+        definitions.map(async ([name, pipeline]) => {
+            const explain = await Sale.aggregate(pipeline).allowDiskUse(true).explain('executionStats');
+            return { name, ...summarizeExplain(explain) };
+        })
+    );
     return { period: range.key, results };
 }
 
@@ -346,10 +391,8 @@ function metricsFromTotals(totals) {
         units: Number(totals.units || 0),
         costs: money.fromCents(costsCents),
         grossProfit: money.fromSignedCents(grossProfitCents),
-        grossMargin: productRevenueCents > 0
-            ? Number(((grossProfitCents / productRevenueCents) * 100).toFixed(1))
-            : 0,
-        averageTicket: orders > 0 ? money.fromSignedCents(Math.round(revenueCents / orders)) : 0
+        grossMargin: productRevenueCents > 0 ? Number(((grossProfitCents / productRevenueCents) * 100).toFixed(1)) : 0,
+        averageTicket: orders > 0 ? money.fromSignedCents(Math.round(revenueCents / orders)) : 0,
     };
 }
 
@@ -367,12 +410,12 @@ function comparison(current, previous) {
         current,
         previous,
         change: percentChange(current, previous),
-        direction: current > previous ? 'up' : current < previous ? 'down' : 'same'
+        direction: current > previous ? 'up' : current < previous ? 'down' : 'same',
     };
 }
 
 function materializeProducts(rows) {
-    return rows.map(row => {
+    return rows.map((row) => {
         const ingresosCents = Number(row.ingresosCents || 0);
         const costosCents = Number(row.costosCents || 0);
         return {
@@ -384,53 +427,77 @@ function materializeProducts(rows) {
             ingresos: money.fromCents(ingresosCents),
             costos: money.fromCents(costosCents),
             ganancia: money.fromSignedCents(ingresosCents - costosCents),
-            margenPorcentaje: ingresosCents > 0
-                ? Number((((ingresosCents - costosCents) / ingresosCents) * 100).toFixed(1))
-                : 0
+            margenPorcentaje:
+                ingresosCents > 0 ? Number((((ingresosCents - costosCents) / ingresosCents) * 100).toFixed(1)) : 0,
         };
     });
 }
 
 async function categoryNames(rows) {
-    const ids = rows.map(row => String(row.categoriaId)).filter(id => id !== 'SIN_CATEGORIA');
+    const ids = rows.map((row) => String(row.categoriaId)).filter((id) => id !== 'SIN_CATEGORIA');
     if (!ids.length) return new Map();
-    const records = await Category.find({ _id: { $in: ids } }).select('nombre').lean();
-    return new Map(records.map(record => [String(record._id), record.nombre]));
+    const records = await Category.find({ _id: { $in: ids } })
+        .select('nombre')
+        .lean();
+    return new Map(records.map((record) => [String(record._id), record.nombre]));
 }
 
 async function materializeCategories(rows) {
     const names = await categoryNames(rows);
-    return rows.map(row => {
+    return rows.map((row) => {
         const ingresosCents = Number(row.ingresosCents || 0);
         const costosCents = Number(row.costosCents || 0);
         const id = String(row.categoriaId);
         return {
             categoriaId: id,
-            nombre: id === 'SIN_CATEGORIA' ? 'Sin categoría' : (names.get(id) || 'Categoría histórica'),
+            nombre: id === 'SIN_CATEGORIA' ? 'Sin categoría' : names.get(id) || 'Categoría histórica',
             unidades: Number(row.unidades || 0),
             ingresosCents,
             costosCents,
             ingresos: money.fromCents(ingresosCents),
             costos: money.fromCents(costosCents),
-            ganancia: money.fromSignedCents(ingresosCents - costosCents)
+            ganancia: money.fromSignedCents(ingresosCents - costosCents),
         };
     });
 }
 
 function decisionNotes(metrics, previous, products, lowStock, noRotation) {
     const notes = [];
-    if (!metrics.orders) notes.push('No hubo ventas pagadas en el periodo seleccionado. Revisa campañas, precios y disponibilidad.');
-    if (previous.orders && metrics.orders < previous.orders) notes.push(`Los pedidos bajaron ${Math.abs(percentChange(metrics.orders, previous.orders) || 0)}% frente al periodo anterior.`);
-    if (metrics.grossMargin > 0 && metrics.grossMargin < 20) notes.push(`El margen bruto estimado es ${metrics.grossMargin}%; revisa costos, descuentos y precios.`);
-    if (lowStock.length) notes.push(`${lowStock.length} productos tienen existencias bajas y pueden limitar próximas ventas.`);
-    if (noRotation.length) notes.push(`${noRotation.length} productos con stock no registraron ventas en el periodo; evalúa promoción o ajuste de inventario.`);
-    if (products.length && products[0].margenPorcentaje >= 30) notes.push(`“${products[0].nombre}” combina alta rotación y buen margen; considera mantener su disponibilidad.`);
+    if (!metrics.orders)
+        notes.push('No hubo ventas pagadas en el periodo seleccionado. Revisa campañas, precios y disponibilidad.');
+    if (previous.orders && metrics.orders < previous.orders)
+        notes.push(
+            `Los pedidos bajaron ${Math.abs(percentChange(metrics.orders, previous.orders) || 0)}% frente al periodo anterior.`
+        );
+    if (metrics.grossMargin > 0 && metrics.grossMargin < 20)
+        notes.push(`El margen bruto estimado es ${metrics.grossMargin}%; revisa costos, descuentos y precios.`);
+    if (lowStock.length)
+        notes.push(`${lowStock.length} productos tienen existencias bajas y pueden limitar próximas ventas.`);
+    if (noRotation.length)
+        notes.push(
+            `${noRotation.length} productos con stock no registraron ventas en el periodo; evalúa promoción o ajuste de inventario.`
+        );
+    if (products.length && products[0].margenPorcentaje >= 30)
+        notes.push(
+            `“${products[0].nombre}” combina alta rotación y buen margen; considera mantener su disponibilidad.`
+        );
     return notes;
 }
 
 async function summary(value = 'week', now = new Date()) {
     const range = periodRange(value, now);
-    const [currentTotals, previousTotals, productsRows, categoriesRows, channels, trendRows, soldIds, pending, incidents, lowStock] = await Promise.all([
+    const [
+        currentTotals,
+        previousTotals,
+        productsRows,
+        categoriesRows,
+        channels,
+        trendRows,
+        soldIds,
+        pending,
+        incidents,
+        lowStock,
+    ] = await Promise.all([
         aggregateTotals(range.start, range.end),
         aggregateTotals(range.previousStart, range.previousEnd),
         aggregateProductRows(range.start, range.end, PRODUCT_LIMIT),
@@ -440,7 +507,11 @@ async function summary(value = 'week', now = new Date()) {
         soldProductIds(range.start, range.end),
         Order.countDocuments({ estado: 'PENDIENTE', estadoPago: 'PENDIENTE' }),
         Order.countDocuments({ estado: 'REQUIERE_REVISION' }),
-        Product.find({ stock: { $lte: 10 } }).sort({ stock: 1, nombre: 1 }).limit(20).select('nombre stock precioVenta').lean()
+        Product.find({ stock: { $lte: 10 } })
+            .sort({ stock: 1, nombre: 1 })
+            .limit(20)
+            .select('nombre stock precioVenta')
+            .lean(),
     ]);
 
     const current = metricsFromTotals(currentTotals);
@@ -448,7 +519,10 @@ async function summary(value = 'week', now = new Date()) {
     const products = materializeProducts(productsRows);
     const categories = await materializeCategories(categoriesRows);
     const noRotation = await Product.find({ stock: { $gt: 0 }, _id: { $nin: soldIds } })
-        .sort({ stock: -1, nombre: 1 }).limit(10).select('nombre stock precioVenta').lean();
+        .sort({ stock: -1, nombre: 1 })
+        .limit(10)
+        .select('nombre stock precioVenta')
+        .lean();
 
     return {
         period: {
@@ -457,8 +531,10 @@ async function summary(value = 'week', now = new Date()) {
             days: range.days,
             start: range.start,
             end: range.end,
-            startLabel: new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeZone: TIME_ZONE }).format(range.start),
-            endLabel: new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeZone: TIME_ZONE }).format(range.end)
+            startLabel: new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeZone: TIME_ZONE }).format(
+                range.start
+            ),
+            endLabel: new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeZone: TIME_ZONE }).format(range.end),
         },
         kpis: {
             revenue: comparison(current.revenue, previous.revenue),
@@ -469,7 +545,7 @@ async function summary(value = 'week', now = new Date()) {
             shipping: current.shipping,
             costs: current.costs,
             productRevenue: current.productRevenue,
-            grossMargin: current.grossMargin
+            grossMargin: current.grossMargin,
         },
         metrics: current,
         previous,
@@ -483,7 +559,7 @@ async function summary(value = 'week', now = new Date()) {
         noRotation,
         channels,
         trend: trendRows,
-        decisionNotes: decisionNotes(current, previous, products, lowStock, noRotation)
+        decisionNotes: decisionNotes(current, previous, products, lowStock, noRotation),
     };
 }
 
@@ -491,36 +567,38 @@ async function totalProfit() {
     const totals = await aggregateTotals();
     const ingresosTotales = money.fromCents(Number(totals.productRevenueCents || 0));
     const costosTotales = money.fromCents(Number(totals.costsCents || 0));
-    const gananciasTotales = money.fromSignedCents(Number(totals.productRevenueCents || 0) - Number(totals.costsCents || 0));
+    const gananciasTotales = money.fromSignedCents(
+        Number(totals.productRevenueCents || 0) - Number(totals.costsCents || 0)
+    );
     return {
         ingresosTotales,
         costosTotales,
         gananciasTotales,
-        margenPorcentaje: ingresosTotales > 0 ? ((gananciasTotales / ingresosTotales) * 100).toFixed(2) : 0
+        margenPorcentaje: ingresosTotales > 0 ? ((gananciasTotales / ingresosTotales) * 100).toFixed(2) : 0,
     };
 }
 
 async function bestSellingProducts(limit = PRODUCT_LIMIT) {
     const rows = await aggregateProductRows(undefined, undefined, limit, 'units');
-    return rows.map(row => ({
+    return rows.map((row) => ({
         productoId: String(row.productoId),
         nombre: row.nombre || 'Producto histórico',
         fotos: row.fotos || [],
         unidadesVendidas: Number(row.unidades || 0),
-        ingresosGenerados: money.fromCents(Number(row.ingresosCents || 0))
+        ingresosGenerados: money.fromCents(Number(row.ingresosCents || 0)),
     }));
 }
 
 async function profitByProduct(limit = ALL_TIME_PRODUCT_LIMIT) {
     const rows = await aggregateProductRows(undefined, undefined, limit, 'profit');
-    return rows.map(row => ({
+    return rows.map((row) => ({
         productoId: String(row.productoId),
         nombre: row.nombre || 'Producto histórico',
         fotos: row.fotos || [],
         vendidos: Number(row.unidades || 0),
         ingresos: money.fromCents(Number(row.ingresosCents || 0)),
         costos: money.fromCents(Number(row.costosCents || 0)),
-        ganancias: money.fromSignedCents(Number(row.profitCents || 0))
+        ganancias: money.fromSignedCents(Number(row.profitCents || 0)),
     }));
 }
 
@@ -534,5 +612,5 @@ module.exports = {
     periodRange,
     periodConfig,
     percentChange,
-    emptyMetrics
+    emptyMetrics,
 };

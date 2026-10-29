@@ -1,10 +1,99 @@
-.commerce-panel{max-width:1000px;margin:40px auto;padding:0 20px;color:#202b35;overflow-wrap:anywhere}
-.commerce-panel h1{font-size:2rem;margin-bottom:12px}.commerce-panel h2{font-size:1.35rem}.commerce-panel p{line-height:1.6;margin:12px 0}
-.commerce-card{background:#fff;border:1px solid #d9e1e6;border-radius:14px;padding:24px;margin:22px 0;box-shadow:0 3px 10px #192b3510}
-.commerce-card form{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:16px 0}.commerce-card label{display:block}
-.commerce-card input:not([type=checkbox]):not([type=hidden]){display:block;max-width:100%;padding:10px;border:1px solid #9baab3;border-radius:6px}
-.commerce-card button{padding:11px 17px;background:#1d5f50;color:#fff;border:0;border-radius:7px;cursor:pointer}.commerce-panel a{color:#235d74;text-decoration:underline}
-.commerce-notice{padding:14px;background:#fff6dd;border-left:4px solid #ad7720}.commerce-panel nav{display:flex;gap:20px;margin:24px 0}
-.error-diagnostics{margin:24px 0;padding:14px;background:#f5f8fa;border:1px solid #d9e1e6;border-radius:10px}
-.error-diagnostics summary{cursor:pointer;font-weight:600}.error-diagnostics-note{font-size:.92rem;color:#53636d}
-.error-diagnostics table{width:100%;border-collapse:collapse;font-size:.9rem}.error-diagnostics th,.error-diagnostics td{padding:7px 8px;border-bottom:1px solid #d9e1e6;text-align:left;vertical-align:top}.error-diagnostics th{width:38%;font-weight:600}.error-diagnostics code{overflow-wrap:anywhere}
+.commerce-panel {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+    color: #202b35;
+    overflow-wrap: anywhere;
+}
+.commerce-panel h1 {
+    font-size: 2rem;
+    margin-bottom: 12px;
+}
+.commerce-panel h2 {
+    font-size: 1.35rem;
+}
+.commerce-panel p {
+    line-height: 1.6;
+    margin: 12px 0;
+}
+.commerce-card {
+    background: var(--color-surface);
+    border: 1px solid #d9e1e6;
+    border-radius: 14px;
+    padding: 24px;
+    margin: 22px 0;
+    box-shadow: 0 3px 10px #192b3510;
+}
+.commerce-card form {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+}
+.commerce-card label {
+    display: block;
+}
+.commerce-card input:not([type='checkbox']):not([type='hidden']) {
+    display: block;
+    max-width: 100%;
+    padding: 10px;
+    border: 1px solid #9baab3;
+    border-radius: 6px;
+}
+.commerce-card button {
+    padding: 11px 17px;
+    background: #1d5f50;
+    color: var(--color-surface);
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+}
+.commerce-panel a {
+    color: #235d74;
+    text-decoration: underline;
+}
+.commerce-notice {
+    padding: 14px;
+    background: #fff6dd;
+    border-left: 4px solid #ad7720;
+}
+.commerce-panel nav {
+    display: flex;
+    gap: 20px;
+    margin: 24px 0;
+}
+.error-diagnostics {
+    margin: 24px 0;
+    padding: 14px;
+    background: #f5f8fa;
+    border: 1px solid #d9e1e6;
+    border-radius: 10px;
+}
+.error-diagnostics summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+.error-diagnostics-note {
+    font-size: 0.92rem;
+    color: #53636d;
+}
+.error-diagnostics table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+.error-diagnostics th,
+.error-diagnostics td {
+    padding: 7px 8px;
+    border-bottom: 1px solid #d9e1e6;
+    text-align: left;
+    vertical-align: top;
+}
+.error-diagnostics th {
+    width: 38%;
+    font-weight: 600;
+}
+.error-diagnostics code {
+    overflow-wrap: anywhere;
+}

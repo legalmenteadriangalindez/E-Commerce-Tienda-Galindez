@@ -10,9 +10,7 @@ function jsonRequest(req) {
 
 function respond(req, res, status, message, productId, values = null) {
     const success = status < 400;
-    const redirectUrl = reviewService.validId(productId)
-        ? '/Detalles/' + productId + '#resenas'
-        : null;
+    const redirectUrl = reviewService.validId(productId) ? '/Detalles/' + productId + '#resenas' : null;
 
     if (redirectUrl && req.session && (success || !jsonRequest(req))) {
         req.session.reviewFeedback = { productId, success, message, values };
@@ -27,11 +25,12 @@ function respond(req, res, status, message, productId, values = null) {
 
 function readInput(body = {}) {
     const rawRating = body.calificacion;
-    const rating = typeof rawRating === 'number'
-        ? rawRating
-        : typeof rawRating === 'string' && /^[1-5]$/.test(rawRating.trim())
-            ? Number(rawRating.trim())
-            : NaN;
+    const rating =
+        typeof rawRating === 'number'
+            ? rawRating
+            : typeof rawRating === 'string' && /^[1-5]$/.test(rawRating.trim())
+              ? Number(rawRating.trim())
+              : NaN;
     const comment = typeof body.comentario === 'string' ? body.comentario.trim() : '';
 
     if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
@@ -46,9 +45,11 @@ function readInput(body = {}) {
 
 function draft(body = {}) {
     return {
-        calificacion: typeof body.calificacion === 'string' || typeof body.calificacion === 'number'
-            ? String(body.calificacion).slice(0, 1) : '',
-        comentario: typeof body.comentario === 'string' ? body.comentario.slice(0, 1000) : ''
+        calificacion:
+            typeof body.calificacion === 'string' || typeof body.calificacion === 'number'
+                ? String(body.calificacion).slice(0, 1)
+                : '',
+        comentario: typeof body.comentario === 'string' ? body.comentario.slice(0, 1000) : '',
     };
 }
 
@@ -59,7 +60,7 @@ exports.create = async (req, res) => {
     }
 
     try {
-        if (!await Productdb.exists({ _id: productId })) {
+        if (!(await Productdb.exists({ _id: productId }))) {
             return respond(req, res, 404, 'El producto ya no existe.');
         }
 
@@ -107,7 +108,7 @@ exports.find = async (req, res) => {
         if (!reviewService.validId(productId)) {
             return res.status(400).json({ message: 'Indica un producto válido para consultar sus reseñas.' });
         }
-        if (!await Productdb.exists({ _id: productId })) {
+        if (!(await Productdb.exists({ _id: productId }))) {
             return res.status(404).json({ message: 'Producto no encontrado.' });
         }
 
@@ -146,9 +147,15 @@ exports.update = async (req, res) => {
         );
 
         if (!updated) return respond(req, res, 404, 'La reseña ya no existe.', productId);
-        return respond(req, res, 200, updated.oculta
-            ? 'Tu reseña se actualizó. Seguirá oculta hasta que la tienda la vuelva a publicar.'
-            : 'Tu reseña se actualizó correctamente.', productId);
+        return respond(
+            req,
+            res,
+            200,
+            updated.oculta
+                ? 'Tu reseña se actualizó. Seguirá oculta hasta que la tienda la vuelva a publicar.'
+                : 'Tu reseña se actualizó correctamente.',
+            productId
+        );
     } catch (error) {
         console.error('No se pudo editar la reseña:', error.message);
         return respond(req, res, 500, 'No se pudo actualizar la reseña. Inténtalo de nuevo.');

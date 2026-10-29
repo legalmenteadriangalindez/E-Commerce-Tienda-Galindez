@@ -3,21 +3,19 @@
    TIENDA GALINDEZ
    ========================================================= */
 
-
 /* =========================================================
    VARIABLES
    ========================================================= */
 
 :root {
-    --primary-dark: #311b14;
-    --accent-orange: #d85c32;
-    --warm-tan: #d58d51;
-    --light: #ffffff;
-    --background: #f6f1ec;
-    --border: #e0d6cf;
-    --text-muted: #6b5b55;
+    --primary-dark: var(--color-brand-dark);
+    --accent-orange: var(--color-brand-accent);
+    --warm-tan: var(--color-brand-tan);
+    --light: var(--color-surface);
+    --background: var(--color-background);
+    --border: var(--color-border);
+    --text-muted: var(--color-text-muted);
 }
-
 
 /* =========================================================
    PAGINA
@@ -29,7 +27,6 @@
     padding: 0 20px;
     box-sizing: border-box;
 }
-
 
 /* =========================================================
    HEADER
@@ -50,7 +47,6 @@
     margin: 0;
 }
 
-
 /* =========================================================
    CARD PRINCIPAL
    ========================================================= */
@@ -63,7 +59,6 @@
     border: 1px solid rgba(213, 141, 81, 0.2);
     box-sizing: border-box;
 }
-
 
 /* =========================================================
    SECCIONES
@@ -86,7 +81,6 @@
     margin-bottom: 18px;
 }
 
-
 /* =========================================================
    GRUPOS
    ========================================================= */
@@ -99,7 +93,6 @@
     margin-bottom: 0;
 }
 
-
 /* =========================================================
    LABELS
    ========================================================= */
@@ -110,7 +103,6 @@
     font-weight: 600;
     color: var(--primary-dark);
 }
-
 
 /* =========================================================
    INPUTS
@@ -123,11 +115,10 @@
     border: 1px solid var(--border);
     border-radius: 8px;
     outline: none;
-    background: #ffffff;
+    background: var(--color-surface);
     box-sizing: border-box;
     transition: 0.2s ease;
 }
-
 
 /* =========================================================
    INPUTS DESHABILITADOS
@@ -138,7 +129,6 @@
     color: #555;
     cursor: not-allowed;
 }
-
 
 /* =========================================================
    SELECT ESTADO
@@ -153,7 +143,6 @@
     box-shadow: 0 0 0 3px rgba(216, 92, 50, 0.15);
 }
 
-
 /* =========================================================
    TABLA DE PRODUCTOS
    ========================================================= */
@@ -162,9 +151,8 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    background: #ffffff;
+    background: var(--color-surface);
 }
-
 
 /* =========================================================
    ENCABEZADO TABLA
@@ -172,12 +160,11 @@
 
 .table-orders thead th {
     background-color: var(--primary-dark);
-    color: #ffffff;
+    color: var(--color-surface);
     padding: 12px;
     text-align: center;
     font-weight: 600;
 }
-
 
 /* =========================================================
    CELDAS TABLA
@@ -189,7 +176,6 @@
     text-align: center;
     color: #444;
 }
-
 
 /* =========================================================
    HOVER TABLA
@@ -203,7 +189,6 @@
     background-color: #faf6f2;
 }
 
-
 /* =========================================================
    TOTAL
    ========================================================= */
@@ -212,7 +197,6 @@
     font-weight: 700;
     color: var(--primary-dark);
 }
-
 
 /* =========================================================
    ACCIONES
@@ -225,7 +209,7 @@
 
 .form-actions button {
     background: var(--accent-orange);
-    color: #ffffff;
+    color: var(--color-surface);
     border: none;
     padding: 12px 22px;
     border-radius: 10px;
@@ -239,13 +223,11 @@
     transform: translateY(-2px);
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 768px) {
-
     .page-wrapper {
         margin: 25px auto;
         padding: 0 15px;
@@ -280,9 +262,7 @@
     }
 }
 
-
 @media (max-width: 480px) {
-
     .page-wrapper {
         padding: 0 10px;
     }

@@ -1,4 +1,4 @@
-.title-orders{
+.title-orders {
     font-size: 2rem;
     font-weight: bold;
 }
@@ -18,16 +18,16 @@
 
 .dealer-eyebrow {
     margin: 0 0 4px;
-    color: #d85c32;
-    font-size: .75rem;
+    color: var(--color-brand-accent);
+    font-size: 0.75rem;
     font-weight: 800;
-    letter-spacing: .12em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
 }
 
 .dealer-description {
     margin: 6px 0 0;
-    color: #6b5b55;
+    color: var(--color-text-muted);
 }
 
 .dealer-orders-count {
@@ -35,7 +35,7 @@
     border-radius: 999px;
     background: #fff3ed;
     color: #8c3f24;
-    font-size: .85rem;
+    font-size: 0.85rem;
     font-weight: 800;
     white-space: nowrap;
 }
@@ -46,14 +46,26 @@
     justify-content: center;
     padding: 6px 9px;
     border-radius: 999px;
-    font-size: .75rem;
+    font-size: 0.75rem;
     font-weight: 800;
 }
 
-.dealer-status--pagada { background: #e6f5e8; color: #216b31; }
-.dealer-status--preparando { background: #fff3d7; color: #795815; }
-.dealer-status--enviada { background: #e5f4fb; color: #14617d; }
-.dealer-status--entregada { background: #e8e5fb; color: #4e3d98; }
+.dealer-status--pagada {
+    background: #e6f5e8;
+    color: #216b31;
+}
+.dealer-status--preparando {
+    background: #fff3d7;
+    color: #795815;
+}
+.dealer-status--enviada {
+    background: #e5f4fb;
+    color: #14617d;
+}
+.dealer-status--entregada {
+    background: #e8e5fb;
+    color: #4e3d98;
+}
 
 .dealer-actions {
     display: flex;
@@ -62,53 +74,50 @@
 }
 
 /* TABLET */
-@media (max-width: 992px){
-
-    .orders-table{
+@media (max-width: 992px) {
+    .orders-table {
         font-size: 14px;
     }
 
-    .orders-table .btn{
+    .orders-table .btn {
         font-size: 12px;
         padding: 6px 10px;
     }
-
 }
 
 /* MOBILE ANDROID */
-@media (max-width: 768px){
-
-    .dealer-orders-heading{
+@media (max-width: 768px) {
+    .dealer-orders-heading {
         align-items: stretch;
         flex-direction: column;
         gap: 8px;
     }
 
-    .dealer-orders-count{
+    .dealer-orders-count {
         align-self: flex-start;
     }
 
-    .orders-table thead{
+    .orders-table thead {
         display: none;
     }
 
     .orders-table,
     .orders-table tbody,
     .orders-table tr,
-    .orders-table td{
+    .orders-table td {
         display: block;
         width: 100%;
     }
 
-    .orders-table tr{
-        background: #fff;
+    .orders-table tr {
+        background: var(--color-surface);
         margin-bottom: 15px;
         border-radius: 10px;
         padding: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .orders-table td{
+    .orders-table td {
         text-align: right;
         padding-left: 50%;
         position: relative;
@@ -116,11 +125,11 @@
         border-bottom: 1px solid #eee;
     }
 
-    .orders-table td:last-child{
+    .orders-table td:last-child {
         border-bottom: none;
     }
 
-    .orders-table td::before{
+    .orders-table td::before {
         content: attr(data-label);
         position: absolute;
         left: 12px;
@@ -129,18 +138,17 @@
         text-align: left;
     }
 
-    .orders-table .btn{
+    .orders-table .btn {
         width: 100%;
         margin-top: 5px;
     }
 
-    .dealer-actions{
+    .dealer-actions {
         display: block;
     }
 
-    .title-orders{
+    .title-orders {
         font-size: 1.5rem;
         text-align: center;
     }
-
 }

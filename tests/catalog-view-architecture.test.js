@@ -4,10 +4,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const directCatalogViews = [
-    '../server/services/renderHomeRoutes.js',
-    '../server/services/renderClothes.js',
-    '../server/services/renderPromotions.js',
-    '../server/services/renderSEO.js'
+    '../server/pages/renderHomeRoutes.js',
+    '../server/pages/renderClothes.js',
+    '../server/pages/renderPromotions.js',
+    '../server/pages/renderSEO.js',
 ];
 
 test('las vistas públicas de catálogo no llaman por HTTP a la propia API', () => {
@@ -20,14 +20,8 @@ test('las vistas públicas de catálogo no llaman por HTTP a la propia API', () 
 });
 
 test('el controlador y las vistas comparten el servicio de catálogo', () => {
-    const controller = fs.readFileSync(
-        path.join(__dirname, '../server/controller/product_controller.js'),
-        'utf8'
-    );
-    const view = fs.readFileSync(
-        path.join(__dirname, '../server/services/renderHomeRoutes.js'),
-        'utf8'
-    );
+    const controller = fs.readFileSync(path.join(__dirname, '../server/controller/product_controller.js'), 'utf8');
+    const view = fs.readFileSync(path.join(__dirname, '../server/pages/renderHomeRoutes.js'), 'utf8');
     assert.match(controller, /require\('\.\.\/business\/catalogService'\)/);
     assert.match(view, /require\('\.\.\/business\/catalogService'\)/);
 });

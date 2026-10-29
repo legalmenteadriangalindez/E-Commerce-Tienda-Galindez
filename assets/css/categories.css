@@ -24,7 +24,7 @@
 /* hover efecto tienda real */
 .product-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
 }
 
 /* imagen producto */
@@ -50,7 +50,7 @@
 .price {
     font-size: 20px;
     font-weight: bold;
-    color: #198754;
+    color: var(--color-success);
     margin-top: 5px;
 }
 
@@ -99,7 +99,6 @@
     }
 }
 
-
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -114,7 +113,7 @@
 
 .product-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0px 10px 20px rgba(0,0,0,0.15);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .price {
@@ -122,4 +121,3 @@
     font-size: 18px;
     color: #2e7d32;
 }
-

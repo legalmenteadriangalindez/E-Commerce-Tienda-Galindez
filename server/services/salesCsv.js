@@ -4,14 +4,8 @@ const money = require('./money');
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_MAX_ROWS = 100000;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-const PAYMENT_STATUSES = Object.freeze([
-    'PAGADO',
-    'PENDIENTE',
-    'FALLIDO',
-    'RECHAZADO',
-    'REEMBOLSADO'
-]);
-const CHANNELS = Object.freeze(['WOMPI', 'CAJA']);
+const PAYMENT_STATUSES = Object.freeze(['PAGADO', 'PENDIENTE', 'FALLIDO', 'RECHAZADO', 'REEMBOLSADO']);
+const CHANNELS = Object.freeze(['WOMPI', 'CAJA', 'WEB']);
 
 const COLUMNS = Object.freeze([
     'id_venta',
@@ -36,7 +30,8 @@ const COLUMNS = Object.freeze([
     'impuestos',
     'envio',
     'descuento',
-    'total_venta'
+    'total_venta',
+    'metodo_pago',
 ]);
 
 class SaleExportFilterError extends Error {
@@ -66,7 +61,11 @@ function parseLocalDate(value, endOfDay = false) {
     // por el administrador a UTC para no perder ventas cercanas a medianoche.
     const parts = value.split('-').map(Number);
     const check = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
-    if (check.getUTCFullYear() !== parts[0] || check.getUTCMonth() !== parts[1] - 1 || check.getUTCDate() !== parts[2]) {
+    if (
+        check.getUTCFullYear() !== parts[0] ||
+        check.getUTCMonth() !== parts[1] - 1 ||
+        check.getUTCDate() !== parts[2]
+    ) {
         throw new SaleExportFilterError(`La fecha ${value} no existe.`);
     }
 
@@ -116,9 +115,7 @@ async function saleFindFilter(filters) {
 
 function maxRows() {
     const configured = Number.parseInt(process.env.CSV_EXPORT_MAX_ROWS || '', 10);
-    return Number.isSafeInteger(configured) && configured > 0
-        ? Math.min(configured, 500000)
-        : DEFAULT_MAX_ROWS;
+    return Number.isSafeInteger(configured) && configured > 0 ? Math.min(configured, 500000) : DEFAULT_MAX_ROWS;
 }
 
 function aggregatePipeline(filters) {
@@ -138,10 +135,10 @@ function aggregatePipeline(filters) {
                 from: Order.collection.name,
                 localField: 'order',
                 foreignField: '_id',
-                as: 'order'
-            }
+                as: 'order',
+            },
         },
-        { $unwind: { path: '$order', preserveNullAndEmptyArrays: true } }
+        { $unwind: { path: '$order', preserveNullAndEmptyArrays: true } },
     ];
 
     if (filters.channel) pipeline.push({ $match: { 'order.canal': filters.channel } });
@@ -152,8 +149,8 @@ function aggregatePipeline(filters) {
                 from: require('../model/saleDetails').collection.name,
                 localField: '_id',
                 foreignField: 'venta',
-                as: 'detail'
-            }
+                as: 'detail',
+            },
         },
         { $unwind: { path: '$detail', preserveNullAndEmptyArrays: true } },
         {
@@ -161,8 +158,8 @@ function aggregatePipeline(filters) {
                 from: require('../model/product').collection.name,
                 localField: 'detail.producto',
                 foreignField: '_id',
-                as: 'product'
-            }
+                as: 'product',
+            },
         },
         { $unwind: { path: '$product', preserveNullAndEmptyArrays: true } },
         {
@@ -170,8 +167,8 @@ function aggregatePipeline(filters) {
                 from: require('../model/categories').collection.name,
                 localField: 'product.categoria',
                 foreignField: '_id',
-                as: 'category'
-            }
+                as: 'category',
+            },
         },
         { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
         {
@@ -179,8 +176,8 @@ function aggregatePipeline(filters) {
                 from: require('../model/user').collection.name,
                 localField: 'cliente',
                 foreignField: '_id',
-                as: 'customer'
-            }
+                as: 'customer',
+            },
         },
         { $unwind: { path: '$customer', preserveNullAndEmptyArrays: true } },
         { $limit: maxRows() },
@@ -202,6 +199,9 @@ function aggregatePipeline(filters) {
                 orderNumber: '$order.numeroOrden',
                 orderStatus: '$order.estado',
                 channel: '$order.canal',
+                paymentMethod: {
+                    $ifNull: ['$order.metodoPagoConfirmado', { $ifNull: ['$order.metodoPago', '$metodoPago'] }],
+                },
                 customerName: { $ifNull: ['$customer.nombre', '$order.cliente.nombre'] },
                 customerEmail: { $ifNull: ['$customer.email', '$order.cliente.email'] },
                 customerPhone: { $ifNull: ['$customer.telefono', '$order.cliente.telefono'] },
@@ -214,8 +214,8 @@ function aggregatePipeline(filters) {
                 lineSubtotal: '$detail.subtotal',
                 lineSubtotalCents: '$detail.subtotalCents',
                 unitCost: { $ifNull: ['$detail.precioCostoUnitario', '$product.precioCosto'] },
-                unitCostCents: { $ifNull: ['$detail.precioCostoUnitarioCents', '$product.precioCostoCents'] }
-            }
+                unitCostCents: { $ifNull: ['$detail.precioCostoUnitarioCents', '$product.precioCostoCents'] },
+            },
         }
     );
 
@@ -229,27 +229,36 @@ function number(value) {
 function dateValue(value) {
     return value
         ? new Intl.DateTimeFormat('sv-SE', {
-            timeZone: 'America/Bogota',
-            dateStyle: 'short',
-            timeStyle: 'medium'
-        }).format(new Date(value)).replace(' ', 'T')
+              timeZone: 'America/Bogota',
+              dateStyle: 'short',
+              timeStyle: 'medium',
+          })
+              .format(new Date(value))
+              .replace(' ', 'T')
         : '';
 }
 
 function rowValues(row) {
     const quantity = number(row.quantity);
-    const legacyCents = value => {
-        try { return money.toCents(value || 0); } catch { return 0; }
+    const legacyCents = (value) => {
+        try {
+            return money.toCents(value || 0);
+        } catch {
+            return 0;
+        }
     };
-    const lineSubtotalCents = row.lineSubtotalCents !== undefined && row.lineSubtotalCents !== null
-        ? money.assertCents(row.lineSubtotalCents)
-        : legacyCents(row.lineSubtotal);
-    const unitPriceCents = row.unitPriceCents !== undefined && row.unitPriceCents !== null
-        ? money.assertCents(row.unitPriceCents)
-        : legacyCents(row.unitPrice);
-    const unitCostCents = row.unitCostCents !== undefined && row.unitCostCents !== null
-        ? money.assertCents(row.unitCostCents)
-        : legacyCents(row.unitCost);
+    const lineSubtotalCents =
+        row.lineSubtotalCents !== undefined && row.lineSubtotalCents !== null
+            ? money.assertCents(row.lineSubtotalCents)
+            : legacyCents(row.lineSubtotal);
+    const unitPriceCents =
+        row.unitPriceCents !== undefined && row.unitPriceCents !== null
+            ? money.assertCents(row.unitPriceCents)
+            : legacyCents(row.unitPrice);
+    const unitCostCents =
+        row.unitCostCents !== undefined && row.unitCostCents !== null
+            ? money.assertCents(row.unitCostCents)
+            : legacyCents(row.unitCost);
     const costCents = unitCostCents * quantity;
     const lineSubtotal = money.fromCents(lineSubtotalCents);
     const unitPrice = money.fromCents(unitPriceCents);
@@ -257,9 +266,10 @@ function rowValues(row) {
     const cost = money.fromCents(costCents);
     const grossProfit = money.fromSignedCents(lineSubtotalCents - costCents);
 
-    const amount = (centsField, legacyField) => centsField !== undefined && centsField !== null
-        ? money.fromCents(money.assertCents(centsField))
-        : money.fromCents(legacyCents(legacyField));
+    const amount = (centsField, legacyField) =>
+        centsField !== undefined && centsField !== null
+            ? money.fromCents(money.assertCents(centsField))
+            : money.fromCents(legacyCents(legacyField));
 
     return [
         row._id,
@@ -284,7 +294,8 @@ function rowValues(row) {
         amount(row.impuestosCents, row.impuestos),
         amount(row.costoEnvioCents, row.costoEnvio),
         amount(row.descuentoCents, row.descuento),
-        amount(row.totalCents, row.total)
+        amount(row.totalCents, row.total),
+        row.paymentMethod || '',
     ];
 }
 
@@ -320,5 +331,5 @@ module.exports = {
     parseFilters,
     row,
     rowValues,
-    saleFindFilter
+    saleFindFilter,
 };

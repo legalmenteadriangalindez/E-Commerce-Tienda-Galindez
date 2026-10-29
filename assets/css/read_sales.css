@@ -4,7 +4,6 @@
    TIENDA GALINDEZ
    ========================================================= */
 
-
 /* =========================================================
    CONTENEDOR PRINCIPAL
    ========================================================= */
@@ -14,7 +13,6 @@ main {
     padding: 30px;
     box-sizing: border-box;
 }
-
 
 /* =========================================================
    TITULO
@@ -26,11 +24,10 @@ main > div:first-child {
 
 main > div:first-child h1 {
     margin: 0;
-    color: #311b14;
+    color: var(--color-brand-dark);
     font-size: 28px;
     font-weight: 700;
 }
-
 
 /* =========================================================
    TABLA
@@ -39,21 +36,20 @@ main > div:first-child h1 {
 main .table {
     width: 100%;
     margin-bottom: 0;
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     border-collapse: collapse;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
 }
 
-
 /* =========================================================
    ENCABEZADO
    ========================================================= */
 
 main .table thead {
-    background-color: #311b14;
-    color: #ffffff;
+    background-color: var(--color-brand-dark);
+    color: var(--color-surface);
 }
 
 main .table thead th {
@@ -65,7 +61,6 @@ main .table thead th {
     vertical-align: middle;
     white-space: nowrap;
 }
-
 
 /* =========================================================
    CUERPO
@@ -79,7 +74,6 @@ main .table tbody th {
     font-size: 14px;
 }
 
-
 /* =========================================================
    FILAS
    ========================================================= */
@@ -92,7 +86,6 @@ main .table tbody tr:hover {
     background-color: #faf6f2;
 }
 
-
 /* =========================================================
    PRODUCTOS
    ========================================================= */
@@ -104,7 +97,6 @@ main .table tbody td:nth-child(3) div {
 main .table tbody td:nth-child(3) div:last-child {
     margin-bottom: 0;
 }
-
 
 /* =========================================================
    CANTIDADES
@@ -119,16 +111,14 @@ main .table tbody td:nth-child(4) div:last-child {
     margin-bottom: 0;
 }
 
-
 /* =========================================================
    CLIENTE
    ========================================================= */
 
 main .table tbody td:nth-child(5) {
     font-weight: 600;
-    color: #311b14;
+    color: var(--color-brand-dark);
 }
-
 
 /* =========================================================
    TOTAL
@@ -136,10 +126,9 @@ main .table tbody td:nth-child(5) {
 
 main .table tbody td:nth-child(6) {
     font-weight: 700;
-    color: #198754;
+    color: var(--color-success);
     white-space: nowrap;
 }
-
 
 /* =========================================================
    BOTÓN DETALLES
@@ -161,18 +150,15 @@ main .table .btn-info:hover {
     transform: translateY(-2px);
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
-
 
 /* ---------------------------------------------------------
    TABLETS
    --------------------------------------------------------- */
 
 @media (max-width: 992px) {
-
     main {
         padding: 25px 20px;
     }
@@ -185,16 +171,13 @@ main .table .btn-info:hover {
     main .table tbody td {
         padding: 10px 8px;
     }
-
 }
-
 
 /* ---------------------------------------------------------
    TABLETS PEQUEÑAS
    --------------------------------------------------------- */
 
 @media (max-width: 768px) {
-
     main {
         padding: 20px 15px;
     }
@@ -215,16 +198,13 @@ main .table .btn-info:hover {
     main .table {
         min-width: 750px;
     }
-
 }
-
 
 /* ---------------------------------------------------------
    MÓVILES
    --------------------------------------------------------- */
 
 @media (max-width: 576px) {
-
     main {
         padding: 15px 10px;
     }
@@ -240,7 +220,6 @@ main .table .btn-info:hover {
     main .table {
         min-width: 700px;
     }
-
 }
 
 /* =========================================================
@@ -252,8 +231,8 @@ main .table .btn-info:hover {
     padding: 22px;
     border: 1px solid #e4d8d0;
     border-radius: 14px;
-    background: #fffaf6;
-    box-shadow: 0 5px 18px rgba(49, 27, 20, .05);
+    background: var(--color-surface-warm);
+    box-shadow: 0 5px 18px rgba(49, 27, 20, 0.05);
 }
 
 .sales-export-panel__heading {
@@ -266,7 +245,7 @@ main .table .btn-info:hover {
 
 .sales-export-panel h2 {
     margin: 0;
-    color: #311b14;
+    color: var(--color-brand-dark);
     font-size: 1.15rem;
 }
 
@@ -275,8 +254,8 @@ main .table .btn-info:hover {
 }
 
 .sales-export-panel__hint {
-    color: #6b5b55;
-    font-size: .84rem;
+    color: var(--color-text-muted);
+    font-size: 0.84rem;
 }
 
 .sales-filters {
@@ -290,7 +269,7 @@ main .table .btn-info:hover {
     display: grid;
     gap: 6px;
     color: #4e3e37;
-    font-size: .82rem;
+    font-size: 0.82rem;
     font-weight: 700;
 }
 
@@ -301,16 +280,16 @@ main .table .btn-info:hover {
     padding: 8px 10px;
     border: 1px solid #d9c8bd;
     border-radius: 8px;
-    background: #fff;
-    color: #311b14;
+    background: var(--color-surface);
+    color: var(--color-brand-dark);
     font: inherit;
     font-weight: 400;
 }
 
 .sales-filters input:focus,
 .sales-filters select:focus {
-    border-color: #d85c32;
-    outline: 3px solid rgba(216, 92, 50, .14);
+    border-color: var(--color-brand-accent);
+    outline: 3px solid rgba(216, 92, 50, 0.14);
 }
 
 .sales-filters__actions {
@@ -325,21 +304,21 @@ main .table .btn-info:hover {
     padding: 8px 13px;
     border: 0;
     border-radius: 8px;
-    background: #311b14;
-    color: #fff;
+    background: var(--color-brand-dark);
+    color: var(--color-surface);
     cursor: pointer;
-    font-size: .84rem;
+    font-size: 0.84rem;
     font-weight: 700;
     white-space: nowrap;
 }
 
 .sales-filter-button:hover {
-    background: #d85c32;
+    background: var(--color-brand-accent);
 }
 
 .sales-filter-reset {
     color: #6b3f2d;
-    font-size: .84rem;
+    font-size: 0.84rem;
     font-weight: 700;
     white-space: nowrap;
 }
@@ -349,8 +328,8 @@ main .table .btn-info:hover {
     padding: 4px 8px;
     border-radius: 999px;
     background: #f1ece8;
-    color: #6b5b55;
-    font-size: .72rem;
+    color: var(--color-text-muted);
+    font-size: 0.72rem;
     font-weight: 800;
     white-space: nowrap;
 }
@@ -377,7 +356,7 @@ main .table .btn-info:hover {
 }
 
 .sales-total {
-    color: #198754;
+    color: var(--color-success);
     font-weight: 700;
     white-space: nowrap;
 }

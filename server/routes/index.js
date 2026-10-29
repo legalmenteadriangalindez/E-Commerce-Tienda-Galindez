@@ -18,16 +18,15 @@ router.use('/api/roles', require('./roles.routes'));
 router.use('/carrito', require('./cart.routes'));
 router.use('/', require('./admin.routes'));
 
-router.use('/dealer', require('./dealer.routes'));                   
-
+router.use('/dealer', require('./dealer.routes'));
 
 router.post('/reset-cart', (req, res) => {
-
     req.session.cart = [];
     delete req.session.claveCheckout;
     delete req.session.claveIdempotenciaCaja;
-    req.session.save(error => error ? res.status(503).json({ message: 'No se pudo guardar el carrito' }) : res.json({ success: true }));
-
+    req.session.save((error) =>
+        error ? res.status(503).json({ message: 'No se pudo guardar el carrito' }) : res.json({ success: true })
+    );
 });
 
 module.exports = router;

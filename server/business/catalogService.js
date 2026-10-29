@@ -29,7 +29,7 @@ function normalizeFilterValue(value) {
 function emptyPage(limit) {
     return {
         productos: [],
-        pagination: { page: 1, limit, totalItems: 0, totalPages: 0 }
+        pagination: { page: 1, limit, totalItems: 0, totalPages: 0 },
     };
 }
 
@@ -49,14 +49,18 @@ async function listPublic(options = {}) {
     const [category, brand] = await Promise.all([
         categoryName
             ? Category.findOne({
-                nombre: new RegExp(`^${escapeRegex(categoryName)}$`, 'i')
-            }).select('_id').lean()
+                  nombre: new RegExp(`^${escapeRegex(categoryName)}$`, 'i'),
+              })
+                  .select('_id')
+                  .lean()
             : null,
         brandName
             ? Brand.findOne({
-                nombre: new RegExp(`^${escapeRegex(brandName)}$`, 'i')
-            }).select('_id').lean()
-            : null
+                  nombre: new RegExp(`^${escapeRegex(brandName)}$`, 'i'),
+              })
+                  .select('_id')
+                  .lean()
+            : null,
     ]);
 
     if (categoryName && !category) return emptyPage(limit);
@@ -91,7 +95,7 @@ async function listPublic(options = {}) {
 
     return {
         productos,
-        pagination: { page, limit, totalItems, totalPages }
+        pagination: { page, limit, totalItems, totalPages },
     };
 }
 
@@ -122,7 +126,7 @@ async function listClothes() {
         .sort({ fechaIngreso: -1, _id: -1 })
         .limit(100)
         .lean()
-        .then(products => products.filter(product => product.categoria !== null));
+        .then((products) => products.filter((product) => product.categoria !== null));
 }
 
 module.exports = {
@@ -133,5 +137,5 @@ module.exports = {
     listPublic,
     listAllPublic,
     findPublicOne,
-    listClothes
+    listClothes,
 };

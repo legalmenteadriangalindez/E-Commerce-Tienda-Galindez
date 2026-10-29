@@ -58,6 +58,20 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
+                    <h5>Medio de pago</h5>
+                    <p>
+                        <%= order.metodoPago === 'CASH_ON_DELIVERY'
+                            ? 'Efectivo contra entrega'
+                            : order.metodoPago === 'CASH_AT_COUNTER' || (order.canal === 'CAJA' && !order.metodoPago)
+                                ? 'Efectivo en caja'
+                                : order.metodoPago === 'WOMPI_NEQUI'
+                                    ? 'Nequi con Wompi'
+                                    : 'Tarjeta con Wompi' %>
+                    </p>
+                    <small>Estado del pago: <%= order.estadoPago %></small>
+                </div>
+
+                <div class="col-md-6 mb-3">
 
                     <h5>Estado</h5>
 

@@ -7,14 +7,16 @@ const path = require('node:path');
 const csrfProtection = require('../server/middleware/csrfProtection');
 const upload = require('../server/middleware/upload');
 
-test('acepta un formulario multipart detrás del proxy cuando el token pertenece a la sesión', async t => {
+test('acepta un formulario multipart detrás del proxy cuando el token pertenece a la sesión', async (t) => {
     const app = express();
     app.set('trust proxy', 1);
-    app.use(session({
-        secret: 'secreto-de-prueba-csrf-multipart-32-caracteres',
-        resave: false,
-        saveUninitialized: false
-    }));
+    app.use(
+        session({
+            secret: 'secreto-de-prueba-csrf-multipart-32-caracteres',
+            resave: false,
+            saveUninitialized: false,
+        })
+    );
     app.use(csrfProtection);
     app.get('/admin/raffle', (req, res) => {
         res.type('html').send(`<input name="_csrf" value="${res.locals.csrfToken}">`);
@@ -23,7 +25,7 @@ test('acepta un formulario multipart detrás del proxy cuando el token pertenece
         res.status(204).end();
     });
 
-    const server = await new Promise(resolve => {
+    const server = await new Promise((resolve) => {
         const httpServer = app.listen(0, '127.0.0.1', () => resolve(httpServer));
     });
     t.after(() => server.close());
@@ -47,23 +49,25 @@ test('acepta un formulario multipart detrás del proxy cuando el token pertenece
             Cookie: cookie,
             Origin: 'https://e-commerce-tienda-galindez.onrender.com',
             'X-Forwarded-Host': 'e-commerce-tienda-galindez.onrender.com',
-            'X-Forwarded-Proto': 'https'
+            'X-Forwarded-Proto': 'https',
         },
-        body: form
+        body: form,
     });
 
     assert.equal(response.status, 204);
 });
 
-test('muestra diagnóstico seguro cuando rechaza el origen del formulario', async t => {
+test('muestra diagnóstico seguro cuando rechaza el origen del formulario', async (t) => {
     const app = express();
     app.set('view engine', 'ejs');
     app.set('views', path.resolve(__dirname, '../views'));
-    app.use(session({
-        secret: 'secreto-de-prueba-csrf-diagnostico-32-caracteres',
-        resave: false,
-        saveUninitialized: false
-    }));
+    app.use(
+        session({
+            secret: 'secreto-de-prueba-csrf-diagnostico-32-caracteres',
+            resave: false,
+            saveUninitialized: false,
+        })
+    );
     app.use((req, res, next) => {
         req.requestId = 'csrf-diagnostic-test';
         next();
@@ -74,7 +78,7 @@ test('muestra diagnóstico seguro cuando rechaza el origen del formulario', asyn
     });
     app.post('/admin/raffle', upload.single('imagenPremio'), (req, res) => res.status(204).end());
 
-    const server = await new Promise(resolve => {
+    const server = await new Promise((resolve) => {
         const httpServer = app.listen(0, '127.0.0.1', () => resolve(httpServer));
     });
     t.after(() => server.close());
@@ -91,7 +95,7 @@ test('muestra diagnóstico seguro cuando rechaza el origen del formulario', asyn
     const response = await fetch(`${baseUrl}/admin/raffle`, {
         method: 'POST',
         headers: { Cookie: cookie, Origin: 'https://sitio-no-autorizado.example' },
-        body: form
+        body: form,
     });
     const errorHtml = await response.text();
 
@@ -108,7 +112,7 @@ test('muestra diagnóstico seguro cuando rechaza el origen del formulario', asyn
     const invalidTokenResponse = await fetch(`${baseUrl}/admin/raffle`, {
         method: 'POST',
         headers: { Cookie: cookie, Origin: baseUrl },
-        body: invalidTokenForm
+        body: invalidTokenForm,
     });
     const invalidTokenHtml = await invalidTokenResponse.text();
 
@@ -124,7 +128,7 @@ test('muestra diagnóstico seguro cuando rechaza el origen del formulario', asyn
     const opaqueOriginResponse = await fetch(`${baseUrl}/admin/raffle`, {
         method: 'POST',
         headers: { Cookie: cookie, Origin: 'null' },
-        body: opaqueOriginForm
+        body: opaqueOriginForm,
     });
 
     assert.equal(opaqueOriginResponse.status, 204);

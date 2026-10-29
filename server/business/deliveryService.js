@@ -3,9 +3,10 @@ const Order = require('../model/order');
 const Userdb = require('../model/user');
 const Roldb = require('../model/rol');
 
-const DELIVERY_STATES = ['PAGADA', 'PREPARANDO', 'ENVIADA', 'ENTREGADA'];
-const ASSIGNABLE_STATES = new Set(['PAGADA', 'PREPARANDO', 'ENVIADA']);
-const DEALER_STATES = new Set(['PAGADA', 'PREPARANDO', 'ENVIADA', 'ENTREGADA']);
+const DELIVERY_STATES = ['PENDIENTE', 'PAGADA', 'PREPARANDO', 'ENVIADA', 'ENTREGADA'];
+const PAID_DELIVERY_STATES = ['PAGADA', 'PREPARANDO', 'ENVIADA', 'ENTREGADA'];
+const ASSIGNABLE_STATES = new Set(['PENDIENTE', 'PAGADA', 'PREPARANDO', 'ENVIADA']);
+const DEALER_STATES = new Set(DELIVERY_STATES);
 
 const STATUS_LABELS = {
     PENDIENTE: 'Pendiente de pago',
@@ -14,17 +15,23 @@ const STATUS_LABELS = {
     ENVIADA: 'En camino',
     ENTREGADA: 'Entregada',
     CANCELADA: 'Cancelada',
-    REQUIERE_REVISION: 'Requiere revisión'
+    REQUIERE_REVISION: 'Requiere revisión',
 };
 
 const STATE_TRACKING = {
-    PENDIENTE: { evento: 'PEDIDO_RECIBIDO', mensaje: 'Recibimos tu pedido y estamos esperando la confirmación del pago.' },
+    PENDIENTE: {
+        evento: 'PEDIDO_RECIBIDO',
+        mensaje: 'Recibimos tu pedido y estamos esperando la confirmación del pago.',
+    },
     PAGADA: { evento: 'PAGO_CONFIRMADO', mensaje: 'El pago fue confirmado. La tienda puede preparar tu pedido.' },
     PREPARANDO: { evento: 'PREPARANDO', mensaje: 'Estamos preparando tu pedido.' },
     ENVIADA: { evento: 'ENVIADA', mensaje: 'Tu pedido salió de la tienda y va en camino.' },
     ENTREGADA: { evento: 'ENTREGADA', mensaje: 'Tu pedido fue entregado.' },
     CANCELADA: { evento: 'CANCELADA', mensaje: 'El pedido fue cancelado.' },
-    REQUIERE_REVISION: { evento: 'REQUIERE_REVISION', mensaje: 'La tienda está revisando una incidencia de pago o inventario.' }
+    REQUIERE_REVISION: {
+        evento: 'REQUIERE_REVISION',
+        mensaje: 'La tienda está revisando una incidencia de pago o inventario.',
+    },
 };
 
 class DeliveryError extends Error {
@@ -46,12 +53,12 @@ function cleanText(value, max = 500) {
 function trackingForState(state, note = '') {
     const base = STATE_TRACKING[state] || {
         evento: 'ACTUALIZACION',
-        mensaje: `El estado del pedido cambió a ${STATUS_LABELS[state] || state}.`
+        mensaje: `El estado del pedido cambió a ${STATUS_LABELS[state] || state}.`,
     };
     const extra = cleanText(note);
     return {
         evento: base.evento,
-        mensaje: extra ? `${base.mensaje} Nota: ${extra}`.slice(0, 500) : base.mensaje
+        mensaje: extra ? `${base.mensaje} Nota: ${extra}`.slice(0, 500) : base.mensaje,
     };
 }
 
@@ -71,7 +78,7 @@ function appendTracking(order, evento, mensaje, actorId = null, options = {}) {
         evento,
         mensaje: text,
         fecha: options.fecha || new Date(),
-        visibleCliente
+        visibleCliente,
     };
     if (actorId && validId(actorId)) entry.actor = actorId;
     if (order.seguimientoEntrega.length >= 100) {
@@ -87,13 +94,26 @@ function trackState(order, state, actorId = null, note = '') {
 }
 
 function baseDeliveryFilter(status) {
-    const filter = {
+    const paid = {
         estadoPago: 'PAGADO',
         inventario: 'CONFIRMADO',
-        estado: { $in: DELIVERY_STATES }
+        estado: { $in: PAID_DELIVERY_STATES },
     };
-    if (status && DELIVERY_STATES.includes(status)) filter.estado = status;
-    return filter;
+    const cashOnDelivery = {
+        metodoPago: 'CASH_ON_DELIVERY',
+        estadoPago: 'PENDIENTE',
+        inventario: 'CONFIRMADO',
+        estado: { $in: ['PENDIENTE', 'PREPARANDO', 'ENVIADA'] },
+    };
+    if (status && DELIVERY_STATES.includes(status)) {
+        return {
+            $or: [
+                { ...paid, estado: status },
+                { ...cashOnDelivery, estado: status },
+            ],
+        };
+    }
+    return { $or: [paid, cashOnDelivery] };
 }
 
 function orderPopulate(query) {
@@ -121,10 +141,12 @@ async function listForAdmin({ page = 1, limit = 10, status = '' } = {}) {
     const totalItems = await Order.countDocuments(filter);
     const totalPages = Math.ceil(totalItems / safeLimit);
     const currentPage = Math.min(safePage, totalPages || 1);
-    const orders = await orderPopulate(Order.find(filter)
-        .sort({ createdAt: -1, _id: -1 })
-        .skip((currentPage - 1) * safeLimit)
-        .limit(safeLimit)).lean();
+    const orders = await orderPopulate(
+        Order.find(filter)
+            .sort({ createdAt: -1, _id: -1 })
+            .skip((currentPage - 1) * safeLimit)
+            .limit(safeLimit)
+    ).lean();
     return { orders, page: currentPage, limit: safeLimit, totalItems, totalPages };
 }
 
@@ -135,25 +157,28 @@ async function listForDealer(dealerId, { page = 1, limit = 20 } = {}) {
     const filter = {
         ...baseDeliveryFilter(),
         repartidor: dealerId,
-        estado: { $in: [...DEALER_STATES] }
     };
     const totalItems = await Order.countDocuments(filter);
     const totalPages = Math.ceil(totalItems / safeLimit);
     const currentPage = Math.min(safePage, totalPages || 1);
-    const orders = await orderPopulate(Order.find(filter)
-        .sort({ createdAt: -1, _id: -1 })
-        .skip((currentPage - 1) * safeLimit)
-        .limit(safeLimit)).lean();
+    const orders = await orderPopulate(
+        Order.find(filter)
+            .sort({ createdAt: -1, _id: -1 })
+            .skip((currentPage - 1) * safeLimit)
+            .limit(safeLimit)
+    ).lean();
     return { orders, page: currentPage, limit: safeLimit, totalItems, totalPages };
 }
 
 async function orderForDealer(orderId, dealerId) {
     if (!validId(orderId) || !validId(dealerId)) throw new DeliveryError('Pedido inválido.', 400);
-    const order = await orderPopulate(Order.findOne({
-        _id: orderId,
-        repartidor: dealerId,
-        ...baseDeliveryFilter()
-    }));
+    const order = await orderPopulate(
+        Order.findOne({
+            _id: orderId,
+            repartidor: dealerId,
+            ...baseDeliveryFilter(),
+        })
+    );
     if (!order) throw new DeliveryError('El pedido no está asignado a tu cuenta.', 404);
     return order;
 }
@@ -163,11 +188,15 @@ async function assignOrder(orderId, dealerId, adminId, note = '') {
         throw new DeliveryError('Pedido, repartidor o administrador inválido.', 400);
     }
     const cleanNote = cleanText(note);
-    return mongoose.connection.transaction(async session => {
+    return mongoose.connection.transaction(async (session) => {
         const order = await Order.findById(orderId).session(session);
         if (!order) throw new DeliveryError('Pedido no encontrado.', 404);
-        if (order.estadoPago !== 'PAGADO' || order.inventario !== 'CONFIRMADO' || !ASSIGNABLE_STATES.has(order.estado)) {
-            throw new DeliveryError('Solo se pueden asignar pedidos pagados y disponibles para reparto.', 409);
+        const cashOnDelivery = order.metodoPago === 'CASH_ON_DELIVERY';
+        const readyForDelivery = cashOnDelivery
+            ? order.estadoPago === 'PENDIENTE' && order.estado === 'PENDIENTE'
+            : order.estadoPago === 'PAGADO' && ASSIGNABLE_STATES.has(order.estado);
+        if (order.inventario !== 'CONFIRMADO' || !readyForDelivery) {
+            throw new DeliveryError('Solo se pueden asignar pedidos confirmados y disponibles para reparto.', 409);
         }
 
         const dealer = await Userdb.findOne({ _id: dealerId, estado: 'Activo' })
@@ -183,7 +212,7 @@ async function assignOrder(orderId, dealerId, adminId, note = '') {
         order.asignacionReparto = {
             asignadoEn: new Date(),
             asignadoPor: adminId,
-            nota: cleanNote
+            nota: cleanNote,
         };
         if (previous !== String(dealer._id)) {
             appendTracking(
@@ -200,11 +229,11 @@ async function assignOrder(orderId, dealerId, adminId, note = '') {
 
 async function unassignOrder(orderId, adminId, note = '') {
     if (!validId(orderId) || !validId(adminId)) throw new DeliveryError('Pedido o administrador inválido.', 400);
-    return mongoose.connection.transaction(async session => {
+    return mongoose.connection.transaction(async (session) => {
         const order = await Order.findById(orderId).session(session);
         if (!order) throw new DeliveryError('Pedido no encontrado.', 404);
         if (!order.repartidor) throw new DeliveryError('El pedido no tiene repartidor asignado.', 409);
-        if (!['PAGADA', 'PREPARANDO'].includes(order.estado)) {
+        if (!['PENDIENTE', 'PAGADA', 'PREPARANDO'].includes(order.estado)) {
             throw new DeliveryError('No se puede retirar un pedido que ya está en camino o entregado.', 409);
         }
         order.repartidor = null;
@@ -225,7 +254,9 @@ async function unassignOrder(orderId, adminId, note = '') {
 
 function visibleTracking(order) {
     const events = Array.isArray(order?.seguimientoEntrega) ? order.seguimientoEntrega : [];
-    return events.filter(event => event.visibleCliente !== false).sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+    return events
+        .filter((event) => event.visibleCliente !== false)
+        .sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
 }
 
 module.exports = {
@@ -235,6 +266,7 @@ module.exports = {
     DeliveryError,
     STATE_TRACKING,
     appendTracking,
+    baseDeliveryFilter,
     trackingForState,
     trackState,
     listDealers,
@@ -243,5 +275,5 @@ module.exports = {
     orderForDealer,
     assignOrder,
     unassignOrder,
-    visibleTracking
+    visibleTracking,
 };

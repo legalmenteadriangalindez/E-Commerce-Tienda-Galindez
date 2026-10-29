@@ -6,15 +6,12 @@ const {
     ALL_PERMISSIONS,
     ADMIN_PERMISSIONS,
     normalizePermissions,
-    expandPermissions
+    expandPermissions,
 } = require('../server/config/permissions');
 const auth = require('../server/middleware/auth');
 
 test('normaliza permisos, elimina duplicados y descarta valores desconocidos', () => {
-    assert.deepEqual(
-        normalizePermissions([P.CATALOG_READ, P.CATALOG_READ, 'inventado']),
-        [P.CATALOG_READ]
-    );
+    assert.deepEqual(normalizePermissions([P.CATALOG_READ, P.CATALOG_READ, 'inventado']), [P.CATALOG_READ]);
 });
 
 test('un Admin antiguo conserva acceso operativo, pero no puede delegar roles', () => {
@@ -27,7 +24,12 @@ test('un Admin antiguo conserva acceso operativo, pero no puede delegar roles', 
 
 test('un rol personalizado solo puede usar los módulos seleccionados', () => {
     const role = { nombre: 'Inventario', permisos: [P.ADMIN_ACCESS, P.CATALOG_WRITE, P.INVENTORY_READ] };
-    assert.deepEqual(expandPermissions(role.permisos), [P.ADMIN_ACCESS, P.CATALOG_WRITE, P.INVENTORY_READ, P.CATALOG_READ]);
+    assert.deepEqual(expandPermissions(role.permisos), [
+        P.ADMIN_ACCESS,
+        P.CATALOG_WRITE,
+        P.INVENTORY_READ,
+        P.CATALOG_READ,
+    ]);
     assert.equal(auth.hasPermission({ rol: role }, P.CATALOG_READ), true);
     assert.equal(auth.hasPermission({ rol: role }, P.PAYMENTS_MANAGE), false);
 });

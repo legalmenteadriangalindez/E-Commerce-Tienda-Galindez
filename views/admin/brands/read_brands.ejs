@@ -32,7 +32,7 @@
         <td><%= brand.nombre %></td>
         <td>
              <% if (brand.foto) { %>
-                 <img src="<%= brand.foto %>" width="80" height="80" style="object-fit: cover;">
+                 <img src="<%= brand.foto %>" width="80" height="80" class="brand-thumbnail" alt="<%= brand.nombre %>">
              <% } else { %>
                  <span>Sin imagen</span>
              <% } %>

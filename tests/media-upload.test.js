@@ -7,12 +7,12 @@ const media = require('../server/business/mediaService');
 const errorHandler = require('../server/middleware/errorHandler');
 
 async function start(app) {
-    const server = await new Promise(resolve => {
+    const server = await new Promise((resolve) => {
         const instance = app.listen(0, '127.0.0.1', () => resolve(instance));
     });
     return {
         server,
-        url: `http://127.0.0.1:${server.address().port}`
+        url: `http://127.0.0.1:${server.address().port}`,
     };
 }
 
@@ -24,7 +24,7 @@ test('las cargas de imágenes tienen límites de memoria y dimensiones acotados'
     assert.equal(media.limits.maxImagePixels, 8_000_000);
 });
 
-test('rechaza una imagen que supera el límite antes de procesarla', async t => {
+test('rechaza una imagen que supera el límite antes de procesarla', async (t) => {
     const app = express();
     app.post('/api/media', upload.array('fotos', 4), (req, res) => res.json({ ok: true }));
     app.use(errorHandler);
@@ -40,7 +40,7 @@ test('rechaza una imagen que supera el límite antes de procesarla', async t => 
     const response = await fetch(`${running.url}/api/media`, {
         method: 'POST',
         headers: { Accept: 'application/json' },
-        body: form
+        body: form,
     });
 
     assert.equal(response.status, 413);
@@ -48,11 +48,13 @@ test('rechaza una imagen que supera el límite antes de procesarla', async t => 
     assert.match(body.message, /límite permitido/);
 });
 
-test('rechaza más archivos que el máximo de una petición multipart', async t => {
+test('rechaza más archivos que el máximo de una petición multipart', async (t) => {
     const app = express();
-    app.post('/api/media', upload.fields(
-        Array.from({ length: 5 }, (_, index) => ({ name: `foto${index}`, maxCount: 1 }))
-    ), (req, res) => res.json({ ok: true }));
+    app.post(
+        '/api/media',
+        upload.fields(Array.from({ length: 5 }, (_, index) => ({ name: `foto${index}`, maxCount: 1 }))),
+        (req, res) => res.json({ ok: true })
+    );
     app.use(errorHandler);
     const running = await start(app);
     t.after(() => running.server.close());
@@ -64,7 +66,7 @@ test('rechaza más archivos que el máximo de una petición multipart', async t 
     const response = await fetch(`${running.url}/api/media`, {
         method: 'POST',
         headers: { Accept: 'application/json' },
-        body: form
+        body: form,
     });
 
     assert.equal(response.status, 413);

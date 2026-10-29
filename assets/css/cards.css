@@ -3,7 +3,6 @@
    TIENDA GALINDEZ
    ========================================================= */
 
-
 /* =========================================================
    CONTENEDOR
    ========================================================= */
@@ -26,7 +25,6 @@
     background-color: var(--light-bg);
 }
 
-
 /* =========================================================
    PRODUCT CARD
    ========================================================= */
@@ -42,7 +40,7 @@
 
     box-sizing: border-box;
 
-    background-color: #ffffff;
+    background-color: var(--color-surface);
 
     border: 1px solid var(--warm-tan);
 
@@ -56,28 +54,23 @@
         border-color 0.3s ease;
 }
 
-
 /* =========================================================
    HOVER
    ========================================================= */
 
 .product-card:hover {
-
     transform: translateY(-6px);
 
     border-color: var(--warm-tan);
 
-    box-shadow:
-        0 12px 25px rgba(49, 27, 20, 0.15);
+    box-shadow: 0 12px 25px rgba(49, 27, 20, 0.15);
 }
-
 
 /* =========================================================
    IMAGEN
    ========================================================= */
 
 .product-card .product-card-img {
-
     width: 100%;
 
     height: 120px;
@@ -86,35 +79,28 @@
 
     display: block;
 
-    transition:
-        transform 0.3s ease;
+    transition: transform 0.3s ease;
 }
-
 
 /* Zoom de imagen */
 
 .product-card:hover .product-card-img {
-
     transform: scale(1.05);
 }
-
 
 /* =========================================================
    BODY
    ========================================================= */
 
 .product-card .product-card-body {
-
     padding: 10px;
 }
-
 
 /* =========================================================
    TITULO
    ========================================================= */
 
 .product-card .product-card-title {
-
     margin-bottom: 5px;
 
     color: #222;
@@ -130,13 +116,11 @@
     text-overflow: ellipsis;
 }
 
-
 /* =========================================================
    DESCRIPCIÓN
    ========================================================= */
 
 .product-card .product-card-text {
-
     margin-bottom: 0;
 
     color: #666;
@@ -154,49 +138,41 @@
     overflow: hidden;
 }
 
-
 /* =========================================================
    INFORMACIÓN DEL PRODUCTO
    ========================================================= */
 
 .product-card .product-list {
-
     margin: 0;
 
     border-top: 1px solid #f0ece9;
 }
 
-
 .product-card .product-list-item {
-
     padding: 7px 10px;
 
     color: #555;
 
     font-size: 0.8rem;
 
-    background-color: #ffffff;
+    background-color: var(--color-surface);
 
     border-color: #f0ece9;
 }
 
-
 /* Precio */
 
 .product-card .product-price {
-
     color: var(--primary-dark);
 
     font-weight: 700;
 }
-
 
 /* =========================================================
    BOTONES
    ========================================================= */
 
 .product-card .product-actions {
-
     display: flex;
 
     gap: 8px;
@@ -204,13 +180,11 @@
     padding: 10px;
 }
 
-
 /* =========================================================
    LINK DETALLES
    ========================================================= */
 
 .product-card .btn-secondary-action {
-
     flex: 1;
 
     text-decoration: none;
@@ -218,23 +192,19 @@
     text-align: center;
 }
 
-
 /* =========================================================
    AGREGAR AL CARRITO
    ========================================================= */
 
 .product-card .btn-primary-action {
-
     flex: 1;
 }
-
 
 /* =========================================================
    ANIMACIÓN BOTÓN CARRITO
    ========================================================= */
 
 .product-card .add-to-cart-btn {
-
     position: relative;
 
     overflow: hidden;
@@ -244,124 +214,92 @@
         box-shadow 0.2s ease;
 }
 
-
 .product-card .add-to-cart-btn:active {
-
     transform: scale(0.95);
 
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
-
 
 /* =========================================================
    ESTADO AGREGADO
    ========================================================= */
 
 .product-card .added {
-
     background-color: #28a745 !important;
 
-    color: #ffffff;
+    color: var(--color-surface);
 }
-
 
 /* =========================================================
    TABLAS
    ========================================================= */
 
 .thead-dark th {
-
     background-color: var(--primary-dark) !important;
 
     color: var(--warm-tan) !important;
 }
-
 
 /* =========================================================
    UTILIDADES
    ========================================================= */
 
 .text-gradient {
-
     color: var(--accent-orange);
 
     font-weight: bold;
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
-
 /* 5 columnas */
 
 @media (max-width: 1400px) {
-
     .container-cards {
-
-        grid-template-columns:
-            repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 }
-
 
 /* 4 columnas */
 
 @media (max-width: 1200px) {
-
     .container-cards {
-
-        grid-template-columns:
-            repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
-
 
 /* 3 columnas */
 
 @media (max-width: 992px) {
-
     .container-cards {
-
-        grid-template-columns:
-            repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
-
 
 /* 2 columnas */
 
 @media (max-width: 768px) {
-
     .container-cards {
-
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
-
 
 /* =========================================================
    MÓVILES
    ========================================================= */
 
 @media (max-width: 480px) {
-
     .container-cards {
-
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
 
         gap: 8px;
 
         padding: 10px 8px;
     }
 
-
     .container-cards .product-card {
-
         width: 100%;
 
         max-width: none;
@@ -371,41 +309,29 @@
         margin: 0;
     }
 
-
     .product-card .product-card-img {
-
         height: 100px;
     }
 
-
     .product-card .product-card-body {
-
         padding: 8px;
     }
 
-
     .product-card .product-card-title {
-
         font-size: 0.85rem;
     }
 
-
     .product-card .product-card-text {
-
         font-size: 0.75rem;
     }
 
-
     .product-card .product-list-item {
-
         padding: 6px 8px;
 
         font-size: 0.75rem;
     }
 
-
     .product-card .product-actions {
-
         flex-direction: column;
 
         gap: 5px;
@@ -413,10 +339,8 @@
         padding: 8px;
     }
 
-
     .product-card .btn-primary-action,
     .product-card .btn-secondary-action {
-
         width: 100%;
 
         font-size: 0.75rem;

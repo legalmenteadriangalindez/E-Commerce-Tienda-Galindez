@@ -6,12 +6,12 @@
     <div class="checkout-header">
         <h1>
             <i class="fas fa-store"></i>
-            Punto de Pago Seguro
+            Finaliza tu pedido
         </h1>
 
         <div class="badge-secure">
             <i class="fas fa-lock"></i>
-            Pago seguro y protegido por Wompi
+            Wompi o efectivo contra entrega
         </div>
     </div>
 
@@ -122,18 +122,24 @@
                 </div>
 
                 <div class="payment-methods">
-                    <div class="section-title" style="margin-bottom: 1rem;">
+                    <div class="section-title section-title-spaced">
                         <i class="fas fa-credit-card"></i>
                         <span>Método de pago</span>
                     </div>
 
-                    <div
-                        class="payment-wompi-info"
-                        style="padding: 20px; border-radius: 12px; background: #f8fafc; text-align: center;"
-                    >
-                        <i class="fas fa-shield-halved" style="font-size: 2.5rem;"></i>
+                    <fieldset class="payment-options">
+                        <legend>Elige cómo pagar</legend>
+                        <% paymentMethods.forEach((method, index) => { %>
+                            <label class="payment-option">
+                                <input type="radio" name="metodoPago" value="<%= method.value %>" <%= index === 0 ? 'checked' : '' %> required>
+                                <span><strong><%= method.label %></strong><small><%= method.description %></small></span>
+                            </label>
+                        <% }) %>
+                    </fieldset>
+                    <div class="payment-wompi-info payment-security">
+                        <i class="fas fa-shield-halved payment-security-icon"></i>
 
-                        <h3>Pago seguro con Wompi</h3>
+                        <h3>Tarjetas y Nequi con Wompi</h3>
 
                         <p>
                             Al confirmar tu pedido serás redirigido a la plataforma
@@ -141,8 +147,11 @@
                         </p>
 
                         <p>
-                            Allí podrás seleccionar el método de pago disponible
-                            para tu compra.
+                            La disponibilidad final de tarjeta o Nequi depende de los medios habilitados en tu cuenta Wompi.
+                        </p>
+
+                        <p>
+                            Si eliges efectivo contra entrega, no serás enviado a Wompi: pagarás al recibir y el repartidor confirmará la entrega.
                         </p>
                     </div>
                 </div>
@@ -229,12 +238,12 @@
 
                 <button type="submit" class="pay-btn">
                     <i class="fas fa-lock"></i>
-                    Continuar al pago con Wompi
+                    Confirmar método de pago
                 </button>
 
                 <div
-                    class="trust-badge"
-                    style="justify-content: space-between; margin-top: 18px;"
+                    class="trust-badge payment-actions"
+
                 >
                     <span>
                         <i class="fas fa-shield-alt"></i>

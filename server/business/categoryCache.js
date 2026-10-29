@@ -14,7 +14,7 @@ function createCategoryCache(load, ttlMs = TTL_MS) {
 
         pending = Promise.resolve()
             .then(load)
-            .then(categories => {
+            .then((categories) => {
                 value = Array.isArray(categories) ? categories : [];
                 expiresAt = Date.now() + ttlMs;
                 return value;
@@ -34,13 +34,11 @@ function createCategoryCache(load, ttlMs = TTL_MS) {
     return { get, invalidate };
 }
 
-const cache = createCategoryCache(() => Categorydb.find()
-    .sort({ nombre: 1, _id: 1 })
-    .lean());
+const cache = createCategoryCache(() => Categorydb.find().sort({ nombre: 1, _id: 1 }).lean());
 
 module.exports = {
     get: cache.get,
     invalidate: cache.invalidate,
     createCategoryCache,
-    TTL_MS
+    TTL_MS,
 };

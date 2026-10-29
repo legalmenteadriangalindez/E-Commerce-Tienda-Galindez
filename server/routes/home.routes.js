@@ -2,17 +2,17 @@ const express = require('express');
 const router = express.Router();
 const { isLogged } = require('../middleware/auth');
 
-const servicesRenderHomeRutes = require('../services/renderHomeRoutes');
-const servicesRenderPromotions = require('../services/renderPromotions');
-const servicesRenderBrand = require('../services/renderBrands');
-const servicesRenderProfile = require('../services/renderProfile');
-const servicesRenderCategory = require('../services/renderCategories');
-const servicesRenderProduct = require('../services/renderProducts');
-const servicesRenderCart = require('../services/renderCart');
-const clotehsService = require('../services/renderClothes');
-const servicesRenderSEO = require('../services/renderSEO');
-const servicesRenderRaffle = require('../services/renderRaffle');
-const servicesRenderLegal = require('../services/renderLegal');
+const servicesRenderHomeRutes = require('../pages/renderHomeRoutes');
+const servicesRenderPromotions = require('../pages/renderPromotions');
+const servicesRenderBrand = require('../pages/renderBrands');
+const servicesRenderProfile = require('../pages/renderProfile');
+const servicesRenderCategory = require('../pages/renderCategories');
+const servicesRenderProduct = require('../pages/renderProducts');
+const servicesRenderCart = require('../pages/renderCart');
+const clotehsService = require('../pages/renderClothes');
+const servicesRenderSEO = require('../pages/renderSEO');
+const servicesRenderRaffle = require('../pages/renderRaffle');
+const servicesRenderLegal = require('../pages/renderLegal');
 const categoriasMiddleware = require('../middleware/categoriasMiddleware');
 
 router.get('/sitemap.xml', servicesRenderSEO.sitemap);
@@ -45,11 +45,11 @@ router.get('/Detalles/:id', categoriasMiddleware, servicesRenderProduct.product_
 // perfil
 router.get('/perfil', isLogged, categoriasMiddleware, servicesRenderProfile.profile);
 router.get('/perfil/editar/:id', isLogged, categoriasMiddleware, servicesRenderProfile.update_profile_form);
-router.post("/perfil/editar/:id",isLogged,servicesRenderProfile.update_profile);
+router.post('/perfil/editar/:id', isLogged, servicesRenderProfile.update_profile);
 
 router.get('/view_cart', isLogged, categoriasMiddleware, servicesRenderCart.car);
-router.get('/payment-point', isLogged, categoriasMiddleware, require('../services/renderCommerce').checkout(false));
-router.get('/venta-finalizada/:id', isLogged, categoriasMiddleware, require('../services/renderCommerce').orderStatus);
-router.get('/mis-pedidos', isLogged, categoriasMiddleware, require('../services/renderCommerce').myOrders);
+router.get('/payment-point', isLogged, categoriasMiddleware, require('../pages/renderCommerce').checkout(false));
+router.get('/venta-finalizada/:id', isLogged, categoriasMiddleware, require('../pages/renderCommerce').orderStatus);
+router.get('/mis-pedidos', isLogged, categoriasMiddleware, require('../pages/renderCommerce').myOrders);
 
 module.exports = router;

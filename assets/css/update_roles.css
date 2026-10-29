@@ -4,15 +4,14 @@
    ========================================================= */
 
 :root {
-    --primary-dark: #311b14;
-    --accent-orange: #d85c32;
-    --warm-tan: #d58d51;
-    --light-bg: #f6f1ec;
-    --white: #ffffff;
+    --primary-dark: var(--color-brand-dark);
+    --accent-orange: var(--color-brand-accent);
+    --warm-tan: var(--color-brand-tan);
+    --light-bg: var(--color-background);
+    --white: var(--color-surface);
     --text-dark: #332923;
-    --text-muted: #6b5b55;
+    --text-muted: var(--color-text-muted);
 }
-
 
 /* =========================================================
    FONDO
@@ -21,7 +20,6 @@
 body {
     background-color: var(--light-bg);
 }
-
 
 /* =========================================================
    CONTENEDOR
@@ -34,7 +32,6 @@ body {
     padding: 0 20px;
     box-sizing: border-box;
 }
-
 
 /* =========================================================
    ENCABEZADO
@@ -56,7 +53,6 @@ body {
     margin: 0;
 }
 
-
 /* =========================================================
    CARD DEL FORMULARIO
    ========================================================= */
@@ -69,7 +65,6 @@ body {
     box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
 }
 
-
 /* =========================================================
    CARD PEQUEÑA
    ========================================================= */
@@ -77,7 +72,6 @@ body {
 .form-card.small-card {
     max-width: 600px;
 }
-
 
 /* =========================================================
    FORMULARIO
@@ -87,7 +81,6 @@ body {
     width: 100%;
 }
 
-
 /* =========================================================
    GRUPO
    ========================================================= */
@@ -95,7 +88,6 @@ body {
 .role-form .form-group {
     width: 100%;
 }
-
 
 /* =========================================================
    LABEL
@@ -108,7 +100,6 @@ body {
     font-weight: 600;
 }
 
-
 /* =========================================================
    INPUT
    ========================================================= */
@@ -118,10 +109,10 @@ body {
     padding: 11px 13px;
     box-sizing: border-box;
 
-    border: 1px solid #e0d6cf;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
 
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     color: var(--text-dark);
 
     outline: none;
@@ -131,7 +122,6 @@ body {
         box-shadow 0.2s ease;
 }
 
-
 /* =========================================================
    INPUT - FOCUS
    ========================================================= */
@@ -139,10 +129,8 @@ body {
 .role-form .form-group input:focus {
     border-color: var(--accent-orange);
 
-    box-shadow:
-        0 0 0 3px rgba(216, 92, 50, 0.15);
+    box-shadow: 0 0 0 3px rgba(216, 92, 50, 0.15);
 }
-
 
 /* =========================================================
    TEXTO DE AYUDA
@@ -162,7 +150,7 @@ body {
     gap: 10px;
     margin-top: 12px;
     padding: 14px;
-    border: 1px solid #e0d6cf;
+    border: 1px solid var(--color-border);
     border-radius: 10px;
     background: #fbf8f5;
 }
@@ -175,19 +163,29 @@ body {
     padding: 9px;
     border-radius: 8px;
     color: var(--text-dark) !important;
-    font-size: .88rem;
+    font-size: 0.88rem;
     font-weight: 500 !important;
     cursor: pointer;
 }
 
-.permission-option:hover { background: rgba(216, 92, 50, .08); }
-.permission-option.is-disabled { opacity: .65; cursor: not-allowed; }
-.permission-option input { width: auto !important; margin-top: 3px; accent-color: var(--accent-orange); }
-
-@media (max-width: 620px) {
-    .permission-grid { grid-template-columns: 1fr; }
+.permission-option:hover {
+    background: rgba(216, 92, 50, 0.08);
+}
+.permission-option.is-disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+.permission-option input {
+    width: auto !important;
+    margin-top: 3px;
+    accent-color: var(--accent-orange);
 }
 
+@media (max-width: 620px) {
+    .permission-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
 /* =========================================================
    ACCIONES
@@ -197,7 +195,6 @@ body {
     margin-top: 25px;
     text-align: right;
 }
-
 
 /* =========================================================
    BOTÓN
@@ -221,7 +218,6 @@ body {
         box-shadow 0.2s ease;
 }
 
-
 /* =========================================================
    BOTÓN - HOVER
    ========================================================= */
@@ -231,10 +227,8 @@ body {
 
     transform: translateY(-2px);
 
-    box-shadow:
-        0 6px 15px rgba(49, 27, 20, 0.15);
+    box-shadow: 0 6px 15px rgba(49, 27, 20, 0.15);
 }
-
 
 /* =========================================================
    BOTÓN - ACTIVE
@@ -245,13 +239,11 @@ body {
     box-shadow: none;
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 768px) {
-
     .page-wrapper {
         margin: 25px auto;
         padding: 0 15px;
@@ -278,13 +270,11 @@ body {
     }
 }
 
-
 /* =========================================================
    MÓVILES
    ========================================================= */
 
 @media (max-width: 480px) {
-
     .page-wrapper {
         padding: 0 10px;
     }

@@ -9,14 +9,14 @@ function shouldAutoIndex(env = process.env) {
 
 const connectDB = async () => {
     if (!process.env.MONGO_URI) {
-        throw new Error("MONGO_URI no está configurada");
+        throw new Error('MONGO_URI no está configurada');
     }
 
     const autoIndex = shouldAutoIndex();
     mongoose.set('autoIndex', autoIndex);
     const con = await mongoose.connect(process.env.MONGO_URI, {
         serverSelectionTimeoutMS: 15000,
-        autoIndex
+        autoIndex,
     });
 
     console.log(`MongoDB conectado: ${con.connection.host} (autoIndex=${autoIndex})`);

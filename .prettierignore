@@ -1,6 +1,5 @@
 node_modules
-public
-assets
 views
 coverage
 package-lock.json
+migrations

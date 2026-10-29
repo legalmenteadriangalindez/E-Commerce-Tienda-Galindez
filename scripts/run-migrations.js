@@ -16,21 +16,29 @@ async function main() {
     await connectDB();
     try {
         const result = await runMigrations({ statusOnly, dryRun });
-        console.log(JSON.stringify({
-            event: statusOnly || dryRun ? 'migrations_status' : 'migrations_completed',
-            ...result
-        }, null, 2));
+        console.log(
+            JSON.stringify(
+                {
+                    event: statusOnly || dryRun ? 'migrations_status' : 'migrations_completed',
+                    ...result,
+                },
+                null,
+                2
+            )
+        );
     } finally {
         await mongoose.disconnect();
     }
 }
 
 if (require.main === module) {
-    main().catch(error => {
-        console.error(JSON.stringify({
-            event: 'migrations_failed',
-            message: typeof error.message === 'string' ? error.message.slice(0, 500) : 'Error desconocido'
-        }));
+    main().catch((error) => {
+        console.error(
+            JSON.stringify({
+                event: 'migrations_failed',
+                message: typeof error.message === 'string' ? error.message.slice(0, 500) : 'Error desconocido',
+            })
+        );
         process.exitCode = 1;
     });
 }

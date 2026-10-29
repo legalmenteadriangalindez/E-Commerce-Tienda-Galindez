@@ -4,25 +4,23 @@
    TIENDA GALINDEZ
    ========================================================= */
 
-
 /* =========================================================
    VARIABLES
    ========================================================= */
 
 :root {
-    --primary-dark: #311b14;
-    --accent-orange: #d85c32;
-    --warm-tan: #d58d51;
-    --light: #ffffff;
+    --primary-dark: var(--color-brand-dark);
+    --accent-orange: var(--color-brand-accent);
+    --warm-tan: var(--color-brand-tan);
+    --light: var(--color-surface);
 
-    --background: #f6f1ec;
-    --border: #e0d6cf;
-    --text-muted: #6b5b55;
+    --background: var(--color-background);
+    --border: var(--color-border);
+    --text-muted: var(--color-text-muted);
 
-    --success: #198754;
-    --danger: #dc3545;
+    --success: var(--color-success);
+    --danger: var(--color-danger);
 }
-
 
 /* =========================================================
    BODY
@@ -32,7 +30,6 @@ body {
     background: var(--background);
     font-family: Arial, sans-serif;
 }
-
 
 /* =========================================================
    PAGE WRAPPER
@@ -45,7 +42,6 @@ body {
     box-sizing: border-box;
 }
 
-
 /* =========================================================
    HEADER
    ========================================================= */
@@ -53,7 +49,6 @@ body {
 .page-header {
     margin-bottom: 20px;
 }
-
 
 .page-header h1 {
     margin: 0 0 6px;
@@ -65,7 +60,6 @@ body {
     font-weight: 700;
 }
 
-
 .page-header p {
     margin: 0;
 
@@ -73,7 +67,6 @@ body {
 
     font-size: 0.95rem;
 }
-
 
 /* =========================================================
    FORM CARD
@@ -88,12 +81,10 @@ body {
 
     padding: 25px;
 
-    box-shadow:
-        0 8px 25px rgba(49, 27, 20, 0.08);
+    box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
 
     box-sizing: border-box;
 }
-
 
 /* =========================================================
    SMALL CARD
@@ -102,7 +93,6 @@ body {
 .form-card.small-card {
     max-width: 600px;
 }
-
 
 /* =========================================================
    ALERTAS
@@ -122,7 +112,6 @@ body {
     box-sizing: border-box;
 }
 
-
 /* =========================================================
    ALERTA ERROR
    ========================================================= */
@@ -134,7 +123,6 @@ body {
 
     color: var(--danger);
 }
-
 
 /* =========================================================
    ALERTA SUCCESS
@@ -148,7 +136,6 @@ body {
     color: var(--success);
 }
 
-
 /* =========================================================
    FORM
    ========================================================= */
@@ -157,7 +144,6 @@ body {
     width: 100%;
 }
 
-
 /* =========================================================
    FORM GROUP
    ========================================================= */
@@ -165,7 +151,6 @@ body {
 .category-form .form-group {
     width: 100%;
 }
-
 
 /* =========================================================
    LABEL
@@ -183,12 +168,11 @@ body {
     font-weight: 600;
 }
 
-
 /* =========================================================
    INPUT
    ========================================================= */
 
-.category-form input[type="text"] {
+.category-form input[type='text'] {
     width: 100%;
 
     padding: 11px 13px;
@@ -212,27 +196,23 @@ body {
         box-shadow 0.2s ease;
 }
 
-
 /* =========================================================
    INPUT FOCUS
    ========================================================= */
 
-.category-form input[type="text"]:focus {
+.category-form input[type='text']:focus {
     border-color: var(--accent-orange);
 
-    box-shadow:
-        0 0 0 3px rgba(216, 92, 50, 0.15);
+    box-shadow: 0 0 0 3px rgba(216, 92, 50, 0.15);
 }
-
 
 /* =========================================================
    PLACEHOLDER
    ========================================================= */
 
-.category-form input[type="text"]::placeholder {
+.category-form input[type='text']::placeholder {
     color: #a59a94;
 }
-
 
 /* =========================================================
    HELP TEXT
@@ -248,7 +228,6 @@ body {
     font-size: 0.8rem;
 }
 
-
 /* =========================================================
    ACTIONS
    ========================================================= */
@@ -260,7 +239,6 @@ body {
 
     justify-content: flex-end;
 }
-
 
 /* =========================================================
    BUTTON
@@ -289,7 +267,6 @@ body {
         box-shadow 0.2s ease;
 }
 
-
 /* =========================================================
    BUTTON HOVER
    ========================================================= */
@@ -299,10 +276,8 @@ body {
 
     transform: translateY(-2px);
 
-    box-shadow:
-        0 5px 12px rgba(49, 27, 20, 0.2);
+    box-shadow: 0 5px 12px rgba(49, 27, 20, 0.2);
 }
-
 
 /* =========================================================
    BUTTON ACTIVE
@@ -314,72 +289,59 @@ body {
     box-shadow: none;
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 768px) {
-
     .page-wrapper {
         margin: 25px auto;
         padding: 0 15px;
     }
 
-
     .page-header h1 {
         font-size: 1.5rem;
     }
-
 
     .form-card {
         padding: 20px;
     }
 
-
     .category-form .form-actions {
         justify-content: stretch;
     }
-
 
     .category-form .form-actions button {
         width: 100%;
     }
 }
 
-
 /* =========================================================
    MOBILE
    ========================================================= */
 
 @media (max-width: 480px) {
-
     .page-wrapper {
         padding: 0 10px;
     }
-
 
     .page-header h1 {
         font-size: 1.35rem;
     }
 
-
     .page-header p {
         font-size: 0.85rem;
     }
-
 
     .form-card {
         padding: 15px;
     }
 
-
     .alert {
         font-size: 0.8rem;
     }
 
-
-    .category-form input[type="text"] {
+    .category-form input[type='text'] {
         padding: 10px;
     }
 }

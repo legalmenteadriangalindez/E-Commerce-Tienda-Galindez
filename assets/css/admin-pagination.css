@@ -14,24 +14,24 @@
 
 .admin-list-heading h1 {
     margin: 0;
-    color: #311b14;
+    color: var(--color-brand-dark);
     font-size: clamp(1.55rem, 2vw, 2.05rem);
     font-weight: 750;
 }
 
 .admin-list-eyebrow {
     margin: 0 0 5px;
-    color: #d85c32;
-    font-size: .73rem;
+    color: var(--color-brand-accent);
+    font-size: 0.73rem;
     font-weight: 800;
-    letter-spacing: .12em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
 }
 
 .admin-list-description {
     max-width: 720px;
     margin: 7px 0 0;
-    color: #6b5b55;
+    color: var(--color-text-muted);
     line-height: 1.5;
 }
 
@@ -42,28 +42,31 @@
     min-height: 42px;
     padding: 10px 17px;
     border-radius: 9px;
-    background: #d85c32;
-    color: #fff !important;
-    font-size: .9rem;
+    background: var(--color-brand-accent);
+    color: var(--color-surface) !important;
+    font-size: 0.9rem;
     font-weight: 750;
     text-decoration: none !important;
     white-space: nowrap;
-    box-shadow: 0 6px 16px rgba(216, 92, 50, .2);
-    transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease;
+    box-shadow: 0 6px 16px rgba(216, 92, 50, 0.2);
+    transition:
+        transform 0.18s ease,
+        background-color 0.18s ease,
+        box-shadow 0.18s ease;
 }
 
 .admin-list-primary:hover {
-    background: #311b14;
-    color: #fff;
+    background: var(--color-brand-dark);
+    color: var(--color-surface);
     transform: translateY(-1px);
-    box-shadow: 0 8px 18px rgba(49, 27, 20, .2);
+    box-shadow: 0 8px 18px rgba(49, 27, 20, 0.2);
 }
 
 .admin-table-wrap {
     width: 100%;
     overflow-x: auto;
     border-radius: 14px;
-    scrollbar-color: #d58d51 #f6f1ec;
+    scrollbar-color: var(--color-brand-tan) var(--color-background);
 }
 
 .admin-list-page .table {
@@ -75,8 +78,8 @@
     padding: 22px;
     border: 1px dashed #d9c8bd;
     border-radius: 12px;
-    background: #fffaf6;
-    color: #6b5b55;
+    background: var(--color-surface-warm);
+    color: var(--color-text-muted);
     text-align: center;
 }
 
@@ -92,12 +95,12 @@
 
 .admin-pagination__summary {
     margin: 0;
-    color: #6b5b55;
-    font-size: .88rem;
+    color: var(--color-text-muted);
+    font-size: 0.88rem;
 }
 
 .admin-pagination__summary strong {
-    color: #311b14;
+    color: var(--color-brand-dark);
 }
 
 .admin-pagination__links {
@@ -114,27 +117,31 @@
     min-width: 36px;
     height: 36px;
     padding: 0 9px;
-    border: 1px solid #e0d6cf;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    background: #fff;
+    background: var(--color-surface);
     color: #6b3f2d;
-    font-size: .88rem;
+    font-size: 0.88rem;
     font-weight: 700;
     text-decoration: none;
-    transition: border-color .18s ease, background-color .18s ease, color .18s ease, transform .18s ease;
+    transition:
+        border-color 0.18s ease,
+        background-color 0.18s ease,
+        color 0.18s ease,
+        transform 0.18s ease;
 }
 
 .admin-pagination__link:hover {
-    border-color: #d85c32;
+    border-color: var(--color-brand-accent);
     background: #fff3ed;
-    color: #311b14;
+    color: var(--color-brand-dark);
     transform: translateY(-1px);
 }
 
 .admin-pagination__link.is-current {
-    border-color: #311b14;
-    background: #311b14;
-    color: #fff;
+    border-color: var(--color-brand-dark);
+    background: var(--color-brand-dark);
+    color: var(--color-surface);
 }
 
 .admin-pagination__link--arrow {
@@ -144,7 +151,7 @@
 
 .admin-pagination__link.is-disabled {
     cursor: not-allowed;
-    opacity: .4;
+    opacity: 0.4;
     transform: none;
 }
 

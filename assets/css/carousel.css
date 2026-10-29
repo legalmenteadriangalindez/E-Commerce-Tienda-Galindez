@@ -1,5 +1,3 @@
-
-
 /*============================== carousel ============================*/
 .container-carousel {
     border-bottom: 5px solid var(--warm-tan);
@@ -50,4 +48,3 @@
     color: var(--warm-tan);
     font-weight: bold;
 }
-

@@ -10,7 +10,7 @@ function positiveInteger(value, fallback) {
 function requested(query = {}, fallbackLimit = DEFAULT_LIMIT) {
     return {
         page: Math.min(positiveInteger(query.page, 1), MAX_PAGE),
-        limit: Math.min(positiveInteger(query.limit, fallbackLimit), MAX_LIMIT)
+        limit: Math.min(positiveInteger(query.limit, fallbackLimit), MAX_LIMIT),
     };
 }
 

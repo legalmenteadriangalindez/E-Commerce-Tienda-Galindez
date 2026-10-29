@@ -5,11 +5,11 @@ const delivery = require('../server/business/deliveryService');
 test('el seguimiento traduce los estados de pedido a mensajes claros', () => {
     assert.deepEqual(delivery.trackingForState('PREPARANDO'), {
         evento: 'PREPARANDO',
-        mensaje: 'Estamos preparando tu pedido.'
+        mensaje: 'Estamos preparando tu pedido.',
     });
     assert.deepEqual(delivery.trackingForState('ENVIADA', 'Se dejó en portería.'), {
         evento: 'ENVIADA',
-        mensaje: 'Tu pedido salió de la tienda y va en camino. Nota: Se dejó en portería.'
+        mensaje: 'Tu pedido salió de la tienda y va en camino. Nota: Se dejó en portería.',
     });
 });
 

@@ -9,7 +9,7 @@ var schema = new mongoose.Schema({
 
     nombre: {
         type: String,
-        required: true
+        required: true,
     },
 
     email: {
@@ -18,74 +18,74 @@ var schema = new mongoose.Schema({
         trim: true,
         lowercase: true,
         maxlength: 254,
-        unique: true
+        unique: true,
     },
 
     password: {
         type: String,
-        required: true
+        required: true,
     },
 
     telefono: {
         type: String,
-        required: true
+        required: true,
     },
 
     genero: {
-        type: String
+        type: String,
     },
 
     direccion: {
         type: String,
-        required: true
+        required: true,
     },
 
     barrio: {
-        type: String
+        type: String,
     },
 
     ciudad: {
         type: String,
-        default: "Timbio"
+        default: 'Timbio',
     },
 
     puntoReferencia: {
-        type: String
+        type: String,
     },
 
     ubicacion: {
         lat: Number,
-        lng: Number
+        lng: Number,
     },
 
     rol: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'roldb',
-        required: true
+        required: true,
     },
 
     estado: {
         type: String,
         enum: ['Activo', 'Inactivo'],
-        default: "Activo"
+        default: 'Activo',
     },
 
     fechaRegistro: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
     verified: {
         type: Boolean,
-        default: false
+        default: false,
     },
-    verificationCode:{
+    verificationCode: {
         type: String,
-        default: null
+        default: null,
     },
     verificationExpire: {
         type: Date,
-        default: null
-    }
+        default: null,
+    },
 });
 
 schema.index({ estado: 1, fechaRegistro: -1, _id: -1 });

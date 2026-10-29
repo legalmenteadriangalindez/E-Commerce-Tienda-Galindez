@@ -1,11 +1,11 @@
-.nequi-float{
+.nequi-float {
     position: fixed;
     width: 65px;
     height: 65px;
     bottom: 100px;
     right: 25px;
     background: #210049;
-    color: #ffffff;
+    color: var(--color-surface);
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -13,12 +13,12 @@
     font-size: 30px;
     font-weight: bold;
     text-decoration: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     z-index: 999;
     transition: all 0.3s ease;
 }
 
-.nequi-float:hover{
+.nequi-float:hover {
     transform: scale(1.1);
     background: #3b007a;
     color: white;

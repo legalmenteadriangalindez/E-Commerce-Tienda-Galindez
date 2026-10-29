@@ -1,106 +1,106 @@
 services:
-  - type: web
-    name: E-Commerce-Tienda-Galindez
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
-    autoDeployTrigger: checksPass
-    healthCheckPath: /healthz
-    envVars:
-      - key: NODE_VERSION
-        value: 22.23.4
-      - key: NODE_ENV
-        value: production
-      - key: BASE_URL
-        sync: false
-      - key: MONGO_URI
-        sync: false
-      - key: SESSION_SECRET
-        generateValue: true
-      - key: BREVO_API_KEY
-        sync: false
-      - key: EMAIL_USER
-        sync: false
-      - key: PAYMENTS_ENABLED
-        value: "false"
-      - key: WOMPI_ENV
-        value: sandbox
-      - key: WOMPI_PUBLIC_KEY
-        sync: false
-      - key: WOMPI_PRIVATE_KEY
-        sync: false
-      - key: WOMPI_INTEGRITY_KEY
-        sync: false
-      - key: WOMPI_EVENTS_KEY
-        sync: false
+    - type: web
+      name: E-Commerce-Tienda-Galindez
+      runtime: docker
+      dockerfilePath: ./Dockerfile
+      dockerContext: .
+      autoDeployTrigger: checksPass
+      healthCheckPath: /healthz
+      envVars:
+          - key: NODE_VERSION
+            value: 22.23.4
+          - key: NODE_ENV
+            value: production
+          - key: BASE_URL
+            sync: false
+          - key: MONGO_URI
+            sync: false
+          - key: SESSION_SECRET
+            generateValue: true
+          - key: BREVO_API_KEY
+            sync: false
+          - key: EMAIL_USER
+            sync: false
+          - key: PAYMENTS_ENABLED
+            value: 'false'
+          - key: WOMPI_ENV
+            value: sandbox
+          - key: WOMPI_PUBLIC_KEY
+            sync: false
+          - key: WOMPI_PRIVATE_KEY
+            sync: false
+          - key: WOMPI_INTEGRITY_KEY
+            sync: false
+          - key: WOMPI_EVENTS_KEY
+            sync: false
 
-  # Las tareas periódicas se ejecutan fuera del proceso web. Render evita
-  # solapamientos de un mismo Cron Job y lo inicia con la misma rama.
-  - type: cron
-    name: tienda-galindez-maintenance
-    runtime: docker
-    schedule: "* * * * *"
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
-    dockerCommand: npm run maintenance
-    autoDeployTrigger: checksPass
-    envVars:
-      - key: NODE_VERSION
-        value: 22.23.4
-      - key: NODE_ENV
-        value: production
-      - key: BASE_URL
-        fromService:
-          name: E-Commerce-Tienda-Galindez
-          type: web
-          envVarKey: BASE_URL
-      - key: MONGO_URI
-        fromService:
-          name: E-Commerce-Tienda-Galindez
-          type: web
-          envVarKey: MONGO_URI
-      - key: SESSION_SECRET
-        fromService:
-          name: E-Commerce-Tienda-Galindez
-          type: web
-          envVarKey: SESSION_SECRET
-      - key: BREVO_API_KEY
-        fromService:
-          name: E-Commerce-Tienda-Galindez
-          type: web
-          envVarKey: BREVO_API_KEY
-      - key: EMAIL_USER
-        fromService:
-          name: E-Commerce-Tienda-Galindez
-          type: web
-          envVarKey: EMAIL_USER
-      - key: PAYMENTS_ENABLED
-        fromService:
-          name: E-Commerce-Tienda-Galindez
-          type: web
-          envVarKey: PAYMENTS_ENABLED
-      - key: WOMPI_ENV
-        fromService:
-          name: E-Commerce-Tienda-Galindez
-          type: web
-          envVarKey: WOMPI_ENV
-      - key: WOMPI_PUBLIC_KEY
-        fromService:
-          name: E-Commerce-Tienda-Galindez
-          type: web
-          envVarKey: WOMPI_PUBLIC_KEY
-      - key: WOMPI_PRIVATE_KEY
-        fromService:
-          name: E-Commerce-Tienda-Galindez
-          type: web
-          envVarKey: WOMPI_PRIVATE_KEY
-      - key: WOMPI_INTEGRITY_KEY
-        fromService:
-          name: E-Commerce-Tienda-Galindez
-          type: web
-          envVarKey: WOMPI_INTEGRITY_KEY
-      - key: WOMPI_EVENTS_KEY
-        fromService:
-          name: E-Commerce-Tienda-Galindez
-          type: web
-          envVarKey: WOMPI_EVENTS_KEY
+    # Las tareas periódicas se ejecutan fuera del proceso web. Render evita
+    # solapamientos de un mismo Cron Job y lo inicia con la misma rama.
+    - type: cron
+      name: tienda-galindez-maintenance
+      runtime: docker
+      schedule: '* * * * *'
+      dockerfilePath: ./Dockerfile
+      dockerContext: .
+      dockerCommand: npm run maintenance
+      autoDeployTrigger: checksPass
+      envVars:
+          - key: NODE_VERSION
+            value: 22.23.4
+          - key: NODE_ENV
+            value: production
+          - key: BASE_URL
+            fromService:
+                name: E-Commerce-Tienda-Galindez
+                type: web
+                envVarKey: BASE_URL
+          - key: MONGO_URI
+            fromService:
+                name: E-Commerce-Tienda-Galindez
+                type: web
+                envVarKey: MONGO_URI
+          - key: SESSION_SECRET
+            fromService:
+                name: E-Commerce-Tienda-Galindez
+                type: web
+                envVarKey: SESSION_SECRET
+          - key: BREVO_API_KEY
+            fromService:
+                name: E-Commerce-Tienda-Galindez
+                type: web
+                envVarKey: BREVO_API_KEY
+          - key: EMAIL_USER
+            fromService:
+                name: E-Commerce-Tienda-Galindez
+                type: web
+                envVarKey: EMAIL_USER
+          - key: PAYMENTS_ENABLED
+            fromService:
+                name: E-Commerce-Tienda-Galindez
+                type: web
+                envVarKey: PAYMENTS_ENABLED
+          - key: WOMPI_ENV
+            fromService:
+                name: E-Commerce-Tienda-Galindez
+                type: web
+                envVarKey: WOMPI_ENV
+          - key: WOMPI_PUBLIC_KEY
+            fromService:
+                name: E-Commerce-Tienda-Galindez
+                type: web
+                envVarKey: WOMPI_PUBLIC_KEY
+          - key: WOMPI_PRIVATE_KEY
+            fromService:
+                name: E-Commerce-Tienda-Galindez
+                type: web
+                envVarKey: WOMPI_PRIVATE_KEY
+          - key: WOMPI_INTEGRITY_KEY
+            fromService:
+                name: E-Commerce-Tienda-Galindez
+                type: web
+                envVarKey: WOMPI_INTEGRITY_KEY
+          - key: WOMPI_EVENTS_KEY
+            fromService:
+                name: E-Commerce-Tienda-Galindez
+                type: web
+                envVarKey: WOMPI_EVENTS_KEY

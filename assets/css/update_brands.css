@@ -4,22 +4,20 @@
    TIENDA GALINDEZ
    ========================================================= */
 
-
 /* =========================================================
    VARIABLES
    ========================================================= */
 
 :root {
-    --primary-dark: #311b14;
-    --accent-orange: #d85c32;
-    --warm-tan: #d58d51;
-    --light: #ffffff;
+    --primary-dark: var(--color-brand-dark);
+    --accent-orange: var(--color-brand-accent);
+    --warm-tan: var(--color-brand-tan);
+    --light: var(--color-surface);
 
-    --background: #f6f1ec;
-    --border: #e0d6cf;
-    --text-muted: #6b5b55;
+    --background: var(--color-background);
+    --border: var(--color-border);
+    --text-muted: var(--color-text-muted);
 }
-
 
 /* =========================================================
    BODY
@@ -31,7 +29,6 @@ body {
     color: var(--primary-dark);
 }
 
-
 /* =========================================================
    CONTENEDOR PRINCIPAL
    ========================================================= */
@@ -41,7 +38,6 @@ body > h1,
 body > form {
     box-sizing: border-box;
 }
-
 
 /* =========================================================
    TITULO
@@ -60,7 +56,6 @@ body > h1 {
 
     font-weight: 700;
 }
-
 
 /* =========================================================
    FORMULARIO
@@ -81,16 +76,14 @@ body > form {
 
     border-radius: 14px;
 
-    box-shadow:
-        0 8px 25px rgba(49, 27, 20, 0.08);
+    box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
 }
-
 
 /* =========================================================
    INPUT NOMBRE
    ========================================================= */
 
-body > form input[type="text"] {
+body > form input[type='text'] {
     width: 100%;
 
     box-sizing: border-box;
@@ -114,18 +107,15 @@ body > form input[type="text"] {
         box-shadow 0.2s ease;
 }
 
-
 /* =========================================================
    INPUT FOCUS
    ========================================================= */
 
-body > form input[type="text"]:focus {
+body > form input[type='text']:focus {
     border-color: var(--accent-orange);
 
-    box-shadow:
-        0 0 0 3px rgba(216, 92, 50, 0.15);
+    box-shadow: 0 0 0 3px rgba(216, 92, 50, 0.15);
 }
-
 
 /* =========================================================
    IMAGEN ACTUAL
@@ -153,12 +143,11 @@ body > form img {
     margin: 20px 0;
 }
 
-
 /* =========================================================
    INPUT FILE
    ========================================================= */
 
-body > form input[type="file"] {
+body > form input[type='file'] {
     width: 100%;
 
     box-sizing: border-box;
@@ -169,7 +158,7 @@ body > form input[type="file"] {
 
     border-radius: 8px;
 
-    background: #fffaf6;
+    background: var(--color-surface-warm);
 
     color: var(--text-muted);
 
@@ -177,7 +166,6 @@ body > form input[type="file"] {
 
     cursor: pointer;
 }
-
 
 /* =========================================================
    BOTÓN
@@ -208,7 +196,6 @@ body > form button {
         box-shadow 0.2s ease;
 }
 
-
 /* =========================================================
    BUTTON HOVER
    ========================================================= */
@@ -218,10 +205,8 @@ body > form button:hover {
 
     transform: translateY(-2px);
 
-    box-shadow:
-        0 5px 12px rgba(49, 27, 20, 0.2);
+    box-shadow: 0 5px 12px rgba(49, 27, 20, 0.2);
 }
-
 
 /* =========================================================
    BUTTON ACTIVE
@@ -233,13 +218,11 @@ body > form button:active {
     box-shadow: none;
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 768px) {
-
     body > h1 {
         margin-top: 25px;
 
@@ -248,32 +231,27 @@ body > form button:active {
         font-size: 1.5rem;
     }
 
-
     body > form {
         width: calc(100% - 30px);
 
         padding: 20px;
     }
 
-
     body > form button {
         width: 100%;
     }
 }
-
 
 /* =========================================================
    MOBILE
    ========================================================= */
 
 @media (max-width: 480px) {
-
     body > h1 {
         padding: 0 10px;
 
         font-size: 1.35rem;
     }
-
 
     body > form {
         width: calc(100% - 20px);
@@ -281,16 +259,13 @@ body > form button:active {
         padding: 15px;
     }
 
-
-    body > form input[type="text"] {
+    body > form input[type='text'] {
         padding: 10px;
     }
 
-
-    body > form input[type="file"] {
+    body > form input[type='file'] {
         font-size: 0.75rem;
     }
-
 
     body > form img {
         width: 80px;

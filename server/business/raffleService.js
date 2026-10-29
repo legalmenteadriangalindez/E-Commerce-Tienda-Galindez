@@ -16,7 +16,7 @@ const DEFAULTS = {
     titulo: 'Sorteo de regalos',
     descripcion: 'Compra el monto mínimo y participa en el próximo sorteo.',
     imagenUrl: '',
-    siguienteNumero: 1
+    siguienteNumero: 1,
 };
 
 function publicError(message, status = 400) {
@@ -42,12 +42,17 @@ async function getOrCreate(session) {
 }
 
 async function publicConfig() {
-    const projection = 'titulo descripcion montoMinimo montoMinimoCents imagenUrl activo numeroRonda estadoRonda ganador.numero ganador.seleccionadoEn';
+    const projection =
+        'titulo descripcion montoMinimo montoMinimoCents imagenUrl activo numeroRonda estadoRonda ganador.numero ganador.seleccionadoEn';
     const [active, lastWinner] = await Promise.all([
         Raffle.findOne({ clave: KEY, estadoRonda: 'ACTIVA', activo: true })
-            .sort({ numeroRonda: -1, _id: -1 }).select(projection).lean(),
+            .sort({ numeroRonda: -1, _id: -1 })
+            .select(projection)
+            .lean(),
         Raffle.findOne({ clave: KEY, 'ganador.numero': { $exists: true } })
-            .sort({ numeroRonda: -1, _id: -1 }).select(projection).lean()
+            .sort({ numeroRonda: -1, _id: -1 })
+            .select(projection)
+            .lean(),
     ]);
 
     const current = active || lastWinner;
@@ -57,7 +62,7 @@ async function publicConfig() {
         current.ultimoGanador = {
             numero: lastWinner.ganador.numero,
             seleccionadoEn: lastWinner.ganador.seleccionadoEn,
-            numeroRonda: lastWinner.numeroRonda
+            numeroRonda: lastWinner.numeroRonda,
         };
     }
     return current;
@@ -100,9 +105,7 @@ async function entryForOrder(orderId, userId) {
 async function entriesForOrders(userId, orderIds) {
     if (!validUserId(userId) || !Array.isArray(orderIds)) return [];
 
-    const ids = orderIds
-        .map(id => String(id))
-        .filter(id => mongoose.isObjectIdOrHexString(id));
+    const ids = orderIds.map((id) => String(id)).filter((id) => mongoose.isObjectIdOrHexString(id));
     if (!ids.length) return [];
 
     return RaffleEntry.find({ usuario: userId, order: { $in: ids } })
@@ -135,13 +138,13 @@ async function updateConfig(body, file) {
     }
     const hasEntries = await RaffleEntry.exists({ raffle: raffle._id });
     const currentMinimumCents = money.readCents(raffle.montoMinimoCents, raffle.montoMinimo);
-    const changesRoundSnapshot = hasEntries && (
-        currentMinimumCents !== montoMinimoCents ||
-        raffle.titulo !== titulo ||
-        raffle.descripcion !== descripcion ||
-        Boolean(file?.url) ||
-        body.quitarImagen === 'si'
-    );
+    const changesRoundSnapshot =
+        hasEntries &&
+        (currentMinimumCents !== montoMinimoCents ||
+            raffle.titulo !== titulo ||
+            raffle.descripcion !== descripcion ||
+            Boolean(file?.url) ||
+            body.quitarImagen === 'si');
     if (changesRoundSnapshot) {
         throw publicError('Esta ronda ya tiene participaciones. Reiníciala para cambiar su configuración.', 409);
     }
@@ -165,7 +168,7 @@ async function adminData(query = {}) {
     const currentRaffle = await getOrCreate();
     let raffle = currentRaffle;
     if (query.ronda && mongoose.isObjectIdOrHexString(String(query.ronda))) {
-        raffle = await Raffle.findOne({ _id: query.ronda, clave: KEY }) || currentRaffle;
+        raffle = (await Raffle.findOne({ _id: query.ronda, clave: KEY })) || currentRaffle;
     }
 
     const rounds = await Raffle.find({ clave: KEY })
@@ -173,17 +176,17 @@ async function adminData(query = {}) {
         .sort({ numeroRonda: -1, _id: -1 })
         .limit(50)
         .lean();
-    const roundIds = rounds.map(round => round._id);
+    const roundIds = rounds.map((round) => round._id);
     const counts = roundIds.length
         ? await RaffleEntry.aggregate([
-            { $match: { raffle: { $in: roundIds } } },
-            { $group: { _id: '$raffle', total: { $sum: 1 } } }
-        ])
+              { $match: { raffle: { $in: roundIds } } },
+              { $group: { _id: '$raffle', total: { $sum: 1 } } },
+          ])
         : [];
-    const countByRound = new Map(counts.map(item => [String(item._id), item.total]));
-    const roundsWithCounts = rounds.map(round => ({
+    const countByRound = new Map(counts.map((item) => [String(item._id), item.total]));
+    const roundsWithCounts = rounds.map((round) => ({
         ...round,
-        totalEntries: countByRound.get(String(round._id)) || 0
+        totalEntries: countByRound.get(String(round._id)) || 0,
     }));
 
     const { page, limit } = adminPagination.requested(query, 10);
@@ -205,7 +208,7 @@ async function adminData(query = {}) {
         rounds: roundsWithCounts,
         selectedRoundId: String(raffle._id),
         entries,
-        pagination
+        pagination,
     };
 }
 
@@ -217,7 +220,8 @@ async function recordEligibleOrder(order, session) {
     if (existing) return existing;
 
     const raffle = await Raffle.findOne({ clave: KEY, estadoRonda: 'ACTIVA', activo: true })
-        .sort({ numeroRonda: -1, _id: -1 }).session(session);
+        .sort({ numeroRonda: -1, _id: -1 })
+        .session(session);
     if (!raffle) return null;
     const minimumCents = money.readCents(raffle.montoMinimoCents, raffle.montoMinimo);
     if (raffle.ganador?.entrada || totalCents < minimumCents) return null;
@@ -231,17 +235,22 @@ async function recordEligibleOrder(order, session) {
 
     const numero = reserved.siguienteNumero - 1;
     try {
-        const [entry] = await RaffleEntry.create([{
-            raffle: raffle._id,
-            usuario: order.usuario,
-            order: order._id,
-            numero,
-            montoCompraCents: totalCents,
-            montoCompra: money.fromCents(totalCents),
-            clienteNombre: order.cliente?.nombre || 'Cliente',
-            clienteEmail: order.cliente?.email || '',
-            ganador: false
-        }], { session });
+        const [entry] = await RaffleEntry.create(
+            [
+                {
+                    raffle: raffle._id,
+                    usuario: order.usuario,
+                    order: order._id,
+                    numero,
+                    montoCompraCents: totalCents,
+                    montoCompra: money.fromCents(totalCents),
+                    clienteNombre: order.cliente?.nombre || 'Cliente',
+                    clienteEmail: order.cliente?.email || '',
+                    ganador: false,
+                },
+            ],
+            { session }
+        );
         return entry;
     } catch (error) {
         if (error.code === 11000) return RaffleEntry.findOne({ order: order._id }).session(session);
@@ -250,9 +259,10 @@ async function recordEligibleOrder(order, session) {
 }
 
 async function drawWinner() {
-    return mongoose.connection.transaction(async session => {
+    return mongoose.connection.transaction(async (session) => {
         const raffle = await Raffle.findOne({ clave: KEY, estadoRonda: 'ACTIVA' })
-            .sort({ numeroRonda: -1, _id: -1 }).session(session);
+            .sort({ numeroRonda: -1, _id: -1 })
+            .session(session);
         if (!raffle) throw publicError('Todavía no existe una configuración de rifa.', 404);
         if (raffle.ganador?.entrada) throw publicError('Esta rifa ya tiene un ganador.', 409);
 
@@ -261,14 +271,10 @@ async function drawWinner() {
         const [winner] = await RaffleEntry.aggregate([
             { $match: { raffle: raffle._id } },
             { $sample: { size: 1 } },
-            { $project: { _id: 1, usuario: 1, numero: 1 } }
+            { $project: { _id: 1, usuario: 1, numero: 1 } },
         ]).session(session);
         if (!winner) throw publicError('No se pudo seleccionar una participación.', 409);
-        await RaffleEntry.updateMany(
-            { raffle: raffle._id, ganador: true },
-            { $set: { ganador: false } },
-            { session }
-        );
+        await RaffleEntry.updateMany({ raffle: raffle._id, ganador: true }, { $set: { ganador: false } }, { session });
         await RaffleEntry.updateOne({ _id: winner._id }, { $set: { ganador: true } }, { session });
 
         const selectedAt = new Date();
@@ -276,7 +282,7 @@ async function drawWinner() {
             entrada: winner._id,
             usuario: winner.usuario,
             numero: winner.numero,
-            seleccionadoEn: selectedAt
+            seleccionadoEn: selectedAt,
         };
         raffle.activo = false;
         raffle.estadoRonda = 'FINALIZADA';
@@ -291,7 +297,7 @@ async function drawWinner() {
 }
 
 async function resetRaffle() {
-    return mongoose.connection.transaction(async session => {
+    return mongoose.connection.transaction(async (session) => {
         const raffle = await latestRound(session);
         if (!raffle) throw publicError('No existe una configuración de rifa.', 404);
 
@@ -304,8 +310,8 @@ async function resetRaffle() {
                         activo: false,
                         estadoRonda: 'FINALIZADA',
                         finalizadaEn: now,
-                        motivoFinalizacion: 'REINICIADA'
-                    }
+                        motivoFinalizacion: 'REINICIADA',
+                    },
                 },
                 { session }
             );
@@ -321,7 +327,7 @@ async function resetRaffle() {
             titulo: raffle.titulo,
             descripcion: raffle.descripcion,
             imagenUrl: raffle.imagenUrl || '',
-            siguienteNumero: 1
+            siguienteNumero: 1,
         };
         const [created] = await Raffle.create([nextRound], { session });
         return created;
@@ -340,5 +346,5 @@ module.exports = {
     entriesForOrders,
     recordEligibleOrder,
     drawWinner,
-    resetRaffle
+    resetRaffle,
 };

@@ -2,10 +2,10 @@ const globals = require('globals');
 
 module.exports = [
     {
-        ignores: ['node_modules/**', 'public/**', 'assets/**', 'views/**', 'coverage/**'],
+        ignores: ['node_modules/**', 'coverage/**'],
     },
     {
-        files: ['server.js', 'api/**/*.js', 'server/**/*.js', 'scripts/**/*.js', 'tests/**/*.js'],
+        files: ['**/*.js'],
         languageOptions: {
             ecmaVersion: 'latest',
             sourceType: 'commonjs',
@@ -65,6 +65,17 @@ module.exports = [
             'require-yield': 'error',
             'use-isnan': 'error',
             'valid-typeof': 'error',
+        },
+    },
+    {
+        files: ['assets/js/**/*.js', 'public/js/**/*.js'],
+        languageOptions: {
+            sourceType: 'script',
+            globals: {
+                ...Object.fromEntries(Object.keys(globals.node).map((key) => [key, 'off'])),
+                ...globals.browser,
+                ...globals.es2021,
+            },
         },
     },
 ];

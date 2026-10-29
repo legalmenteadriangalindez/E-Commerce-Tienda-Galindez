@@ -2,7 +2,8 @@ const crypto = require('crypto');
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const WOMPI_WEBHOOK_PATH = '/carrito/get_wompi_webhook';
-const CSRF_ERROR_MESSAGE = 'La sesión del formulario venció o la solicitud no es válida. Recarga la página e inténtalo de nuevo.';
+const CSRF_ERROR_MESSAGE =
+    'La sesión del formulario venció o la solicitud no es válida. Recarga la página e inténtalo de nuevo.';
 
 function debugLogsEnabled() {
     return ['1', 'true', 'yes', 'on'].includes(String(process.env.CSRF_DEBUG_LOGS || '').toLowerCase());
@@ -29,8 +30,7 @@ function validToken(expected, provided) {
     const expectedBuffer = Buffer.from(expected, 'utf8');
     const providedBuffer = Buffer.from(provided, 'utf8');
 
-    return expectedBuffer.length === providedBuffer.length &&
-        crypto.timingSafeEqual(expectedBuffer, providedBuffer);
+    return expectedBuffer.length === providedBuffer.length && crypto.timingSafeEqual(expectedBuffer, providedBuffer);
 }
 
 function normalizeOrigin(value) {
@@ -49,11 +49,17 @@ function normalizeOrigin(value) {
 }
 
 function firstForwarded(value) {
-    return String(value || '').split(',')[0].trim();
+    return String(value || '')
+        .split(',')[0]
+        .trim();
 }
 
 function isOpaqueOrigin(value) {
-    return String(value || '').trim().toLowerCase() === 'null';
+    return (
+        String(value || '')
+            .trim()
+            .toLowerCase() === 'null'
+    );
 }
 
 function sessionCookiePresent(req) {
@@ -75,7 +81,7 @@ function tokenMetadata(req) {
         providedPresent: typeof provided === 'string' && provided.length > 0,
         providedLength: typeof provided === 'string' ? provided.length : 0,
         providedType: provided === undefined ? 'undefined' : Array.isArray(provided) ? 'array' : typeof provided,
-        source
+        source,
     };
 }
 
@@ -91,7 +97,12 @@ function requestDiagnostics(req, extra = {}) {
         requestId: req.requestId || '',
         method: req.method,
         path: req.path || '/',
-        contentType: truncate(String(req.get('content-type') || '').split(';')[0].toLowerCase() || '(none)', 80),
+        contentType: truncate(
+            String(req.get('content-type') || '')
+                .split(';')[0]
+                .toLowerCase() || '(none)',
+            80
+        ),
         multipart: Boolean(req.is && req.is('multipart/form-data')),
         sessionAvailable: Boolean(req.session),
         sessionCookiePresent: sessionCookiePresent(req),
@@ -102,7 +113,7 @@ function requestDiagnostics(req, extra = {}) {
         providedTokenType: token.providedType,
         tokenSource: token.source,
         originHeader: originHeader ? truncate(originHeader) : '(none)',
-        origin: originHeader ? (normalizeOrigin(originHeader) || 'invalid') : '(none)',
+        origin: originHeader ? normalizeOrigin(originHeader) || 'invalid' : '(none)',
         originAllowed: originHeader ? allowedOrigin(req, originHeader) : true,
         originDeferred: Boolean(req.csrfOriginDeferred),
         host: truncate(req.get('host') || '(none)'),
@@ -112,7 +123,7 @@ function requestDiagnostics(req, extra = {}) {
         filePresent: Boolean(req.file || (req.files && Object.keys(req.files).length)),
         status: extra.status || '',
         stage: extra.stage || 'token_validation',
-        reason: extra.reason || 'unknown'
+        reason: extra.reason || 'unknown',
     };
 }
 
@@ -129,11 +140,13 @@ function allowedOrigin(req, origin) {
     const requestedOrigin = normalizeOrigin(origin);
     if (!requestedOrigin) return false;
 
-    const hosts = new Set([
-        req.get('host'),
-        // Render puede conservar el host público únicamente en este encabezado.
-        firstForwarded(req.get('x-forwarded-host'))
-    ].filter(Boolean));
+    const hosts = new Set(
+        [
+            req.get('host'),
+            // Render puede conservar el host público únicamente en este encabezado.
+            firstForwarded(req.get('x-forwarded-host')),
+        ].filter(Boolean)
+    );
     const origins = new Set();
 
     // El proxy puede entregar HTTP al proceso aunque el navegador use HTTPS.
@@ -161,7 +174,7 @@ function rejectRequest(req, res, reason = 'unknown', extra = {}) {
             success: false,
             message: 'Token CSRF inválido o ausente',
             requestId: req.requestId || '',
-            diagnostics
+            diagnostics,
         });
     }
 
@@ -169,7 +182,7 @@ function rejectRequest(req, res, reason = 'unknown', extra = {}) {
         message: CSRF_ERROR_MESSAGE,
         requestId: req.requestId || '',
         status: 403,
-        diagnostics
+        diagnostics,
     });
 }
 
@@ -179,10 +192,7 @@ function validateToken(req, res, next) {
     }
 
     // Wompi es un webhook servidor a servidor y valida su propia firma.
-    if (
-        req.method === 'POST' &&
-        req.path === WOMPI_WEBHOOK_PATH
-    ) {
+    if (req.method === 'POST' && req.path === WOMPI_WEBHOOK_PATH) {
         return next();
     }
 
@@ -194,17 +204,20 @@ function validateToken(req, res, next) {
         const reason = !token.expectedPresent
             ? 'session_token_missing'
             : !token.providedPresent
-                ? 'token_missing'
-                : 'token_mismatch';
+              ? 'token_missing'
+              : 'token_mismatch';
         return rejectRequest(req, res, reason, {
-            stage: req.csrfValidationStage || 'token_validation'
+            stage: req.csrfValidationStage || 'token_validation',
         });
     }
 
-    logCsrf('csrf_validated', requestDiagnostics(req, {
-        stage: req.csrfValidationStage || 'token_validation',
-        reason: req.csrfOriginDeferred ? 'valid_token_opaque_origin' : 'valid'
-    }));
+    logCsrf(
+        'csrf_validated',
+        requestDiagnostics(req, {
+            stage: req.csrfValidationStage || 'token_validation',
+            reason: req.csrfOriginDeferred ? 'valid_token_opaque_origin' : 'valid',
+        })
+    );
 
     return next();
 }
@@ -214,14 +227,14 @@ function csrfProtection(req, res, next) {
         const diagnostics = requestDiagnostics(req, {
             status: 503,
             stage: 'global_middleware',
-            reason: 'session_unavailable'
+            reason: 'session_unavailable',
         });
         logCsrf('csrf_rejected', diagnostics);
         return res.status(503).render('error', {
             message: 'No hay una sesión disponible. Inténtalo de nuevo.',
             requestId: req.requestId || '',
             status: 503,
-            diagnostics
+            diagnostics,
         });
     }
 
@@ -231,21 +244,20 @@ function csrfProtection(req, res, next) {
         return next();
     }
 
-    if (
-        req.method === 'POST' &&
-        req.path === WOMPI_WEBHOOK_PATH
-    ) {
+    if (req.method === 'POST' && req.path === WOMPI_WEBHOOK_PATH) {
         return next();
     }
 
     if (req.is('multipart/form-data')) {
         // Solo estas rutas tienen un parser seguido de validación CSRF.
         // Un DELETE o login multipart no puede evitar la protección global.
-        const allowed = (
-            ['POST', 'PUT'].includes(req.method) && /^\/api\/(productos|marcas)(\/[a-f\d]{24})?\/?$/i.test(req.path)
-        ) || (req.method === 'POST' && req.path === '/admin/raffle') || (req.method === 'POST' && /^\/update-marca\/[a-f\d]{24}$/.test(req.path)) || (
-            ['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method) && /^\/api\/(admin\/)?reviews(?:\/[a-f\d]{24}(?:\/(reply|visibility))?)?\/?$/i.test(req.path)
-        );
+        const allowed =
+            (['POST', 'PUT'].includes(req.method) &&
+                /^\/api\/(productos|marcas)(\/[a-f\d]{24})?\/?$/i.test(req.path)) ||
+            (req.method === 'POST' && req.path === '/admin/raffle') ||
+            (req.method === 'POST' && /^\/update-marca\/[a-f\d]{24}$/.test(req.path)) ||
+            (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method) &&
+                /^\/api\/(admin\/)?reviews(?:\/[a-f\d]{24}(?:\/(reply|visibility))?)?\/?$/i.test(req.path));
         if (!allowed) {
             req.csrfValidationStage = 'global_multipart_validation';
             return validateToken(req, res, next);
@@ -257,20 +269,26 @@ function csrfProtection(req, res, next) {
             // de origen hasta después de que Multer lea y valide _csrf.
             if (isOpaqueOrigin(origin)) {
                 req.csrfOriginDeferred = true;
-                logCsrf('csrf_origin_deferred', requestDiagnostics(req, {
-                    stage: 'global_multipart_origin',
-                    reason: 'opaque_origin'
-                }));
+                logCsrf(
+                    'csrf_origin_deferred',
+                    requestDiagnostics(req, {
+                        stage: 'global_multipart_origin',
+                        reason: 'opaque_origin',
+                    })
+                );
                 return next();
             }
             return rejectRequest(req, res, 'origin_mismatch', {
-                stage: 'global_multipart_origin'
+                stage: 'global_multipart_origin',
             });
         }
-        logCsrf('csrf_multipart_waiting_for_parser', requestDiagnostics(req, {
-            stage: 'global_multipart_origin',
-            reason: 'origin_valid'
-        }));
+        logCsrf(
+            'csrf_multipart_waiting_for_parser',
+            requestDiagnostics(req, {
+                stage: 'global_multipart_origin',
+                reason: 'origin_valid',
+            })
+        );
         return next();
     }
 

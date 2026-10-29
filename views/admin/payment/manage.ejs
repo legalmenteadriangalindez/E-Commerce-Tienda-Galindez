@@ -36,27 +36,35 @@
   </section><% } %>
   <h2>Pedidos recientes</h2>
   <% orders.forEach(order => { %>
+    <% const paymentLabel = order.metodoPago === 'CASH_ON_DELIVERY'
+      ? 'Efectivo contra entrega'
+      : order.metodoPago === 'CASH_AT_COUNTER' || (order.canal === 'CAJA' && !order.metodoPago)
+        ? 'Efectivo en caja'
+        : order.metodoPago === 'WOMPI_NEQUI'
+          ? 'Nequi con Wompi'
+          : 'Tarjeta con Wompi'; %>
     <article class="commerce-card">
       <h3><a href="/order/<%= order._id %>"><%= order.numeroOrden %></a></h3>
       <p><%= order.cliente.nombre %> · $<%= order.total.toLocaleString('es-CO') %> COP · <%= order.canal || 'ANTERIOR A ESTA VERSIÓN' %></p>
-      <p>Pago: <strong><%= order.estadoPago %></strong> · Pedido: <%= order.estado %> · Inventario: <%= order.inventario || 'REVISAR HISTORIAL' %></p>
+      <p>Medio: <strong><%= paymentLabel %></strong> · Pago: <strong><%= order.estadoPago %></strong> · Pedido: <%= order.estado %> · Inventario: <%= order.inventario || 'REVISAR HISTORIAL' %></p>
+      <% if (order.metodoPagoConfirmado) { %><p>Wompi reportó el método: <strong><%= order.metodoPagoConfirmado %></strong></p><% } %>
       <p>Repartidor: <strong><%= order.repartidor?.nombre || 'Sin asignar' %></strong></p>
       <% if (order.incidenciaPago) { %><p class="commerce-notice"><%= order.incidenciaPago %></p><% } %>
-      <% if (order.canal === 'CAJA' && order.estadoPago === 'PENDIENTE' && order.inventario === 'RESERVADO') { %>
+      <% if (['CASH_AT_COUNTER', 'CASH_ON_DELIVERY'].includes(order.metodoPago || (order.canal === 'CAJA' ? 'CASH_AT_COUNTER' : '')) && order.estadoPago === 'PENDIENTE' && ['RESERVADO', 'CONFIRMADO'].includes(order.inventario)) { %>
         <form action="/admin/payments/<%= order._id %>/confirm-cash" method="post">
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <label><input type="checkbox" name="confirmar" value="si" required> Recibí el total de este pedido y comprobé el pago.</label>
-          <button type="submit">Confirmar pago recibido</button>
+          <label><input type="checkbox" name="confirmar" value="si" required> Confirmé el efectivo correspondiente a este pedido.</label>
+          <button type="submit"><%= order.metodoPago === 'CASH_ON_DELIVERY' ? 'Confirmar efectivo recibido' : 'Confirmar pago recibido' %></button>
         </form>
       <% } %>
-      <% if (order.inventario === 'RESERVADO' && order.estadoPago === 'PENDIENTE') { %>
+      <% if (order.estadoPago === 'PENDIENTE' && (order.inventario === 'RESERVADO' || (order.metodoPago === 'CASH_ON_DELIVERY' && order.inventario === 'CONFIRMADO')) && ['PENDIENTE', 'PREPARANDO', 'ENVIADA'].includes(order.estado)) { %>
         <form action="/admin/payments/<%= order._id %>/cancel" method="post">
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <button type="submit">Cancelar reserva pendiente</button>
+          <button type="submit"><%= order.metodoPago === 'CASH_ON_DELIVERY' ? 'Cancelar pedido contra entrega' : 'Cancelar reserva pendiente' %></button>
         </form>
       <% } %>
       <a href="/update-order?id=<%= order._id %>">Gestionar entrega</a>
-      <% if (['PAGADA', 'PREPARANDO', 'ENVIADA', 'ENTREGADA'].includes(order.estado) && order.estadoPago === 'PAGADO') { %>
+      <% if (['PAGADA', 'PREPARANDO', 'ENVIADA', 'ENTREGADA'].includes(order.estado) && (order.estadoPago === 'PAGADO' || order.metodoPago === 'CASH_ON_DELIVERY')) { %>
         · <a href="/admin/delivery">Asignar o revisar reparto</a>
       <% } %>
       <% if (order.estadoPago === 'PAGADO') { %>

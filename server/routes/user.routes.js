@@ -5,7 +5,7 @@ const { requirePermission } = require('../middleware/auth');
 const { PERMISSIONS: P } = require('../config/permissions');
 
 const userController = require('../controller/user_controller');
-const servicesRenderUser = require('../services/renderUsers');
+const servicesRenderUser = require('../pages/renderUsers');
 const { validate } = require('../middleware/validateRequest');
 const schemas = require('../validation/schemas');
 

@@ -11,7 +11,7 @@ const UPLOAD_LIMITS = Object.freeze({
     fields: 24,
     fieldSizeBytes: 8 * 1024,
     parts: 28,
-    requestSizeBytes: 9 * 1024 * 1024
+    requestSizeBytes: 9 * 1024 * 1024,
 });
 
 const ACCEPTED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
@@ -23,7 +23,7 @@ const parser = multer({
         files: UPLOAD_LIMITS.files,
         fields: UPLOAD_LIMITS.fields,
         fieldSize: UPLOAD_LIMITS.fieldSizeBytes,
-        parts: UPLOAD_LIMITS.parts
+        parts: UPLOAD_LIMITS.parts,
     },
     fileFilter: (req, file, callback) => {
         if (!ACCEPTED_MIME_TYPES.has(file.mimetype)) {
@@ -33,7 +33,7 @@ const parser = multer({
             return callback(error);
         }
         return callback(null, true);
-    }
+    },
 });
 
 function checked(parse) {
@@ -47,16 +47,18 @@ function checked(parse) {
             return next(error);
         }
 
-        return parse(req, res, error => {
+        return parse(req, res, (error) => {
             if (error) {
-                console.warn(JSON.stringify({
-                    event: 'multipart_parse_error',
-                    requestId: req.requestId,
-                    method: req.method,
-                    path: req.path,
-                    type: error.name,
-                    code: error.code
-                }));
+                console.warn(
+                    JSON.stringify({
+                        event: 'multipart_parse_error',
+                        requestId: req.requestId,
+                        method: req.method,
+                        path: req.path,
+                        type: error.name,
+                        code: error.code,
+                    })
+                );
                 error.status = 400;
                 return next(error);
             }
@@ -69,25 +71,31 @@ function checked(parse) {
             csrf.validateToken(req, res, async () => {
                 const files = req.file ? [req.file] : Object.values(req.files || {}).flat();
                 const uploaded = [];
-                const cleanup = () => Promise.all(uploaded.map(media.removeUnused)).catch(() => {
-                    console.error('No se pudieron limpiar imágenes temporales; se reintentará en mantenimiento.');
-                });
+                const cleanup = () =>
+                    Promise.all(uploaded.map(media.removeUnused)).catch(() => {
+                        console.error('No se pudieron limpiar imágenes temporales; se reintentará en mantenimiento.');
+                    });
                 res.once('finish', cleanup);
                 try {
                     for (const file of files) {
                         const result = await media.storeImage(file);
-                        Object.assign(file, result); delete file.buffer; uploaded.push(result.url);
+                        Object.assign(file, result);
+                        delete file.buffer;
+                        uploaded.push(result.url);
                     }
                     next();
-                } catch (uploadError) { await cleanup(); next(uploadError); }
+                } catch (uploadError) {
+                    await cleanup();
+                    next(uploadError);
+                }
             });
         });
     };
 }
 module.exports = {
-    single: name => checked(parser.single(name)),
+    single: (name) => checked(parser.single(name)),
     array: (name, count) => checked(parser.array(name, count)),
-    fields: fields => checked(parser.fields(fields)),
+    fields: (fields) => checked(parser.fields(fields)),
     none: () => checked(parser.none()),
-    limits: UPLOAD_LIMITS
+    limits: UPLOAD_LIMITS,
 };

@@ -13,18 +13,16 @@ main {
     box-sizing: border-box;
 }
 
-
 /* =========================================================
    TITULO
    ========================================================= */
 
 main h1 {
-    color: var(--primary-dark, #311b14);
+    color: var(--primary-dark, var(--color-brand-dark));
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 25px;
 }
-
 
 /* =========================================================
    TABLA
@@ -33,26 +31,24 @@ main h1 {
 main .table {
     width: 100%;
     margin-bottom: 0;
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     border-radius: 10px;
     overflow: hidden;
     vertical-align: middle;
 }
-
 
 /* =========================================================
    ENCABEZADO
    ========================================================= */
 
 main .table thead th {
-    background-color: var(--primary-dark, #311b14);
-    color: #ffffff;
+    background-color: var(--primary-dark, var(--color-brand-dark));
+    color: var(--color-surface);
     font-weight: 600;
     text-align: center;
     vertical-align: middle;
     white-space: nowrap;
 }
-
 
 /* =========================================================
    CELDAS
@@ -71,7 +67,6 @@ main .table tbody tr:hover {
     background-color: #f8f3ef;
 }
 
-
 /* =========================================================
    ORDEN Y USUARIO
    ========================================================= */
@@ -80,16 +75,14 @@ main .table tbody td:first-of-type {
     font-weight: 600;
 }
 
-
 /* =========================================================
    TOTAL
    ========================================================= */
 
 main .table tbody td:nth-child(3) {
     font-weight: 600;
-    color: var(--primary-dark, #311b14);
+    color: var(--primary-dark, var(--color-brand-dark));
 }
-
 
 /* =========================================================
    ESTADO
@@ -102,7 +95,6 @@ main .table .badge {
     font-size: 0.8rem;
 }
 
-
 /* =========================================================
    BOTONES
    ========================================================= */
@@ -113,7 +105,6 @@ main .table .btn {
     border-radius: 7px;
 }
 
-
 /* =========================================================
    BOTÓN CREAR
    ========================================================= */
@@ -121,20 +112,18 @@ main .table .btn {
 main .table tbody tr.admin-create-row td {
     padding: 18px;
     text-align: left;
-    background-color: #ffffff;
+    background-color: var(--color-surface);
 }
 
 main .table tbody tr.admin-create-row .btn {
     padding: 9px 16px;
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 1200px) {
-
     main {
         padding: 25px 20px;
     }
@@ -150,9 +139,7 @@ main .table tbody tr.admin-create-row .btn {
     }
 }
 
-
 @media (max-width: 992px) {
-
     main {
         padding: 20px 15px;
         overflow-x: auto;
@@ -167,9 +154,7 @@ main .table tbody tr.admin-create-row .btn {
     }
 }
 
-
 @media (max-width: 576px) {
-
     main {
         padding: 15px 10px;
     }

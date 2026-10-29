@@ -1,8 +1,8 @@
 :root {
-    --primary-dark: #311b14;
-    --accent-orange: #d85c32;
-    --warm-tan: #d58d51;
-    --light: #ffffff;
+    --primary-dark: var(--color-brand-dark);
+    --accent-orange: var(--color-brand-accent);
+    --warm-tan: var(--color-brand-tan);
+    --light: var(--color-surface);
 }
 
 /* PAGE */
@@ -18,7 +18,7 @@
 }
 
 .page-header p {
-    color: #6b5b55;
+    color: var(--color-text-muted);
     margin-bottom: 20px;
 }
 
@@ -47,7 +47,7 @@
 .form-group input {
     width: 100%;
     padding: 10px 12px;
-    border: 1px solid #e0d6cf;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     outline: none;
     transition: 0.2s;

@@ -4,13 +4,12 @@
    ========================================================= */
 
 :root {
-    --primary-dark: #311b14;
-    --accent-orange: #d85c32;
-    --warm-tan: #d58d51;
-    --light-bg: #f6f1ec;
-    --white: #ffffff;
+    --primary-dark: var(--color-brand-dark);
+    --accent-orange: var(--color-brand-accent);
+    --warm-tan: var(--color-brand-tan);
+    --light-bg: var(--color-background);
+    --white: var(--color-surface);
 }
-
 
 /* =========================================================
    CONTENEDOR PRINCIPAL
@@ -23,7 +22,6 @@ main {
     overflow-x: auto;
 }
 
-
 /* =========================================================
    TÍTULO
    ========================================================= */
@@ -34,7 +32,6 @@ main > div h1 {
     font-weight: 700;
     margin-bottom: 25px;
 }
-
 
 /* =========================================================
    TABLA
@@ -53,7 +50,6 @@ main .table {
     box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
 }
 
-
 /* =========================================================
    CABECERA
    ========================================================= */
@@ -69,7 +65,6 @@ main .table thead th {
     white-space: nowrap;
 }
 
-
 /* =========================================================
    CELDAS
    ========================================================= */
@@ -83,7 +78,6 @@ main .table tbody th {
     font-size: 14px;
 }
 
-
 /* =========================================================
    FILAS
    ========================================================= */
@@ -96,7 +90,6 @@ main .table tbody tr:hover {
     background-color: #fdf7f2;
 }
 
-
 /* =========================================================
    ÚLTIMA FILA
    ========================================================= */
@@ -104,7 +97,6 @@ main .table tbody tr:hover {
 main .table tbody tr.admin-create-row td {
     border-bottom: none;
 }
-
 
 /* =========================================================
    DATOS DE UBICACIÓN
@@ -114,7 +106,6 @@ main .table td:nth-child(11) {
     white-space: nowrap;
 }
 
-
 /* =========================================================
    ESTADO
    ========================================================= */
@@ -123,7 +114,6 @@ main .table td:nth-child(12) {
     font-weight: 600;
 }
 
-
 /* =========================================================
    FECHA DE REGISTRO
    ========================================================= */
@@ -131,7 +121,6 @@ main .table td:nth-child(12) {
 main .table td:nth-child(13) {
     white-space: nowrap;
 }
-
 
 /* =========================================================
    BOTONES
@@ -151,7 +140,6 @@ main .table .btn {
         background-color 0.2s ease;
 }
 
-
 /* =========================================================
    BOTÓN EDITAR
    ========================================================= */
@@ -170,14 +158,13 @@ main .table .btn-warning:hover {
     box-shadow: 0 4px 10px rgba(216, 92, 50, 0.25);
 }
 
-
 /* =========================================================
    BOTÓN ELIMINAR
    ========================================================= */
 
 main .table .btn-danger {
-    background-color: #dc3545;
-    border-color: #dc3545;
+    background-color: var(--color-danger);
+    border-color: var(--color-danger);
     color: var(--white);
 }
 
@@ -188,7 +175,6 @@ main .table .btn-danger:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(220, 53, 69, 0.25);
 }
-
 
 /* =========================================================
    BOTÓN CREAR USUARIO
@@ -208,7 +194,6 @@ main .table .btn-primary:hover {
     box-shadow: 0 5px 12px rgba(49, 27, 20, 0.2);
 }
 
-
 /* =========================================================
    CELDA DEL BOTÓN CREAR
    ========================================================= */
@@ -218,13 +203,11 @@ main .table tbody tr:last-child td {
     background-color: #fffaf7;
 }
 
-
 /* =========================================================
    SCROLL HORIZONTAL
    ========================================================= */
 
 @media (max-width: 1200px) {
-
     main {
         padding: 25px 20px;
     }
@@ -234,13 +217,11 @@ main .table tbody tr:last-child td {
     }
 }
 
-
 /* =========================================================
    TABLET
    ========================================================= */
 
 @media (max-width: 768px) {
-
     main {
         padding: 20px 15px;
     }
@@ -261,13 +242,11 @@ main .table tbody tr:last-child td {
     }
 }
 
-
 /* =========================================================
    MÓVIL
    ========================================================= */
 
 @media (max-width: 480px) {
-
     main {
         padding: 15px 10px;
     }

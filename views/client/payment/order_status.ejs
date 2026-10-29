@@ -6,18 +6,29 @@
   <p><%= order.numeroOrden %></p>
   <% if (notice) { %><p role="status" class="commerce-notice"><%= notice %></p><% } %>
   <article class="commerce-card">
+    <p>Medio de pago:
+      <strong>
+        <%= order.metodoPago === 'CASH_ON_DELIVERY'
+          ? 'Efectivo contra entrega'
+          : order.metodoPago === 'WOMPI_NEQUI'
+            ? 'Nequi con Wompi'
+            : 'Tarjeta con Wompi' %>
+      </strong>
+    </p>
+    <% if (order.metodoPagoConfirmado) { %><p>Wompi confirmó: <strong><%= order.metodoPagoConfirmado %></strong></p><% } %>
     <p>Pago: <strong><%= order.estadoPago %></strong></p>
     <p>Pedido: <strong><%= order.estado %></strong></p>
     <% if (order.estado === 'REQUIERE_REVISION') { %>
       <p>Recibimos la confirmación del pago y estamos revisando la disponibilidad. Contacta con la tienda indicando tu número de pedido. No vuelvas a pagar.</p>
     <% } else if (order.estadoPago === 'PAGADO') { %><p>Tu pago está confirmado. Aquí podrás consultar el avance de la entrega.</p>
     <% } else if (order.estado === 'CANCELADA') { %><p>Este intento de compra terminó. Si tu banco muestra un cobro, contacta con la tienda antes de repetirlo.</p>
+    <% } else if (order.metodoPago === 'CASH_ON_DELIVERY') { %><p>El pedido está reservado para entrega. Paga el total al repartidor y confirma el efectivo cuando recibas tu compra.</p>
     <% } else { %><p>El pedido todavía no tiene un pago confirmado. Si acabas de pagar, espera la confirmación antes de reintentar.</p><% } %>
     <a href="/venta-finalizada/<%= order._id %>">Actualizar estado</a>
     <% if (order.repartidor) { %>
       <p class="delivery-assigned-client"><i class="bi bi-bicycle"></i> Tu pedido ya está asignado a reparto.</p>
     <% } %>
-    <% if (!hasPaymentPending && order.canal === 'WOMPI' && order.estadoPago === 'PENDIENTE' && order.inventario === 'RESERVADO' && order.reservaHasta > new Date()) { %>
+    <% if (!hasPaymentPending && ['WOMPI_CARD', 'WOMPI_NEQUI'].includes(order.metodoPago || 'WOMPI_CARD') && order.estadoPago === 'PENDIENTE' && order.inventario === 'RESERVADO' && order.reservaHasta > new Date()) { %>
       <form method="post" action="/carrito/pay/<%= order._id %>">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <button type="submit">Continuar al pago</button>

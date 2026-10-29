@@ -85,7 +85,7 @@
 
           <td>
             <% if (product.stock <= 5) { %>
-              <span style="color: red; font-weight: bold;">
+              <span class="stock-warning">
                 <%= product.stock %>
               </span>
             <% } else { %>
@@ -127,4 +127,3 @@
 </main>
 
 <%- include('../../include/_footerAdmin') %>
-

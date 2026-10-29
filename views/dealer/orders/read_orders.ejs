@@ -20,6 +20,7 @@
                     <th>Cliente</th>
                     <th>Destino</th>
                     <th>Total</th>
+                    <th>Pago</th>
                     <th>Estado</th>
                     <th>Fecha</th>
                     <th>Acciones</th>
@@ -38,6 +39,13 @@
                             <small><%= order.direccionEnvio?.ciudad || '' %></small>
                         </td>
                         <td data-label="Total">$ <%= Number(order.total || 0).toLocaleString('es-CO') %></td>
+                        <td data-label="Pago">
+                            <%= order.metodoPago === 'CASH_ON_DELIVERY'
+                                ? 'Contra entrega'
+                                : order.metodoPago === 'WOMPI_NEQUI'
+                                    ? 'Nequi · Wompi'
+                                    : 'Tarjeta · Wompi' %>
+                        </td>
                         <td data-label="Estado">
                             <span class="dealer-status dealer-status--<%= order.estado.toLowerCase() %>">
                                 <%= statusLabels[order.estado] || order.estado %>

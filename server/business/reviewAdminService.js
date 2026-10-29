@@ -13,15 +13,15 @@ function normalizeFilters(query = {}) {
         q: stringFilter(query.q),
         producto: stringFilter(query.producto),
         estado: ['publicadas', 'ocultas'].includes(query.estado) ? query.estado : 'todas',
-        calificacion: typeof query.calificacion === 'string' &&
-            /^[1-5]$/.test(query.calificacion) ? query.calificacion : '',
-        respuesta: ['con_respuesta', 'sin_respuesta'].includes(query.respuesta) ? query.respuesta : 'todas'
+        calificacion:
+            typeof query.calificacion === 'string' && /^[1-5]$/.test(query.calificacion) ? query.calificacion : '',
+        respuesta: ['con_respuesta', 'sin_respuesta'].includes(query.respuesta) ? query.respuesta : 'todas',
     };
 }
 
 function literalRegex(text) {
     const special = '\\^$.*+?()[]{}|';
-    const escaped = Array.from(text, char => special.includes(char) ? '\\' + char : char).join('');
+    const escaped = Array.from(text, (char) => (special.includes(char) ? '\\' + char : char)).join('');
     return new RegExp(escaped, 'i');
 }
 
@@ -39,17 +39,22 @@ async function getPage(query = {}) {
     const conditions = [];
 
     if (filters.producto) {
-        const products = await Productdb.find({ nombre: literalRegex(filters.producto) }).select('_id').limit(200).lean();
-        conditions.push({ producto: { $in: products.map(p => p._id) } });
+        const products = await Productdb.find({ nombre: literalRegex(filters.producto) })
+            .select('_id')
+            .limit(200)
+            .lean();
+        conditions.push({ producto: { $in: products.map((p) => p._id) } });
     }
     if (filters.q) {
         const regex = literalRegex(filters.q);
         const users = await Userdb.find({ nombre: regex }).select('_id').limit(200).lean();
-        conditions.push({ $or: [
-            { comentario: regex },
-            { 'respuestaTienda.texto': regex },
-            { usuario: { $in: users.map(u => u._id) } }
-        ] });
+        conditions.push({
+            $or: [
+                { comentario: regex },
+                { 'respuestaTienda.texto': regex },
+                { usuario: { $in: users.map((u) => u._id) } },
+            ],
+        });
     }
     if (filters.estado === 'publicadas') conditions.push({ oculta: { $ne: true } });
     if (filters.estado === 'ocultas') conditions.push({ oculta: true });
@@ -63,21 +68,26 @@ async function getPage(query = {}) {
     const filter = conditions.length ? { $and: conditions } : {};
     const [totalItems, stats] = await Promise.all([
         Reviewdb.countDocuments(filter),
-        Reviewdb.aggregate([{ $group: {
-            _id: null,
-            total: { $sum: 1 },
-            ocultas: { $sum: { $cond: [{ $eq: ['$oculta', true] }, 1, 0] } },
-            sinRespuesta: { $sum: { $cond: [{ $eq: [{ $ifNull: ['$respuestaTienda.texto', ''] }, ''] }, 1, 0] } }
-        } }])
+        Reviewdb.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: 1 },
+                    ocultas: { $sum: { $cond: [{ $eq: ['$oculta', true] }, 1, 0] } },
+                    sinRespuesta: {
+                        $sum: { $cond: [{ $eq: [{ $ifNull: ['$respuestaTienda.texto', ''] }, ''] }, 1, 0] },
+                    },
+                },
+            },
+        ]),
     ]);
     const totalPages = Math.ceil(totalItems / PAGE_SIZE);
     const requested = Number(query.page);
-    const page = Math.min(
-        Number.isSafeInteger(requested) && requested > 0 ? requested : 1,
-        totalPages || 1
-    );
+    const page = Math.min(Number.isSafeInteger(requested) && requested > 0 ? requested : 1, totalPages || 1);
     const reviews = await Reviewdb.find(filter)
-        .select('producto usuario calificacion comentario fotos video fecha fechaEdicion oculta moderacion respuestaTienda historialGestion __v')
+        .select(
+            'producto usuario calificacion comentario fotos video fecha fechaEdicion oculta moderacion respuestaTienda historialGestion __v'
+        )
         .populate('producto', 'nombre')
         .populate('usuario', 'nombre')
         .populate('moderacion.administrador', 'nombre')
@@ -91,24 +101,27 @@ async function getPage(query = {}) {
     const summary = stats[0] || { total: 0, ocultas: 0, sinRespuesta: 0 };
     return {
         filters,
-        reviews: reviews.map(review => ({
+        reviews: reviews.map((review) => ({
             ...review,
             oculta: review.oculta === true,
             version: Number.isSafeInteger(review.__v) ? review.__v : 0,
             historialGestion: (review.historialGestion || []).slice(-50).reverse(),
-            fotos: (review.fotos || []).filter(file =>
+            fotos: (review.fotos || []).filter((file) =>
                 /^\/assets\/img\/[a-z0-9][a-z0-9._-]*\.(jpg|jpeg|png|webp)$/i.test(file)
             ),
-            video: typeof review.video === 'string' &&
-                /^\/assets\/img\/[a-z0-9][a-z0-9._-]*\.(mp4|webm)$/i.test(review.video) ? review.video : null
+            video:
+                typeof review.video === 'string' &&
+                /^\/assets\/img\/[a-z0-9][a-z0-9._-]*\.(mp4|webm)$/i.test(review.video)
+                    ? review.video
+                    : null,
         })),
         summary: {
             total: summary.total,
             publicadas: summary.total - summary.ocultas,
             ocultas: summary.ocultas,
-            sinRespuesta: summary.sinRespuesta
+            sinRespuesta: summary.sinRespuesta,
         },
-        pagination: { page, limit: PAGE_SIZE, totalItems, totalPages }
+        pagination: { page, limit: PAGE_SIZE, totalItems, totalPages },
     };
 }
 

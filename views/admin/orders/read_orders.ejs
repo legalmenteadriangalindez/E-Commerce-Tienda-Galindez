@@ -12,7 +12,6 @@
       <h1>Gestionar órdenes</h1>
       <p class="admin-list-description">Supervisa el estado de los pedidos y continúa su proceso de entrega.</p>
     </div>
-    <a href="/create-order" class="admin-list-primary">Crear orden</a>
   </header>
 
 <div class="admin-table-wrap">
@@ -30,13 +29,14 @@
 
             <th scope="col">Total</th>
 
+            <th scope="col">Medio de pago</th>
+
             <th scope="col">Estado</th>
 
             <th scope="col">Fecha</th>
 
             <th scope="col">Editar</th>
 
-            <th scope="col">Eliminar</th>
 
             <th scope="col">Detalle</th>
 
@@ -64,6 +64,16 @@
 
             <td>
                 $ <%= order.total?.toLocaleString() %>
+            </td>
+
+            <td>
+                <%= order.metodoPago === 'CASH_ON_DELIVERY'
+                    ? 'Contra entrega'
+                    : order.metodoPago === 'CASH_AT_COUNTER' || (order.canal === 'CAJA' && !order.metodoPago)
+                        ? 'Efectivo en caja'
+                        : order.metodoPago === 'WOMPI_NEQUI'
+                            ? 'Nequi · Wompi'
+                            : 'Tarjeta · Wompi' %>
             </td>
 
             <td>
@@ -118,7 +128,7 @@
 
             <td>
 
-                <a 
+                <a
                     href="/update-order?id=<%= order._id %>"
                     class="btn btn-success"
                 >
@@ -129,16 +139,7 @@
 
             <td>
 
-                <form action="/delete-order/<%= order._id %>" method="POST" class="d-inline">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                </form>
-
-            </td>
-
-            <td>
-
-                <a 
+                <a
                     href="/order/<%= order._id %>"
                     class="btn btn-info"
                 >

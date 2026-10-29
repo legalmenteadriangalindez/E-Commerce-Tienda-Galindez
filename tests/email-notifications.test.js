@@ -11,15 +11,18 @@ test('las notificaciones de pedidos conservan el estado y escapan el contenido',
         estado: 'ENVIADA',
         estadoPago: 'PAGADO',
         direccionEnvio: { direccion: 'Calle <script>', ciudad: 'Timbío' },
-        productos: [{ nombre: 'Producto & prueba', cantidad: 1, subtotal: 25000 }]
+        productos: [{ nombre: 'Producto & prueba', cantidad: 1, subtotal: 25000 }],
     };
 
     const data = notifications.snapshotOrder(order);
-    const rendered = notifications.renderOrderNotification({ tipo: 'AVISO_ENVIO', datos: {
-        ...data,
+    const rendered = notifications.renderOrderNotification({
         tipo: 'AVISO_ENVIO',
-        estadoLabel: notifications.STATUS_LABELS[data.estado]
-    } });
+        datos: {
+            ...data,
+            tipo: 'AVISO_ENVIO',
+            estadoLabel: notifications.STATUS_LABELS[data.estado],
+        },
+    });
 
     assert.equal(data.email, 'cliente@example.test');
     assert.match(rendered.subject, /ORD-PRUEBA/);
@@ -30,13 +33,16 @@ test('las notificaciones de pedidos conservan el estado y escapan el contenido',
 
 test('los avisos de envío y entrega sustituyen al cambio genérico', () => {
     assert.deepEqual(notifications.statusEvent('ENVIADA', 'pedido-1'), {
-        type: 'AVISO_ENVIO', key: 'pedido:pedido-1:envio'
+        type: 'AVISO_ENVIO',
+        key: 'pedido:pedido-1:envio',
     });
     assert.deepEqual(notifications.statusEvent('ENTREGADA', 'pedido-1'), {
-        type: 'AVISO_ENTREGA', key: 'pedido:pedido-1:entrega'
+        type: 'AVISO_ENTREGA',
+        key: 'pedido:pedido-1:entrega',
     });
     assert.deepEqual(notifications.statusEvent('PREPARANDO', 'pedido-1'), {
-        type: 'CAMBIO_ESTADO', key: 'pedido:pedido-1:estado:PREPARANDO'
+        type: 'CAMBIO_ESTADO',
+        key: 'pedido:pedido-1:estado:PREPARANDO',
     });
 });
 
@@ -47,8 +53,8 @@ test('el aviso de ganador incluye el número sin exponer datos privados', () => 
             nombre: 'Cliente de prueba',
             numero: 17,
             titulo: 'Sorteo de regalos',
-            seleccionadoEn: '2026-10-27T20:00:00.000Z'
-        }
+            seleccionadoEn: '2026-10-27T20:00:00.000Z',
+        },
     });
 
     assert.match(rendered.subject, /Número 17/);

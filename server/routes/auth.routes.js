@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const authController = require('../controller/auth_controller');
-const servicesLoginLogout = require('../services/renderLoginLogout');
+const servicesLoginLogout = require('../pages/renderLoginLogout');
 const confirmationCodeController = require('../controller/confirmationCodeController');
-const servicesRenderVerificationCode = require('../services/renderVerificationCode');
+const servicesRenderVerificationCode = require('../pages/renderVerificationCode');
 const categoriasMiddleware = require('../middleware/categoriasMiddleware');
 const { loginLimiter, registrationLimiter, verificationLimiter, resendLimiter } = require('../middleware/rateLimit');
 const { validate } = require('../middleware/validateRequest');

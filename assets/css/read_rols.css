@@ -4,15 +4,14 @@
    ========================================================= */
 
 :root {
-    --primary-dark: #311b14;
-    --accent-orange: #d85c32;
-    --warm-tan: #d58d51;
-    --light-bg: #f6f1ec;
-    --white: #ffffff;
+    --primary-dark: var(--color-brand-dark);
+    --accent-orange: var(--color-brand-accent);
+    --warm-tan: var(--color-brand-tan);
+    --light-bg: var(--color-background);
+    --white: var(--color-surface);
     --text-dark: #332923;
-    --text-muted: #6b5b55;
+    --text-muted: var(--color-text-muted);
 }
-
 
 /* =========================================================
    CONTENEDOR PRINCIPAL
@@ -26,7 +25,6 @@ main {
     box-sizing: border-box;
 }
 
-
 /* =========================================================
    TITULO
    ========================================================= */
@@ -37,7 +35,6 @@ main h1 {
     font-weight: 700;
     margin-bottom: 25px;
 }
-
 
 /* =========================================================
    TABLA
@@ -53,7 +50,6 @@ main .table {
     margin-bottom: 0;
 }
 
-
 /* =========================================================
    ENCABEZADO
    ========================================================= */
@@ -67,7 +63,6 @@ main .table thead th {
     vertical-align: middle;
 }
 
-
 /* =========================================================
    CELDAS
    ========================================================= */
@@ -78,7 +73,6 @@ main .table tbody td {
     vertical-align: middle;
     border-color: #eee5df;
 }
-
 
 /* =========================================================
    FILAS
@@ -92,7 +86,6 @@ main .table tbody tr:hover {
     background-color: #fcf7f3;
 }
 
-
 /* =========================================================
    DESCRIPCIÓN
    ========================================================= */
@@ -100,7 +93,6 @@ main .table tbody tr:hover {
 main .table tbody td:nth-child(3) {
     color: var(--text-muted);
 }
-
 
 /* =========================================================
    BOTONES
@@ -114,7 +106,6 @@ main .table .btn {
         transform 0.2s ease,
         box-shadow 0.2s ease;
 }
-
 
 /* =========================================================
    BOTÓN EDITAR
@@ -132,7 +123,6 @@ main .table .btn-success:hover {
     box-shadow: 0 5px 12px rgba(49, 27, 20, 0.15);
 }
 
-
 /* =========================================================
    BOTÓN ELIMINAR
    ========================================================= */
@@ -148,7 +138,6 @@ main .table .btn-danger:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 12px rgba(185, 74, 72, 0.2);
 }
-
 
 /* =========================================================
    CREAR NUEVO ROL
@@ -178,13 +167,11 @@ main .table .btn-primary:hover {
     box-shadow: 0 6px 15px rgba(49, 27, 20, 0.15);
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 768px) {
-
     main {
         margin: 25px auto;
         padding: 0 10px;
@@ -210,13 +197,11 @@ main .table .btn-primary:hover {
     }
 }
 
-
 /* =========================================================
    MÓVILES
    ========================================================= */
 
 @media (max-width: 576px) {
-
     main {
         overflow-x: auto;
     }

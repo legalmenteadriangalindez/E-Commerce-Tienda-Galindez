@@ -27,7 +27,7 @@ test('los esquemas exponen campos enteros de centavos para cada importe', () => 
         [Sale, ['subtotalCents', 'impuestosCents', 'costoEnvioCents', 'descuentoCents', 'totalCents']],
         [SaleDetail, ['precioUnitarioCents', 'precioCostoUnitarioCents', 'subtotalCents']],
         [Raffle, ['montoMinimoCents']],
-        [RaffleEntry, ['montoCompraCents']]
+        [RaffleEntry, ['montoCompraCents']],
     ];
 
     for (const [Model, fields] of paths) {
@@ -35,7 +35,7 @@ test('los esquemas exponen campos enteros de centavos para cada importe', () => 
             const schemaPath = Model.schema.path(field);
             assert.ok(schemaPath, `${Model.modelName}.${field} no existe`);
             assert.equal(schemaPath.instance, 'Number');
-            assert.ok(schemaPath.validators.some(validator => validator.validator === Number.isSafeInteger));
+            assert.ok(schemaPath.validators.some((validator) => validator.validator === Number.isSafeInteger));
         }
     }
 
@@ -43,7 +43,7 @@ test('los esquemas exponen campos enteros de centavos para cada importe', () => 
         const schemaPath = Order.schema.path('productos').schema.path(field);
         assert.ok(schemaPath, `orderdb.productos.${field} no existe`);
         assert.equal(schemaPath.instance, 'Number');
-        assert.ok(schemaPath.validators.some(validator => validator.validator === Number.isSafeInteger));
+        assert.ok(schemaPath.validators.some((validator) => validator.validator === Number.isSafeInteger));
     }
 });
 
@@ -52,4 +52,3 @@ test('los importes en centavos respetan el límite seguro de JavaScript', () => 
     assert.equal(money.assertCents(0), 0);
     assert.ok(mongoose.isValidObjectId(new mongoose.Types.ObjectId()));
 });
-

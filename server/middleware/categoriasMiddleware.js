@@ -5,8 +5,8 @@ module.exports = async (req, res, next) => {
         res.locals.categorias = await categoryCache.get();
         next();
     } catch (error) {
-        console.error("Error al cargar categorías:", error.message);
-        return res.status(500).send("Error al cargar categorías");
+        console.error('Error al cargar categorías:', error.message);
+        return res.status(500).send('Error al cargar categorías');
     }
 };
 

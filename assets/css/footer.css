@@ -1,10 +1,8 @@
-
-
 /* ================= FOOTER ================= */
 
 .footer {
-    background: #000;      /* negro puro */
-    color: #fff;           /* blanco puro */
+    background: #000; /* negro puro */
+    color: var(--color-surface); /* blanco puro */
     padding: 50px 20px 20px;
 }
 
@@ -23,14 +21,14 @@
 .footer-col h4 {
     margin-bottom: 15px;
     font-weight: 600;
-    color: #fff;
+    color: var(--color-surface);
 }
 
 /* TEXTO */
 .footer-col p {
     font-size: 14px;
     line-height: 1.6;
-    color: #fff;   /* blanco (antes gris) */
+    color: var(--color-surface); /* blanco (antes gris) */
 }
 
 /* LISTAS */
@@ -45,7 +43,7 @@
 
 /* LINKS */
 .footer-col a {
-    color: #fff;   /* blanco */
+    color: var(--color-surface); /* blanco */
     text-decoration: none;
     font-size: 14px;
     transition: 0.3s;
@@ -53,7 +51,7 @@
 
 /* HOVER SUTIL */
 .footer-col a:hover {
-    opacity: 0.7;     /* en vez de cambiar color */
+    opacity: 0.7; /* en vez de cambiar color */
     padding-left: 5px;
 }
 
@@ -70,18 +68,18 @@
     align-items: center;
     justify-content: center;
 
-    border: 1px solid #fff;
+    border: 1px solid var(--color-surface);
     border-radius: 50%;
     transition: 0.3s;
 }
 
 .socials i {
     font-size: 18px;
-    color: #fff;
+    color: var(--color-surface);
 }
 
 .socials a:hover {
-    background: #fff;
+    background: var(--color-surface);
     color: #000;
     transform: translateY(-3px);
 }
@@ -93,7 +91,7 @@
     padding-top: 15px;
     text-align: center;
     font-size: 14px;
-    color: #fff;
+    color: var(--color-surface);
 }
 
 /* ================= RESPONSIVE ================= */
@@ -123,11 +121,10 @@
 }
 
 /* STICKY FOOTER */
-html, body {
+html,
+body {
     height: 100%;
 }
-
-
 
 .footer {
     margin-top: auto;

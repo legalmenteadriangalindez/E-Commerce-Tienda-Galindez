@@ -1,13 +1,13 @@
 (() => {
     'use strict';
 
-    document.querySelectorAll('[data-edit-review]').forEach(link => {
+    document.querySelectorAll('[data-edit-review]').forEach((link) => {
         link.addEventListener('click', () => {
             document.getElementById('review-comment')?.focus({ preventScroll: true });
         });
     });
 
-    document.querySelectorAll('[data-review-form]').forEach(form => {
+    document.querySelectorAll('[data-review-form]').forEach((form) => {
         const comment = form.querySelector('[name="comentario"]');
         const counter = form.querySelector('[data-review-count]');
         if (comment && counter) {
@@ -16,7 +16,7 @@
             });
         }
 
-        form.addEventListener('submit', async event => {
+        form.addEventListener('submit', async (event) => {
             event.preventDefault();
             if (form.dataset.sending === 'true') return;
 
@@ -38,11 +38,11 @@
                     method,
                     credentials: 'same-origin',
                     headers: {
-                        'Accept': 'application/json',
+                        Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        'X-CSRF-Token': payload._csrf || ''
+                        'X-CSRF-Token': payload._csrf || '',
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok || !data.success) {
@@ -50,7 +50,8 @@
                     if (response.status === 401) {
                         message = 'Tu sesión venció. Inicia sesión antes de continuar.';
                     } else if (response.status === 403 && /csrf/i.test(message)) {
-                        message = 'La sesión del formulario venció. Copia tu comentario y recarga la página para continuar.';
+                        message =
+                            'La sesión del formulario venció. Copia tu comentario y recarga la página para continuar.';
                     }
                     throw new Error(message);
                 }

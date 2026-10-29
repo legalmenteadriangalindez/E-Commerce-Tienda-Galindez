@@ -1,11 +1,11 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const legal = require('../server/services/renderLegal');
+const legal = require('../server/pages/renderLegal');
 
 test('las páginas legales públicas están registradas y tienen controlador', () => {
     assert.deepEqual(
-        legal.legalPages.map(page => page.path),
+        legal.legalPages.map((page) => page.path),
         ['/privacidad', '/terminos', '/cambios-devoluciones', '/envios', '/reclamaciones']
     );
 
@@ -24,11 +24,14 @@ test('la información de contacto legal tiene valores seguros por defecto', () =
 
 test('el controlador hidrata los datos de contacto también en el SEO', () => {
     let rendered;
-    legal.page('terminos')({}, {
-        render(_view, data) {
-            rendered = data;
+    legal.page('terminos')(
+        {},
+        {
+            render(_view, data) {
+                rendered = data;
+            },
         }
-    });
+    );
 
     assert.ok(rendered);
     assert.doesNotMatch(rendered.seoDescription, /\{\{/);

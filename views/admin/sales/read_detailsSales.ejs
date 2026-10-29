@@ -6,7 +6,9 @@
 
 <main>
 <div>
-<h1>Gestionar Detalles de Ventas</h1>
+<h1>Detalles de la venta</h1>
+<p>Las ventas confirmadas se conservan como comprobante. Consulta los pedidos para gestionar su estado.</p>
+<a href="/read-sales" class="btn btn-secondary">Volver a ventas</a>
 </div>
   <table class="table">
     <thead>
@@ -18,8 +20,6 @@
         <th scope="col">Cantidad</th>
         <th scope="col">Precio Unitario</th>
         <th scope="col">Total</th>
-        <th scope="col">Editar</th>
-        <th scope="col">Eliminar</th>
       </tr>
     </thead>
     <tbody>
@@ -43,20 +43,8 @@
         <td>$ <%= detail.precioUnitario %></td>
         <td>$ <%= detail.cantidad * detail.precioUnitario %></td>
 
-        <td>
-          <a href="/update-sale-detail?id=<%= detail._id %>" class="btn btn-success">Editar</a>
-        </td>
-
-        <td>
-          <a href="/api/sale-details/<%= detail._id %>" class="btn btn-danger delete">Eliminar</a>
-        </td>
       </tr>
       <% }); %>
-        <tr>
-          <td colspan="8" >
-          <a href="/create-sale-detail" class="btn btn-primary">Crear Nueva Detalle de Venta</a>
-        </td>
-      </tr>
     </tbody>
   </table>
 

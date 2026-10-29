@@ -9,7 +9,8 @@ const { runMigrations } = require('../server/database/migrationRunner');
 async function runMaintenanceCycle(dependencies = {}) {
     const commerce = dependencies.commerce || require('../server/business/commerceService');
     const media = dependencies.media || require('../server/business/mediaService');
-    const emailNotifications = dependencies.emailNotifications || require('../server/business/emailNotificationService');
+    const emailNotifications =
+        dependencies.emailNotifications || require('../server/business/emailNotificationService');
 
     // Ejecutar en orden evita que una tarea de limpieza o correo oculte un
     // fallo de conciliación y permite que cada paso deje un resultado auditable.
@@ -43,11 +44,13 @@ async function main() {
 }
 
 if (require.main === module) {
-    main().catch(error => {
-        console.error(JSON.stringify({
-            event: 'maintenance_failed',
-            message: typeof error.message === 'string' ? error.message.slice(0, 500) : 'Error desconocido'
-        }));
+    main().catch((error) => {
+        console.error(
+            JSON.stringify({
+                event: 'maintenance_failed',
+                message: typeof error.message === 'string' ? error.message.slice(0, 500) : 'Error desconocido',
+            })
+        );
         process.exitCode = 1;
     });
 }

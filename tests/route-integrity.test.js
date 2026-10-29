@@ -8,9 +8,10 @@ const routesDirectory = path.join(root, 'server', 'routes');
 const routesIndexPath = path.join(routesDirectory, 'index.js');
 
 function routeModuleFiles() {
-    return fs.readdirSync(routesDirectory, { withFileTypes: true })
-        .filter(entry => entry.isFile() && entry.name.endsWith('.routes.js'))
-        .map(entry => entry.name)
+    return fs
+        .readdirSync(routesDirectory, { withFileTypes: true })
+        .filter((entry) => entry.isFile() && entry.name.endsWith('.routes.js'))
+        .map((entry) => entry.name)
         .sort();
 }
 
@@ -27,7 +28,7 @@ function collectRoutes(router, prefix = '', routes = []) {
                 if (method !== '_all') {
                     routes.push({
                         method: method.toUpperCase(),
-                        path: `${prefix}${layer.route.path}`
+                        path: `${prefix}${layer.route.path}`,
                     });
                 }
             }
@@ -62,19 +63,14 @@ test('todos los módulos de rutas se cargan y están montados', () => {
             new RegExp(`require\\(['"]${escapedModuleName}['"]\\)`),
             `${file} no está montado en server/routes/index.js`
         );
-        assert.doesNotThrow(
-            () => require(path.join(routesDirectory, file)),
-            `${file} no se puede cargar`
-        );
+        assert.doesNotThrow(() => require(path.join(routesDirectory, file)), `${file} no se puede cargar`);
     }
 });
 
 test('el router expone las rutas de página y API esperadas', () => {
     const router = require('../server/routes');
     const routes = collectRoutes(router);
-    const has = (method, routePath) => routes.some(
-        route => route.method === method && route.path === routePath
-    );
+    const has = (method, routePath) => routes.some((route) => route.method === method && route.path === routePath);
 
     assert.ok(routes.length > 0, 'no se encontraron rutas registradas');
     assert.ok(has('GET', '/view_cart'), 'la página activa del carrito no está registrada');
@@ -85,10 +81,7 @@ test('el router expone las rutas de página y API esperadas', () => {
 });
 
 test('las vistas no enlazan a la página heredada /carrito', () => {
-    const viewFiles = walkFiles(
-        path.join(root, 'views'),
-        filename => filename.endsWith('.ejs')
-    );
+    const viewFiles = walkFiles(path.join(root, 'views'), (filename) => filename.endsWith('.ejs'));
 
     for (const filename of viewFiles) {
         const source = fs.readFileSync(filename, 'utf8');
@@ -100,14 +93,64 @@ test('las vistas no enlazan a la página heredada /carrito', () => {
     }
 });
 
+test('cada método y ruta se registra una sola vez', () => {
+    const routes = collectRoutes(require('../server/routes'));
+    const seen = new Set();
+    for (const route of routes) {
+        const key = `${route.method} ${route.path.toLowerCase()}`;
+        assert.ok(!seen.has(key), `Ruta duplicada: ${key}`);
+        seen.add(key);
+    }
+});
+
+test('los enlaces y acciones locales de todas las vistas tienen una ruta', () => {
+    // Express compila los patrones; no dependemos de sus dependencias transitivas.
+    const router = require('express').Router();
+    const routes = collectRoutes(require('../server/routes')).map((route) => {
+        router.get(route.path, (req, res) => res.end());
+        return { ...route, pattern: router.stack.at(-1).regexp };
+    });
+    const missing = [];
+    for (const file of walkFiles(path.join(root, 'views'), (file) => file.endsWith('.ejs'))) {
+        const source = fs
+            .readFileSync(file, 'utf8')
+            .replace(/<!--[\s\S]*?-->/g, '')
+            .replace(/<%[\s\S]*?%>/g, 'sample');
+        for (const match of source.matchAll(/<(a)\b[^>]*>|<(form)\b[^>]*>[\s\S]*?<\/form>/gi)) {
+            const tag = match[0];
+            const url = tag.match(/(?:href|action)=["'](\/[^"']*)["']/)?.[1];
+            if (!url || url.startsWith('//') || /^\/(?:assets|uploads)\//.test(url)) continue;
+            const target = new URL(url.replace(/&amp;/g, '&'), 'http://localhost');
+            let method =
+                match[1]?.toLowerCase() === 'a'
+                    ? 'GET'
+                    : (tag.match(/method=["']([^"']*)["']/i)?.[1] || 'GET').toUpperCase();
+            if (method === 'POST' && target.searchParams.has('_method'))
+                method = target.searchParams.get('_method').toUpperCase();
+            if (method === 'POST') {
+                const override = tag.match(
+                    /<input\b[^>]*name=["']_method["'][^>]*value=["'](PUT|PATCH|DELETE)["']/i
+                )?.[1];
+                if (override) method = override.toUpperCase();
+            }
+            if (!routes.some((route) => route.method === method && route.pattern.test(target.pathname)))
+                missing.push(`${path.relative(root, file)} -> ${method} ${target.pathname}`);
+        }
+    }
+    assert.deepEqual(missing, []);
+});
+
 test('los módulos eliminados no vuelven a introducir exports heredados', () => {
     assert.equal(fs.existsSync(path.join(root, 'server/services/renderCheckout.js')), false);
 
-    const renderCart = fs.readFileSync(path.join(root, 'server/services/renderCart.js'), 'utf8');
-    const renderSales = fs.readFileSync(path.join(root, 'server/services/renderSales.js'), 'utf8');
+    const renderCart = fs.readFileSync(path.join(root, 'server/pages/renderCart.js'), 'utf8');
+    const renderSales = fs.readFileSync(path.join(root, 'server/pages/renderSales.js'), 'utf8');
     const saleController = fs.readFileSync(path.join(root, 'server/controller/sale_controller.js'), 'utf8');
 
-    assert.doesNotMatch(renderCart, /exports\.(billing_point|payment_point|payment_point_admin|add_to_carrito|order_success)\s*=/);
+    assert.doesNotMatch(
+        renderCart,
+        /exports\.(billing_point|payment_point|payment_point_admin|add_to_carrito|order_success)\s*=/
+    );
     assert.doesNotMatch(renderSales, /exports\.(create_sale_form|view_sale|total_profit)\s*=/);
     assert.doesNotMatch(saleController, /exports\.confirmacion\s*=/);
 });

@@ -22,24 +22,51 @@ const ADMIN_LIMIT = 10;
 
 function queryDefinitions(start, end) {
     return [
-        ['admin.sales.list', Sale.find({ estadoPago: 'PAGADO', createdAt: { $gte: start, $lt: end } })
-            .sort({ createdAt: -1, _id: -1 }).skip(0).limit(ADMIN_LIMIT).select('_id')],
-        ['admin.orders.list', Order.find({})
-            .sort({ createdAt: -1, _id: -1 }).skip(0).limit(ADMIN_LIMIT).select('_id')],
-        ['admin.products.list', Product.find({})
-            .sort({ fechaIngreso: -1, _id: -1 }).skip(0).limit(ADMIN_LIMIT).select('_id')],
-        ['admin.products.stock-alerts', Product.find({ stock: { $lte: 10 } })
-            .sort({ stock: 1, nombre: 1, _id: 1 }).skip(0).limit(ADMIN_LIMIT).select('_id')],
-        ['admin.categories.list', Category.find({})
-            .sort({ nombre: 1, _id: 1 }).skip(0).limit(ADMIN_LIMIT).select('_id')],
-        ['admin.providers.list', Provider.find({})
-            .sort({ nombre: 1, _id: 1 }).skip(0).limit(ADMIN_LIMIT).select('_id')],
-        ['admin.roles.list', Role.find({})
-            .sort({ nombre: 1, _id: 1 }).skip(0).limit(ADMIN_LIMIT).select('_id')],
-        ['admin.users.list', User.find({ estado: 'Activo' })
-            .sort({ fechaRegistro: -1, _id: -1 }).skip(0).limit(ADMIN_LIMIT).select('_id')],
-        ['admin.sale-details.by-sale', Detail.find({ venta: new mongoose.Types.ObjectId() })
-            .sort({ createdAt: 1, _id: 1 }).limit(200).select('_id')]
+        [
+            'admin.sales.list',
+            Sale.find({ estadoPago: 'PAGADO', createdAt: { $gte: start, $lt: end } })
+                .sort({ createdAt: -1, _id: -1 })
+                .skip(0)
+                .limit(ADMIN_LIMIT)
+                .select('_id'),
+        ],
+        ['admin.orders.list', Order.find({}).sort({ createdAt: -1, _id: -1 }).skip(0).limit(ADMIN_LIMIT).select('_id')],
+        [
+            'admin.products.list',
+            Product.find({}).sort({ fechaIngreso: -1, _id: -1 }).skip(0).limit(ADMIN_LIMIT).select('_id'),
+        ],
+        [
+            'admin.products.stock-alerts',
+            Product.find({ stock: { $lte: 10 } })
+                .sort({ stock: 1, nombre: 1, _id: 1 })
+                .skip(0)
+                .limit(ADMIN_LIMIT)
+                .select('_id'),
+        ],
+        [
+            'admin.categories.list',
+            Category.find({}).sort({ nombre: 1, _id: 1 }).skip(0).limit(ADMIN_LIMIT).select('_id'),
+        ],
+        [
+            'admin.providers.list',
+            Provider.find({}).sort({ nombre: 1, _id: 1 }).skip(0).limit(ADMIN_LIMIT).select('_id'),
+        ],
+        ['admin.roles.list', Role.find({}).sort({ nombre: 1, _id: 1 }).skip(0).limit(ADMIN_LIMIT).select('_id')],
+        [
+            'admin.users.list',
+            User.find({ estado: 'Activo' })
+                .sort({ fechaRegistro: -1, _id: -1 })
+                .skip(0)
+                .limit(ADMIN_LIMIT)
+                .select('_id'),
+        ],
+        [
+            'admin.sale-details.by-sale',
+            Detail.find({ venta: new mongoose.Types.ObjectId() })
+                .sort({ createdAt: 1, _id: 1 })
+                .limit(200)
+                .select('_id'),
+        ],
     ];
 }
 
@@ -50,7 +77,9 @@ async function explainQuery(name, query) {
 
 async function main() {
     if (!process.env.MONGO_URI) {
-        throw new Error('MONGO_URI no está configurada. Usa una base de datos de desarrollo o una copia de producción.');
+        throw new Error(
+            'MONGO_URI no está configurada. Usa una base de datos de desarrollo o una copia de producción.'
+        );
     }
 
     try {
@@ -62,20 +91,20 @@ async function main() {
         const range = analytics.periodRange(process.env.EXPLAIN_PERIOD || 'month');
         const [analyticsExplain, adminExplain] = await Promise.all([
             analytics.explainAnalytics(range.key, range.end),
-            Promise.all(queryDefinitions(range.start, range.end).map(([name, query]) => explainQuery(name, query)))
+            Promise.all(queryDefinitions(range.start, range.end).map(([name, query]) => explainQuery(name, query))),
         ]);
 
         const report = {
             generatedAt: new Date().toISOString(),
             period: range.key,
             analytics: analyticsExplain.results,
-            adminQueries: adminExplain
+            adminQueries: adminExplain,
         };
         console.log(JSON.stringify(report, null, 2));
 
         const scans = [...analyticsExplain.results, ...adminExplain]
-            .filter(result => result.usesCollectionScan)
-            .map(result => result.name);
+            .filter((result) => result.usesCollectionScan)
+            .map((result) => result.name);
         if (scans.length) {
             console.error(`Advertencia: COLLSCAN detectado en: ${scans.join(', ')}`);
             if (process.env.EXPLAIN_FAIL_ON_COLLSCAN === 'true') process.exitCode = 2;
@@ -88,7 +117,7 @@ async function main() {
 }
 
 if (require.main === module) {
-    main().catch(error => {
+    main().catch((error) => {
         console.error(error.message || 'No se pudo ejecutar explain.');
         process.exitCode = 1;
     });

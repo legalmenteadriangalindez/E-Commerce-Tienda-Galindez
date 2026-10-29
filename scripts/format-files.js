@@ -2,45 +2,52 @@
 
 const { spawnSync } = require('node:child_process');
 const path = require('node:path');
-
-const files = [
-    'eslint.config.js',
-    'server.js',
-    'server/controller/user_controller.js',
-    'server/middleware/apiContract.js',
-    'server/middleware/errorHandler.js',
-    'server/middleware/validateRequest.js',
-    'server/routes/adminReview.routes.js',
-    'server/routes/auth.routes.js',
-    'server/routes/brand.routes.js',
-    'server/routes/cart.routes.js',
-    'server/routes/category.routes.js',
-    'server/routes/order.routes.js',
-    'server/routes/product.routes.js',
-    'server/routes/provider.routes.js',
-    'server/routes/review.routes.js',
-    'server/routes/roles.routes.js',
-    'server/routes/sales.routes.js',
-    'server/routes/user.routes.js',
-    'server/services/publicError.js',
-    'server/services/renderDetailsSales.js',
-    'server/services/apiResponse.js',
-    'server/validation/schemas.js',
-    'tests/api-contract.test.js',
-    'tests/dockerfile-hardening.test.js',
-    'tests/static-assets.test.js',
-    'scripts/format-files.js',
-    'tests/commerce-write-path.test.js',
-];
-
-const prettier = require.resolve('prettier/bin/prettier.cjs');
+const fs = require('node:fs');
+const root = path.resolve(__dirname, '..');
 const check = process.argv.includes('--check');
+let ejsFailures = 0;
+
+// Prettier no interpreta EJS sin un plugin. Normalizamos solo espacios finales
+// y saltos de línea, sin reescribir sus etiquetas ni expresiones.
+function tidyViews(directory) {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+        const file = path.join(directory, entry.name);
+        if (entry.isDirectory()) tidyViews(file);
+        else if (file.endsWith('.ejs')) {
+            const source = fs.readFileSync(file, 'utf8');
+            const normalized =
+                source
+                    .replace(/\r\n?/g, '\n')
+                    .replace(/[\t ]+$/gm, '')
+                    .trimEnd() + '\n';
+            if (source === normalized) continue;
+            if (check) {
+                console.error('Revisar espacios/saltos de línea: ' + path.relative(root, file));
+                ejsFailures++;
+            } else fs.writeFileSync(file, normalized);
+        }
+    }
+}
+tidyViews(path.join(root, 'views'));
+
+// Globs incluyen archivos nuevos. EJS se compila con npm run check.
+// Las migraciones publicadas conservan su checksum; nunca se reformatean.
+const files = [
+    '*.js',
+    '*.json',
+    '*.md',
+    '*.yaml',
+    '.github/workflows/*.{yml,yaml}',
+    'api/**/*.js',
+    'server/**/*.js',
+    'scripts/**/*.js',
+    'tests/**/*.js',
+    'assets/**/*.{js,css}',
+    'public/**/*.{js,css}',
+];
 const result = spawnSync(
     process.execPath,
-    [prettier, check ? '--check' : '--write', ...files.map((file) => path.resolve(__dirname, '..', file))],
-    {
-        stdio: 'inherit',
-    }
+    [require.resolve('prettier/bin/prettier.cjs'), check ? '--check' : '--write', ...files],
+    { cwd: root, stdio: 'inherit' }
 );
-
-process.exit(result.status ?? 1);
+process.exit(result.status || (ejsFailures ? 1 : (result.status ?? 1)));

@@ -1,32 +1,30 @@
 const mongoose = require('mongoose');
 
 var schema = new mongoose.Schema({
-
     nombre: {
         type: String,
-        required: true
+        required: true,
     },
 
     contacto: {
-        type: String
+        type: String,
     },
 
     telefono: {
-        type: String
+        type: String,
     },
 
     email: {
-        type: String
+        type: String,
     },
 
     direccion: {
-        type: String
+        type: String,
     },
 
-    descripcion: {   
-        type: String
-    }
-
+    descripcion: {
+        type: String,
+    },
 });
 
 schema.index({ nombre: 1, _id: 1 });

@@ -4,15 +4,14 @@
    ========================================================= */
 
 :root {
-    --primary-dark: #311b14;
-    --accent-orange: #d85c32;
-    --warm-tan: #d58d51;
-    --light: #ffffff;
-    --background: #f6f1ec;
-    --border: #e0d6cf;
-    --text-muted: #6b5b55;
+    --primary-dark: var(--color-brand-dark);
+    --accent-orange: var(--color-brand-accent);
+    --warm-tan: var(--color-brand-tan);
+    --light: var(--color-surface);
+    --background: var(--color-background);
+    --border: var(--color-border);
+    --text-muted: var(--color-text-muted);
 }
-
 
 /* =========================================================
    CONTENEDOR
@@ -24,7 +23,6 @@
     padding: 0 20px;
     box-sizing: border-box;
 }
-
 
 /* =========================================================
    TITULO
@@ -41,7 +39,6 @@
     margin: 0;
 }
 
-
 /* =========================================================
    CARDS
    ========================================================= */
@@ -55,20 +52,18 @@
     box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
 }
 
-
 /* =========================================================
    HEADER DE CARD
    ========================================================= */
 
 .detail-order-container .order-card .card-header {
     background-color: var(--primary-dark);
-    color: #ffffff;
+    color: var(--color-surface);
     padding: 14px 20px;
     font-size: 1.05rem;
     font-weight: 700;
     border: none;
 }
-
 
 /* =========================================================
    BODY
@@ -77,7 +72,6 @@
 .detail-order-container .order-card .card-body {
     padding: 22px;
 }
-
 
 /* =========================================================
    TITULOS DE INFORMACION
@@ -90,7 +84,6 @@
     margin-bottom: 6px;
 }
 
-
 /* =========================================================
    DATOS
    ========================================================= */
@@ -100,7 +93,6 @@
     color: #555;
     line-height: 1.5;
 }
-
 
 /* =========================================================
    BADGES
@@ -113,7 +105,6 @@
     font-weight: 600;
 }
 
-
 /* =========================================================
    TABLA DE PRODUCTOS
    ========================================================= */
@@ -125,7 +116,7 @@
 
 .detail-order-container .table thead th {
     background-color: var(--primary-dark);
-    color: #ffffff;
+    color: var(--color-surface);
     text-align: center;
     font-weight: 600;
     white-space: nowrap;
@@ -143,7 +134,6 @@
 .detail-order-container .table tbody tr:hover {
     background-color: #faf6f2;
 }
-
 
 /* =========================================================
    RESUMEN FINANCIERO
@@ -176,7 +166,6 @@
     font-weight: 700;
 }
 
-
 /* =========================================================
    LINEA RESUMEN
    ========================================================= */
@@ -187,13 +176,11 @@
     opacity: 1;
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 768px) {
-
     .detail-order-container {
         margin: 25px auto;
         padding: 0 15px;
@@ -220,9 +207,7 @@
     }
 }
 
-
 @media (max-width: 480px) {
-
     .detail-order-container {
         margin: 20px auto;
         padding: 0 10px;

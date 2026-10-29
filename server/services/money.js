@@ -20,8 +20,12 @@ class MoneyError extends Error {
 function toCents(value) {
     const number = Number(value);
     const cents = Math.round(number * SCALE);
-    if (!Number.isFinite(number) || number < 0 || !Number.isSafeInteger(cents) ||
-        Math.abs(number * SCALE - cents) > 0.00001) {
+    if (
+        !Number.isFinite(number) ||
+        number < 0 ||
+        !Number.isSafeInteger(cents) ||
+        Math.abs(number * SCALE - cents) > 0.00001
+    ) {
         throw new MoneyError('El importe debe ser positivo y tener como máximo dos decimales.');
     }
     return cents;
@@ -67,8 +71,8 @@ function integerCentsPath(options = {}) {
         min: 0,
         validate: {
             validator: Number.isSafeInteger,
-            message: 'El importe en centavos debe ser un entero seguro.'
-        }
+            message: 'El importe en centavos debe ser un entero seguro.',
+        },
     };
 }
 
@@ -81,5 +85,5 @@ module.exports = {
     fromSignedCents,
     readCents,
     display,
-    integerCentsPath
+    integerCentsPath,
 };

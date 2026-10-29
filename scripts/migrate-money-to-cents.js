@@ -15,42 +15,49 @@ const collections = [
     {
         name: 'productos',
         Model: require('../server/model/product'),
-        fields: { precioCostoCents: ['precioCosto'], precioVentaCents: ['precioVenta'] }
+        fields: { precioCostoCents: ['precioCosto'], precioVentaCents: ['precioVenta'] },
     },
     {
         name: 'pedidos',
         Model: require('../server/model/order'),
         fields: {
-            subtotalCents: ['subtotal'], impuestosCents: ['impuestos'], costoEnvioCents: ['costoEnvio'],
-            descuentoCents: ['descuento'], totalCents: ['total']
-        }
+            subtotalCents: ['subtotal'],
+            impuestosCents: ['impuestos'],
+            costoEnvioCents: ['costoEnvio'],
+            descuentoCents: ['descuento'],
+            totalCents: ['total'],
+        },
     },
     {
         name: 'ventas',
         Model: require('../server/model/sales'),
         fields: {
-            subtotalCents: ['subtotal'], impuestosCents: ['impuestos'], costoEnvioCents: ['costoEnvio'],
-            descuentoCents: ['descuento'], totalCents: ['total']
-        }
+            subtotalCents: ['subtotal'],
+            impuestosCents: ['impuestos'],
+            costoEnvioCents: ['costoEnvio'],
+            descuentoCents: ['descuento'],
+            totalCents: ['total'],
+        },
     },
     {
         name: 'detalles de venta',
         Model: require('../server/model/saleDetails'),
         fields: {
-            precioUnitarioCents: ['precioUnitario'], precioCostoUnitarioCents: ['precioCostoUnitario'],
-            subtotalCents: ['subtotal']
-        }
+            precioUnitarioCents: ['precioUnitario'],
+            precioCostoUnitarioCents: ['precioCostoUnitario'],
+            subtotalCents: ['subtotal'],
+        },
     },
     {
         name: 'rifas',
         Model: require('../server/model/raffle'),
-        fields: { montoMinimoCents: ['montoMinimo'] }
+        fields: { montoMinimoCents: ['montoMinimo'] },
     },
     {
         name: 'participaciones de rifa',
         Model: require('../server/model/raffleEntry'),
-        fields: { montoCompraCents: ['montoCompra'] }
-    }
+        fields: { montoCompraCents: ['montoCompra'] },
+    },
 ];
 
 function valueFor(document, legacyFields) {
@@ -61,7 +68,7 @@ function valueFor(document, legacyFields) {
 }
 
 async function migrateCollection(collection, apply) {
-    const filter = { $or: Object.keys(collection.fields).map(field => ({ [field]: { $exists: false } })) };
+    const filter = { $or: Object.keys(collection.fields).map((field) => ({ [field]: { $exists: false } })) };
     const total = await collection.Model.countDocuments(filter);
     let updated = 0;
     if (apply && total) {
@@ -96,20 +103,25 @@ async function main() {
         for (const collection of collections) {
             result[collection.name] = await migrateCollection(collection, apply);
         }
-        console.log(JSON.stringify({
-            modo: apply ? 'aplicado' : 'diagnostico',
-            colecciones: result,
-            siguientePaso: apply
-                ? 'Verifica los documentos y conserva la copia de seguridad.'
-                : 'Para escribir, repite con MONEY_MIGRATION_APPLY=true.'
-        }, null, 2));
+        console.log(
+            JSON.stringify(
+                {
+                    modo: apply ? 'aplicado' : 'diagnostico',
+                    colecciones: result,
+                    siguientePaso: apply
+                        ? 'Verifica los documentos y conserva la copia de seguridad.'
+                        : 'Para escribir, repite con MONEY_MIGRATION_APPLY=true.',
+                },
+                null,
+                2
+            )
+        );
     } finally {
         await mongoose.disconnect();
     }
 }
 
-main().catch(error => {
+main().catch((error) => {
     console.error('No se pudo completar la migración monetaria:', error.message);
     process.exitCode = 1;
 });
-

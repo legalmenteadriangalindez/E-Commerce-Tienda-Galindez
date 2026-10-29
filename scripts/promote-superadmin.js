@@ -23,7 +23,7 @@ async function main() {
 
         const [role, user] = await Promise.all([
             Role.findOne({ nombre: SYSTEM_ROLES.SUPER_ADMIN }).select('_id'),
-            User.findOne(accounts.emailFilter(email)).populate('rol', 'nombre')
+            User.findOne(accounts.emailFilter(email)).populate('rol', 'nombre'),
         ]);
 
         if (!user) throw new Error('No existe una cuenta con ese correo. Usa seed:admin para crearla primero.');
@@ -36,10 +36,7 @@ async function main() {
             return;
         }
 
-        await User.updateOne(
-            { _id: user._id },
-            { $set: { rol: role._id }, $inc: { authVersion: 1 } }
-        );
+        await User.updateOne({ _id: user._id }, { $set: { rol: role._id }, $inc: { authVersion: 1 } });
         // Mantener el rol operativo preparado para futuras cuentas sin volver a
         // conceder accidentalmente roles:manage.
         await Role.updateOne(
@@ -53,8 +50,7 @@ async function main() {
     }
 }
 
-main().catch(error => {
+main().catch((error) => {
     console.error(error.message);
     process.exitCode = 1;
 });
-

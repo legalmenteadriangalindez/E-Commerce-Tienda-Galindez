@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
+    <link rel="stylesheet" href="/assets/css/theme.css">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Revisar solicitud · Tienda Galindez</title>
@@ -26,9 +27,7 @@
                     </tbody>
                 </table>
             </details>
-            <script nonce="<%= typeof cspNonce !== 'undefined' ? cspNonce : '' %>">
-                console.warn('[Tienda Galindez] Solicitud rechazada. Revisa los detalles técnicos y usa la referencia mostrada.');
-            </script>
+            <script nonce="<%= typeof cspNonce !== 'undefined' ? cspNonce : '' %>" src="/assets/js/error-diagnostics.js" defer></script>
         <% } %>
 
         <a href="/">Ir a la tienda</a> · <a href="/mis-pedidos">Mis pedidos</a>

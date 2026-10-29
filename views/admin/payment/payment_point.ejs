@@ -57,6 +57,16 @@
 
                 </div>
 
+                <fieldset class="payment-options">
+                    <legend>Método de pago</legend>
+                    <% paymentMethods.forEach((method, index) => { %>
+                        <label class="payment-option">
+                            <input type="radio" name="metodoPago" value="<%= method.value %>" <%= index === 0 ? 'checked' : '' %> required>
+                            <span><strong><%= method.label %></strong><small><%= method.description %></small></span>
+                        </label>
+                    <% }) %>
+                </fieldset>
+
                 <div class="input-row">
 
                     <!-- EMAIL -->
@@ -278,8 +288,8 @@
                 </button>
 
                 <div
-                    class="trust-badge"
-                    style="justify-content: space-between; margin-top: 18px;"
+                    class="trust-badge payment-actions"
+
                 >
 
 

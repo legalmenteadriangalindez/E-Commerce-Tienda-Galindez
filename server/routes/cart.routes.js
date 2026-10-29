@@ -14,7 +14,12 @@ router.post('/add', isLogged, validate(schemas.cartAdd), cartController.add_to_c
 router.post('/remove', isLogged, validate(schemas.cartRemove), cartController.remove_from_carrito);
 router.post('/checkout', isLogged, validate(schemas.cartCheckout), cartController.checkout);
 router.post('/pay/:id', isLogged, cartController.retryPayment);
-router.post('/checkout_admin', requirePermission(P.PAYMENTS_MANAGE), cartController.checkout_admin);
+router.post(
+    '/checkout_admin',
+    requirePermission(P.PAYMENTS_MANAGE),
+    validate(schemas.cartCheckout),
+    cartController.checkout_admin
+);
 router.post('/payment_point', isLogged, validate(schemas.paymentPoint), cartController.payment_point);
 router.get('/get_carrito', isLogged, cartController.get_carrito);
 router.post('/get_wompi_webhook', cartController.wompiWebhook);

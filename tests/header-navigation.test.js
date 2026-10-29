@@ -4,10 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const ejs = require('ejs');
 
-const template = fs.readFileSync(
-    path.join(__dirname, '../views/include/_header.ejs'),
-    'utf8'
-);
+const template = fs.readFileSync(path.join(__dirname, '../views/include/_header.ejs'), 'utf8');
 
 function render(sessionUser = null) {
     return ejs.render(template, {
@@ -16,7 +13,7 @@ function render(sessionUser = null) {
         csrfToken: 'csrf-test',
         cspNonce: 'nonce-test',
         sessionUser,
-        activeRaffle: null
+        activeRaffle: null,
     });
 }
 

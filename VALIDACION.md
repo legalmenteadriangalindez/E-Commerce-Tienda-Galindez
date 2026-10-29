@@ -14,4 +14,3 @@ Fecha: 27 de octubre de 2026.
 No se usaron la base ni las credenciales reales de la tienda. Wompi se simuló en las pruebas automatizadas: no se hicieron cargos ni devoluciones reales, ni se verificó la cuenta de Brevo. Este documento registra la validación local del paquete; el resultado de GitHub Actions se consulta en la solicitud de cambios, con una ejecución para Node 22 y otra para Node 24. El despliegue sigue pendiente. Sigue `PRODUCCION.md` para la aceptación en tu entorno y la revisión de datos anteriores.
 
 Límites que requieren atención del negocio: configuración y prueba del proveedor de pagos y correo, copias y restauración, migración de pedidos anteriores, tratamiento de devoluciones parciales, políticas comerciales/privacidad y facturación aplicable. Un resultado correcto de las pruebas no sustituye esas comprobaciones.
-

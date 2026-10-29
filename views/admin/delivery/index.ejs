@@ -8,7 +8,7 @@
             <p class="admin-list-eyebrow">Operación logística</p>
             <h1>Reparto y seguimiento</h1>
             <p class="admin-list-description">
-                Asigna los pedidos pagados a un repartidor y consulta el avance de cada entrega.
+                Asigna pedidos confirmados o contra entrega a un repartidor y consulta el avance de cada entrega.
             </p>
         </div>
         <a href="/read-order" class="admin-list-primary">Ver todos los pedidos</a>
@@ -32,7 +32,7 @@
             <button type="submit" class="delivery-button delivery-button--secondary">Filtrar</button>
             <% if (status) { %><a href="/admin/delivery" class="delivery-clear">Limpiar</a><% } %>
         </form>
-        <p class="delivery-count"><strong><%= pagination.totalItems %></strong> pedido(s) pagado(s) en el flujo de entrega.</p>
+        <p class="delivery-count"><strong><%= pagination.totalItems %></strong> pedido(s) en el flujo de entrega.</p>
     </section>
 
     <% if (!dealers.length) { %>
@@ -47,7 +47,10 @@
             <% const lastEvent = Array.isArray(order.seguimientoEntrega) && order.seguimientoEntrega.length
                 ? order.seguimientoEntrega[order.seguimientoEntrega.length - 1]
                 : null; %>
-            <% const canAssign = ['PAGADA', 'PREPARANDO', 'ENVIADA'].includes(order.estado); %>
+            <% const paymentMethod = order.metodoPago || (order.canal === 'CAJA' ? 'CASH_AT_COUNTER' : 'WOMPI_CARD'); %>
+            <% const canAssign = order.metodoPago === 'CASH_ON_DELIVERY'
+                ? order.estado === 'PENDIENTE'
+                : ['PAGADA', 'PREPARANDO', 'ENVIADA'].includes(order.estado); %>
             <article class="delivery-card">
                 <div class="delivery-card__header">
                     <div>
@@ -61,6 +64,16 @@
 
                 <div class="delivery-card__facts">
                     <span><i class="bi bi-cash-coin"></i> $<%= Number(order.total || 0).toLocaleString('es-CO') %> COP</span>
+                    <span>
+                        <i class="bi bi-wallet2"></i>
+                        <%= paymentMethod === 'CASH_ON_DELIVERY'
+                            ? 'Contra entrega'
+                            : paymentMethod === 'CASH_AT_COUNTER'
+                                ? 'Efectivo en caja'
+                                : paymentMethod === 'WOMPI_NEQUI'
+                                ? 'Nequi · Wompi'
+                                : 'Tarjeta · Wompi' %>
+                    </span>
                     <span><i class="bi bi-calendar3"></i> <%= new Date(order.createdAt).toLocaleDateString('es-CO') %></span>
                     <span><i class="bi bi-geo-alt"></i> <%= order.direccionEnvio?.ciudad || 'Ciudad no indicada' %></span>
                 </div>
@@ -103,7 +116,7 @@
                         <p class="delivery-assignment__closed">La entrega ya terminó; se conserva el repartidor para auditoría.</p>
                     <% } %>
 
-                    <% if (order.repartidor && ['PAGADA', 'PREPARANDO'].includes(order.estado)) { %>
+                    <% if (order.repartidor && ['PENDIENTE', 'PAGADA', 'PREPARANDO'].includes(order.estado)) { %>
                         <form method="post" action="/admin/delivery/<%= order._id %>/unassign" class="delivery-unassign-form">
                             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                             <input type="hidden" name="status" value="<%= status %>">
@@ -125,7 +138,7 @@
     </section>
 
     <% if (!orders.length) { %>
-        <p class="admin-list-empty">No hay pedidos pagados para este filtro.</p>
+        <p class="admin-list-empty">No hay pedidos disponibles para este filtro.</p>
     <% } %>
 
     <%- include('../../include/_adminPagination', { pagination, label: 'pedidos de reparto' }) %>

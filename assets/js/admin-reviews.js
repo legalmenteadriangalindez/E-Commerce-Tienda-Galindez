@@ -1,7 +1,7 @@
 (() => {
     'use strict';
-    document.querySelectorAll('[data-admin-review-form]').forEach(form => {
-        form.addEventListener('submit', async event => {
+    document.querySelectorAll('[data-admin-review-form]').forEach((form) => {
+        form.addEventListener('submit', async (event) => {
             event.preventDefault();
             const card = form.closest('[data-review-id]');
             if (card.dataset.sending === 'true') return;
@@ -14,7 +14,9 @@
             const payload = Object.fromEntries(new FormData(form));
             errorBox.hidden = true;
             card.dataset.sending = 'true';
-            buttons.forEach(button => { button.disabled = true; });
+            buttons.forEach((button) => {
+                button.disabled = true;
+            });
             submit.textContent = 'Guardando…';
             try {
                 const response = await fetch(form.action, {
@@ -23,15 +25,17 @@
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        'X-CSRF-Token': payload._csrf || ''
+                        'X-CSRF-Token': payload._csrf || '',
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok || !data.success) {
                     let message = data.message || 'No se pudo guardar el cambio. Inténtalo de nuevo.';
-                    if (response.status === 401) message = 'Tu sesión venció. Copia tu texto e inicia sesión para continuar.';
-                    if (response.status === 403 && /csrf/i.test(message)) message = 'El formulario venció. Copia tu texto y recarga el panel para continuar.';
+                    if (response.status === 401)
+                        message = 'Tu sesión venció. Copia tu texto e inicia sesión para continuar.';
+                    if (response.status === 403 && /csrf/i.test(message))
+                        message = 'El formulario venció. Copia tu texto y recarga el panel para continuar.';
                     throw new Error(message);
                 }
                 window.location.reload();
@@ -41,7 +45,9 @@
                 errorBox.focus();
             } finally {
                 card.dataset.sending = 'false';
-                buttons.forEach(button => { button.disabled = false; });
+                buttons.forEach((button) => {
+                    button.disabled = false;
+                });
                 submit.textContent = label;
             }
         });

@@ -12,6 +12,11 @@ async function main() {
             await service.reconcile(id);
         } else await service.runMaintenance();
         console.log('Conciliación terminada. Revisa incidencias en /admin/payments.');
-    } finally { await mongoose.disconnect(); }
+    } finally {
+        await mongoose.disconnect();
+    }
 }
-main().catch(() => { console.error('No se pudo conciliar. Comprueba conexión y configuración de Wompi.'); process.exitCode = 1; });
+main().catch(() => {
+    console.error('No se pudo conciliar. Comprueba conexión y configuración de Wompi.');
+    process.exitCode = 1;
+});

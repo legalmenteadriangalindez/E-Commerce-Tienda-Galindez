@@ -4,18 +4,17 @@
    Marrón oscuro + beige/tostado + naranja cálido
    ========================================================= */
 
-
 /* =========================================================
    VARIABLES
    ========================================================= */
 
 :root {
-    --coffee-dark: #311b14;
-    --burnt-orange: #d85c32;
-    --tan-clay: #d58d51;
+    --coffee-dark: var(--color-brand-dark);
+    --burnt-orange: var(--color-brand-accent);
+    --tan-clay: var(--color-brand-tan);
 
     --bg-soft: #fcfaf8;
-    --white: #ffffff;
+    --white: var(--color-surface);
 
     --text-dark: #222222;
     --text-muted: #666666;
@@ -27,13 +26,10 @@
 
     --success: #28a745;
 
-    --shadow-soft:
-        0 8px 25px rgba(49, 27, 20, 0.07);
+    --shadow-soft: 0 8px 25px rgba(49, 27, 20, 0.07);
 
-    --shadow-hover:
-        0 12px 28px rgba(49, 27, 20, 0.12);
+    --shadow-hover: 0 12px 28px rgba(49, 27, 20, 0.12);
 }
-
 
 /* =========================================================
    BODY
@@ -45,7 +41,6 @@ body {
     color: var(--coffee-dark);
     margin: 0;
 }
-
 
 /* =========================================================
    TITULO PRINCIPAL
@@ -67,7 +62,6 @@ body {
     font-size: 0.95rem;
 }
 
-
 /* =========================================================
    CONTENEDOR PRINCIPAL
    ========================================================= */
@@ -77,7 +71,6 @@ body {
     margin: 35px auto 60px;
     padding: 0 20px;
 }
-
 
 /* =========================================================
    LAYOUT
@@ -89,7 +82,6 @@ body {
     gap: 30px;
     align-items: start;
 }
-
 
 /* =========================================================
    SECCIÓN DE PRODUCTOS
@@ -113,7 +105,6 @@ body {
 .items-section:hover {
     box-shadow: var(--shadow-hover);
 }
-
 
 /* =========================================================
    HEADER DEL CARRITO
@@ -142,7 +133,6 @@ body {
     font-weight: 700;
 }
 
-
 /* =========================================================
    BADGE
    ========================================================= */
@@ -165,10 +155,8 @@ body {
 
     white-space: nowrap;
 
-    box-shadow:
-        0 3px 8px rgba(213, 141, 81, 0.25);
+    box-shadow: 0 3px 8px rgba(213, 141, 81, 0.25);
 }
-
 
 /* =========================================================
    LISTA DE PRODUCTOS
@@ -178,7 +166,6 @@ body {
     display: flex;
     flex-direction: column;
 }
-
 
 /* =========================================================
    PRODUCT CARD
@@ -206,7 +193,6 @@ body {
         transform 0.25s ease;
 }
 
-
 /*
    Evita que la última tarjeta tenga
    una línea innecesaria
@@ -216,7 +202,6 @@ body {
     border-bottom: none;
 }
 
-
 /*
    Hover de producto
 */
@@ -224,7 +209,6 @@ body {
 .product-card:hover {
     background-color: #fffdfb;
 }
-
 
 /* =========================================================
    IMAGEN
@@ -243,7 +227,6 @@ body {
     background-color: var(--bg-soft);
 }
 
-
 .img-container img {
     width: 100%;
     height: 100%;
@@ -252,10 +235,8 @@ body {
 
     display: block;
 
-    transition:
-        transform 0.3s ease;
+    transition: transform 0.3s ease;
 }
-
 
 /*
    Zoom igual al utilizado
@@ -266,7 +247,6 @@ body {
     transform: scale(1.05);
 }
 
-
 /* =========================================================
    INFORMACIÓN DEL PRODUCTO
    ========================================================= */
@@ -274,7 +254,6 @@ body {
 .product-info {
     min-width: 0;
 }
-
 
 .product-info h3 {
     margin: 0;
@@ -289,7 +268,6 @@ body {
     text-overflow: ellipsis;
 }
 
-
 .category {
     color: var(--tan-clay);
 
@@ -303,7 +281,6 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 
 /* =========================================================
    SELECTOR DE CANTIDAD
@@ -329,14 +306,11 @@ body {
         box-shadow 0.2s ease;
 }
 
-
 .quantity-picker:focus-within {
     border-color: var(--burnt-orange);
 
-    box-shadow:
-        0 0 0 3px rgba(216, 92, 50, 0.12);
+    box-shadow: 0 0 0 3px rgba(216, 92, 50, 0.12);
 }
-
 
 /*
    Input de cantidad
@@ -366,7 +340,6 @@ body {
     font-weight: 700;
 }
 
-
 /*
    Elimina las flechas del input number
 */
@@ -376,13 +349,11 @@ body {
     margin: 0;
 }
 
-
 /* Firefox */
 
-.quantity-picker input[type="number"] {
+.quantity-picker input[type='number'] {
     appearance: textfield;
 }
-
 
 /* =========================================================
    PRECIO
@@ -401,11 +372,9 @@ body {
     white-space: nowrap;
 }
 
-
 .item-total {
     color: var(--burnt-orange);
 }
-
 
 /* =========================================================
    BOTÓN ELIMINAR
@@ -437,7 +406,6 @@ body {
         transform 0.2s ease;
 }
 
-
 .remove-btn:hover {
     color: var(--burnt-orange);
 
@@ -445,7 +413,6 @@ body {
 
     transform: scale(1.05);
 }
-
 
 /* =========================================================
    CARRITO VACÍO
@@ -467,7 +434,6 @@ body {
     border: 1px dashed var(--border-soft);
 }
 
-
 /* =========================================================
    SUMMARY
    ========================================================= */
@@ -475,7 +441,6 @@ body {
 .summary-section {
     min-width: 0;
 }
-
 
 /*
    IMPORTANTE:
@@ -501,12 +466,10 @@ body {
 
     border-radius: 16px;
 
-    box-shadow:
-        0 12px 30px rgba(49, 27, 20, 0.18);
+    box-shadow: 0 12px 30px rgba(49, 27, 20, 0.18);
 
     overflow: hidden;
 }
-
 
 /* =========================================================
    TITULO RESUMEN
@@ -516,7 +479,6 @@ body {
     color: var(--white);
 }
 
-
 .summary-card h2 {
     margin: 0;
 
@@ -525,7 +487,6 @@ body {
     font-weight: 700;
 }
 
-
 /* =========================================================
    DIVIDER
    ========================================================= */
@@ -533,12 +494,10 @@ body {
 .divider {
     height: 1px;
 
-    background-color:
-        rgba(213, 141, 81, 0.35);
+    background-color: rgba(213, 141, 81, 0.35);
 
     margin: 20px 0;
 }
-
 
 /* =========================================================
    LINEAS DEL RESUMEN
@@ -560,7 +519,6 @@ body {
     font-size: 0.95rem;
 }
 
-
 /* =========================================================
    ENVÍO GRATIS
    ========================================================= */
@@ -570,7 +528,6 @@ body {
 
     font-weight: 700;
 }
-
 
 /* =========================================================
    TOTAL
@@ -584,7 +541,6 @@ body {
     font-weight: 700;
 }
 
-
 .total-amount {
     color: var(--tan-clay) !important;
 
@@ -592,7 +548,6 @@ body {
 
     font-weight: 800;
 }
-
 
 /* =========================================================
    BOTÓN DE PAGO
@@ -638,15 +593,13 @@ body {
 
     cursor: pointer;
 
-    box-shadow:
-        0 5px 12px rgba(216, 92, 50, 0.25);
+    box-shadow: 0 5px 12px rgba(216, 92, 50, 0.25);
 
     transition:
         transform 0.2s ease,
         background-color 0.2s ease,
         box-shadow 0.2s ease;
 }
-
 
 /*
    Hover
@@ -657,10 +610,8 @@ body {
 
     transform: translateY(-3px);
 
-    box-shadow:
-        0 10px 20px rgba(216, 92, 50, 0.3);
+    box-shadow: 0 10px 20px rgba(216, 92, 50, 0.3);
 }
-
 
 /*
    Active
@@ -669,10 +620,8 @@ body {
 .pay-btn:active {
     transform: scale(0.97);
 
-    box-shadow:
-        0 3px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
-
 
 /* =========================================================
    LINK DE PAGO
@@ -684,54 +633,44 @@ body {
     color: inherit;
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
-
 
 /* -----------------------------------------
    TABLETS
 ----------------------------------------- */
 
 @media (max-width: 1000px) {
-
     .cart-wrapper {
         grid-template-columns: 1fr;
     }
 
-
     .summary-card {
         position: static;
     }
-
 
     .summary-section {
         width: 100%;
     }
 }
 
-
 /* -----------------------------------------
    TABLETS PEQUEÑAS
 ----------------------------------------- */
 
 @media (max-width: 768px) {
-
     .main-cart {
         margin-top: 25px;
 
         padding: 0 15px;
     }
 
-
     .items-section {
         padding: 20px;
     }
 
-
     .product-card {
-
         grid-template-columns:
             70px
             minmax(0, 1fr)
@@ -742,18 +681,15 @@ body {
         padding: 18px 0;
     }
 
-
     .img-container {
         width: 70px;
         height: 70px;
     }
 
-
     .quantity-picker {
         grid-column: 2;
         width: 100px;
     }
-
 
     .price {
         grid-column: 3;
@@ -761,17 +697,14 @@ body {
     }
 }
 
-
 /* -----------------------------------------
    MÓVILES
 ----------------------------------------- */
 
 @media (max-width: 576px) {
-
     .container h1 {
         font-size: 1.5rem;
     }
-
 
     .container + p {
         font-size: 0.85rem;
@@ -779,20 +712,17 @@ body {
         padding: 0 15px;
     }
 
-
     .main-cart {
         padding: 0 10px;
 
         margin-top: 20px;
     }
 
-
     .items-section {
         padding: 15px;
 
         border-radius: 14px;
     }
-
 
     .cart-header {
         align-items: flex-start;
@@ -804,14 +734,11 @@ body {
         margin-bottom: 10px;
     }
 
-
     .cart-header h1 {
         font-size: 1.25rem;
     }
 
-
     .product-card {
-
         grid-template-columns:
             65px
             minmax(0, 1fr);
@@ -821,22 +748,18 @@ body {
         padding: 15px 0;
     }
 
-
     .img-container {
         width: 65px;
         height: 65px;
     }
 
-
     .product-info h3 {
         font-size: 0.9rem;
     }
 
-
     .category {
         font-size: 0.75rem;
     }
-
 
     .quantity-picker {
         grid-column: 1 / 2;
@@ -846,13 +769,11 @@ body {
         margin-top: 5px;
     }
 
-
     .quantity-picker input {
         height: 40px;
 
         font-size: 0.9rem;
     }
-
 
     .price {
         grid-column: 2;
@@ -864,33 +785,27 @@ body {
         font-size: 0.95rem;
     }
 
-
     .summary-card {
         padding: 22px;
 
         border-radius: 14px;
     }
 
-
     .summary-card h2 {
         font-size: 1.2rem;
     }
-
 
     .summary-line {
         font-size: 0.9rem;
     }
 
-
     .total {
         font-size: 1.1rem;
     }
 
-
     .total-amount {
         font-size: 1.25rem;
     }
-
 
     .pay-btn {
         min-height: 48px;
@@ -899,25 +814,20 @@ body {
     }
 }
 
-
 /* -----------------------------------------
    MÓVILES MUY PEQUEÑOS
 ----------------------------------------- */
 
 @media (max-width: 380px) {
-
     .main-cart {
         padding: 0 8px;
     }
-
 
     .items-section {
         padding: 12px;
     }
 
-
     .product-card {
-
         grid-template-columns:
             55px
             minmax(0, 1fr);
@@ -925,22 +835,18 @@ body {
         gap: 10px;
     }
 
-
     .img-container {
         width: 55px;
         height: 55px;
     }
 
-
     .product-info h3 {
         font-size: 0.82rem;
     }
 
-
     .quantity-picker {
         width: 55px;
     }
-
 
     .price {
         font-size: 0.85rem;

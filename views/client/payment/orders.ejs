@@ -9,6 +9,7 @@
     <article class="commerce-card">
       <h2><a href="/venta-finalizada/<%= order._id %>"><%= order.numeroOrden %></a></h2>
       <p><%= new Date(order.createdAt).toLocaleString('es-CO') %> · $<%= order.total.toLocaleString('es-CO') %> COP</p>
+      <p>Medio: <strong><%= order.metodoPago === 'CASH_ON_DELIVERY' ? 'Efectivo contra entrega' : order.metodoPago === 'WOMPI_NEQUI' ? 'Nequi con Wompi' : 'Tarjeta con Wompi' %></strong></p>
       <p>Pago: <strong><%= order.estadoPago %></strong> · Pedido: <strong><%= order.estado %></strong></p>
       <% if (raffleEntry) { %>
         <p class="raffle-order-number">Rifa ronda #<%= raffleEntry.raffle?.numeroRonda || 'histórica' %>: <strong>número #<%= raffleEntry.numero %></strong></p>

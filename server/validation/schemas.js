@@ -144,6 +144,12 @@ const cartCheckout = passthrough({
     department: optionalText(100),
     reference: optionalText(200),
     notes: optionalText(1000),
+    metodoPago: z
+        .preprocess(
+            (value) => (typeof value === 'string' ? value.trim().toUpperCase() : value),
+            z.enum(['WOMPI_CARD', 'WOMPI_NEQUI', 'CASH_ON_DELIVERY', 'CASH_AT_COUNTER'])
+        )
+        .optional(),
 });
 const salesQuery = pagination.extend({
     from: z

@@ -4,7 +4,6 @@
    TIENDA GALINDEZ
    ========================================================= */
 
-
 /* =========================================================
    CONTENEDOR PRINCIPAL
    ========================================================= */
@@ -14,7 +13,6 @@ main {
     padding: 30px;
     box-sizing: border-box;
 }
-
 
 /* =========================================================
    TÍTULO
@@ -26,11 +24,10 @@ main > div:first-child {
 
 main > div:first-child h1 {
     margin: 0;
-    color: #311b14;
+    color: var(--color-brand-dark);
     font-size: 28px;
     font-weight: 700;
 }
-
 
 /* =========================================================
    TABLA
@@ -39,21 +36,20 @@ main > div:first-child h1 {
 main .table {
     width: 100%;
     margin-bottom: 0;
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     border-collapse: collapse;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
 }
 
-
 /* =========================================================
    ENCABEZADO
    ========================================================= */
 
 main .table thead {
-    background-color: #311b14;
-    color: #ffffff;
+    background-color: var(--color-brand-dark);
+    color: var(--color-surface);
 }
 
 main .table thead th {
@@ -65,7 +61,6 @@ main .table thead th {
     vertical-align: middle;
     white-space: nowrap;
 }
-
 
 /* =========================================================
    CUERPO
@@ -79,7 +74,6 @@ main .table tbody th {
     font-size: 14px;
 }
 
-
 /* =========================================================
    FILAS
    ========================================================= */
@@ -92,16 +86,14 @@ main .table tbody tr:hover {
     background-color: #faf6f2;
 }
 
-
 /* =========================================================
    VENTA
    ========================================================= */
 
 main .table tbody td:nth-child(2) {
-    color: #6b5b55;
+    color: var(--color-text-muted);
     font-size: 13px;
 }
-
 
 /* =========================================================
    CLIENTE
@@ -109,9 +101,8 @@ main .table tbody td:nth-child(2) {
 
 main .table tbody td:nth-child(3) {
     font-weight: 600;
-    color: #311b14;
+    color: var(--color-brand-dark);
 }
-
 
 /* =========================================================
    PRODUCTO
@@ -120,7 +111,6 @@ main .table tbody td:nth-child(3) {
 main .table tbody td:nth-child(4) {
     font-weight: 600;
 }
-
 
 /* =========================================================
    CANTIDAD
@@ -131,7 +121,6 @@ main .table tbody td:nth-child(5) {
     font-weight: 700;
 }
 
-
 /* =========================================================
    PRECIO UNITARIO
    ========================================================= */
@@ -141,17 +130,15 @@ main .table tbody td:nth-child(6) {
     white-space: nowrap;
 }
 
-
 /* =========================================================
    TOTAL
    ========================================================= */
 
 main .table tbody td:nth-child(7) {
-    color: #198754;
+    color: var(--color-success);
     font-weight: 700;
     white-space: nowrap;
 }
-
 
 /* =========================================================
    BOTONES
@@ -169,7 +156,6 @@ main .table .btn {
         box-shadow 0.2s ease;
 }
 
-
 /* =========================================================
    BOTÓN EDITAR
    ========================================================= */
@@ -182,7 +168,6 @@ main .table .btn-success:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(25, 135, 84, 0.25);
 }
-
 
 /* =========================================================
    BOTÓN ELIMINAR
@@ -197,18 +182,15 @@ main .table .btn-danger:hover {
     box-shadow: 0 4px 10px rgba(220, 53, 69, 0.25);
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
-
 
 /* ---------------------------------------------------------
    TABLETS
    --------------------------------------------------------- */
 
 @media (max-width: 992px) {
-
     main {
         padding: 25px 20px;
     }
@@ -218,16 +200,13 @@ main .table .btn-danger:hover {
         padding: 10px 8px;
         font-size: 13px;
     }
-
 }
-
 
 /* ---------------------------------------------------------
    TABLETS PEQUEÑAS
    --------------------------------------------------------- */
 
 @media (max-width: 768px) {
-
     main {
         padding: 20px 15px;
         overflow-x: auto;
@@ -246,16 +225,13 @@ main .table .btn-danger:hover {
     main .table {
         min-width: 850px;
     }
-
 }
-
 
 /* ---------------------------------------------------------
    MÓVILES
    --------------------------------------------------------- */
 
 @media (max-width: 576px) {
-
     main {
         padding: 15px 10px;
     }
@@ -276,5 +252,4 @@ main .table .btn-danger:hover {
         padding: 6px 10px;
         font-size: 12px;
     }
-
 }
