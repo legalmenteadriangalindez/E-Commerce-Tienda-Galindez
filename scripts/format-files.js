@@ -28,6 +28,7 @@ const files = [
     'server/validation/schemas.js',
     'tests/api-contract.test.js',
     'tests/dockerfile-hardening.test.js',
+    'tests/static-assets.test.js',
     'scripts/format-files.js',
     'tests/commerce-write-path.test.js',
 ];

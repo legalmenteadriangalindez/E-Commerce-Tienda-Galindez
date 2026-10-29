@@ -13,13 +13,24 @@ module.exports = (app) => {
         return req.method === 'POST' && typeof method === 'string' && ['PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase()) ? method.toUpperCase() : undefined;
     }));
 
-    app.use(express.static(path.join(__dirname, '../../public')));
+    const publicDirectory = path.resolve(__dirname, '../../public');
+    const assetsDirectory = path.resolve(__dirname, '../../assets');
+
+    // `public` contiene los recursos nuevos y `assets` conserva archivos
+    // históricos. Ambos se exponen bajo una ruta canónica (/assets) para que
+    // las vistas no dependan de la ubicación física del archivo. Las rutas
+    // /css, /js y /assets anteriores se mantienen como compatibilidad para
+    // enlaces ya publicados.
+    app.use(express.static(publicDirectory));
     app.get('/uploads/:filename', require('../business/mediaService').serve);
 
     app.set("view engine", "ejs");
     app.set("views", path.resolve(__dirname, "../../views"));
 
-    app.use('/css', express.static(path.resolve(__dirname, "../../assets/css")));
-    app.use('/assets', express.static(path.resolve(__dirname, "../../assets")));
-    app.use('/js', express.static(path.resolve(__dirname, "../../assets/js")));
+    app.use('/assets', express.static(assetsDirectory));
+    app.use('/assets', express.static(publicDirectory));
+    app.use('/css', express.static(path.join(publicDirectory, 'css')));
+    app.use('/css', express.static(path.join(assetsDirectory, 'css')));
+    app.use('/js', express.static(path.join(publicDirectory, 'js')));
+    app.use('/js', express.static(path.join(assetsDirectory, 'js')));
 };
