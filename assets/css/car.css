@@ -1152,6 +1152,17 @@ body {
 }
 
 .product-card {
+    /*
+       cards.css también define .product-card para el catálogo público.
+       En la despensa debemos anular sus límites para que no recorte los
+       controles de cantidad, el total ni el botón de eliminar.
+    */
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin: 0;
+    box-sizing: border-box;
+    overflow: visible;
     grid-template-columns: 84px minmax(180px, 1fr) 132px 120px 42px;
     gap: 16px;
     min-height: 112px;
