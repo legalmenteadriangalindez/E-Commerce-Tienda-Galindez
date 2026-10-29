@@ -1,20 +1,32 @@
 const { publicError } = require('../services/publicError');
 const Ordendb = require('../model/order');
 const commerce = require('../business/commerceService');
+const catalog = require('../business/catalogService');
 const money = require('../services/money');
 
 // RENDER CART
 exports.car = async (req, res) => {
     try {
         const cart = req.session.cart || [];
+        const productSearch =
+            typeof req.query.productSearch === 'string' ? req.query.productSearch.trim().slice(0, 100) : '';
         const subtotalCents = cart.reduce(
             (acc, item) => acc + money.readCents(item.precioCents, item.precio) * item.cantidad,
             0
         );
         const summary = commerce.totals(subtotalCents);
         const shipping = commerce.shippingPolicy();
+        const suggested = await catalog.listPublic({
+            page: 1,
+            limit: 6,
+            search: productSearch,
+            available: true,
+        });
         return res.render('client/cart/cart', {
             productosCarrito: cart,
+            cartItemCount: cart.reduce((total, item) => total + Number(item.cantidad || 0), 0),
+            productosSugeridos: suggested.productos,
+            productSearch,
             user: req.session.user,
             ...summary,
             shippingPriceCents: shipping.priceCents,

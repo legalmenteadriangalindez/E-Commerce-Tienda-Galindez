@@ -98,8 +98,35 @@ function reindexForm() {
 
 function updateCartCount() {
     const count = document.getElementById('cartCount');
-    const total = document.querySelectorAll('.product-card').length;
+    const total = [...document.querySelectorAll('.quantity-input')].reduce(
+        (sum, input) => sum + Math.max(0, Number(input.value) || 0),
+        0
+    );
     if (count) count.textContent = `${total} ${total === 1 ? 'artículo' : 'artículos'}`;
+}
+
+function toggleCatalog(force) {
+    const panel = document.getElementById('cartAddProducts');
+    const toggle = document.querySelector('[data-cart-action="toggle-catalog"]');
+    if (!panel) return;
+    panel.hidden = typeof force === 'boolean' ? !force : !panel.hidden;
+    if (toggle) toggle.setAttribute('aria-expanded', String(!panel.hidden));
+    if (!panel.hidden) document.getElementById('cartProductSearch')?.focus();
+}
+
+async function addSuggestedProduct(productId) {
+    if (!productId || saving) return;
+    setBusy(true);
+    setStatus('Agregando producto…');
+    try {
+        const data = await requestCart('/carrito/add', { productoId: productId, cantidad: 1 });
+        setStatus(data.message || 'Producto agregado.', 'success');
+        window.setTimeout(() => window.location.reload(), 250);
+    } catch (error) {
+        setStatus(error.message, 'error');
+    } finally {
+        setBusy(false);
+    }
 }
 
 function applyServerCart(data) {
@@ -179,6 +206,22 @@ document.addEventListener('click', (event) => {
     const button = event.target.closest('[data-cart-action]');
     if (!button || saving) return;
     const action = button.dataset.cartAction;
+
+    if (action === 'toggle-catalog') {
+        toggleCatalog();
+        return;
+    }
+
+    if (action === 'close-catalog') {
+        toggleCatalog(false);
+        return;
+    }
+
+    if (action === 'add-product') {
+        addSuggestedProduct(button.dataset.productId);
+        return;
+    }
+
     const card = button.closest('.product-card');
     if (!card) {
         if (action === 'save') syncCart();
