@@ -18,8 +18,6 @@
    Ahora usamos texto claro.
 */
 
-
-
 /* =========================================================
    TITULO RESUMEN
    ========================================================= */
@@ -27,8 +25,6 @@
 .summary-card .summary-text {
     color: var(--color-surface);
 }
-
-
 
 /* =========================================================
    DIVIDER
@@ -69,8 +65,6 @@
     font-size: 0.78rem;
     line-height: 1.4;
 }
-
-
 
 .update-cart-btn:hover:not(:disabled) {
     border-color: var(--color-brand-tan);
@@ -124,8 +118,6 @@
    Por eso debemos utilizar .pay-btn
    y no .checkout-button.
 */
-
-
 
 /*
    Hover

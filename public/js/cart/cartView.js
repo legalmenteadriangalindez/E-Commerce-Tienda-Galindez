@@ -33,8 +33,7 @@
     }
 
     function updateShipping(subtotalCents) {
-        const shippingCents =
-            subtotalCents === 0 || subtotalCents >= freeShippingFromCents ? 0 : shippingPriceCents;
+        const shippingCents = subtotalCents === 0 || subtotalCents >= freeShippingFromCents ? 0 : shippingPriceCents;
         const shipping = document.getElementById('shipping');
         const total = document.getElementById('total');
         const hint = document.getElementById('shippingHint');
@@ -132,8 +131,7 @@
             if (subtotal) subtotal.textContent = formatCents(data.subtotalCents);
             const shipping = document.getElementById('shipping');
             if (shipping) {
-                shipping.textContent =
-                    data.costoEnvioCents === 0 ? 'Gratis' : formatCents(data.costoEnvioCents);
+                shipping.textContent = data.costoEnvioCents === 0 ? 'Gratis' : formatCents(data.costoEnvioCents);
             }
             const total = document.getElementById('total');
             if (total) total.textContent = formatCents(data.totalCents);

@@ -1,13 +1,14 @@
 const css = (...names) => names.map((name) => `/css/${name}`);
 const js = (...names) => names.map((name) => `/js/${name}`);
 
-const checkoutStyles = () => css(
-    'pages/checkout/layout.css',
-    'pages/checkout/form.css',
-    'pages/checkout/payment-methods.css',
-    'pages/checkout/summary.css',
-    'pages/checkout/responsive.css'
-);
+const checkoutStyles = () =>
+    css(
+        'pages/checkout/layout.css',
+        'pages/checkout/form.css',
+        'pages/checkout/payment-methods.css',
+        'pages/checkout/summary.css',
+        'pages/checkout/responsive.css'
+    );
 const pointOfSaleStyles = () => [...checkoutStyles(), ...css('add-product-billing-point.css')];
 
 // Recursos propios de cada vista. Los estilos base de navegación, tema y pie

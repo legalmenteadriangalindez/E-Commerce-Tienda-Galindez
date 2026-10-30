@@ -2,8 +2,7 @@
 
 (function () {
     const DEFAULT_IMAGE = '/img/default.jpg';
-    const money = (value) =>
-        new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value);
+    const money = (value) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value);
     const input = (id) => document.getElementById(id);
 
     function productImage(product) {
@@ -43,9 +42,7 @@
 
             const imageWrapper = document.createElement('span');
             imageWrapper.className = 'search-item__image';
-            imageWrapper.appendChild(
-                createImage(productImage(product), product.nombre, 'search-item__image-content')
-            );
+            imageWrapper.appendChild(createImage(productImage(product), product.nombre, 'search-item__image-content'));
 
             const details = document.createElement('span');
             details.className = 'search-item__details';
@@ -90,12 +87,8 @@
         const quote = data.quote || {};
         const shippingPolicy = data.shippingPolicy || {};
         const subtotal = Number.isFinite(Number(quote.subtotal)) ? Number(quote.subtotal) : fallbackSubtotal;
-        const shipping = data.cart.length && Number.isFinite(Number(quote.costoEnvio))
-            ? Number(quote.costoEnvio)
-            : 0;
-        const total = data.cart.length && Number.isFinite(Number(quote.total))
-            ? Number(quote.total)
-            : subtotal;
+        const shipping = data.cart.length && Number.isFinite(Number(quote.costoEnvio)) ? Number(quote.costoEnvio) : 0;
+        const total = data.cart.length && Number.isFinite(Number(quote.total)) ? Number(quote.total) : subtotal;
 
         input('subtotal').textContent = money(subtotal);
         input('iva').textContent = 'Incluidos';
@@ -106,9 +99,10 @@
         const shippingMessage = input('shippingMessage') || input('shippingHint');
         const freeFrom = Number(shippingPolicy.freeShippingFrom);
         if (shippingMessage && Number.isFinite(freeFrom) && data.cart.length) {
-            shippingMessage.textContent = shipping === 0
-                ? 'Envío gratis aplicado por compras desde ' + money(freeFrom) + '.'
-                : 'Envío gratis desde ' + money(freeFrom) + '.';
+            shippingMessage.textContent =
+                shipping === 0
+                    ? 'Envío gratis aplicado por compras desde ' + money(freeFrom) + '.'
+                    : 'Envío gratis desde ' + money(freeFrom) + '.';
         } else if (shippingMessage) {
             shippingMessage.textContent = 'Agrega productos para calcular el envío.';
         }
@@ -133,8 +127,12 @@
             const quantity = document.createElement('p');
             quantity.className = 'order-item-meta';
             quantity.textContent =
-                item.cantidad + ' ' + (item.cantidad === 1 ? 'unidad' : 'unidades') +
-                ' · ' + money(item.precio) + ' c/u';
+                item.cantidad +
+                ' ' +
+                (item.cantidad === 1 ? 'unidad' : 'unidades') +
+                ' · ' +
+                money(item.precio) +
+                ' c/u';
             details.append(title, quantity);
 
             const lineTotal = document.createElement('div');

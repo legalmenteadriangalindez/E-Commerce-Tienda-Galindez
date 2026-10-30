@@ -2,13 +2,9 @@
    LISTA DE PRODUCTOS
    ========================================================= */
 
-
-
 /* =========================================================
    PRODUCT CARD
    ========================================================= */
-
-
 
 /*
    Evita que la última tarjeta tenga
@@ -23,13 +19,9 @@
    Hover de producto
 */
 
-
-
 /* =========================================================
    IMAGEN
    ========================================================= */
-
-
 
 .img-container img {
     width: 100%;
@@ -59,15 +51,9 @@
     min-width: 0;
 }
 
-
-
-
-
 /* =========================================================
    SELECTOR DE CANTIDAD
    ========================================================= */
-
-
 
 .quantity-picker:focus-within {
     border-color: var(--color-brand-accent);
@@ -83,16 +69,10 @@
    que tienes actualmente en EJS.
 */
 
-
-
-
-
 .quantity-btn:hover:not(:disabled) {
     background: var(--color-brand-accent);
     color: var(--color-surface);
 }
-
-
 
 /*
    Elimina las flechas del input number
@@ -113,15 +93,9 @@
    PRECIO
    ========================================================= */
 
-
-
-
-
 /* =========================================================
    BOTÓN ELIMINAR
    ========================================================= */
-
-
 
 .remove-btn:hover {
     color: var(--color-brand-accent);

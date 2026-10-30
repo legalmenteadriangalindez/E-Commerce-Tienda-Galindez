@@ -19,8 +19,7 @@
     }
 
     window.PointOfSaleApi = {
-        searchProducts: (search) =>
-            request('/api/productos/search?search=' + encodeURIComponent(search)),
+        searchProducts: (search) => request('/api/productos/search?search=' + encodeURIComponent(search)),
         getCart: () => request('/carrito/get_carrito'),
         addProduct: (productoId, cantidad) => request('/carrito/add', { productoId, cantidad }),
         removeProduct: (productoId) => request('/carrito/remove', { productoId }),
