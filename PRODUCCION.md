@@ -139,7 +139,7 @@ El proceso falla de forma explícita si faltan variables esenciales o si intenta
 
 Si un formulario con imagen devuelve `403`, configura temporalmente `CSRF_DEBUG_LOGS=true` en Render y reproduce la operación. Los logs mostrarán la ruta, `requestId`, presencia y longitud de los tokens, cookie de sesión, origen y etapa del parser; nunca imprimen el token ni la cookie. La página HTML del error también muestra esos metadatos y el encabezado `X-CSRF-Reason`. Después de identificar el problema, vuelve a `false` o elimina la variable.
 
-El servicio web puede suspenderse sin detener estas tareas: el Cron de Render las ejecuta por separado. Revisa también memoria, almacenamiento de Atlas y límites del plan. Las imágenes nuevas consumen espacio de MongoDB, no del disco efímero de Render.
+El mantenimiento se ejecuta en un runner de GitHub Actions y no depende de que el servicio web de Render esté activo. Revisa el historial del workflow y el estado de los eventos de pago; una tarea programada puede demorarse o fallar. Las imágenes nuevas consumen espacio de MongoDB, no del disco efímero de Render.
 
 ### Copias de MongoDB y prueba de restauración
 
