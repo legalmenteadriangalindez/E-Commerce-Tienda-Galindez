@@ -5,7 +5,7 @@ const commerce = require('../business/commerceService');
 function saveSession(req) {
     return new Promise((resolve, reject) => {
         if (typeof req.session.save !== 'function') return resolve();
-        req.session.save(error => (error ? reject(error) : resolve()));
+        req.session.save((error) => (error ? reject(error) : resolve()));
     });
 }
 

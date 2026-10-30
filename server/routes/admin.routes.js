@@ -78,8 +78,16 @@ router.get('/admin/delivery', requirePermission(P.DELIVERY_MANAGE), servicesRend
 router.post('/admin/delivery/:id/assign', requirePermission(P.DELIVERY_MANAGE), servicesRenderDelivery.assign);
 router.post('/admin/delivery/:id/unassign', requirePermission(P.DELIVERY_MANAGE), servicesRenderDelivery.unassign);
 
-router.get('/admin/settings/shipping', requirePermission(P.STORE_SETTINGS_MANAGE), servicesRenderShippingSettings.index);
-router.post('/admin/settings/shipping', requirePermission(P.STORE_SETTINGS_MANAGE), servicesRenderShippingSettings.update);
+router.get(
+    '/admin/settings/shipping',
+    requirePermission(P.STORE_SETTINGS_MANAGE),
+    servicesRenderShippingSettings.index
+);
+router.post(
+    '/admin/settings/shipping',
+    requirePermission(P.STORE_SETTINGS_MANAGE),
+    servicesRenderShippingSettings.update
+);
 
 router.get('/create-marca', requirePermission(P.CATALOG_WRITE), servicesRenderBrand.create_brand_form);
 router.post('/create-marca', requirePermission(P.CATALOG_WRITE), servicesRenderBrand.create_brand);

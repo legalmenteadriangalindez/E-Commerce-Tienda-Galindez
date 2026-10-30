@@ -57,8 +57,7 @@ function policyFromDocument(document) {
     if (!document) return envPolicy();
 
     return policyFromCents(
-        document.shippingPriceCents ??
-            money.toCents(document.shippingPrice ?? (process.env.SHIPPING_PRICE || '5000')),
+        document.shippingPriceCents ?? money.toCents(document.shippingPrice ?? (process.env.SHIPPING_PRICE || '5000')),
         document.freeShippingFromCents ??
             money.toCents(document.freeShippingFrom ?? (process.env.FREE_SHIPPING_FROM || '30000'))
     );

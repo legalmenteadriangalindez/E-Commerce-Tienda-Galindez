@@ -68,7 +68,9 @@ input('buscarProducto').addEventListener('input', (event) => {
 
                 const imageWrapper = document.createElement('span');
                 imageWrapper.className = 'search-item__image';
-                imageWrapper.appendChild(createImage(productImage(product), product.nombre, 'search-item__image-content'));
+                imageWrapper.appendChild(
+                    createImage(productImage(product), product.nombre, 'search-item__image-content')
+                );
 
                 const details = document.createElement('span');
                 details.className = 'search-item__details';
@@ -98,7 +100,8 @@ input('buscarProducto').addEventListener('input', (event) => {
                 results.appendChild(button);
             }
         } catch (error) {
-            if (requestId === searchRequestId) statusMessage(results, error.message, 'search-message search-message--error');
+            if (requestId === searchRequestId)
+                statusMessage(results, error.message, 'search-message search-message--error');
         }
     }, 250);
 });
@@ -174,9 +177,10 @@ async function cargarCarrito() {
     const shippingMessage = input('shippingMessage') || input('shippingHint');
     const freeFrom = Number(shippingPolicy.freeShippingFrom);
     if (shippingMessage && Number.isFinite(freeFrom) && data.cart.length) {
-        shippingMessage.textContent = shippingValue === 0
-            ? `Envío gratis aplicado por compras desde ${money(freeFrom)}.`
-            : `Envío gratis desde ${money(freeFrom)}.`;
+        shippingMessage.textContent =
+            shippingValue === 0
+                ? `Envío gratis aplicado por compras desde ${money(freeFrom)}.`
+                : `Envío gratis desde ${money(freeFrom)}.`;
     } else if (shippingMessage) {
         shippingMessage.textContent = 'Agrega productos para calcular el envío.';
     }
