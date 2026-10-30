@@ -84,6 +84,10 @@ Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicació
 - Configuración de Render en `render.yaml`: servicio web Docker con health check `/healthz`, despliegue después de CI y Cron Job de mantenimiento.
 - Comprobación de variables: `npm run check:production`.
 - Auditoría de datos anteriores, de solo lectura: `npm run audit:data`.
+- Copias y restauración: `npm run backup:restore-drill` crea una copia completa,
+  restaura en una base desechable y verifica `media.files` y `media.chunks`;
+  consulta la sección **Copias de MongoDB y prueba de restauración** de
+  `PRODUCCION.md` antes de ejecutarlo.
 - Revisión de planes MongoDB: `npm run explain:queries` con `MONGO_URI` apuntando a una base de desarrollo o a una copia de producción. El informe usa `executionStats` para las analíticas y listados administrativos; activa `EXPLAIN_FAIL_ON_COLLSCAN=true` para hacer fallar la revisión si aparece un escaneo completo.
 - Gestión de pagos: `/admin/payments`.
 - Informe de ventas: `/admin-analytics?period=week` o `?period=month`.

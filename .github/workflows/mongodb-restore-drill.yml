@@ -1,0 +1,60 @@
+name: Prueba manual de restauración MongoDB
+
+on:
+    workflow_dispatch:
+        inputs:
+            confirm:
+                description: Escribe RESTORE_TO_DRILL_ONLY para restaurar solo en la base desechable
+                required: true
+                default: 'NO'
+                type: string
+
+permissions:
+    contents: read
+
+jobs:
+    restore-drill:
+        name: Copia, restauración y verificación de GridFS
+        runs-on: ubuntu-22.04
+        timeout-minutes: 30
+        env:
+            NODE_ENV: production
+            SOURCE_MONGO_URI: ${{ secrets.PROD_MONGO_URI }}
+            TARGET_MONGO_URI: ${{ secrets.PROD_BACKUP_DRILL_MONGO_URI }}
+            SOURCE_DB_NAME: ${{ secrets.PROD_MONGO_DB_NAME }}
+            TARGET_DB_NAME: ${{ secrets.PROD_BACKUP_DRILL_DB_NAME }}
+            BACKUP_DRILL_CONFIRM: ${{ inputs.confirm }}
+            TARGET_DISPOSABLE: YES
+            BACKUP_DIR: ${{ runner.temp }}/mongodb-restore-drill
+        steps:
+            - name: Descargar el código
+              uses: actions/checkout@v4
+            - name: Configurar Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22.23.4
+                  cache: npm
+            - name: Instalar MongoDB Database Tools
+              env:
+                  TOOLS_VERSION: 100.19.1
+              run: |
+                  set -euo pipefail
+                  archive="$RUNNER_TEMP/mongodb-tools.tgz"
+                  curl --fail --location --retry 3 "https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-${TOOLS_VERSION}.tgz" -o "$archive"
+                  mkdir -p "$RUNNER_TEMP/mongodb-tools"
+                  tar -xzf "$archive" --strip-components=1 -C "$RUNNER_TEMP/mongodb-tools"
+                  echo "$RUNNER_TEMP/mongodb-tools/bin" >> "$GITHUB_PATH"
+            - name: Instalar dependencias de producción
+              run: npm ci --omit=dev --no-audit --no-fund
+            - name: Ejecutar copia y restauración controlada
+              run: npm run backup:restore-drill
+            - name: Guardar evidencia (sin el volcado de datos)
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: mongodb-restore-drill-${{ github.run_id }}
+                  if-no-files-found: warn
+                  retention-days: 30
+                  path: |
+                      ${{ runner.temp }}/mongodb-restore-drill/gridfs-restore-report.json
+                      ${{ runner.temp }}/mongodb-restore-drill/restore-drill-manifest.json

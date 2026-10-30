@@ -136,6 +136,67 @@ Si un formulario con imagen devuelve `403`, configura temporalmente `CSRF_DEBUG_
 
 El servicio web puede suspenderse sin detener estas tareas: el Cron de Render las ejecuta por separado. Revisa también memoria, almacenamiento de Atlas y límites del plan. Las imágenes nuevas consumen espacio de MongoDB, no del disco efímero de Render.
 
+### Copias de MongoDB y prueba de restauración
+
+Una copia que nunca se restaura no es evidencia de recuperación. En Atlas, abre
+el clúster de producción → **Backup** y configura la política de snapshots y su
+retención según el plan contratado. No actives una opción con coste sin la
+aprobación del negocio: algunos clústeres gratuitos muestran una copia diaria
+opcional con retención limitada, mientras que otros planes requieren usar las
+Database Tools. En todos los casos conserva las copias fuera del repositorio y
+restringe el acceso a las personas que administran la tienda.
+
+Para una prueba reproducible sin modificar producción, este repositorio incluye
+`npm run backup:restore-drill`. Usa `mongodump` para copiar **toda** la base (no
+solo las colecciones de pedidos), restaura en una base cuyo nombre debe indicar
+`restore`, `backup`, `drill`, `test` o `staging`, y ejecuta una verificación que
+compara:
+
+- existencia y cantidad de `media.files` y `media.chunks`;
+- cantidad de archivos, cantidad de chunks y bytes totales;
+- metadata, tamaño, `chunkSize`, fecha y SHA-256 del contenido de cada archivo;
+- índices de ambas colecciones GridFS.
+
+Instala las [MongoDB Database Tools](https://www.mongodb.com/docs/database-tools/installation/)
+(`mongodump` y `mongorestore`) y configura las variables solo en la sesión
+actual de PowerShell. Nunca las guardes en Git ni las pegues en un chat:
+
+```powershell
+$env:SOURCE_MONGO_URI = '<URI de producción, obtenida de tu gestor de secretos>'
+$env:TARGET_MONGO_URI = '<URI de la base o clúster de restauración>'
+$env:SOURCE_DB_NAME = 'tienda_galindez'
+$env:TARGET_DB_NAME = 'tienda_galindez_restore_20261030'
+$env:BACKUP_DRILL_CONFIRM = 'RESTORE_TO_DRILL_ONLY'
+$env:TARGET_DISPOSABLE = 'YES'
+npm run backup:restore-drill
+```
+
+El destino debe estar vacío o ser desechable: el comando usa `--drop` solo en
+esa base. Si origen y destino están en el mismo clúster, puedes reutilizar la
+misma URI y cambiar únicamente `TARGET_DB_NAME`; nunca uses el mismo nombre de
+base. El volcado queda en `backups/` (ignorado por Git), junto con
+`gridfs-restore-report.json` y `restore-drill-manifest.json`. Cifra el volcado y
+guárdalo en el almacenamiento de copias de la empresa; el informe no contiene
+URI ni credenciales.
+
+También hay un workflow manual **Prueba manual de restauración MongoDB**. Crea
+estos secretos en GitHub Actions, apuntando el segundo URI a una base de prueba:
+
+```text
+PROD_MONGO_URI
+PROD_BACKUP_DRILL_MONGO_URI
+PROD_MONGO_DB_NAME
+PROD_BACKUP_DRILL_DB_NAME
+```
+
+En **Actions** ejecuta el workflow y escribe exactamente
+`RESTORE_TO_DRILL_ONLY`. El job instala las Database Tools, crea la copia,
+restaura únicamente en el destino desechable y publica como artefacto solo el
+manifiesto y el informe (no el volcado de datos). Conserva ese artefacto con la
+fecha, el identificador de ejecución y el resultado `passed: true` como
+evidencia de la prueba. Repite la prueba después de cambios importantes de
+esquema o almacenamiento de imágenes.
+
 ### Renderizado y API interna
 
 Las páginas públicas de catálogo, búsqueda, categorías, marcas, promociones, detalle y sitemap reutilizan `server/business/catalogService.js` directamente. Esto evita llamadas Axios al dominio público desde el propio servidor, reduce latencia y evita duplicar autenticación de sesión. La API `/api/productos` sigue disponible para el navegador y consumidores externos; ambas capas comparten el mismo servicio y contrato de datos.
