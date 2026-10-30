@@ -1,6 +1,7 @@
 const commerce = require('../business/commerceService');
 const payments = require('../business/paymentService');
-const save = (req) => new Promise((resolve, reject) => req.session.save((error) => (error ? reject(error) : resolve())));
+const save = (req) =>
+    new Promise((resolve, reject) => req.session.save((error) => (error ? reject(error) : resolve())));
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 
 exports.checkout = wrap(async (req, res) => {
