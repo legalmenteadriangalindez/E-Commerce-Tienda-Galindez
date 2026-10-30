@@ -1,0 +1,19 @@
+/* Reset mínimo compartido. No contiene estilos de componentes ni de páginas. */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+    padding: 0;
+    width: 100%;
+}
+
+body {
+    overflow-x: hidden;
+}

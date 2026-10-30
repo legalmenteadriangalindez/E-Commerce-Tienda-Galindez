@@ -2,7 +2,9 @@
 <html lang="es">
 
 <head>
-    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/core/theme.css">
+    <link rel="stylesheet" href="/css/core/reset.css">
+    <link rel="stylesheet" href="/css/core/layout.css">
     <link rel="stylesheet" href="/css/components/ui.css">
 
     <meta charset="UTF-8">
@@ -91,9 +93,8 @@
         crossorigin="anonymous"
     >
 
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/core/header.css">
+    <link rel="stylesheet" href="/css/core/footer.css">
     <%
         const validPageResource = (value, prefix) => typeof value === 'string'
             && value.startsWith(prefix)

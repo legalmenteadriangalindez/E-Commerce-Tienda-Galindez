@@ -17,7 +17,7 @@ function files(directory, extension) {
 
 test('la paleta global es la única que declara :root', () => {
     const duplicateRoots = files(cssRoot, '.css')
-        .filter((filename) => path.basename(filename) !== 'theme.css')
+        .filter((filename) => path.relative(cssRoot, filename) !== path.join('core', 'theme.css'))
         .filter((filename) => /:root\s*\{/.test(fs.readFileSync(filename, 'utf8')))
         .map((filename) => path.relative(root, filename));
 
@@ -38,7 +38,7 @@ test('las vistas que cargan el tema también exponen los componentes reutilizabl
     const offenders = files(viewsRoot, '.ejs')
         .filter((filename) => {
             const source = fs.readFileSync(filename, 'utf8');
-            return /\/css\/theme\.css/.test(source) && !/\/css\/components\/ui\.css/.test(source);
+            return /\/css\/core\/theme\.css/.test(source) && !/\/css\/components\/ui\.css/.test(source);
         })
         .map((filename) => path.relative(root, filename));
 
@@ -54,4 +54,10 @@ test('los componentes visuales tienen una hoja canónica y el área administrati
     const adminHeader = fs.readFileSync(path.join(viewsRoot, 'include', '_headerAdmin.ejs'), 'utf8');
     assert.match(adminHeader, /\/css\/components\/admin\.css/);
     assert.ok(fs.existsSync(path.join(cssRoot, 'components', 'admin.css')));
+});
+
+test('la estructura core contiene reset, layout y tema canónicos', () => {
+    for (const filename of ['reset.css', 'layout.css', 'theme.css', 'header.css', 'footer.css']) {
+        assert.equal(fs.existsSync(path.join(cssRoot, 'core', filename)), true, `core/${filename}`);
+    }
 });

@@ -13,10 +13,13 @@ const canonicalFiles = [
     'server/controller/reviewAdminController.js',
     'server/pages/paymentPointPage.js',
     'public/css/add-product-billing-point.css',
-    'public/css/create-products.css',
-    'public/css/edit-profile.css',
-    'public/css/read-orders.css',
-    'public/css/stock.css',
+    'public/css/pages/create-products.css',
+    'public/css/pages/edit-profile.css',
+    'public/css/pages/read-orders.css',
+    'public/css/pages/stock.css',
+    'public/css/core/theme.css',
+    'public/css/core/reset.css',
+    'public/css/core/layout.css',
 ];
 
 const legacyFiles = [
@@ -39,5 +42,26 @@ test('los módulos renombrados usan la convención vigente', () => {
 
     for (const relativePath of legacyFiles) {
         assert.equal(fs.existsSync(path.join(root, relativePath)), false, relativePath);
+    }
+});
+
+test('los nombres antiguos de CSS se conservan solo como alias de compatibilidad', () => {
+    const aliases = [
+        ['public/css/theme.css', '/css/core/theme.css'],
+        ['public/css/style.css', '/css/core/layout.css'],
+        ['public/css/header.css', '/css/core/header.css'],
+        ['public/css/footer.css', '/css/core/footer.css'],
+        ['public/css/login.css', '/css/pages/login.css'],
+        ['public/css/register.css', '/css/pages/register.css'],
+        ['public/css/_verificationCode.css', '/css/pages/_verificationCode.css'],
+        ['public/css/create-products.css', '/css/pages/create-products.css'],
+        ['public/css/edit-profile.css', '/css/pages/edit-profile.css'],
+        ['public/css/read-orders.css', '/css/pages/read-orders.css'],
+        ['public/css/stock.css', '/css/pages/stock.css'],
+    ];
+
+    for (const [relativePath, target] of aliases) {
+        const source = fs.readFileSync(path.join(root, relativePath), 'utf8');
+        assert.match(source, new RegExp(`@import url\\(['"]${target.replace('/', '\\/')}`), relativePath);
     }
 });

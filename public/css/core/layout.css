@@ -1,0 +1,37 @@
+/* Utilidades de estructura que se comparten entre páginas. */
+
+html,
+body {
+    height: 100%;
+}
+
+.container {
+    background-color: var(--color-surface);
+    display: flex;
+    width: 100%;
+}
+
+.container div {
+    flex: 1;
+}
+
+.pay-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.descripcion-corta {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.text-sumary {
+    color: var(--color-brand-dark);
+}
+
+.cantidad {
+    margin-left: 27%;
+    margin-right: 27%;
+}

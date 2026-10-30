@@ -75,6 +75,6 @@ test('las plantillas no contienen estilos ni scripts ejecutables inline', () => 
         for (const match of source.matchAll(/<script\b((?:[^>]|%>)*?)>[\s\S]*?<\/script>/gi)) {
             assert.match(match[1], /\bsrc=|type=["']application\/ld\+json["']/i, filename);
         }
-        if (/<head>/.test(source)) assert.match(source, /\/css\/theme\.css/, filename);
+        if (/<head>/.test(source)) assert.match(source, /\/css\/core\/theme\.css/, filename);
     }
 });

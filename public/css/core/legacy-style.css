@@ -1,0 +1,4 @@
+/* Alias temporal para HTML antiguo. Las páginas nuevas cargan core/reset.css
+   y core/layout.css directamente. */
+@import url('/css/core/reset.css');
+@import url('/css/core/layout.css');

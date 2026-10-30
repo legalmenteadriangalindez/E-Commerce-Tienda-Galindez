@@ -48,7 +48,7 @@ const resources = {
         pageJs: js('client_cart.js'),
     },
     'client/profile/profile': { pageCss: css('profile.css') },
-    'client/profile/Edit_profile': { pageCss: css('edit-profile.css') },
+    'client/profile/Edit_profile': { pageCss: css('pages/edit-profile.css') },
     'client/payment/payment_point': { pageCss: css('payment_point.css') },
     'client/payment/orders': { pageCss: css('commerce.css') },
     'client/payment/order_status': { pageCss: css('commerce.css', 'delivery-tracking.css') },
@@ -65,10 +65,10 @@ const resources = {
     'admin/payment/checkout_confirmation': { pageCss: css('payment_point.css') },
     'admin/payment/manage': { pageCss: css('commerce.css', 'admin-pagination.css') },
     'admin/analytics/index': { pageCss: css('analytics.css') },
-    'admin/analytics/stock': { pageCss: css('stock.css', 'admin-pagination.css') },
+    'admin/analytics/stock': { pageCss: css('pages/stock.css', 'admin-pagination.css') },
     'admin/analytics/profit_margins': { pageCss: css('profit_margins.css') },
     'admin/analytics/best_selling_products': { pageCss: css('best_selling_products.css') },
-    'admin/orders/read_orders': { pageCss: css('read-orders.css', 'admin-pagination.css') },
+    'admin/orders/read_orders': { pageCss: css('pages/read-orders.css', 'admin-pagination.css') },
     'admin/orders/detail_orders': { pageCss: css('detail_order.css', 'delivery-tracking.css') },
     'admin/orders/update_order': { pageCss: css('update_order.css') },
     'admin/delivery/index': { pageCss: css('admin-delivery.css', 'admin-pagination.css') },
@@ -81,7 +81,7 @@ const resources = {
     'admin/sales/read_sales': { pageCss: css('read_sales.css', 'admin-pagination.css') },
     'admin/sales/read_detailsSales': { pageCss: css('read_detailsSales.css') },
     'admin/products/read_products': { pageCss: css('read_products.css', 'admin-pagination.css') },
-    'admin/products/create_producto': { pageCss: css('create-products.css') },
+    'admin/products/create_producto': { pageCss: css('pages/create-products.css') },
     'admin/products/update_products': { pageCss: css('edit_products.css') },
     'admin/categories/read_categories': { pageCss: css('read_categories.css', 'admin-pagination.css') },
     'admin/categories/create_categoria': { pageCss: css('create_categories.css') },
@@ -99,7 +99,7 @@ const resources = {
     'admin/rols/create_rol': { pageCss: css('create_roles.css') },
     'admin/rols/update_roles': { pageCss: css('update_roles.css') },
     'admin/profile/profile': { pageCss: css('profile.css') },
-    'admin/profile/Edit_profile': { pageCss: css('edit-profile.css') },
+    'admin/profile/Edit_profile': { pageCss: css('pages/edit-profile.css') },
     'dealer/orders/read_orders': { pageCss: css('dealer_read_orders.css', 'admin-pagination.css') },
     'dealer/orders/detail_orders': {
         pageCss: css('dealer_detail_order.css', 'detail_order.css', 'delivery-tracking.css'),
@@ -108,7 +108,7 @@ const resources = {
         pageCss: css('dealer_update_orders.css', 'delivery-tracking.css'),
     },
     'dealer/profile/profile': { pageCss: css('profile.css') },
-    'dealer/profile/Edit_profile': { pageCss: css('edit-profile.css') },
+    'dealer/profile/Edit_profile': { pageCss: css('pages/edit-profile.css') },
 };
 
 function pageResourcesFor(view) {
