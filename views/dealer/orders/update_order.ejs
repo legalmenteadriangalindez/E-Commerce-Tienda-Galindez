@@ -1,7 +1,5 @@
 <%- include('../../include/_headerDealer') %>
 
-<link rel="stylesheet" href="/assets/css/dealer_update_orders.css">
-<link rel="stylesheet" href="/assets/css/delivery-tracking.css">
 
 <div class="page-wrapper">
 
@@ -10,7 +8,7 @@
         <p>Visualiza la información de la orden y actualiza su estado</p>
     </div>
 
-    <div class="form-card">
+    <div class="form-card ui-card">
 
         <form action="/dealer/orders/update/<%= order._id %>" method="POST">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">

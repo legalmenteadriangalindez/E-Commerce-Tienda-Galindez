@@ -91,7 +91,7 @@ async function startReviewApp(uri, configure) {
     });
     const origin = 'http://127.0.0.1:' + server.address().port;
     process.env.BASE_URL = origin;
-    app.get('/api/productos/catalogo/:id', require('../../server/controller/product_controller').findPublicOne);
+    app.get('/api/productos/catalogo/:id', require('../../server/controller/productController').findPublicOne);
     app.get('/Detalles/:id', require('../../server/pages/renderProducts').product_detail);
     if (configure) await configure(app, users);
     // Usa el mismo contrato de errores que el servidor real. El manejador

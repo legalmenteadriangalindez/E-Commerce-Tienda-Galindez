@@ -12,7 +12,7 @@ try {
             else if (/\.(js|ejs)$/.test(entry.name)) files.push(absolute);
         }
     }
-    for (const directory of ['server', 'scripts', 'migrations', 'assets/js', 'public/js', 'views', 'tests'])
+    for (const directory of ['server', 'scripts', 'migrations', 'public/js', 'views', 'tests'])
         walk(path.join(root, directory));
     files.push(path.join(root, 'server.js'));
     for (const file of files) {

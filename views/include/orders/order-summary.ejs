@@ -1,0 +1,33 @@
+<div class="card order-card">
+    <div class="card-header">Información General</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <h5>Número de Orden</h5>
+                <p><%= order.numeroOrden %></p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <h5>Estado</h5>
+                <% const statusClass = {
+                    PENDIENTE: 'bg-warning text-dark',
+                    PAGADA: 'bg-success',
+                    PREPARANDO: 'bg-secondary',
+                    ENVIADA: 'bg-info',
+                    ENTREGADA: 'bg-primary',
+                    CANCELADA: 'bg-danger'
+                }[order.estado]; %>
+                <% if (statusClass) { %>
+                    <span class="badge <%= statusClass %>"><%= order.estado %></span>
+                <% } %>
+            </div>
+            <div class="col-md-6 mb-3">
+                <h5>Usuario</h5>
+                <p><%= order.usuario?.nombre || 'Sin usuario' %></p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <h5>Fecha</h5>
+                <p><%= new Date(order.createdAt).toLocaleDateString() %></p>
+            </div>
+        </div>
+    </div>
+</div>

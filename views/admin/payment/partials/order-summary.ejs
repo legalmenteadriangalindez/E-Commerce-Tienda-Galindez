@@ -1,0 +1,53 @@
+<div
+    class="summary-card checkout-summary"
+    data-subtotal-cents="<%= subtotalCents %>"
+    data-shipping-price-cents="<%= shippingPriceCents %>"
+    data-free-shipping-from-cents="<%= freeShippingFromCents || 0 %>"
+>
+    <div class="section-title">
+        <i class="fas fa-bag-shopping"></i>
+        <span>Tu pedido</span>
+    </div>
+
+    <div class="order-items-list text-sumary">
+        <% productosCarrito.forEach(item => { %>
+            <div class="order-item">
+                <div class="item-icon"><i class="fas fa-box"></i></div>
+                <div class="item-details">
+                    <div class="item-title"><%= item.nombre %></div>
+                    <div class="item-price"><%= item.precio %> $</div>
+                    <div class="item-quantity">Cantidad: <%= item.cantidad %></div>
+                </div>
+                <div class="item-line-price"><%= item.precio * item.cantidad %> $</div>
+            </div>
+        <% }) %>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="summary-line text-sumary">
+        <span>Subtotal</span>
+        <span id="checkoutSubtotal"><%= Number(subtotal).toLocaleString('es-CO') %> $</span>
+    </div>
+    <div class="summary-line text-sumary">
+        <span>Envío</span>
+        <span id="checkoutShipping"><%= costoEnvio === 0 ? 'Gratis' : '$' + Number(costoEnvio).toLocaleString('es-CO') %></span>
+    </div>
+    <div class="summary-line text-sumary">
+        <span>Impuestos</span><span>Incluidos en los precios</span>
+    </div>
+    <div class="promo-code"></div>
+    <div class="summary-line total text-sumary">
+        <span>Total a pagar</span>
+        <span id="checkoutTotal">$<%= Number(total).toLocaleString('es-CO') %></span>
+    </div>
+
+    <small class="shipping-hint">El envío se recalcula automáticamente según el subtotal del pedido.</small>
+
+    <button type="submit" class="pay-btn">
+        <i class="fas fa-lock"></i>
+        Registrar pedido · $<%= Number(total).toLocaleString('es-CO') %>
+    </button>
+
+    <div class="trust-badge payment-actions"></div>
+</div>

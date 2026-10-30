@@ -1,0 +1,241 @@
+/* Componentes visuales reutilizables. La paleta vive en theme.css. */
+
+.field-relative {
+    position: relative;
+}
+
+.action-spaced {
+    margin-top: 10px;
+}
+
+.action-wide {
+    margin-top: 10px;
+    width: 100%;
+}
+
+.payment-actions {
+    justify-content: space-between;
+    margin-top: 18px;
+}
+
+.text-centered {
+    text-align: center;
+}
+
+.brand-thumbnail {
+    object-fit: cover;
+}
+
+.stock-warning {
+    color: var(--color-danger);
+    font-weight: bold;
+}
+
+.stock-empty-icon {
+    font-size: 4rem;
+    opacity: 0.3;
+}
+
+.section-title-spaced {
+    margin-bottom: 1rem;
+}
+
+.payment-security {
+    background: var(--color-security-background);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.payment-security-icon {
+    font-size: 2.5rem;
+}
+
+.nequi-qr {
+    border-radius: 15px;
+    width: 200px;
+}
+
+.ui-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+}
+
+.ui-button {
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    gap: 0.45rem;
+    justify-content: center;
+    line-height: 1.2;
+    min-height: 2.5rem;
+    padding: 0.65rem 1rem;
+    text-decoration: none;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        color 160ms ease,
+        transform 160ms ease;
+}
+
+.ui-button:hover {
+    transform: translateY(-1px);
+}
+
+.ui-button:focus-visible,
+.ui-input:focus-visible,
+.ui-select:focus-visible,
+.ui-textarea:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-brand-accent) 35%, transparent);
+    outline-offset: 2px;
+}
+
+.ui-button--primary {
+    background: var(--color-brand-accent);
+    color: var(--color-surface);
+}
+
+.ui-button--primary:hover {
+    background: var(--color-brand-accent-dark);
+    color: var(--color-surface);
+}
+
+.ui-button--secondary {
+    background: var(--color-surface);
+    border-color: var(--color-brand-dark);
+    color: var(--color-brand-dark);
+}
+
+.ui-button--secondary:hover {
+    background: var(--color-brand-dark);
+    color: var(--color-surface);
+}
+
+.ui-button--danger {
+    background: var(--color-danger);
+    color: var(--color-surface);
+}
+
+.ui-button--danger:hover {
+    filter: brightness(0.92);
+    color: var(--color-surface);
+}
+
+.ui-table-wrap {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    overflow-x: auto;
+}
+
+.ui-table {
+    border-collapse: collapse;
+    margin: 0;
+    min-width: 100%;
+    width: max-content;
+}
+
+.ui-table th,
+.ui-table td {
+    border-bottom: 1px solid var(--color-border-light);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.ui-table thead th {
+    background: var(--color-surface-warm);
+    color: var(--color-brand-dark);
+    font-size: 0.8rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.ui-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.ui-table tbody tr:hover {
+    background: var(--color-surface-warm);
+}
+
+.ui-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.ui-form__group {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.ui-form__label {
+    color: var(--color-brand-dark);
+    font-weight: 600;
+}
+
+.ui-input,
+.ui-select,
+.ui-textarea {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-strong);
+    font: inherit;
+    min-height: 2.6rem;
+    padding: 0.65rem 0.75rem;
+    width: 100%;
+}
+
+.ui-textarea {
+    min-height: 7rem;
+    resize: vertical;
+}
+
+.ui-modal {
+    background: var(--color-overlay);
+    inset: 0;
+    opacity: 0;
+    overflow-y: auto;
+    padding: 1rem;
+    pointer-events: none;
+    position: fixed;
+    transition: opacity 160ms ease;
+    visibility: hidden;
+    z-index: 1050;
+}
+
+.ui-modal.is-open,
+.ui-modal[aria-hidden='false'] {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+}
+
+.ui-modal__dialog {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-hover);
+    margin: 5vh auto;
+    max-width: 36rem;
+    padding: 1.25rem;
+}
+
+@media (max-width: 640px) {
+    .ui-button {
+        width: 100%;
+    }
+
+    .ui-table th,
+    .ui-table td {
+        padding: 0.65rem 0.75rem;
+    }
+}

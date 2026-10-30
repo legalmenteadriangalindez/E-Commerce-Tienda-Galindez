@@ -1,0 +1,19 @@
+<div class="card order-card">
+    <div class="card-header">Estado del pago</div>
+    <div class="card-body">
+        <h5>Medio de pago</h5>
+        <p>
+            <%= order.metodoPago === 'CASH_ON_DELIVERY'
+                ? 'Efectivo contra entrega'
+                : order.metodoPago === 'CASH_AT_COUNTER' || (order.canal === 'CAJA' && !order.metodoPago)
+                    ? 'Efectivo en caja'
+                    : order.metodoPago === 'WOMPI_NEQUI'
+                        ? 'Nequi con Wompi'
+                        : 'Tarjeta con Wompi' %>
+        </p>
+        <small>Estado del pago: <%= order.estadoPago %></small>
+        <% if (isDealer && order.metodoPago === 'CASH_ON_DELIVERY' && order.estadoPago === 'PENDIENTE') { %>
+            <p class="mt-2 mb-0"><small>Recibe el efectivo antes de confirmar la entrega.</small></p>
+        <% } %>
+    </div>
+</div>

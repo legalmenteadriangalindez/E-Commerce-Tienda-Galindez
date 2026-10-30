@@ -1,0 +1,56 @@
+<aside class="review-editor" id="mi-resena" aria-labelledby="review-editor-title">
+    <h3 id="review-editor-title"><%= ownReview ? 'Tu opinión cuenta' : 'Escribe una reseña' %></h3>
+    <% if (ownReview?.oculta) { %>
+        <div class="review-moderation-notice" role="status">
+            <strong>Tu reseña está oculta</strong>
+            <p><%= ownReview.moderacion?.motivo || 'La tienda está revisando esta reseña.' %></p>
+            <p>Puedes corregir tu comentario. Seguirá oculto hasta que la tienda lo vuelva a publicar.</p>
+        </div>
+    <% } else if (ownReview?.moderacion?.motivo) { %>
+        <div class="review-moderation-notice" role="status">
+            <strong>Tu reseña volvió a publicarse</strong>
+            <p><%= ownReview.moderacion.motivo %></p>
+        </div>
+    <% } %>
+
+    <% if (!reviewUser) { %>
+        <p>Inicia sesión para compartir tu experiencia con este producto.</p>
+        <a class="review-submit" href="/login">Iniciar sesión</a>
+    <% } else if (!reviewUser.verified) { %>
+        <p>Verifica tu correo electrónico para publicar o editar una reseña.</p>
+        <a href="/login">Continuar con la verificación</a>
+    <% } else { %>
+        <p><%= ownReview ? 'Puedes actualizar tu calificación y comentario.' : 'Comparte una opinión sobre el producto. Podrás editarla cuando quieras.' %></p>
+        <form action="<%= ownReview ? '/api/reviews/' + ownReview._id : '/api/reviews' %>" method="post" data-review-form data-method="<%= ownReview ? 'PUT' : 'POST' %>">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="producto" value="<%= product._id %>">
+            <% if (ownReview) { %><input type="hidden" name="_method" value="PUT"><% } %>
+
+            <fieldset class="review-rating-field">
+                <legend>Tu calificación</legend>
+                <div class="review-rating-options">
+                    <% for (let value = 1; value <= 5; value++) { %>
+                        <label>
+                            <input type="radio" name="calificacion" value="<%= value %>" aria-label="<%= value %> <%= value === 1 ? 'estrella' : 'estrellas' %>" required <%= Number(reviewValues.calificacion) === value ? 'checked' : '' %>>
+                            <span><%= value %> <span aria-hidden="true">★</span></span>
+                        </label>
+                    <% } %>
+                </div>
+            </fieldset>
+
+            <label for="review-comment">Tu comentario</label>
+            <textarea id="review-comment" name="comentario" rows="5" minlength="3" maxlength="1000" required aria-describedby="review-comment-hint" placeholder="¿Qué te pareció este producto?"><%= reviewValues.comentario || '' %></textarea>
+            <p class="review-hint" id="review-comment-hint">De 3 a 1000 caracteres. <span data-review-count><%= (reviewValues.comentario || '').length %></span>/1000</p>
+            <p class="review-form-error" data-review-error role="alert" tabindex="-1" hidden></p>
+            <button class="review-submit" type="submit"><%= ownReview ? 'Guardar cambios' : 'Publicar reseña' %></button>
+        </form>
+        <% if (ownReview) { %>
+            <form class="review-editor__delete" action="/api/reviews/<%= ownReview._id %>" method="post" data-review-form data-method="DELETE">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="review-delete">Eliminar mi reseña</button>
+                <p class="review-form-error" data-review-error role="alert" tabindex="-1" hidden></p>
+            </form>
+        <% } %>
+    <% } %>
+</aside>

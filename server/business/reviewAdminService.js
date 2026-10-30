@@ -107,11 +107,11 @@ async function getPage(query = {}) {
             version: Number.isSafeInteger(review.__v) ? review.__v : 0,
             historialGestion: (review.historialGestion || []).slice(-50).reverse(),
             fotos: (review.fotos || []).filter((file) =>
-                /^\/assets\/img\/[a-z0-9][a-z0-9._-]*\.(jpg|jpeg|png|webp)$/i.test(file)
+                /^\/(?:assets\/)?img\/[a-z0-9][a-z0-9._-]*\.(jpg|jpeg|png|webp)$/i.test(file)
             ),
             video:
                 typeof review.video === 'string' &&
-                /^\/assets\/img\/[a-z0-9][a-z0-9._-]*\.(mp4|webm)$/i.test(review.video)
+                /^\/(?:assets\/)?img\/[a-z0-9][a-z0-9._-]*\.(mp4|webm)$/i.test(review.video)
                     ? review.video
                     : null,
         })),

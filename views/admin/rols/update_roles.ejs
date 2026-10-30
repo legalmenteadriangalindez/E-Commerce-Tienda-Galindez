@@ -1,7 +1,6 @@
 <%- include('../../include/_headerAdmin') %>
 
 
-<link rel="stylesheet" href="/assets/css/update_roles.css">
 
 <div class="page-wrapper">
 
@@ -10,7 +9,7 @@
     <p>Actualiza el nombre, descripción y permisos del rol</p>
   </div>
 
-  <div class="form-card small-card">
+  <div class="form-card ui-card small-card">
 
     <form action="/update-rol" method="POST" class="role-form">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">

@@ -3,19 +3,19 @@
 La tienda es un monolito modular Express con vistas EJS. Las páginas y la API
 comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
 
-| Directorio           | Responsabilidad                                                            |
-| -------------------- | -------------------------------------------------------------------------- |
-| `server/routes/`     | Rutas, permisos, middleware y carga de archivos.                           |
-| `server/pages/`      | Adaptar solicitudes HTTP a páginas EJS y redirecciones.                    |
-| `server/controller/` | Adaptar solicitudes HTTP a respuestas API, descargas y recursos.           |
-| `server/business/`   | Operaciones, validaciones de negocio y consultas a MongoDB.                |
-| `server/model/`      | Esquemas, relaciones y definiciones de índices.                            |
-| `server/validation/` | Esquemas de entradas HTTP compartidos con los servicios de administración. |
-| `server/services/`   | Utilidades compartidas: importes, paginación, CSV y respuestas.            |
-| `server/templates/`  | Composición de correos; no envía mensajes ni importa servicios de negocio. |
-| `server/config/`     | Configuración e integraciones, incluido el transporte Brevo.               |
-| `views/`             | Presentación EJS, includes y datos estructurados JSON-LD.                  |
-| `assets/`, `public/` | CSS, JavaScript de navegador y recursos; URL canónica `/assets/`.          |
+| Directorio           | Responsabilidad                                                                                                                                            |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `server/routes/`     | Rutas, permisos, middleware y carga de archivos.                                                                                                           |
+| `server/pages/`      | Adaptar solicitudes HTTP a páginas EJS y redirecciones.                                                                                                    |
+| `server/controller/` | Adaptar solicitudes HTTP a respuestas API, descargas y recursos.                                                                                           |
+| `server/business/`   | Operaciones, validaciones de negocio y consultas a MongoDB.                                                                                                |
+| `server/model/`      | Esquemas, relaciones y definiciones de índices.                                                                                                            |
+| `server/validation/` | Esquemas de entradas HTTP compartidos con los servicios de administración.                                                                                 |
+| `server/services/`   | Utilidades compartidas: importes, paginación, CSV y respuestas.                                                                                            |
+| `server/templates/`  | Composición de correos; no envía mensajes ni importa servicios de negocio.                                                                                 |
+| `server/config/`     | Configuración e integraciones, incluido el transporte Brevo.                                                                                               |
+| `views/`             | Presentación EJS, includes y datos estructurados JSON-LD.                                                                                                  |
+| `public/`            | CSS, JavaScript de navegador, imágenes y fuentes; URLs canónicas `/css`, `/js` y `/img`. El alias `/assets` se conserva temporalmente para compatibilidad. |
 
 ## Reglas para nuevos cambios
 
@@ -35,12 +35,26 @@ comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
 - El JavaScript ejecutable va en archivos `.js`; los estilos van en `.css`.
   JSON-LD es la excepción declarativa en EJS. Los correos pueden tener estilos
   inline por compatibilidad con clientes de correo.
-- `assets/css/theme.css` contiene los colores comunes y utilidades visuales;
-  se carga antes del CSS de cada página. Los componentes pueden definir alias
-  locales que referencien esos colores.
+- `public/css/theme.css` contiene los colores comunes y `public/css/components/ui.css`
+  concentra los componentes visuales reutilizables;
+  se carga antes del CSS de cada página. Los componentes deben reutilizar estos
+  tokens y no declarar paletas locales.
+- Las vistas grandes se componen con parciales por responsabilidad: `views/include/orders/`
+  contiene bloques compartidos de pedidos; carrito, reseñas y puntos de pago mantienen
+  sus parciales junto a la vista (`partials/`). Los parciales no cargan CSS ni JavaScript;
+  esos recursos se cargan una sola vez en la vista principal.
+- Los encabezados (`_header`, `_headerAdmin` y `_headerDealer`) cargan únicamente los
+  recursos base. `server/config/pageResources.js` registra `pageCss` y `pageJs` por
+  plantilla; el layout los valida, elimina duplicados y los inserta de forma diferida.
 - No introducir dependencias circulares ni importar páginas o controladores
   desde servicios de negocio. Los cambios de esquema e índices requieren una
   migración nueva; las migraciones publicadas conservan su checksum.
+- Los módulos JavaScript nuevos y ya normalizados usan `camelCase`
+  (`authController.js`, `productController.js`, `paymentPointPage.js`) y los
+  estilos propios usan `kebab-case` en minúsculas
+  (`add-product-billing-point.css`, `stock.css`). Los nombres heredados se
+  migran de forma gradual para no romper rutas ni referencias de despliegues
+  existentes.
 
 ## Comprobaciones locales
 

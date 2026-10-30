@@ -1,0 +1,84 @@
+<form id="cartForm" action="/carrito/payment_point" method="POST">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <% if (productosCarrito.length > 0) { %>
+    <div class="product-list-heading" aria-hidden="true">
+      <span>Producto</span>
+      <span>Cantidad</span>
+      <span>Total</span>
+    </div>
+  <% } %>
+
+  <div class="product-list">
+    <% if (productosCarrito.length === 0) { %>
+      <div class="empty-cart">
+        <span class="empty-cart-icon" aria-hidden="true"><i class="fas fa-shopping-cart"></i></span>
+        <h2>Tu despensa está vacía</h2>
+        <p>Agrega productos para comenzar tu compra.</p>
+        <a href="/" class="continue-shopping continue-shopping--primary">Ver productos</a>
+      </div>
+    <% } %>
+
+    <% productosCarrito.forEach((producto, index) => { %>
+      <article
+        class="product-card"
+        data-price="<%= producto.precio %>"
+        data-price-cents="<%= producto.precioCents || Math.round(Number(producto.precio) * 100) %>"
+      >
+        <div class="img-container">
+          <img src="<%= producto.foto || '/img/default.jpg' %>" alt="<%= producto.nombre %>">
+        </div>
+
+        <div class="product-info">
+          <h3><%= producto.nombre %></h3>
+          <p class="category"><%= producto.categoria || 'Sin categoría' %></p>
+        </div>
+
+        <input
+          type="hidden"
+          name="productos[<%= index %>][productoId]"
+          value="<%= producto.productoId %>"
+        >
+
+        <div class="quantity-picker" aria-label="Cantidad de <%= producto.nombre %>">
+          <button
+            type="button"
+            class="quantity-btn quantity-btn--minus"
+            data-cart-action="decrease"
+            aria-label="Disminuir cantidad de <%= producto.nombre %>"
+          ><span aria-hidden="true">−</span></button>
+          <input
+            type="number"
+            name="productos[<%= index %>][cantidad]"
+            value="<%= producto.cantidad %>"
+            min="1"
+            max="999"
+            inputmode="numeric"
+            class="quantity-input"
+            aria-label="Cantidad de <%= producto.nombre %>"
+          >
+          <button
+            type="button"
+            class="quantity-btn quantity-btn--plus"
+            data-cart-action="increase"
+            aria-label="Aumentar cantidad de <%= producto.nombre %>"
+          ><span aria-hidden="true">+</span></button>
+        </div>
+
+        <p class="price item-total">
+          $<%= Number(producto.precio * producto.cantidad).toLocaleString('es-CO') %>
+        </p>
+
+        <button
+          type="button"
+          class="remove-btn"
+          data-cart-action="remove"
+          aria-label="Eliminar <%= producto.nombre %> de la despensa"
+          title="Eliminar producto"
+        >
+          <i class="fas fa-trash-alt" aria-hidden="true"></i>
+        </button>
+      </article>
+    <% }) %>
+  </div>
+</form>

@@ -1,0 +1,50 @@
+<%
+    const id = String(r._id);
+    const reply = r.respuestaTienda;
+    const draft = feedback && !feedback.success && feedback.id === id ? feedback : null;
+    const replyText = draft?.form === 'reply' ? draft.values.texto : reply?.texto || '';
+    const visibilityReason = draft?.form === 'visibility' ? draft.values.motivo : '';
+%>
+<article class="ar-card" id="reseña-<%= id %>" data-review-id="<%= id %>">
+    <header class="ar-card-heading">
+        <div>
+            <% if (r.producto) { %>
+                <a class="ar-product-name" href="/Detalles/<%= r.producto._id %>#resenas"><%= r.producto.nombre %></a>
+            <% } else { %>
+                <strong class="ar-product-name">Producto eliminado</strong>
+            <% } %>
+            <p class="ar-meta"><%= r.usuario?.nombre || 'Usuario eliminado' %> · <%= formatDate(r.fecha) %></p>
+            <% if (r.fechaEdicion) { %><p class="ar-meta">Editada por el cliente: <%= formatDate(r.fechaEdicion) %></p><% } %>
+        </div>
+        <div class="ar-badges">
+            <span class="ar-status <%= r.oculta ? 'ar-status--hidden' : 'ar-status--published' %>"><%= r.oculta ? 'Oculta' : 'Publicada' %></span>
+            <span class="ar-stars" aria-label="<%= r.calificacion %> de 5 estrellas">★ <%= r.calificacion %>/5</span>
+        </div>
+    </header>
+
+    <p class="ar-comment"><%= r.comentario %></p>
+    <% if (r.fotos.length) { %>
+        <div class="ar-media"><% r.fotos.forEach(foto => { %><img src="<%= foto %>" alt="Adjunto de la reseña" loading="lazy"><% }) %></div>
+    <% } %>
+    <% if (r.video) { %><video class="ar-video" src="<%= r.video %>" controls preload="none"></video><% } %>
+
+    <% if (r.moderacion?.motivo) { %>
+        <div class="ar-moderation">
+            <strong><%= r.oculta ? 'Motivo de ocultación' : 'Motivo de la última publicación' %></strong>
+            <p><%= r.moderacion.motivo %></p>
+            <small><%= r.moderacion.administrador?.nombre || 'Administrador eliminado' %> · <%= formatDate(r.moderacion.fecha) %></small>
+        </div>
+    <% } %>
+
+    <% if (reply?.texto) { %>
+        <div class="ar-reply">
+            <strong>Respuesta de Tienda Galindez</strong>
+            <p><%= reply.texto %></p>
+            <small><%= reply.administrador?.nombre || 'Administrador eliminado' %> · <%= formatDate(reply.fechaEdicion || reply.fecha) %><%= reply.fechaEdicion ? ' · Editada' : '' %></small>
+            <% if (r.oculta) { %><p class="ar-hint">Esta respuesta también permanece oculta mientras la reseña esté oculta.</p><% } %>
+        </div>
+    <% } %>
+
+    <%- include('./review-actions', { r, id, reply, draft, replyText, visibilityReason, csrfToken, returnTo }) %>
+    <%- include('./review-history', { r, actionLabels, formatDate }) %>
+</article>

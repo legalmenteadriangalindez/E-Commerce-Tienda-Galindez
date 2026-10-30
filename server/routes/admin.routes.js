@@ -9,7 +9,7 @@ const servicesRenderProvider = require('../pages/renderProviders');
 const servicesRenderRol = require('../pages/renderRoles');
 const servicesRenderSales = require('../pages/renderSales');
 const servicesRenderUser = require('../pages/renderUsers');
-const servicesRenderPaymentPoint = require('../pages/RenderPaymentPoint');
+const paymentPointPage = require('../pages/paymentPointPage');
 const servicesRenderAdminAnalytics = require('../pages/renderAdminAnalytics');
 const servicesRenderBrand = require('../pages/renderBrands');
 const servicesRenderOrders = require('../pages/renderOrders');
@@ -59,7 +59,7 @@ router.get('/update-order', requirePermission(P.ORDERS_MANAGE), servicesRenderOr
 router.post('/update-order/:id', requirePermission(P.ORDERS_MANAGE), servicesRenderOrders.update_order_data);
 router.post('/delete-order/:id', requirePermission(P.ORDERS_MANAGE), servicesRenderOrders.delete_order);
 
-router.get('/billing-point', requirePermission(P.PAYMENTS_MANAGE), servicesRenderPaymentPoint.billing_point);
+router.get('/billing-point', requirePermission(P.PAYMENTS_MANAGE), paymentPointPage.billing_point);
 router.post('/payment_point', requirePermission(P.PAYMENTS_MANAGE), commercePages.checkout(true));
 router.get('/payment_point', requirePermission(P.PAYMENTS_MANAGE), commercePages.checkout(true));
 router.get('/venta-finalizada-admin/:id', requirePermission(P.ORDERS_READ), servicesRenderCart.order_success_admin);

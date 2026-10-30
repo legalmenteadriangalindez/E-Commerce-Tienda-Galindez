@@ -119,7 +119,7 @@ test('los enlaces y acciones locales de todas las vistas tienen una ruta', () =>
         for (const match of source.matchAll(/<(a)\b[^>]*>|<(form)\b[^>]*>[\s\S]*?<\/form>/gi)) {
             const tag = match[0];
             const url = tag.match(/(?:href|action)=["'](\/[^"']*)["']/)?.[1];
-            if (!url || url.startsWith('//') || /^\/(?:assets|uploads)\//.test(url)) continue;
+            if (!url || url.startsWith('//') || /^\/(?:assets|css|js|img|uploads)\//.test(url)) continue;
             const target = new URL(url.replace(/&amp;/g, '&'), 'http://localhost');
             let method =
                 match[1]?.toLowerCase() === 'a'

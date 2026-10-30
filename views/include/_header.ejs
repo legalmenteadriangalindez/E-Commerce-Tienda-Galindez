@@ -2,7 +2,8 @@
 <html lang="es">
 
 <head>
-    <link rel="stylesheet" href="/assets/css/theme.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/components/ui.css">
 
     <meta charset="UTF-8">
     <meta name="csrf-token" content="<%= csrfToken %>">
@@ -66,7 +67,7 @@
     <link
         rel="icon"
         type="image/png"
-        href="/assets/img/favicon.png"
+        href="/img/favicon.png"
     >
 
     <!-- CSS -->
@@ -90,28 +91,22 @@
         crossorigin="anonymous"
     >
 
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="/assets/css/header.css">
-    <link rel="stylesheet" href="/assets/css/footer.css">
-    <link rel="stylesheet" href="/assets/css/pagination.css">
-    <link rel="stylesheet" href="/assets/css/cards.css">
-    <link rel="stylesheet" href="/assets/css/brand-cards.css">
-    <link rel="stylesheet" href="/assets/css/carousel.css">
-    <link rel="stylesheet" href="/assets/css/components/reviews.css">
-
-    <link rel="stylesheet" href="/assets/css/components/product-info.css">
-    <link rel="stylesheet" href="/assets/css/components/buttons.css">
-
-
-<link rel="stylesheet" href="/assets/css/commerce.css">
-<link rel="stylesheet" href="/assets/css/raffle.css">
-<% if (typeof legalPage !== 'undefined' && legalPage) { %>
-<link rel="stylesheet" href="/assets/css/legal.css">
-<% } %>
-<script nonce="<%= cspNonce %>" defer src="/assets/js/commerce-ui.js"></script>
-<script nonce="<%= cspNonce %>" defer src="/assets/js/Add_to_cart_client_nav.js"></script>
-<link rel="stylesheet" href="/assets/css/nequi.css">
-<link rel="stylesheet" href="/assets/css/whatsapp.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <%
+        const validPageResource = (value, prefix) => typeof value === 'string'
+            && value.startsWith(prefix)
+            && !value.includes('..')
+            && !/[\r\n"'<>]/.test(value);
+        const pageCssValues = typeof pageCss === 'undefined' ? [] : pageCss;
+        const pageJsValues = typeof pageJs === 'undefined' ? [] : pageJs;
+        const headerPageCss = [...new Set((Array.isArray(pageCssValues) ? pageCssValues : []).filter(value => validPageResource(value, '/css/')))];
+        const headerPageJs = [...new Set((Array.isArray(pageJsValues) ? pageJsValues : []).filter(value => validPageResource(value, '/js/')))];
+        if (typeof activeRaffle !== 'undefined' && activeRaffle && !headerPageCss.includes('/css/raffle.css')) headerPageCss.push('/css/raffle.css');
+    %>
+    <% headerPageCss.forEach(href => { %><link rel="stylesheet" href="<%= href %>"><% }) %>
+    <% headerPageJs.forEach(src => { %><script nonce="<%= cspNonce %>" defer src="<%= src %>"></script><% }) %>
 </head>
 
 <body>

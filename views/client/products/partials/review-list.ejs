@@ -1,0 +1,66 @@
+<div class="reviews-list">
+    <% if (reviews.length === 0) { %>
+        <div class="reviews-empty">
+            <span aria-hidden="true">☆</span>
+            <h3>Aún no hay reseñas</h3>
+            <p>Comparte tu opinión y ayuda a otras personas a conocer este producto.</p>
+        </div>
+    <% } %>
+
+    <% reviews.forEach(r => {
+        const isOwner = reviewUser && r.usuario && String(reviewUser._id) === String(r.usuario._id);
+        const canDelete = reviewUser && (isOwner || canModerateReviews);
+    %>
+        <article class="review-card" id="resena-<%= r._id %>">
+            <div class="review-card__heading">
+                <strong><%= r.usuario?.nombre || 'Usuario eliminado' %></strong>
+                <% if (isOwner) { %><span class="review-own-badge">Tu reseña</span><% } %>
+                <span class="review-stars" aria-label="<%= r.calificacion %> de 5 estrellas">
+                    <span aria-hidden="true"><%= '★'.repeat(Math.round(r.calificacion)) %><%= '☆'.repeat(5 - Math.round(r.calificacion)) %></span>
+                    <span class="review-rating"><%= r.calificacion %>/5</span>
+                </span>
+            </div>
+            <p class="review-comment"><%= r.comentario %></p>
+            <p class="review-date">
+                <time datetime="<%= new Date(r.fecha).toISOString() %>"><%= new Date(r.fecha).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) %></time>
+                <% if (r.fechaEdicion) { %> · Editada<% } %>
+            </p>
+            <% if (r.fotos.length) { %>
+                <div class="review-images">
+                    <% r.fotos.forEach(foto => { %><img src="<%= foto %>" alt="Foto adjunta a la reseña" loading="lazy"><% }) %>
+                </div>
+            <% } %>
+            <% if (r.video) { %><video class="review-video" controls preload="none" src="<%= r.video %>"></video><% } %>
+
+            <% if (r.respuestaTienda) { %>
+                <div class="review-store-reply">
+                    <strong>Respuesta de Tienda Galindez</strong>
+                    <p class="review-comment"><%= r.respuestaTienda.texto %></p>
+                    <p class="review-date"><%= new Date(r.respuestaTienda.fechaEdicion || r.respuestaTienda.fecha).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) %><%= r.respuestaTienda.fechaEdicion ? ' · Editada' : '' %></p>
+                </div>
+            <% } %>
+
+            <div class="review-card__actions">
+                <% if (isOwner && ownReview && String(ownReview._id) === String(r._id) && reviewUser.verified) { %>
+                    <a href="#mi-resena" data-edit-review>Editar mi reseña</a>
+                <% } %>
+                <% if (canDelete) { %>
+                    <form action="/api/reviews/<%= r._id %>" method="post" data-review-form data-method="DELETE">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="review-delete"><%= isOwner ? 'Eliminar mi reseña' : 'Eliminar reseña' %></button>
+                        <p class="review-form-error" data-review-error role="alert" tabindex="-1" hidden></p>
+                    </form>
+                <% } %>
+            </div>
+        </article>
+    <% }) %>
+
+    <% if (reviewPagination.totalPages > 1) { %>
+        <nav class="review-pagination" aria-label="Páginas de reseñas">
+            <% if (reviewPagination.previousUrl) { %><a href="<%= reviewPagination.previousUrl %>" rel="prev">Anterior</a><% } %>
+            <span>Página <%= reviewPagination.page %> de <%= reviewPagination.totalPages %></span>
+            <% if (reviewPagination.nextUrl) { %><a href="<%= reviewPagination.nextUrl %>" rel="next">Siguiente</a><% } %>
+        </nav>
+    <% } %>
+</div>

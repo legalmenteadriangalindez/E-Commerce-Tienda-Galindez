@@ -18,15 +18,19 @@ function viewFiles(directory = viewsRoot, files = []) {
 function assetCandidates(url) {
     if (url.startsWith('/assets/')) {
         const relative = url.slice('/assets/'.length);
-        return [path.join(root, 'assets', relative), path.join(root, 'public', relative)];
+        return [path.join(root, 'public', relative)];
     }
     if (url.startsWith('/css/')) {
         const relative = url.slice('/css/'.length);
-        return [path.join(root, 'public', 'css', relative), path.join(root, 'assets', 'css', relative)];
+        return [path.join(root, 'public', 'css', relative)];
     }
     if (url.startsWith('/js/')) {
         const relative = url.slice('/js/'.length);
-        return [path.join(root, 'public', 'js', relative), path.join(root, 'assets', 'js', relative)];
+        return [path.join(root, 'public', 'js', relative)];
+    }
+    if (url.startsWith('/img/')) {
+        const relative = url.slice('/img/'.length);
+        return [path.join(root, 'public', 'img', relative)];
     }
     return [];
 }
@@ -51,10 +55,12 @@ test('las vistas usan la ruta canónica de recursos y los parciales no repiten e
         const source = fs.readFileSync(filename, 'utf8');
         assert.doesNotMatch(
             source,
-            /(?:href|src)=["']\/(?:css|js)\//,
-            `${path.relative(root, filename)} usa una ruta estática heredada`
+            /(?:href|src)=["']\/assets\/(?:css|js|img)\//,
+            `${path.relative(root, filename)} usa la ruta estática heredada /assets`
         );
     }
+
+    assert.equal(fs.existsSync(path.join(root, 'assets')), false, 'assets/ no debe duplicar recursos versionados');
 
     for (const relative of [
         'views/include/card.ejs',

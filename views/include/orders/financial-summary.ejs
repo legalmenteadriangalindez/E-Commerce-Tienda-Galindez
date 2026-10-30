@@ -1,0 +1,26 @@
+<div class="card order-card total-card">
+    <div class="card-header">Resumen Financiero</div>
+    <div class="card-body">
+        <div class="summary-item">
+            <span>Subtotal:</span>
+            <strong>$ <%= order.subtotal.toLocaleString() %></strong>
+        </div>
+        <div class="summary-item">
+            <span>Impuestos:</span>
+            <strong>$ <%= order.impuestos.toLocaleString() %></strong>
+        </div>
+        <div class="summary-item">
+            <span>Envío:</span>
+            <strong>$ <%= order.costoEnvio.toLocaleString() %></strong>
+        </div>
+        <div class="summary-item">
+            <span>Descuento:</span>
+            <strong>$ <%= order.descuento.toLocaleString() %></strong>
+        </div>
+        <hr>
+        <div class="summary-item total">
+            <span>Total:</span>
+            <strong>$ <%= order.total.toLocaleString() %></strong>
+        </div>
+    </div>
+</div>

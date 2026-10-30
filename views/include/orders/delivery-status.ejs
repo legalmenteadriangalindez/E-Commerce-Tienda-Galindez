@@ -1,0 +1,17 @@
+<div class="card order-card delivery-assigned-summary">
+    <div class="card-header"><%= isDealer ? 'Asignación de reparto' : 'Asignación y reparto' %></div>
+    <div class="card-body">
+        <p><strong>Repartidor:</strong> <%= order.repartidor?.nombre || 'Sin asignar' %></p>
+        <% if (order.asignacionReparto?.asignadoEn) { %>
+            <p><strong>Asignado el:</strong> <%= new Date(order.asignacionReparto.asignadoEn).toLocaleString('es-CO') %></p>
+        <% } else if (!isDealer) { %>
+            <p><strong>Asignado el:</strong> Pendiente</p>
+        <% } %>
+        <% if (!isDealer && order.asignacionReparto?.nota) { %>
+            <p class="mb-0"><strong>Nota interna:</strong> <%= order.asignacionReparto.nota %></p>
+        <% } %>
+        <% if (!isDealer) { %>
+            <p class="mb-0 mt-2"><a href="/admin/delivery">Abrir panel de reparto</a></p>
+        <% } %>
+    </div>
+</div>

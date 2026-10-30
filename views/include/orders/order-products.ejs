@@ -1,0 +1,22 @@
+<% if (isDealer) { %><div class="table-responsive"><% } %>
+<table class="table table-bordered <%= isDealer ? 'product-table' : '' %>">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% order.productos.forEach(function(item) { %>
+            <tr>
+                <td<%= isDealer ? ' data-label="Producto"' : '' %>><%= item.nombre %></td>
+                <td<%= isDealer ? ' data-label="Cantidad"' : '' %>><%= item.cantidad %></td>
+                <td<%= isDealer ? ' data-label="Precio"' : '' %>>$ <%= item.precioUnitario.toLocaleString() %></td>
+                <td<%= isDealer ? ' data-label="Subtotal"' : '' %>>$ <%= item.subtotal.toLocaleString() %></td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>
+<% if (isDealer) { %></div><% } %>

@@ -1,0 +1,75 @@
+<section
+  class="cart-add-products"
+  id="cartAddProducts"
+  <%= productosCarrito.length === 0 || productSearch ? '' : 'hidden' %>
+>
+  <div class="cart-add-products-header">
+    <div>
+      <p class="cart-eyebrow">Añade algo más</p>
+      <h3>Completa tu compra</h3>
+    </div>
+    <% if (productosCarrito.length > 0) { %>
+      <button
+        type="button"
+        class="cart-add-products-close"
+        data-cart-action="close-catalog"
+        aria-label="Cerrar productos sugeridos"
+      >
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+    <% } %>
+  </div>
+
+  <form class="cart-product-search" action="/view_cart" method="GET">
+    <label for="cartProductSearch">Buscar otro producto</label>
+    <div class="cart-product-search-control">
+      <i class="fas fa-search" aria-hidden="true"></i>
+      <input
+        id="cartProductSearch"
+        name="productSearch"
+        type="search"
+        value="<%= productSearch %>"
+        placeholder="Ej. arroz, leche o jabón"
+        minlength="2"
+        maxlength="100"
+        autocomplete="off"
+      >
+      <button type="submit">Buscar</button>
+    </div>
+  </form>
+
+  <div class="suggested-products">
+    <% if (productosSugeridos.length === 0) { %>
+      <p class="suggested-products-empty">
+        No encontramos productos disponibles con esa búsqueda.
+        <a href="/view_cart">Ver sugerencias</a>
+      </p>
+    <% } else { %>
+      <% productosSugeridos.forEach((producto) => { %>
+        <% const alreadyInCart = productosCarrito.some((item) => String(item.productoId) === String(producto._id)); %>
+        <article class="suggested-product">
+          <img
+            src="<%= producto.fotos?.[0] || '/img/default.jpg' %>"
+            alt="<%= producto.nombre %>"
+            loading="lazy"
+          >
+          <div class="suggested-product-info">
+            <h4><%= producto.nombre %></h4>
+            <p><%= producto.categoria?.nombre || 'Producto disponible' %></p>
+            <strong>$<%= Number(producto.precioVenta || 0).toLocaleString('es-CO') %></strong>
+          </div>
+          <button
+            type="button"
+            class="suggested-product-add"
+            data-cart-action="add-product"
+            data-product-id="<%= producto._id %>"
+            <%= alreadyInCart ? 'disabled' : '' %>
+          >
+            <i class="fas <%= alreadyInCart ? 'fa-check' : 'fa-plus' %>" aria-hidden="true"></i>
+            <span><%= alreadyInCart ? 'En la despensa' : 'Agregar' %></span>
+          </button>
+        </article>
+      <% }) %>
+    <% } %>
+  </div>
+</section>

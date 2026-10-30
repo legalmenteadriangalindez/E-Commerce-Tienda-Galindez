@@ -1,18 +1,10 @@
 <%- include('../../include/_header') %>
 
-<link rel="stylesheet" href="/assets/css/payment_point.css">
 
 <div class="checkout-wrapper">
     <div class="checkout-header">
-        <h1>
-            <i class="fas fa-store"></i>
-            Finaliza tu pedido
-        </h1>
-
-        <div class="badge-secure">
-            <i class="fas fa-lock"></i>
-            Wompi o efectivo contra entrega
-        </div>
+        <h1><i class="fas fa-store"></i> Finaliza tu pedido</h1>
+        <div class="badge-secure"><i class="fas fa-lock"></i> Wompi o efectivo contra entrega</div>
     </div>
 
     <form action="/carrito/checkout" method="POST">
@@ -22,111 +14,55 @@
         <input type="hidden" name="cliente" value="<%= user._id %>">
 
         <div class="checkout-grid">
-            <div class="form-card">
-                <div class="section-title">
-                    <i class="fas fa-user-pen"></i>
-                    <span>Información de facturación</span>
-                </div>
+            <div class="form-card ui-card">
+                <div class="section-title"><i class="fas fa-user-pen"></i><span>Información de facturación</span></div>
 
                 <div class="input-group">
                     <label>Nombre completo</label>
-                    <input
-                        type="text"
-                        id="fullName"
-                        name="fullName"
-                        value="<%= locals.user?.nombre || '' %>"
-                        required
-                    >
+                    <input type="text" id="fullName" name="fullName" value="<%= locals.user?.nombre || '' %>" required>
                 </div>
 
                 <div class="input-row">
                     <div class="input-group">
                         <label>Correo electrónico</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value="<%= locals.user?.email || '' %>"
-                            required
-                        >
+                        <input type="email" id="email" name="email" value="<%= locals.user?.email || '' %>" required>
                     </div>
-
                     <div class="input-group">
                         <label>Teléfono</label>
-                        <input
-                            type="tel"
-                            id="phone"
-                            name="phone"
-                            value="<%= locals.user?.telefono || '' %>"
-                            required
-                        >
+                        <input type="tel" id="phone" name="phone" value="<%= locals.user?.telefono || '' %>" required>
                     </div>
                 </div>
 
                 <div class="input-group">
                     <label>Dirección</label>
-                    <input
-                        type="text"
-                        id="address"
-                        name="address"
-                        value="<%= locals.user?.direccion || '' %>"
-                        required
-                    >
+                    <input type="text" id="address" name="address" value="<%= locals.user?.direccion || '' %>" required>
                 </div>
 
                 <div class="input-row">
                     <div class="input-group">
                         <label>Departamento</label>
-                        <input
-                            type="text"
-                            id="department"
-                            name="department"
-                            placeholder="Departamento"
-                            value="cauca"
-                            required
-                        >
+                        <input type="text" id="department" name="department" placeholder="Departamento" value="cauca" required>
                     </div>
-
                     <div class="input-group">
                         <label>Ciudad</label>
-                        <input
-                            type="text"
-                            id="city"
-                            name="city"
-                            value="<%= locals.user?.ciudad || '' %>"
-                            required
-                        >
+                        <input type="text" id="city" name="city" value="<%= locals.user?.ciudad || '' %>" required>
                     </div>
                 </div>
 
                 <div class="input-row">
                     <div class="input-group">
                         <label>Referencia</label>
-                        <input
-                            type="text"
-                            id="reference"
-                            name="reference"
-                            placeholder="Apartamento, torre, referencia..."
-                        >
+                        <input type="text" id="reference" name="reference" placeholder="Apartamento, torre, referencia...">
                     </div>
                 </div>
 
                 <div class="input-group">
                     <label>Notas</label>
-                    <textarea
-                        id="notes"
-                        name="notes"
-                        rows="4"
-                        placeholder="Notas adicionales para la entrega..."
-                    ></textarea>
+                    <textarea id="notes" name="notes" rows="4" placeholder="Notas adicionales para la entrega..."></textarea>
                 </div>
 
                 <div class="payment-methods">
-                    <div class="section-title section-title-spaced">
-                        <i class="fas fa-credit-card"></i>
-                        <span>Método de pago</span>
-                    </div>
-
+                    <div class="section-title section-title-spaced"><i class="fas fa-credit-card"></i><span>Método de pago</span></div>
                     <fieldset class="payment-options">
                         <legend>Elige cómo pagar</legend>
                         <% paymentMethods.forEach((method, index) => { %>
@@ -138,138 +74,29 @@
                     </fieldset>
                     <div class="payment-wompi-info payment-security">
                         <i class="fas fa-shield-halved payment-security-icon"></i>
-
                         <h3>Tarjetas y Nequi con Wompi</h3>
-
-                        <p>
-                            Al confirmar tu pedido serás redirigido a la plataforma
-                            segura de Wompi para completar tu pago.
-                        </p>
-
-                        <p>
-                            La disponibilidad final de tarjeta o Nequi depende de los medios habilitados en tu cuenta Wompi.
-                        </p>
-
-                        <p>
-                            Si eliges efectivo contra entrega, no serás enviado a Wompi: pagarás al recibir y el repartidor confirmará la entrega.
-                        </p>
+                        <p>Al confirmar tu pedido serás redirigido a la plataforma segura de Wompi para completar tu pago.</p>
+                        <p>La disponibilidad final de tarjeta o Nequi depende de los medios habilitados en tu cuenta Wompi.</p>
+                        <p>Si eliges efectivo contra entrega, no serás enviado a Wompi: pagarás al recibir y el repartidor confirmará la entrega.</p>
                     </div>
                 </div>
 
                 <div class="trust-badge">
-                    <span>
-                        <i class="fas fa-shield-alt"></i>
-                        Pago seguro
-                    </span>
-
-                    <span>
-                        <i class="fas fa-lock"></i>
-                        Datos protegidos
-                    </span>
-
-                    <span>
-                        <i class="fas fa-check-circle"></i>
-                        Wompi
-                    </span>
+                    <span><i class="fas fa-shield-alt"></i> Pago seguro</span>
+                    <span><i class="fas fa-lock"></i> Datos protegidos</span>
+                    <span><i class="fas fa-check-circle"></i> Wompi</span>
                 </div>
             </div>
 
-            <div
-                class="summary-card checkout-summary"
-                data-subtotal-cents="<%= subtotalCents %>"
-                data-shipping-price-cents="<%= shippingPriceCents %>"
-                data-free-shipping-from-cents="<%= freeShippingFromCents || 0 %>"
-            >
-                <div class="section-title">
-                    <i class="fas fa-bag-shopping"></i>
-                    <span>Tu pedido</span>
-                </div>
-
-                <div class="order-items-list text-sumary">
-                    <% productosCarrito.forEach(item => { %>
-                        <div class="order-item">
-                            <div class="item-icon">
-                                <i class="fas fa-box"></i>
-                            </div>
-
-                            <div class="item-details">
-                                <div class="item-title">
-                                    <%= item.nombre %>
-                                </div>
-
-                                <div class="item-price">
-                                    $<%= Number(item.precio).toLocaleString('es-CO') %>
-                                </div>
-
-                                <div class="item-quantity">
-                                    Cantidad: <%= item.cantidad %>
-                                </div>
-                            </div>
-
-                            <div class="item-line-price">
-                                $<%= Number(
-                                    item.precio * item.cantidad
-                                ).toLocaleString('es-CO') %>
-                            </div>
-                        </div>
-                    <% }) %>
-                </div>
-
-                <div class="divider"></div>
-
-                <div class="summary-line text-sumary">
-                    <span>Subtotal</span>
-                    <span id="checkoutSubtotal">
-                        $<%= Number(subtotal).toLocaleString('es-CO') %>
-                    </span>
-                </div>
-
-                <div class="summary-line text-sumary">
-                    <span>Envío</span>
-                    <span id="checkoutShipping">
-                        <%= costoEnvio === 0 ? 'Gratis' : '$' + Number(costoEnvio).toLocaleString('es-CO') %>
-                    </span>
-                </div>
-
-                <div class="summary-line text-sumary">
-                    <span>Impuestos</span><span>Incluidos en los precios publicados</span></div>
-
-                <div class="summary-line total text-sumary">
-                    <span>Total a pagar</span>
-                    <span id="checkoutTotal">
-                        $<%= Number(total).toLocaleString('es-CO') %>
-                    </span>
-                </div>
-
-                <small class="shipping-hint">
-                    El envío se recalcula automáticamente según el subtotal del pedido.
-                </small>
-
-                <button type="submit" class="pay-btn">
-                    <i class="fas fa-lock"></i>
-                    Confirmar método de pago
-                </button>
-
-                <div
-                    class="trust-badge payment-actions"
-
-                >
-                    <span>
-                        <i class="fas fa-shield-alt"></i>
-                        Pago seguro
-                    </span>
-
-                    <span>
-                        <i class="fas fa-lock"></i>
-                        Encriptado
-                    </span>
-
-                    <span>
-                        <i class="fas fa-credit-card"></i>
-                        Wompi
-                    </span>
-                </div>
-            </div>
+            <%- include('./partials/order-summary', {
+                productosCarrito,
+                subtotal,
+                costoEnvio,
+                total,
+                subtotalCents,
+                shippingPriceCents,
+                freeShippingFromCents
+            }) %>
         </div>
     </form>
 </div>

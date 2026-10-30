@@ -4,7 +4,7 @@ const upload = require('../middleware/upload');
 const { requirePermission } = require('../middleware/auth');
 const { PERMISSIONS: P } = require('../config/permissions');
 const csrfProtection = require('../middleware/csrfProtection');
-const productController = require('../controller/product_controller');
+const productController = require('../controller/productController');
 const { validate } = require('../middleware/validateRequest');
 const schemas = require('../validation/schemas');
 

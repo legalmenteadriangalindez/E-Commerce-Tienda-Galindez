@@ -1,6 +1,5 @@
 <%- include('../../include/_headerAdmin') %>
 
-<link rel="stylesheet" href="/assets/css/update_categories.css">
 
 
 <div class="page-wrapper">
@@ -10,7 +9,7 @@
     <p>Modifica el nombre de la categoría seleccionada</p>
   </div>
 
-  <div class="form-card small-card">
+  <div class="form-card ui-card small-card">
 
     <form action="/update-categoria/<%= category._id %>" method="POST" class="category-form">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">

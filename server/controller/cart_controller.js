@@ -34,7 +34,7 @@ exports.add_to_carrito = wrap(async (req, res) => {
             precio: money.display(product.precioVentaCents, product.precioVenta),
             precioCents: money.readCents(product.precioVentaCents, product.precioVenta),
             cantidad,
-            foto: product.fotos?.[0] || '/assets/img/default.jpg',
+            foto: product.fotos?.[0] || '/img/default.jpg',
             categoria: product.categoria?.nombre || '',
         });
     }

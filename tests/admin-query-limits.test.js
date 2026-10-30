@@ -16,7 +16,7 @@ test('las peticiones administrativas tienen límites máximos de página', () =>
 
 test('ventas y analíticas no cargan todos los detalles en memoria', () => {
     const sales = read('server/business/salesService.js');
-    const analytics = read('server/business/analyticsService.js');
+    const analytics = read('server/business/analytics/salesAnalytics.js');
 
     assert.match(sales, /queryPage\(Sale, query/);
     assert.match(sales, /\.limit\(5000\)/);
@@ -76,7 +76,16 @@ test('las agregaciones tienen índices para sus filtros y joins principales', ()
 });
 
 test('existe un diagnóstico explain reproducible para analíticas y listados', () => {
-    assert.match(read('server/business/analyticsService.js'), /async function explainAnalytics/);
-    assert.match(read('server/business/analyticsService.js'), /\.explain\('executionStats'\)/);
+    assert.match(read('server/business/analytics/analyticsExport.js'), /async function explainAnalytics/);
+    assert.match(read('server/business/analytics/analyticsExport.js'), /\.explain\('executionStats'\)/);
     assert.match(read('scripts/explain-queries.js'), /EXPLAIN_FAIL_ON_COLLSCAN/);
+});
+
+test('analyticsService coordina módulos especializados y no concentra modelos', () => {
+    const facade = read('server/business/analyticsService.js');
+    assert.match(facade, /analytics\/salesAnalytics/);
+    assert.match(facade, /analytics\/inventoryAnalytics/);
+    assert.match(facade, /analytics\/customerAnalytics/);
+    assert.match(facade, /analytics\/analyticsExport/);
+    assert.doesNotMatch(facade, /require\(['"]\.\.\/model\//);
 });

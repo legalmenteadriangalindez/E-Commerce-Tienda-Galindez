@@ -2,59 +2,25 @@
 <%- include('../../include/_headerAdmin') %>
 <!-- /include header -->
 
-<link rel="stylesheet" href="/assets/css/payment_point.css">
-
 
 <div class="checkout-wrapper">
-
     <div class="checkout-header">
-
-        <h1>
-            <i class="fas fa-store"></i>
-            Punto de Pago Seguro
-        </h1>
-
-        <div class="badge-secure">
-            <i class="fas fa-lock"></i>
-            Registro de venta en caja
-        </div>
-
+        <h1><i class="fas fa-store"></i> Punto de Pago Seguro</h1>
+        <div class="badge-secure"><i class="fas fa-lock"></i> Registro de venta en caja</div>
     </div>
 
-    <!-- FORMULARIO PRINCIPAL -->
     <form action="/carrito/checkout_admin" method="POST">
         <input type="hidden" name="totalCotizado" value="<%= total %>">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-
-    <input
-        type="hidden"
-        name="claveIdempotenciaCaja"
-        value="<%= claveIdempotenciaCaja %>"
-    >
+        <input type="hidden" name="claveIdempotenciaCaja" value="<%= claveIdempotenciaCaja %>">
 
         <div class="checkout-grid">
-
-            <!-- COLUMNA IZQUIERDA -->
             <div class="form-card">
+                <div class="section-title"><i class="fas fa-user-pen"></i><span>Información de facturación</span></div>
 
-                <div class="section-title">
-                    <i class="fas fa-user-pen"></i>
-                    <span>Información de facturación</span>
-                </div>
-
-                <!-- NOMBRE -->
                 <div class="input-group">
-
                     <label>Nombre completo</label>
-
-                    <input
-                        type="text"
-                        id="fullName"
-                        name="fullName"
-                        placeholder="Nombre del cliente"
-                        required
-                    >
-
+                    <input type="text" id="fullName" name="fullName" placeholder="Nombre del cliente" required>
                 </div>
 
                 <fieldset class="payment-options">
@@ -68,247 +34,61 @@
                 </fieldset>
 
                 <div class="input-row">
-
-                    <!-- EMAIL -->
                     <div class="input-group">
-
                         <label>Correo electrónico</label>
-
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="correo@cliente.com"
-                            required
-                        >
-
+                        <input type="email" id="email" name="email" placeholder="correo@cliente.com" required>
                     </div>
-
-                    <!-- TELÉFONO -->
                     <div class="input-group">
-
                         <label>Teléfono</label>
-
-                        <input
-                            type="tel"
-                            id="phone"
-                            name="phone"
-                            placeholder="Teléfono del cliente"
-                            required
-                        >
-
+                        <input type="tel" id="phone" name="phone" placeholder="Teléfono del cliente" required>
                     </div>
-
                 </div>
 
-                <!-- DIRECCIÓN -->
                 <div class="input-group">
-
                     <label>Dirección</label>
-
-                    <input
-                        type="text"
-                        id="address"
-                        name="address"
-                        placeholder="Dirección del cliente"
-                        required
-                    >
-
+                    <input type="text" id="address" name="address" placeholder="Dirección del cliente" required>
                 </div>
 
-                <!-- DEPARTAMENTO Y CIUDAD -->
                 <div class="input-row">
-
                     <div class="input-group">
-
                         <label>Departamento</label>
-
-                        <input
-                            type="text"
-                            id="department"
-                            name="department"
-                            placeholder="Departamento"
-                        >
-
+                        <input type="text" id="department" name="department" placeholder="Departamento">
                     </div>
-
                     <div class="input-group">
-
                         <label>Ciudad</label>
-
-                        <input
-                            type="text"
-                            id="city"
-                            name="city"
-                            placeholder="Ciudad"
-                            required
-                        >
-
+                        <input type="text" id="city" name="city" placeholder="Ciudad" required>
                     </div>
-
                 </div>
 
-                <!-- ZIP Y REFERENCIA -->
                 <div class="input-row">
-
                     <div class="input-group">
-
                         <label>Referencia</label>
-
-                        <input
-                            type="text"
-                            id="reference"
-                            name="reference"
-                            placeholder="Apartamento, torre, referencia..."
-                        >
-
+                        <input type="text" id="reference" name="reference" placeholder="Apartamento, torre, referencia...">
                     </div>
-
                 </div>
 
-                <!-- NOTAS -->
                 <div class="input-group">
-
                     <label>Notas del cliente</label>
-
-                    <textarea
-                        id="notes"
-                        name="notes"
-                        rows="4"
-                        placeholder="Notas adicionales para la entrega..."
-                    ></textarea>
-
+                    <textarea id="notes" name="notes" rows="4" placeholder="Notas adicionales para la entrega..."></textarea>
                 </div>
-
 
                 <div class="trust-badge">
-
-                    <span>
-                        <i class="fas fa-shield-alt"></i>
-                        Datos seguros
-                    </span>
-
-                    <span>
-                        <i class="fas fa-clock"></i>
-                        Atención de la tienda
-                    </span>
-
+                    <span><i class="fas fa-shield-alt"></i> Datos seguros</span>
+                    <span><i class="fas fa-clock"></i> Atención de la tienda</span>
                 </div>
-
             </div>
 
-            <!-- COLUMNA DERECHA -->
-            <div
-                class="summary-card checkout-summary"
-                data-subtotal-cents="<%= subtotalCents %>"
-                data-shipping-price-cents="<%= shippingPriceCents %>"
-                data-free-shipping-from-cents="<%= freeShippingFromCents || 0 %>"
-            >
-
-                <div class="section-title">
-
-                    <i class="fas fa-bag-shopping"></i>
-
-                    <span>Tu pedido</span>
-
-                </div>
-
-                <div class="order-items-list text-sumary">
-
-                    <% productosCarrito.forEach(item => { %>
-
-                        <div class="order-item">
-
-                            <div class="item-icon">
-                                <i class="fas fa-box"></i>
-                            </div>
-
-                            <div class="item-details">
-
-                                <div class="item-title">
-                                    <%= item.nombre %>
-                                </div>
-
-                                <div class="item-price">
-                                    <%= item.precio %> $
-                                </div>
-
-                                <div class="item-quantity">
-                                    Cantidad: <%= item.cantidad %>
-                                </div>
-
-                            </div>
-
-                            <div class="item-line-price">
-                                <%= item.precio * item.cantidad %> $
-                            </div>
-
-                        </div>
-
-                    <% }) %>
-
-                </div>
-
-                <div class="divider"></div>
-
-                <div class="summary-line text-sumary">
-                    <span>Subtotal</span>
-                    <span id="checkoutSubtotal"><%= Number(subtotal).toLocaleString('es-CO') %> $</span>
-                </div>
-
-                <div class="summary-line text-sumary">
-                    <span>Envío</span>
-                    <span id="checkoutShipping">
-                        <%= costoEnvio === 0 ? 'Gratis' : '$' + Number(costoEnvio).toLocaleString('es-CO') %>
-                    </span>
-                </div>
-
-                <div class="summary-line text-sumary">
-                    <span>Impuestos</span><span>Incluidos en los precios</span>
-                </div>
-
-                <div class="promo-code">
-
-
-
-                </div>
-
-                <div class="summary-line total text-sumary">
-
-                    <span>Total a pagar</span>
-
-                    <span id="checkoutTotal">$<%= Number(total).toLocaleString('es-CO') %></span>
-
-                </div>
-
-                <small class="shipping-hint">
-                    El envío se recalcula automáticamente según el subtotal del pedido.
-                </small>
-
-                <!-- BOTÓN -->
-                <button type="submit" class="pay-btn">
-
-                    <i class="fas fa-lock"></i>
-
-                    Registrar pedido · $<%= Number(total).toLocaleString('es-CO') %>
-
-                </button>
-
-                <div
-                    class="trust-badge payment-actions"
-
-                >
-
-
-
-                </div>
-
-            </div>
-
+            <%- include('./partials/order-summary', {
+                productosCarrito,
+                subtotal,
+                costoEnvio,
+                total,
+                subtotalCents,
+                shippingPriceCents,
+                freeShippingFromCents
+            }) %>
         </div>
-
     </form>
-
 </div>
 
 <!-- include footer -->

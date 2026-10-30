@@ -42,7 +42,6 @@ const files = [
     'server/**/*.js',
     'scripts/**/*.js',
     'tests/**/*.js',
-    'assets/**/*.{js,css}',
     'public/**/*.{js,css}',
 ];
 const result = spawnSync(

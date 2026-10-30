@@ -32,10 +32,11 @@ function publicReview(review) {
               }
             : null,
         fotos: (review.fotos || []).filter((file) =>
-            /^\/assets\/img\/[a-z0-9][a-z0-9._-]*\.(jpg|jpeg|png|webp)$/i.test(file)
+            /^\/(?:assets\/)?img\/[a-z0-9][a-z0-9._-]*\.(jpg|jpeg|png|webp)$/i.test(file)
         ),
         video:
-            typeof review.video === 'string' && /^\/assets\/img\/[a-z0-9][a-z0-9._-]*\.(mp4|webm)$/i.test(review.video)
+            typeof review.video === 'string' &&
+            /^\/(?:assets\/)?img\/[a-z0-9][a-z0-9._-]*\.(mp4|webm)$/i.test(review.video)
                 ? review.video
                 : null,
     };

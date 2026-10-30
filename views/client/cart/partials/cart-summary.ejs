@@ -1,0 +1,47 @@
+<aside class="summary-section">
+  <div class="summary-card">
+    <h2 class="text-sumary">Resumen</h2>
+    <div class="divider"></div>
+
+    <div class="summary-line">
+      <span class="text-sumary">Subtotal</span>
+      <span class="text-sumary" id="subtotal">$<%= subtotal.toFixed(2) %></span>
+    </div>
+
+    <div class="summary-line">
+      <span class="text-sumary">Envío</span>
+      <span class="text-sumary free" id="shipping">
+        <%= costoEnvio === 0 ? 'Gratis' : '$' + Number(costoEnvio).toLocaleString('es-CO') %>
+      </span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="summary-line total">
+      <span class="text-sumary">Total</span>
+      <span class="text-sumary total-amount" id="total">
+        $<%= Number(total).toLocaleString('es-CO') %>
+      </span>
+      <small class="shipping-hint" id="shippingHint">
+        Envío gratis desde $<%= Number(freeShippingFromCents / 100).toLocaleString('es-CO') %>.
+      </small>
+    </div>
+
+    <% if (productosCarrito.length > 0) { %>
+      <button type="button" class="update-cart-btn" data-cart-action="save">
+        <i class="fas fa-sync-alt" aria-hidden="true"></i>
+        Actualizar despensa
+      </button>
+    <% } %>
+
+    <button
+      type="submit"
+      form="cartForm"
+      class="pay-btn"
+      <%= productosCarrito.length === 0 ? 'disabled' : '' %>
+    >
+      <i class="fas fa-lock"></i>
+      Proceder al pago
+    </button>
+  </div>
+</aside>

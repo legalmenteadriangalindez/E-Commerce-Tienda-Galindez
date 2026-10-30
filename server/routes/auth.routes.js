@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const authController = require('../controller/auth_controller');
+const authController = require('../controller/authController');
 const servicesLoginLogout = require('../pages/renderLoginLogout');
 const confirmationCodeController = require('../controller/confirmationCodeController');
 const servicesRenderVerificationCode = require('../pages/renderVerificationCode');

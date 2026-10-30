@@ -68,7 +68,7 @@ module.exports = [
         },
     },
     {
-        files: ['assets/js/**/*.js', 'public/js/**/*.js'],
+        files: ['public/js/**/*.js'],
         languageOptions: {
             sourceType: 'script',
             globals: {

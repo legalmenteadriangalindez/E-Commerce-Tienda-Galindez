@@ -1,0 +1,15 @@
+<% if (r.historialGestion.length) { %>
+    <details class="ar-history">
+        <summary>Historial de gestión · <%= r.historialGestion.length === 1 ? 'última acción' : 'últimas ' + r.historialGestion.length + ' acciones' %></summary>
+        <ol>
+            <% r.historialGestion.forEach(event => { %>
+                <li>
+                    <strong><%= actionLabels[event.accion] || 'Cambio administrativo' %></strong>
+                    <small><%= event.administrador?.nombre || 'Administrador eliminado' %> · <%= formatDate(event.fecha) %></small>
+                    <% if (event.detalle) { %><p><%= event.detalle %></p><% } %>
+                    <% if (event.textoAnterior) { %><details><summary>Respuesta anterior</summary><p><%= event.textoAnterior %></p></details><% } %>
+                </li>
+            <% }) %>
+        </ol>
+    </details>
+<% } %>

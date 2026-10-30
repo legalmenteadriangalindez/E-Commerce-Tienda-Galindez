@@ -7,7 +7,7 @@
         "start": "node server.js",
         "dev": "nodemon server.js",
         "check": "node scripts/check-routes.js",
-        "lint": "eslint server.js eslint.config.js api server scripts tests migrations assets/js public/js",
+        "lint": "eslint server.js eslint.config.js api server scripts tests migrations public/js",
         "format": "node scripts/format-files.js",
         "format:check": "node scripts/format-files.js --check",
         "test": "npm run check && node --test tests/*.test.js",

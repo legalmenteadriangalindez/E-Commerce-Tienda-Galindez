@@ -1,6 +1,7 @@
 const express = require('express');
 const methodOverride = require('method-override');
 const path = require('path');
+const { pageResourcesFor } = require('./pageResources');
 
 module.exports = (app) => {
     require('axios').defaults.timeout = 10000;
@@ -20,23 +21,33 @@ module.exports = (app) => {
     );
 
     const publicDirectory = path.resolve(__dirname, '../../public');
-    const assetsDirectory = path.resolve(__dirname, '../../assets');
 
-    // `public` contiene los recursos nuevos y `assets` conserva archivos
-    // históricos. Ambos se exponen bajo una ruta canónica (/assets) para que
-    // las vistas no dependan de la ubicación física del archivo. Las rutas
-    // /css, /js y /assets anteriores se mantienen como compatibilidad para
-    // enlaces ya publicados.
+    // Todos los recursos versionados viven en public/. La raíz sirve las rutas
+    // canónicas (/css, /js, /img) y /assets se conserva como alias legado para
+    // no romper enlaces o imágenes guardadas antes de esta migración.
     app.use(express.static(publicDirectory));
     app.get('/uploads/:filename', require('../controller/media_controller').serve);
 
     app.set('view engine', 'ejs');
     app.set('views', path.resolve(__dirname, '../../views'));
 
-    app.use('/assets', express.static(assetsDirectory));
+    // Cada vista recibe únicamente sus recursos propios. Un render explícito
+    // puede sobreescribir estos valores pasando pageCss/pageJs en sus locals.
+    app.use((req, res, next) => {
+        const render = res.render.bind(res);
+        res.render = (view, options, callback) => {
+            let locals = options;
+            let done = callback;
+
+            if (typeof options === 'function') {
+                done = options;
+                locals = {};
+            }
+
+            return render(view, { ...pageResourcesFor(view), ...(locals || {}) }, done);
+        };
+        next();
+    });
+
     app.use('/assets', express.static(publicDirectory));
-    app.use('/css', express.static(path.join(publicDirectory, 'css')));
-    app.use('/css', express.static(path.join(assetsDirectory, 'css')));
-    app.use('/js', express.static(path.join(publicDirectory, 'js')));
-    app.use('/js', express.static(path.join(assetsDirectory, 'js')));
 };

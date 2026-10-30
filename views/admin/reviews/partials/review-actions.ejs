@@ -1,0 +1,43 @@
+<div class="ar-actions">
+    <details <%= draft?.form === 'reply' || draft?.form === 'removeReply' ? 'open' : '' %>>
+        <summary><%= reply?.texto ? 'Editar respuesta' : 'Responder como tienda' %></summary>
+        <form action="/api/admin/reviews/<%= id %>/reply" method="post" data-admin-review-form data-method="PUT">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="_method" value="PUT">
+            <input type="hidden" name="version" value="<%= r.version %>">
+            <input type="hidden" name="returnTo" value="<%= returnTo %>">
+            <label for="reply-<%= id %>">Respuesta de la tienda</label>
+            <textarea id="reply-<%= id %>" name="texto" rows="4" minlength="3" maxlength="1000" required aria-describedby="reply-hint-<%= id %>"><%= replyText %></textarea>
+            <p class="ar-hint" id="reply-hint-<%= id %>">De 3 a 1000 caracteres. Será pública junto a la reseña cuando esté publicada.</p>
+            <p class="ar-form-error" data-admin-review-error role="alert" tabindex="-1" hidden></p>
+            <button class="ar-button" type="submit"><%= reply?.texto ? 'Guardar respuesta' : 'Enviar respuesta' %></button>
+        </form>
+        <% if (reply?.texto) { %>
+            <form class="ar-remove-reply" action="/api/admin/reviews/<%= id %>/reply" method="post" data-admin-review-form data-method="DELETE" data-confirm="¿Quieres retirar la respuesta de la tienda? La reseña del cliente se conservará.">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="_method" value="DELETE">
+                <input type="hidden" name="version" value="<%= r.version %>">
+                <input type="hidden" name="returnTo" value="<%= returnTo %>">
+                <button class="ar-text-button" type="submit">Retirar respuesta</button>
+                <p class="ar-form-error" data-admin-review-error role="alert" tabindex="-1" hidden></p>
+            </form>
+        <% } %>
+    </details>
+
+    <details <%= draft?.form === 'visibility' ? 'open' : '' %>>
+        <summary><%= r.oculta ? 'Volver a publicar' : 'Ocultar reseña' %></summary>
+        <form action="/api/admin/reviews/<%= id %>/visibility" method="post" data-admin-review-form data-method="PATCH">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="_method" value="PATCH">
+            <input type="hidden" name="version" value="<%= r.version %>">
+            <input type="hidden" name="oculta" value="<%= !r.oculta %>">
+            <input type="hidden" name="returnTo" value="<%= returnTo %>">
+            <label for="reason-<%= id %>"><%= r.oculta ? 'Motivo para volver a publicar' : 'Motivo para ocultar' %></label>
+            <textarea id="reason-<%= id %>" name="motivo" rows="3" minlength="3" maxlength="500" required aria-describedby="reason-hint-<%= id %>"><%= visibilityReason %></textarea>
+            <p class="ar-hint" id="reason-hint-<%= id %>">Obligatorio, de 3 a 500 caracteres. El motivo se mostrará al autor y al equipo administrador.</p>
+            <p class="ar-hint"><%= r.oculta ? 'La reseña y su respuesta volverán a ser públicas. Su calificación contará de nuevo para el promedio.' : 'Se conservará la reseña. Su comentario, respuesta y calificación dejarán de aparecer públicamente.' %></p>
+            <p class="ar-form-error" data-admin-review-error role="alert" tabindex="-1" hidden></p>
+            <button class="ar-button <%= r.oculta ? '' : 'ar-button--warning' %>" type="submit"><%= r.oculta ? 'Publicar de nuevo' : 'Ocultar con motivo' %></button>
+        </form>
+    </details>
+</div>

@@ -1,0 +1,249 @@
+/* =========================================================
+   CARDS DE MARCAS
+   TIENDA GALINDEZ
+   ========================================================= */
+
+/* =========================================================
+   CONTENEDOR
+   ========================================================= */
+
+.container-brands {
+    display: grid;
+
+    grid-template-columns: repeat(5, 220px);
+
+    gap: 18px;
+
+    width: 100%;
+
+    padding: 20px 0;
+
+    box-sizing: border-box;
+
+    justify-content: start;
+
+    align-items: stretch;
+}
+
+/* =========================================================
+   BRAND CARD
+   ========================================================= */
+
+.brand-card {
+    width: 220px;
+
+    margin: 0;
+
+    background-color: var(--color-surface);
+
+    border: 1px solid var(--color-brand-tan);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    box-sizing: border-box;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.brand-card:hover {
+    transform: translateY(-7px);
+
+    border-color: var(--color-brand-accent);
+
+    box-shadow: 0 12px 25px rgba(49, 27, 20, 0.15);
+}
+
+/* =========================================================
+   IMAGEN
+   ========================================================= */
+
+.brand-card-img {
+    width: 100%;
+
+    height: 150px;
+
+    object-fit: contain;
+
+    display: block;
+
+    padding: 15px;
+
+    box-sizing: border-box;
+
+    background-color: var(--color-surface);
+
+    transition: transform 0.3s ease;
+}
+
+.brand-card:hover .brand-card-img {
+    transform: scale(1.05);
+}
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+.brand-card-body {
+    padding: 12px;
+
+    text-align: center;
+}
+
+/* =========================================================
+   TITULO
+   ========================================================= */
+
+.brand-card-title {
+    margin: 0 0 6px;
+
+    color: var(--color-brand-dark);
+
+    font-size: 1rem;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+/* =========================================================
+   DESCRIPCIÓN
+   ========================================================= */
+
+.brand-card-text {
+    margin: 0;
+
+    color: #666;
+
+    font-size: 0.8rem;
+
+    line-height: 1.4;
+}
+
+/* =========================================================
+   ACCIONES
+   ========================================================= */
+
+.brand-card-actions {
+    display: flex;
+
+    justify-content: center;
+
+    padding: 0 12px 12px;
+}
+
+/* =========================================================
+   BOTÓN
+   ========================================================= */
+
+.brand-card .btn-secondary-action {
+    width: 100%;
+
+    max-width: 180px;
+
+    text-decoration: none;
+
+    text-align: center;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+/* -----------------------------------------
+   PANTALLAS MEDIANAS
+   ----------------------------------------- */
+
+@media (max-width: 1200px) {
+    .container-brands {
+        grid-template-columns: repeat(4, 220px);
+    }
+}
+
+/* -----------------------------------------
+   TABLETS
+   ----------------------------------------- */
+
+@media (max-width: 992px) {
+    .container-brands {
+        grid-template-columns: repeat(3, 220px);
+    }
+}
+
+/* -----------------------------------------
+   TABLETS PEQUEÑAS
+   ----------------------------------------- */
+
+@media (max-width: 768px) {
+    .container-brands {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 15px;
+
+        padding: 15px 0;
+    }
+
+    .brand-card {
+        width: 100%;
+    }
+}
+
+/* -----------------------------------------
+   MÓVILES
+   ----------------------------------------- */
+
+@media (max-width: 480px) {
+    .container-brands {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+
+        padding: 10px 8px;
+    }
+
+    .brand-card {
+        width: 100%;
+    }
+
+    .brand-card-img {
+        height: 100px;
+
+        padding: 10px;
+    }
+
+    .brand-card-body {
+        padding: 8px;
+    }
+
+    .brand-card-title {
+        font-size: 0.85rem;
+    }
+
+    .brand-card-text {
+        font-size: 0.7rem;
+    }
+
+    .brand-card-actions {
+        padding: 0 8px 8px;
+    }
+
+    .brand-card .btn-secondary-action {
+        max-width: none;
+
+        font-size: 0.75rem;
+
+        padding: 6px 4px;
+    }
+}

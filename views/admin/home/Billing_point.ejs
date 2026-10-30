@@ -1,8 +1,6 @@
 <!-- include header -->
 <%- include('../../include/_headerAdmin') %>
 
-<link rel="stylesheet" href="/assets/css/payment_point.css">
-<link rel="stylesheet" href="/assets/css/Add_product_billing_point.css">
 
 <form id="billingForm" action="/payment_point" method="POST">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -27,7 +25,7 @@
     <div class="checkout-grid">
 
         <!-- COLUMNA IZQUIERDA -->
-        <div class="form-card">
+        <div class="form-card ui-card">
 
             <div class="section-title">
                 <i class="fas fa-barcode"></i>
@@ -234,7 +232,6 @@
 </form>
 
 <!-- SCRIPT -->
-<script nonce="<%= cspNonce %>" src="/assets/js/AdminPaymentPoint.js"></script>
 
 <br>
 <br>

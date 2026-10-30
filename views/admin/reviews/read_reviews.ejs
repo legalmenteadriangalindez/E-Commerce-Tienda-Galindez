@@ -1,5 +1,4 @@
 <%- include('../../include/_headerAdmin') %>
-<link rel="stylesheet" href="/assets/css/components/admin-reviews.css">
 <%
     const formatDate = value => {
         const date = new Date(value);
@@ -34,45 +33,7 @@
         <div><span>Sin respuesta</span><strong><%= summary.sinRespuesta %></strong></div>
     </div>
 
-    <form class="ar-filters" method="get" action="/admin/reviews" role="search" aria-label="Filtrar reseñas">
-        <div class="ar-field ar-search">
-            <label for="ar-search">Buscar opiniones</label>
-            <input id="ar-search" name="q" type="search" value="<%= filters.q %>" maxlength="100" placeholder="Comentario, respuesta o cliente">
-        </div>
-        <div class="ar-field">
-            <label for="ar-product">Producto</label>
-            <input id="ar-product" name="producto" type="search" value="<%= filters.producto %>" maxlength="100" placeholder="Nombre del producto">
-        </div>
-        <div class="ar-field">
-            <label for="ar-state">Visibilidad</label>
-            <select id="ar-state" name="estado">
-                <option value="todas" <%= filters.estado === 'todas' ? 'selected' : '' %>>Todas</option>
-                <option value="publicadas" <%= filters.estado === 'publicadas' ? 'selected' : '' %>>Publicadas</option>
-                <option value="ocultas" <%= filters.estado === 'ocultas' ? 'selected' : '' %>>Ocultas</option>
-            </select>
-        </div>
-        <div class="ar-field">
-            <label for="ar-rating">Calificación</label>
-            <select id="ar-rating" name="calificacion">
-                <option value="">Todas las estrellas</option>
-                <% for (let rating = 5; rating >= 1; rating--) { %>
-                    <option value="<%= rating %>" <%= filters.calificacion === String(rating) ? 'selected' : '' %>><%= rating %> <%= rating === 1 ? 'estrella' : 'estrellas' %></option>
-                <% } %>
-            </select>
-        </div>
-        <div class="ar-field">
-            <label for="ar-reply">Respuesta de la tienda</label>
-            <select id="ar-reply" name="respuesta">
-                <option value="todas" <%= filters.respuesta === 'todas' ? 'selected' : '' %>>Todas</option>
-                <option value="sin_respuesta" <%= filters.respuesta === 'sin_respuesta' ? 'selected' : '' %>>Sin respuesta</option>
-                <option value="con_respuesta" <%= filters.respuesta === 'con_respuesta' ? 'selected' : '' %>>Con respuesta</option>
-            </select>
-        </div>
-        <div class="ar-filter-actions">
-            <button class="ar-button" type="submit">Aplicar filtros</button>
-            <a href="/admin/reviews">Limpiar</a>
-        </div>
-    </form>
+    <%- include('./partials/review-filters', { filters }) %>
 
     <div class="ar-results-heading">
         <h2><%= pagination.totalItems %> <%= pagination.totalItems === 1 ? 'reseña encontrada' : 'reseñas encontradas' %></h2>
@@ -89,113 +50,9 @@
     <% } %>
 
     <div class="ar-list">
-    <% reviews.forEach(r => {
-        const id = String(r._id);
-        const reply = r.respuestaTienda;
-        const draft = feedback && !feedback.success && feedback.id === id ? feedback : null;
-        const replyText = draft?.form === 'reply' ? draft.values.texto : reply?.texto || '';
-        const visibilityReason = draft?.form === 'visibility' ? draft.values.motivo : '';
-    %>
-        <article class="ar-card" id="reseña-<%= id %>" data-review-id="<%= id %>">
-            <header class="ar-card-heading">
-                <div>
-                    <% if (r.producto) { %>
-                        <a class="ar-product-name" href="/Detalles/<%= r.producto._id %>#resenas"><%= r.producto.nombre %></a>
-                    <% } else { %>
-                        <strong class="ar-product-name">Producto eliminado</strong>
-                    <% } %>
-                    <p class="ar-meta"><%= r.usuario?.nombre || 'Usuario eliminado' %> · <%= formatDate(r.fecha) %></p>
-                    <% if (r.fechaEdicion) { %><p class="ar-meta">Editada por el cliente: <%= formatDate(r.fechaEdicion) %></p><% } %>
-                </div>
-                <div class="ar-badges">
-                    <span class="ar-status <%= r.oculta ? 'ar-status--hidden' : 'ar-status--published' %>"><%= r.oculta ? 'Oculta' : 'Publicada' %></span>
-                    <span class="ar-stars" aria-label="<%= r.calificacion %> de 5 estrellas">★ <%= r.calificacion %>/5</span>
-                </div>
-            </header>
-            <p class="ar-comment"><%= r.comentario %></p>
-            <% if (r.fotos.length) { %>
-                <div class="ar-media"><% r.fotos.forEach(foto => { %><img src="<%= foto %>" alt="Adjunto de la reseña" loading="lazy"><% }) %></div>
-            <% } %>
-            <% if (r.video) { %><video class="ar-video" src="<%= r.video %>" controls preload="none"></video><% } %>
-
-            <% if (r.moderacion?.motivo) { %>
-                <div class="ar-moderation">
-                    <strong><%= r.oculta ? 'Motivo de ocultación' : 'Motivo de la última publicación' %></strong>
-                    <p><%= r.moderacion.motivo %></p>
-                    <small><%= r.moderacion.administrador?.nombre || 'Administrador eliminado' %> · <%= formatDate(r.moderacion.fecha) %></small>
-                </div>
-            <% } %>
-
-            <% if (reply?.texto) { %>
-                <div class="ar-reply">
-                    <strong>Respuesta de Tienda Galindez</strong>
-                    <p><%= reply.texto %></p>
-                    <small><%= reply.administrador?.nombre || 'Administrador eliminado' %> · <%= formatDate(reply.fechaEdicion || reply.fecha) %><%= reply.fechaEdicion ? ' · Editada' : '' %></small>
-                    <% if (r.oculta) { %><p class="ar-hint">Esta respuesta también permanece oculta mientras la reseña esté oculta.</p><% } %>
-                </div>
-            <% } %>
-
-            <div class="ar-actions">
-                <details <%= draft?.form === 'reply' || draft?.form === 'removeReply' ? 'open' : '' %>>
-                    <summary><%= reply?.texto ? 'Editar respuesta' : 'Responder como tienda' %></summary>
-                    <form action="/api/admin/reviews/<%= id %>/reply" method="post" data-admin-review-form data-method="PUT">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                        <input type="hidden" name="_method" value="PUT">
-                        <input type="hidden" name="version" value="<%= r.version %>">
-                        <input type="hidden" name="returnTo" value="<%= returnTo %>">
-                        <label for="reply-<%= id %>">Respuesta de la tienda</label>
-                        <textarea id="reply-<%= id %>" name="texto" rows="4" minlength="3" maxlength="1000" required aria-describedby="reply-hint-<%= id %>"><%= replyText %></textarea>
-                        <p class="ar-hint" id="reply-hint-<%= id %>">De 3 a 1000 caracteres. Será pública junto a la reseña cuando esté publicada.</p>
-                        <p class="ar-form-error" data-admin-review-error role="alert" tabindex="-1" hidden></p>
-                        <button class="ar-button" type="submit"><%= reply?.texto ? 'Guardar respuesta' : 'Enviar respuesta' %></button>
-                    </form>
-                    <% if (reply?.texto) { %>
-                        <form class="ar-remove-reply" action="/api/admin/reviews/<%= id %>/reply" method="post" data-admin-review-form data-method="DELETE" data-confirm="¿Quieres retirar la respuesta de la tienda? La reseña del cliente se conservará.">
-                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <input type="hidden" name="version" value="<%= r.version %>">
-                            <input type="hidden" name="returnTo" value="<%= returnTo %>">
-                            <button class="ar-text-button" type="submit">Retirar respuesta</button>
-                            <p class="ar-form-error" data-admin-review-error role="alert" tabindex="-1" hidden></p>
-                        </form>
-                    <% } %>
-                </details>
-
-                <details <%= draft?.form === 'visibility' ? 'open' : '' %>>
-                    <summary><%= r.oculta ? 'Volver a publicar' : 'Ocultar reseña' %></summary>
-                    <form action="/api/admin/reviews/<%= id %>/visibility" method="post" data-admin-review-form data-method="PATCH">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                        <input type="hidden" name="_method" value="PATCH">
-                        <input type="hidden" name="version" value="<%= r.version %>">
-                        <input type="hidden" name="oculta" value="<%= !r.oculta %>">
-                        <input type="hidden" name="returnTo" value="<%= returnTo %>">
-                        <label for="reason-<%= id %>"><%= r.oculta ? 'Motivo para volver a publicar' : 'Motivo para ocultar' %></label>
-                        <textarea id="reason-<%= id %>" name="motivo" rows="3" minlength="3" maxlength="500" required aria-describedby="reason-hint-<%= id %>"><%= visibilityReason %></textarea>
-                        <p class="ar-hint" id="reason-hint-<%= id %>">Obligatorio, de 3 a 500 caracteres. El motivo se mostrará al autor y al equipo administrador.</p>
-                        <p class="ar-hint"><%= r.oculta ? 'La reseña y su respuesta volverán a ser públicas. Su calificación contará de nuevo para el promedio.' : 'Se conservará la reseña. Su comentario, respuesta y calificación dejarán de aparecer públicamente.' %></p>
-                        <p class="ar-form-error" data-admin-review-error role="alert" tabindex="-1" hidden></p>
-                        <button class="ar-button <%= r.oculta ? '' : 'ar-button--warning' %>" type="submit"><%= r.oculta ? 'Publicar de nuevo' : 'Ocultar con motivo' %></button>
-                    </form>
-                </details>
-            </div>
-
-            <% if (r.historialGestion.length) { %>
-                <details class="ar-history">
-                    <summary>Historial de gestión · <%= r.historialGestion.length === 1 ? 'última acción' : 'últimas ' + r.historialGestion.length + ' acciones' %></summary>
-                    <ol>
-                        <% r.historialGestion.forEach(event => { %>
-                            <li>
-                                <strong><%= actionLabels[event.accion] || 'Cambio administrativo' %></strong>
-                                <small><%= event.administrador?.nombre || 'Administrador eliminado' %> · <%= formatDate(event.fecha) %></small>
-                                <% if (event.detalle) { %><p><%= event.detalle %></p><% } %>
-                                <% if (event.textoAnterior) { %><details><summary>Respuesta anterior</summary><p><%= event.textoAnterior %></p></details><% } %>
-                            </li>
-                        <% }) %>
-                    </ol>
-                </details>
-            <% } %>
-        </article>
-    <% }) %>
+        <% reviews.forEach(r => { %>
+            <%- include('./partials/review-card', { r, feedback, csrfToken, returnTo, formatDate, actionLabels }) %>
+        <% }) %>
     </div>
 
     <% if (pagination.totalItems > 0) { %>
@@ -211,5 +68,4 @@
         </nav>
     <% } %>
 </main>
-<script nonce="<%= cspNonce %>" src="/assets/js/admin-reviews.js" defer></script>
 <%- include('../../include/_footerAdmin') %>

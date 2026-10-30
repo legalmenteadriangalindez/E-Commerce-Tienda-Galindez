@@ -185,7 +185,7 @@ test(
         await t.test(
             'ocultar excluye comentario, respuesta, media y promedio; solo el autor ve el motivo',
             async () => {
-                const review = await seed({ comentario: 'COMENTARIO_PRIVADO_424', fotos: ['/assets/img/prueba.jpg'] });
+                const review = await seed({ comentario: 'COMENTARIO_PRIVADO_424', fotos: ['/img/prueba.jpg'] });
                 await seed({ usuario: app.users.second._id, calificacion: 5, comentario: 'Muy buen producto.' });
                 await mutate(review, 'reply', { texto: 'RESPUESTA_PRIVADA_424' });
                 const reason = 'MOTIVO_PRIVADO_424 <script>window.reasonAttack=1</script>';
