@@ -32,11 +32,13 @@ body > h2 {
    CONTENEDOR
    ========================================================= */
 
-.container.mt-4 {
+.admin-brand-form {
     max-width: 650px;
 
     margin-top: 0 !important;
+    margin-right: auto;
     margin-bottom: 40px;
+    margin-left: auto;
 
     padding: 30px;
 
@@ -55,7 +57,7 @@ body > h2 {
    GRUPOS DEL FORMULARIO
    ========================================================= */
 
-.container.mt-4 .form-group {
+.admin-brand-form .form-group {
     margin-bottom: 20px;
 }
 
@@ -63,7 +65,7 @@ body > h2 {
    LABELS
    ========================================================= */
 
-.container.mt-4 .form-group label {
+.admin-brand-form .form-group label {
     display: block;
 
     margin-bottom: 7px;
@@ -77,7 +79,7 @@ body > h2 {
    INPUTS
    ========================================================= */
 
-.container.mt-4 .form-control {
+.admin-brand-form .form-control {
     width: 100%;
 
     box-sizing: border-box;
@@ -103,7 +105,7 @@ body > h2 {
    INPUT TEXT FOCUS
    ========================================================= */
 
-.container.mt-4 input[type='text']:focus {
+.admin-brand-form input[type='text']:focus {
     border-color: var(--color-brand-accent);
 
     box-shadow: 0 0 0 3px rgba(216, 92, 50, 0.15);
@@ -113,7 +115,7 @@ body > h2 {
    INPUT FILE
    ========================================================= */
 
-.container.mt-4 input[type='file'] {
+.admin-brand-form input[type='file'] {
     padding: 8px;
 
     background: var(--color-surface-warm);
@@ -127,7 +129,7 @@ body > h2 {
    BOTÓN
    ========================================================= */
 
-.container.mt-4 .btn-primary {
+.admin-brand-form .btn-primary {
     background: var(--color-brand-accent);
 
     border-color: var(--color-brand-accent);
@@ -149,7 +151,7 @@ body > h2 {
    BOTÓN HOVER
    ========================================================= */
 
-.container.mt-4 .btn-primary:hover {
+.admin-brand-form .btn-primary:hover {
     background: var(--color-brand-dark);
 
     border-color: var(--color-brand-dark);
@@ -163,7 +165,7 @@ body > h2 {
    BOTÓN ACTIVE
    ========================================================= */
 
-.container.mt-4 .btn-primary:active {
+.admin-brand-form .btn-primary:active {
     background: var(--color-brand-dark);
 
     border-color: var(--color-brand-dark);
@@ -186,13 +188,13 @@ body > h2 {
         font-size: 1.5rem;
     }
 
-    .container.mt-4 {
+    .admin-brand-form {
         width: calc(100% - 30px);
 
         padding: 20px;
     }
 
-    .container.mt-4 .btn-primary {
+    .admin-brand-form .btn-primary {
         width: 100%;
     }
 }
@@ -208,13 +210,13 @@ body > h2 {
         font-size: 1.35rem;
     }
 
-    .container.mt-4 {
+    .admin-brand-form {
         width: calc(100% - 20px);
 
         padding: 15px;
     }
 
-    .container.mt-4 .form-control {
+    .admin-brand-form .form-control {
         padding: 9px 10px;
     }
 }

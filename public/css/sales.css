@@ -8,7 +8,7 @@
    CONTENEDOR
    ========================================================= */
 
-.container.mt-4 {
+.admin-sales-page {
     margin-top: 30px !important;
     padding: 0 20px;
 }
@@ -17,13 +17,13 @@
    TÍTULO
    ========================================================= */
 
-.container.mt-4 h2 {
+.admin-sales-page h2 {
     color: var(--color-brand-dark);
     font-weight: 700;
     margin-bottom: 15px;
 }
 
-.container.mt-4 h2 i {
+.admin-sales-page h2 i {
     margin-right: 8px;
 }
 
@@ -31,7 +31,7 @@
    SEPARADOR
    ========================================================= */
 
-.container.mt-4 hr {
+.admin-sales-page hr {
     border: 0;
     border-top: 1px solid #d8ccc5;
     margin-bottom: 25px;
@@ -41,7 +41,7 @@
    TABLA PRINCIPAL
    ========================================================= */
 
-.container.mt-4 > .table-responsive > .table {
+.admin-sales-page > .table-responsive > .table {
     width: 100%;
     margin-bottom: 0;
     background-color: var(--color-surface);
@@ -54,11 +54,11 @@
    ENCABEZADO
    ========================================================= */
 
-.container.mt-4 .table-dark {
+.admin-sales-page .table-dark {
     background-color: var(--color-brand-dark);
 }
 
-.container.mt-4 .table-dark th {
+.admin-sales-page .table-dark th {
     padding: 14px 12px;
     border: none;
     font-size: 14px;
@@ -70,11 +70,11 @@
    FILAS
    ========================================================= */
 
-.container.mt-4 .table-striped tbody tr {
+.admin-sales-page .table-striped tbody tr {
     transition: background-color 0.2s ease;
 }
 
-.container.mt-4 .table-hover tbody tr:hover {
+.admin-sales-page .table-hover tbody tr:hover {
     background-color: #faf6f2;
 }
 
@@ -82,7 +82,7 @@
    CELDAS
    ========================================================= */
 
-.container.mt-4 > .table-responsive > .table > tbody > tr > td {
+.admin-sales-page > .table-responsive > .table > tbody > tr > td {
     padding: 13px 12px;
     vertical-align: middle;
 }
@@ -91,7 +91,7 @@
    ID VENTA
    ========================================================= */
 
-.container.mt-4 > .table-responsive > .table > tbody > tr > td:first-child {
+.admin-sales-page > .table-responsive > .table > tbody > tr > td:first-child {
     color: var(--color-text-muted);
     font-size: 13px;
 }
@@ -100,7 +100,7 @@
    TOTAL
    ========================================================= */
 
-.container.mt-4 > .table-responsive > .table > tbody > tr > td:nth-child(3) {
+.admin-sales-page > .table-responsive > .table > tbody > tr > td:nth-child(3) {
     color: var(--color-success);
     font-weight: 700;
     white-space: nowrap;
@@ -110,7 +110,7 @@
    BOTÓN VER DETALLES
    ========================================================= */
 
-.container.mt-4 .btn-info {
+.admin-sales-page .btn-info {
     font-weight: 600;
     border-radius: 7px;
     transition:
@@ -118,7 +118,7 @@
         box-shadow 0.2s ease;
 }
 
-.container.mt-4 .btn-info:hover {
+.admin-sales-page .btn-info:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(13, 202, 240, 0.25);
 }
@@ -127,11 +127,11 @@
    FILA COLAPSABLE
    ========================================================= */
 
-.container.mt-4 tr.collapse {
+.admin-sales-page tr.collapse {
     background-color: #f8f4f0;
 }
 
-.container.mt-4 tr.collapse > td {
+.admin-sales-page tr.collapse > td {
     padding: 20px;
 }
 
@@ -139,7 +139,7 @@
    CARD DE DETALLES
    ========================================================= */
 
-.container.mt-4 .collapse .card {
+.admin-sales-page .collapse .card {
     border: 1px solid var(--color-border);
     border-radius: 12px;
     background-color: var(--color-surface);
@@ -150,7 +150,7 @@
    TÍTULO DETALLES
    ========================================================= */
 
-.container.mt-4 .collapse .card h6 {
+.admin-sales-page .collapse .card h6 {
     color: var(--color-brand-dark);
     font-weight: 700;
     margin-bottom: 15px;
@@ -160,16 +160,16 @@
    TABLA INTERNA
    ========================================================= */
 
-.container.mt-4 .collapse .table {
+.admin-sales-page .collapse .table {
     margin-bottom: 0;
     background-color: var(--color-surface);
 }
 
-.container.mt-4 .collapse .table thead {
+.admin-sales-page .collapse .table thead {
     background-color: #f1e9e3;
 }
 
-.container.mt-4 .collapse .table thead th {
+.admin-sales-page .collapse .table thead th {
     color: var(--color-brand-dark);
     font-size: 13px;
     font-weight: 700;
@@ -181,7 +181,7 @@
    CELDAS TABLA INTERNA
    ========================================================= */
 
-.container.mt-4 .collapse .table tbody td {
+.admin-sales-page .collapse .table tbody td {
     padding: 10px;
     font-size: 13px;
     vertical-align: middle;
@@ -191,7 +191,7 @@
    PRECIO UNITARIO
    ========================================================= */
 
-.container.mt-4 .collapse .table tbody td:nth-child(3) {
+.admin-sales-page .collapse .table tbody td:nth-child(3) {
     white-space: nowrap;
 }
 
@@ -199,7 +199,7 @@
    SUBTOTAL
    ========================================================= */
 
-.container.mt-4 .collapse .table tbody td:nth-child(4) {
+.admin-sales-page .collapse .table tbody td:nth-child(4) {
     color: var(--color-success);
     font-weight: 700;
     white-space: nowrap;
@@ -209,7 +209,7 @@
    SIN DETALLES
    ========================================================= */
 
-.container.mt-4 .collapse .text-muted {
+.admin-sales-page .collapse .text-muted {
     text-align: center;
     padding: 15px;
 }
@@ -218,7 +218,7 @@
    ALERTA
    ========================================================= */
 
-.container.mt-4 .alert-info {
+.admin-sales-page .alert-info {
     border-radius: 10px;
     padding: 15px 20px;
     font-weight: 600;
@@ -233,16 +233,16 @@
    --------------------------------------------------------- */
 
 @media (max-width: 992px) {
-    .container.mt-4 {
+    .admin-sales-page {
         padding: 0 15px;
     }
 
-    .container.mt-4 > .table-responsive > .table {
+    .admin-sales-page > .table-responsive > .table {
         font-size: 13px;
     }
 
-    .container.mt-4 .table-dark th,
-    .container.mt-4 > .table-responsive > .table > tbody > tr > td {
+    .admin-sales-page .table-dark th,
+    .admin-sales-page > .table-responsive > .table > tbody > tr > td {
         padding: 10px 8px;
     }
 }
@@ -252,12 +252,12 @@
    --------------------------------------------------------- */
 
 @media (max-width: 768px) {
-    .container.mt-4 {
+    .admin-sales-page {
         margin-top: 20px !important;
         padding: 0 10px;
     }
 
-    .container.mt-4 h2 {
+    .admin-sales-page h2 {
         font-size: 22px;
     }
 
@@ -267,7 +267,7 @@
        del desplazamiento horizontal.
     */
 
-    .container.mt-4 .collapse .card {
+    .admin-sales-page .collapse .card {
         padding: 5px;
     }
 }
@@ -277,16 +277,16 @@
    --------------------------------------------------------- */
 
 @media (max-width: 576px) {
-    .container.mt-4 h2 {
+    .admin-sales-page h2 {
         font-size: 20px;
     }
 
-    .container.mt-4 .btn-info {
+    .admin-sales-page .btn-info {
         font-size: 12px;
         padding: 6px 9px;
     }
 
-    .container.mt-4 .collapse .card {
+    .admin-sales-page .collapse .card {
         padding: 2px;
     }
 }

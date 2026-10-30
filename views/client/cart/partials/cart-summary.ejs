@@ -1,16 +1,16 @@
 <aside class="summary-section">
   <div class="summary-card">
-    <h2 class="text-sumary">Resumen</h2>
+    <h2 class="summary-text">Resumen</h2>
     <div class="divider"></div>
 
     <div class="summary-line">
-      <span class="text-sumary">Subtotal</span>
-      <span class="text-sumary" id="subtotal">$<%= subtotal.toFixed(2) %></span>
+      <span class="summary-text">Subtotal</span>
+      <span class="summary-text" id="subtotal">$<%= subtotal.toFixed(2) %></span>
     </div>
 
     <div class="summary-line">
-      <span class="text-sumary">Envío</span>
-      <span class="text-sumary free" id="shipping">
+      <span class="summary-text">Envío</span>
+      <span class="summary-text free" id="shipping">
         <%= costoEnvio === 0 ? 'Gratis' : '$' + Number(costoEnvio).toLocaleString('es-CO') %>
       </span>
     </div>
@@ -18,8 +18,8 @@
     <div class="divider"></div>
 
     <div class="summary-line total">
-      <span class="text-sumary">Total</span>
-      <span class="text-sumary total-amount" id="total">
+      <span class="summary-text">Total</span>
+      <span class="summary-text total-amount" id="total">
         $<%= Number(total).toLocaleString('es-CO') %>
       </span>
       <small class="shipping-hint" id="shippingHint">

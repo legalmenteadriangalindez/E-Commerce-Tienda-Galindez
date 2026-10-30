@@ -10,7 +10,7 @@ body {
 }
 
 /* CONTENEDOR */
-.container {
+.auth-shell {
     display: flex;
     height: 100vh;
 }

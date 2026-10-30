@@ -61,3 +61,42 @@ test('la estructura core contiene reset, layout y tema canónicos', () => {
         assert.equal(fs.existsSync(path.join(cssRoot, 'core', filename)), true, `core/${filename}`);
     }
 });
+
+test('las capas globales no publican selectores heredados sin ámbito', () => {
+    const layoutSource = fs.readFileSync(path.join(cssRoot, 'core', 'layout.css'), 'utf8');
+    const headerSource = fs.readFileSync(path.join(cssRoot, 'core', 'header.css'), 'utf8');
+    const footerSource = fs.readFileSync(path.join(cssRoot, 'core', 'footer.css'), 'utf8');
+
+    assert.doesNotMatch(layoutSource, /(?:^|[,{\s])\.container\s*\{/);
+    assert.doesNotMatch(layoutSource, /\.(?:pay-link|descripcion-corta|text-sumary)\b/);
+    assert.match(layoutSource, /\.payment-link\b/);
+    assert.match(layoutSource, /\.product-description-truncated\b/);
+    assert.match(layoutSource, /\.summary-text\b/);
+
+    assert.doesNotMatch(headerSource, /(?:^|[,{\s])\.(?:navbar|nav-link|nav-right|search-form|profile-btn)\s*\{/);
+    assert.match(headerSource, /\.app-navbar\b/);
+    assert.match(headerSource, /\.app-nav-link\b/);
+    assert.match(headerSource, /\.app-search-form\b/);
+
+    assert.doesNotMatch(
+        footerSource,
+        /(?:^|[,{\s])\.(?:footer|footer-container|footer-col|socials|footer-bottom)\s*\{/
+    );
+    assert.match(footerSource, /\.app-footer\b/);
+    assert.match(footerSource, /\.app-footer-container\b/);
+});
+
+test('las vistas usan contenedores con intención de página', () => {
+    const login = fs.readFileSync(path.join(viewsRoot, 'client', 'auth', 'login.ejs'), 'utf8');
+    const register = fs.readFileSync(path.join(viewsRoot, 'client', 'auth', 'register.ejs'), 'utf8');
+    const brandForm = fs.readFileSync(path.join(viewsRoot, 'admin', 'brands', 'create_marca.ejs'), 'utf8');
+    const profile = fs.readFileSync(path.join(viewsRoot, 'admin', 'profile', 'profile.ejs'), 'utf8');
+
+    for (const source of [login, register]) {
+        assert.match(source, /class="auth-shell"/);
+        assert.doesNotMatch(source, /class="container"/);
+    }
+    assert.match(brandForm, /class="admin-brand-form"/);
+    assert.doesNotMatch(brandForm, /class="container mt-4"/);
+    assert.match(profile, /class="profile-container"/);
+});

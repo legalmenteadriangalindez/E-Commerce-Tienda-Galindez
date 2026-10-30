@@ -22,14 +22,14 @@ body {
    TITULO PRINCIPAL
    ========================================================= */
 
-.container h1 {
+.cart-page-header h1 {
     color: var(--color-brand-dark);
     font-weight: 700;
     margin-top: 25px;
     margin-bottom: 8px;
 }
 
-.container + p {
+.cart-page-subtitle {
     max-width: 1100px;
     margin: 0 auto 25px;
     padding: 0 20px;
@@ -580,7 +580,7 @@ body {
    TITULO RESUMEN
    ========================================================= */
 
-.text-sumary {
+.summary-card .summary-text {
     color: var(--color-surface);
 }
 
@@ -767,7 +767,7 @@ body {
    LINK DE PAGO
    ========================================================= */
 
-.pay-link {
+.payment-link {
     text-decoration: none;
 
     color: inherit;
@@ -850,11 +850,11 @@ body {
 ----------------------------------------- */
 
 @media (max-width: 576px) {
-    .container h1 {
+    .cart-page-header h1 {
         font-size: 1.5rem;
     }
 
-    .container + p {
+    .cart-page-subtitle {
         font-size: 0.85rem;
 
         padding: 0 15px;

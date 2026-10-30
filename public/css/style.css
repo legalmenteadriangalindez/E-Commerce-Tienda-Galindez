@@ -1,4 +1,4 @@
 /* Alias de compatibilidad. La fuente canónica está en core/reset.css y
-   core/layout.css. */
+   core/layout.css. No contiene selectores globales propios. */
 @import url('/css/core/reset.css');
 @import url('/css/core/layout.css');

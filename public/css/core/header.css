@@ -1,5 +1,5 @@
 /* ================= BASE ================= */ /* ================= NAVBAR ================= */
-.navbar {
+.app-navbar {
     background-color: var(--color-brand-dark);
     border-bottom: 3px solid var(--color-brand-accent);
     padding: 12px 24px;
@@ -8,7 +8,7 @@
 }
 
 /* ================= BRAND ================= */
-.brand-text {
+.app-brand-text {
     font-weight: 700; /* más fuerte */
     font-size: 1.4rem; /* más protagonista */
     color: var(--color-surface);
@@ -17,29 +17,29 @@
 }
 
 /* efecto sutil hover */
-.navbar-brand:hover .brand-text {
+.app-navbar .navbar-brand:hover .app-brand-text {
     color: var(--color-brand-tan);
 }
 
 /* ================= LINKS ================= */
-.nav-link {
+.app-nav-link {
     color: var(--color-text-on-dark-muted);
     position: relative;
     transition: 0.3s;
     font-weight: 500;
 }
 
-.nav-link i {
+.app-nav-link i {
     font-size: 18px;
     margin-right: 5px;
 }
 
-.nav-link:hover {
+.app-nav-link:hover {
     color: var(--color-brand-tan);
 }
 
 /* underline animation */
-.nav-link::after {
+.app-nav-link::after {
     content: '';
     position: absolute;
     bottom: -4px;
@@ -50,19 +50,19 @@
     transition: 0.3s;
 }
 
-.nav-link:hover::after {
+.app-nav-link:hover::after {
     width: 100%;
 }
 
 /* ================= RIGHT SIDE ================= */
-.nav-right {
+.app-nav-right {
     display: flex;
     align-items: center;
     gap: 14px;
 }
 
 /* ================= SEARCH ================= */
-.search-form {
+.app-search-form {
     width: 100%;
     display: flex;
     background: var(--color-surface);
@@ -70,7 +70,7 @@
     overflow: hidden;
 }
 
-.search-form input {
+.app-search-form input {
     border: none;
     padding: 7px 12px;
     outline: none;
@@ -79,7 +79,7 @@
     min-width: 0;
 }
 
-.search-form button {
+.app-search-form button {
     border: none;
     background: var(--color-brand-accent);
     color: white;
@@ -87,25 +87,25 @@
     transition: 0.3s;
 }
 
-.search-form button:hover {
+.app-search-form button:hover {
     background: var(--color-brand-accent-dark);
 }
 
 /* ================= PROFILE ================= */
-.profile-btn {
+.app-profile-btn {
     color: var(--color-surface);
     font-size: 26px; /* más visible */
     cursor: pointer;
     transition: 0.3s;
 }
 
-.profile-btn:hover {
+.app-profile-btn:hover {
     color: var(--color-brand-tan);
     transform: scale(1.1);
 }
 
 /* ================= DROPDOWN ================= */
-.dropdown-menu {
+.app-navbar .dropdown-menu {
     border-radius: 12px;
     padding: 6px;
     box-shadow: var(--shadow-dropdown);
@@ -114,21 +114,21 @@
 
 /* ================= TABLET ================= */
 @media (max-width: 991px) {
-    .nav-right {
+    .app-nav-right {
         flex-direction: column;
         width: 100%;
         margin-top: 12px;
     }
 
-    .search-form {
+    .app-search-form {
         width: 100%;
     }
 
-    .search-form input {
+    .app-search-form input {
         width: 100%;
     }
 
-    .profile-btn {
+    .app-profile-btn {
         text-align: center;
         width: 100%;
     }
@@ -136,30 +136,30 @@
 
 /* ================= MOBILE ================= */
 @media (max-width: 576px) {
-    .navbar {
+    .app-navbar {
         padding: 8px 12px;
     }
 
-    .brand-text {
+    .app-brand-text {
         font-size: 1.1rem;
     }
 
-    .profile-btn {
+    .app-profile-btn {
         font-size: 22px;
     }
 
-    .search-form input {
+    .app-search-form input {
         min-width: 100%;
     }
 }
 
 /* Opcional: pequeño detalle visual admin */
-.navbar .bi-shield-lock {
+.app-navbar .bi-shield-lock {
     color: var(--color-brand-accent);
     font-size: 20px;
 }
 
-.cart-badge {
+.app-cart-badge {
     position: absolute;
     top: -5px;
     right: -10px;

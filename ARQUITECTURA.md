@@ -56,6 +56,10 @@ comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
   migran gradualmente a `public/css/pages/`; los archivos CSS que permanecen
   en la raíz son alias temporales para no romper enlaces antiguos. Los
   componentes deben reutilizar estos tokens y no declarar paletas locales.
+  `core/layout.css` solo expone utilidades con intención (`.payment-link`,
+  `.product-description-truncated` y `.summary-text`), nunca `.container`.
+  La navegación y el pie usan prefijos `.app-*` para que sus reglas no
+  interfieran con Bootstrap ni con las pantallas de catálogo, carrito o pago.
 - Las vistas grandes se componen con parciales por responsabilidad: `views/include/orders/`
   contiene bloques compartidos de pedidos; carrito, reseñas y puntos de pago mantienen
   sus parciales junto a la vista (`partials/`). Los parciales no cargan CSS ni JavaScript;

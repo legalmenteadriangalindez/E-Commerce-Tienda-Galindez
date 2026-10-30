@@ -128,7 +128,7 @@ main .table tbody tr:hover {
    DESCRIPCIÓN
    ========================================================= */
 
-.descripcion-corta {
+.product-description-truncated {
     max-width: 220px;
 
     color: var(--color-text-muted);
