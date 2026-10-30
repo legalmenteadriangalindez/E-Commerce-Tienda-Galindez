@@ -74,6 +74,12 @@ test('las vistas usan la ruta canónica de recursos y los parciales no repiten e
     }
 });
 
+test('conserva /assets como alias de compatibilidad sin duplicar archivos', () => {
+    const appConfig = fs.readFileSync(path.join(root, 'server', 'config', 'appConfig.js'), 'utf8');
+    assert.match(appConfig, /app\.use\('\/assets',\s*express\.static\(publicDirectory\)\)/);
+    assert.equal(fs.existsSync(path.join(root, 'assets')), false);
+});
+
 test('todos los includes EJS apuntan a archivos existentes', () => {
     const missing = [];
     for (const filename of viewFiles()) {

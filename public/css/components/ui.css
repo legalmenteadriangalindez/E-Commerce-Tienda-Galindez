@@ -63,6 +63,16 @@
     box-shadow: var(--shadow-soft);
 }
 
+.ui-card--form {
+    padding: clamp(1.25rem, 3vw, 1.9rem);
+}
+
+.ui-card-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
 .ui-button {
     align-items: center;
     border: 1px solid transparent;
@@ -171,14 +181,41 @@
     gap: 1rem;
 }
 
+.ui-form-grid {
+    display: grid;
+    gap: 1rem 1.25rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .ui-form__group {
     display: grid;
     gap: 0.4rem;
 }
 
+.ui-form__group--full {
+    grid-column: 1 / -1;
+}
+
 .ui-form__label {
     color: var(--color-brand-dark);
     font-weight: 600;
+}
+
+.ui-form__control {
+    width: 100%;
+}
+
+.ui-form__help {
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
+}
+
+.ui-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    justify-content: flex-end;
+    margin-top: 0.75rem;
 }
 
 .ui-input,
@@ -229,6 +266,18 @@
     padding: 1.25rem;
 }
 
+.ui-modal__header,
+.ui-modal__footer {
+    align-items: center;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+}
+
+.ui-modal__body {
+    margin: 1rem 0;
+}
+
 @media (max-width: 640px) {
     .ui-button {
         width: 100%;
@@ -237,5 +286,17 @@
     .ui-table th,
     .ui-table td {
         padding: 0.65rem 0.75rem;
+    }
+
+    .ui-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ui-form__group--full {
+        grid-column: auto;
+    }
+
+    .ui-form__actions > * {
+        flex: 1 1 100%;
     }
 }

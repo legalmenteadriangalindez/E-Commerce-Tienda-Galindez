@@ -9,7 +9,7 @@
     <p>Modifica el nombre de la categoría seleccionada</p>
   </div>
 
-  <div class="form-card ui-card small-card">
+  <div class="form-card ui-card ui-card--form small-card">
 
     <form action="/update-categoria/<%= category._id %>" method="POST" class="category-form">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">

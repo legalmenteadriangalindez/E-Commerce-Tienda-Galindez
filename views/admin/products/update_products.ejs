@@ -9,7 +9,7 @@
     <p>Actualiza la información del producto y gestiona sus imágenes</p>
   </div>
 
-  <div class="form-card ui-card">
+  <div class="form-card ui-card ui-card--form">
 
     <form action="/api/productos/<%= producto._id %>?_method=PUT"
           method="POST"
@@ -17,7 +17,7 @@
           class="product-form">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-      <div class="form-grid">
+      <div class="form-grid ui-form-grid">
 
         <div class="form-group full">
           <label>Nombre</label>

@@ -9,12 +9,12 @@
     <p>Actualiza la información del usuario registrado</p>
   </div>
 
-  <div class="form-card ui-card">
+  <div class="form-card ui-card ui-card--form">
 
     <form action="/update-user/<%= user._id %>" method="POST" class="user-form">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-      <div class="form-grid">
+      <div class="form-grid ui-form-grid">
 
         <!-- Nombre -->
         <div class="form-group full">

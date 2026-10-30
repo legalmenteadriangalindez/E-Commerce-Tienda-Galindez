@@ -9,12 +9,12 @@
     <p>Registra nuevos proveedores para gestionar tu cadena de suministro</p>
   </div>
 
-  <div class="form-card ui-card">
+  <div class="form-card ui-card ui-card--form">
 
     <form action="/create-proveedor" method="POST" class="provider-form">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-      <div class="form-grid">
+      <div class="form-grid ui-form-grid">
 
   <div class="form-group full">
     <label>Nombre del proveedor</label>

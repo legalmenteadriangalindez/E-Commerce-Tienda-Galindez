@@ -48,10 +48,11 @@ comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
 - El JavaScript ejecutable va en archivos `.js`; los estilos van en `.css`.
   JSON-LD es la excepción declarativa en EJS. Los correos pueden tener estilos
   inline por compatibilidad con clientes de correo.
-- `public/css/theme.css` contiene los colores comunes y `public/css/components/ui.css`
-  concentra los componentes visuales reutilizables;
-  se carga antes del CSS de cada página. Los componentes deben reutilizar estos
-  tokens y no declarar paletas locales.
+- `public/css/theme.css` contiene los colores comunes; `public/css/components/ui.css`
+  concentra botones, tablas, formularios, tarjetas y modales; y
+  `public/css/components/admin.css` contiene la estructura compartida del panel.
+  Estas hojas se cargan antes del CSS de cada página. Los componentes deben
+  reutilizar estos tokens y no declarar paletas locales.
 - Las vistas grandes se componen con parciales por responsabilidad: `views/include/orders/`
   contiene bloques compartidos de pedidos; carrito, reseñas y puntos de pago mantienen
   sus parciales junto a la vista (`partials/`). Los parciales no cargan CSS ni JavaScript;

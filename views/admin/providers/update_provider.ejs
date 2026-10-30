@@ -9,12 +9,12 @@
     <p>Actualiza la información del proveedor registrado</p>
   </div>
 
-  <div class="form-card ui-card">
+  <div class="form-card ui-card ui-card--form">
 
     <form action="/update-proveedor/<%= provider._id %>" method="POST" class="provider-form">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-      <div class="form-grid">
+      <div class="form-grid ui-form-grid">
 
         <!-- Nombre -->
         <div class="form-group full">

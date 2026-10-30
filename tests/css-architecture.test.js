@@ -44,3 +44,14 @@ test('las vistas que cargan el tema también exponen los componentes reutilizabl
 
     assert.deepEqual(offenders, []);
 });
+
+test('los componentes visuales tienen una hoja canónica y el área administrativa su capa común', () => {
+    const uiSource = fs.readFileSync(path.join(cssRoot, 'components', 'ui.css'), 'utf8');
+    for (const selector of ['.ui-button', '.ui-table', '.ui-form', '.ui-card', '.ui-modal']) {
+        assert.match(uiSource, new RegExp(`${selector.replace('.', '\\.')}(?:\\W|$)`));
+    }
+
+    const adminHeader = fs.readFileSync(path.join(viewsRoot, 'include', '_headerAdmin.ejs'), 'utf8');
+    assert.match(adminHeader, /\/css\/components\/admin\.css/);
+    assert.ok(fs.existsSync(path.join(cssRoot, 'components', 'admin.css')));
+});
