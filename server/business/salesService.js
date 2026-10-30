@@ -1,12 +1,12 @@
 const Sale = require('../model/sales');
 const SaleDetail = require('../model/saleDetails');
-const salesCsv = require('../services/salesCsv');
+const analyticsExport = require('./analytics/analyticsExport');
 const adminPagination = require('../services/adminPagination');
 const queryPage = require('./queryPage');
 const { validId, BusinessError } = require('./errors');
 
 async function list(query = {}) {
-    const filter = await salesCsv.saleFindFilter(salesCsv.parseFilters(query));
+    const filter = await analyticsExport.saleFindFilter(analyticsExport.parseFilters(query));
     const page = await queryPage(Sale, query, {
         filter,
         sort: { createdAt: -1, _id: -1 },
@@ -55,8 +55,4 @@ async function details(venta, query = {}) {
     return { items, pagination };
 }
 
-function csvCursor(filters) {
-    return Sale.aggregate(salesCsv.aggregatePipeline(filters)).allowDiskUse(true).cursor({ batchSize: 500 });
-}
-
-module.exports = { list, get, details, csvCursor };
+module.exports = { list, get, details };

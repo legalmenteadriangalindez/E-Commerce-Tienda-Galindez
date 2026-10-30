@@ -20,6 +20,7 @@ module.exports = {
     normalizePaymentMethod: shared.normalizePaymentMethod,
     isCashOnDelivery: shared.isCashOnDelivery,
     cents: shared.cents,
+    isValidObjectId: shared.isValidObjectId,
     normalizedCart: shared.normalizedCart,
     customerData: shared.customerData,
     validTransactionId: shared.validTransactionId,

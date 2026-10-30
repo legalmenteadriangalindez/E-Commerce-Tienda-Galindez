@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const salesCsv = require('../server/services/salesCsv');
+const salesCsv = require('../server/business/analytics/analyticsExport');
 
 test('normaliza filtros de exportación y conserva el rango colombiano', () => {
     const filters = salesCsv.parseFilters({

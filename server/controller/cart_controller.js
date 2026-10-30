@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const commerce = require('../business/commerceService');
 const cartService = require('../business/cartService');
 const orders = require('../business/orderService');
@@ -15,7 +14,7 @@ function invalidate(req) {
 exports.add_to_carrito = wrap(async (req, res) => {
     const { productoId } = req.body;
     const cantidad = Number(req.body.cantidad);
-    if (!mongoose.isObjectIdOrHexString(productoId) || !Number.isInteger(cantidad) || cantidad < 1 || cantidad > 999) {
+    if (!commerce.isValidObjectId(productoId) || !Number.isInteger(cantidad) || cantidad < 1 || cantidad > 999) {
         throw new commerce.CommerceError('Producto o cantidad inválida.');
     }
     const cart = req.session.cart || [];
@@ -32,7 +31,7 @@ exports.get_carrito = wrap(async (req, res) => {
     res.json({ success: true, totalItems: cart.length, cart, quote, shippingPolicy });
 });
 exports.remove_from_carrito = wrap(async (req, res) => {
-    if (!mongoose.isObjectIdOrHexString(req.body.productoId)) throw new commerce.CommerceError('Producto inválido.');
+    if (!commerce.isValidObjectId(req.body.productoId)) throw new commerce.CommerceError('Producto inválido.');
     req.session.cart = (req.session.cart || []).filter((item) => item.productoId !== req.body.productoId);
     invalidate(req);
     await save(req);
@@ -129,7 +128,7 @@ exports.wompiWebhook = wrap(async (req, res) => {
     return res.sendStatus(200);
 });
 exports.retryPayment = wrap(async (req, res) => {
-    if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new commerce.CommerceError('Pedido inválido.');
+    if (!commerce.isValidObjectId(req.params.id)) throw new commerce.CommerceError('Pedido inválido.');
     const order = await orders.findRetryablePaymentOrder(req.params.id, req.session.user._id, commerce.WOMPI_METHODS);
     if (!order) throw new commerce.CommerceError('Pedido no encontrado.', 404);
     if (await payments.hasPendingEvent(order._id))

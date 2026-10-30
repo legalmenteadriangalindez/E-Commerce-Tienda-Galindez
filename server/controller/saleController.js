@@ -1,4 +1,4 @@
-const salesCsv = require('../services/salesCsv');
+const analyticsExport = require('../business/analytics/analyticsExport');
 const adminPagination = require('../services/adminPagination');
 const analytics = require('../business/analyticsService');
 const sales = require('../business/salesService');
@@ -11,9 +11,9 @@ exports.findOne = wrap(async (req, res) => res.json(await sales.get(req.params.i
 exports.exportCsv = async (req, res) => {
     let filters;
     try {
-        filters = salesCsv.parseFilters(req.query);
+        filters = analyticsExport.parseFilters(req.query);
     } catch (error) {
-        if (error instanceof salesCsv.SaleExportFilterError) {
+        if (error instanceof analyticsExport.SaleExportFilterError) {
             return res.status(error.status).json({ message: error.message });
         }
         console.error('ERROR VALIDANDO EXPORTACIÓN DE VENTAS:', error.message);
@@ -25,23 +25,23 @@ exports.exportCsv = async (req, res) => {
     const filename = `ventas${suffix}.csv`;
 
     try {
-        // El cursor y la agregación viven en el servicio de ventas; el
+        // El cursor y la agregación viven en el módulo de exportación; el
         // controlador solo transforma sus filas en una respuesta HTTP.
-        const cursor = sales.csvCursor(filters);
+        const cursor = analyticsExport.csvCursor(filters);
 
         res.status(200);
         res.set({
             'Content-Type': 'text/csv; charset=utf-8',
             'Content-Disposition': `attachment; filename="${filename}"`,
             'Cache-Control': 'no-store',
-            'X-Export-Row-Limit': String(salesCsv.maxRows()),
+            'X-Export-Row-Limit': String(analyticsExport.maxRows()),
         });
         // BOM: Excel reconoce correctamente tildes y caracteres como ñ.
         res.write('\uFEFF');
-        res.write(salesCsv.header());
+        res.write(analyticsExport.header());
 
         for await (const row of cursor) {
-            res.write(salesCsv.row(row));
+            res.write(analyticsExport.row(row));
         }
 
         return res.end();

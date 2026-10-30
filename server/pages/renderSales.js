@@ -2,7 +2,7 @@ const { wrap } = require('../http/handlers');
 const pagination = require('../services/catalogPagination');
 const sales = require('../business/salesService');
 const analytics = require('../business/analyticsService');
-const salesCsv = require('../services/salesCsv');
+const analyticsExport = require('../business/analytics/analyticsExport');
 exports.sales = wrap(async (req, res) => {
     const filters = Object.fromEntries(
         ['from', 'to', 'estadoPago', 'canal'].map((key) => [
@@ -16,8 +16,8 @@ exports.sales = wrap(async (req, res) => {
         sales: result.items,
         pagination: pagination.buildPagination(req, result.pagination),
         filters,
-        paymentStatuses: salesCsv.PAYMENT_STATUSES,
-        channels: salesCsv.CHANNELS,
+        paymentStatuses: analyticsExport.PAYMENT_STATUSES,
+        channels: analyticsExport.CHANNELS,
         exportUrl: '/api/ventas/export.csv' + (query ? '?' + query : ''),
     });
 });

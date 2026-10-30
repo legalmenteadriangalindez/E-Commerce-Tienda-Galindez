@@ -1,9 +1,8 @@
 const crypto = require('node:crypto');
-const mongoose = require('mongoose');
 const checkout = require('../business/checkoutService');
 const payments = require('../business/paymentService');
 const orders = require('../business/orderService');
-const { CommerceError, validTransactionId } = require('../business/commerceShared');
+const { CommerceError, isValidObjectId, validTransactionId } = require('../business/commerceShared');
 const raffle = require('../business/raffleService');
 const catalogPagination = require('../services/catalogPagination');
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
@@ -103,7 +102,7 @@ exports.myOrders = wrap(async (req, res) => {
     });
 });
 exports.orderStatus = wrap(async (req, res) => {
-    if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new CommerceError('Pedido no encontrado.', 404);
+    if (!isValidObjectId(req.params.id)) throw new CommerceError('Pedido no encontrado.', 404);
     let order = await orders.findCustomerOrder(req.params.id, req.session.user._id);
     if (!order) throw new CommerceError('Pedido no encontrado.', 404);
     let notice = '';
@@ -173,7 +172,7 @@ exports.adminPayments = wrap(async (req, res) => {
 });
 exports.confirmCash = wrap(async (req, res) => {
     if (req.body.confirmar !== 'si') throw new CommerceError('Confirma que recibiste el dinero.');
-    if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new CommerceError('Pedido inválido.');
+    if (!isValidObjectId(req.params.id)) throw new CommerceError('Pedido inválido.');
     const order = await orders.confirmCash(req.params.id, req.session.user._id);
     if (order.claveCheckout === `CAJA:${req.session.user._id}:${req.session.claveIdempotenciaCaja}`) {
         req.session.cart = [];

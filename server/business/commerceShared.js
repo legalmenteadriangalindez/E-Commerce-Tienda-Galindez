@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
 const money = require('../services/money');
+const schemas = require('../validation/schemas');
 
 /**
  * Error de dominio utilizado por los flujos de comercio.
@@ -58,6 +58,10 @@ function textField(value, label, max, required = true) {
     return value.trim();
 }
 
+function isValidObjectId(value) {
+    return schemas.objectId.safeParse(value).success;
+}
+
 function customerData(body) {
     const email = textField(body.email, 'correo', 254).toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new CommerceError('Correo inválido.');
@@ -83,13 +87,7 @@ function normalizedCart(cart) {
     return cart.map((item) => {
         const id = String(item.productoId || item.producto || '');
         const cantidad = Number(item.cantidad);
-        if (
-            !mongoose.isObjectIdOrHexString(id) ||
-            seen.has(id) ||
-            !Number.isSafeInteger(cantidad) ||
-            cantidad < 1 ||
-            cantidad > 999
-        ) {
+        if (!isValidObjectId(id) || seen.has(id) || !Number.isSafeInteger(cantidad) || cantidad < 1 || cantidad > 999) {
             throw new CommerceError('Producto o cantidad inválida en el carrito.');
         }
         seen.add(id);
@@ -111,6 +109,7 @@ module.exports = {
     cents,
     textField,
     customerData,
+    isValidObjectId,
     normalizedCart,
     validTransactionId,
 };
