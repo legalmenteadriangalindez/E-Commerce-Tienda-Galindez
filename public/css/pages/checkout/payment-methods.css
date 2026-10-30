@@ -1,0 +1,114 @@
+/* métodos de pago estilo cards */
+.payment-methods {
+    margin: 1.5rem 0 1.8rem 0;
+}
+.payment-options {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.payment-options legend {
+    width: 100%;
+    margin-bottom: 0.75rem;
+    color: var(--color-brand-dark);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+.payment-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.9rem 1rem;
+    border: 1.5px solid #eeddcf;
+    border-radius: 18px;
+    background: #fffcf9;
+    cursor: pointer;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+.payment-option:has(input:checked) {
+    border-color: var(--color-brand-accent);
+    background: #fef4ed;
+    box-shadow: 0 4px 12px rgba(216, 92, 50, 0.12);
+}
+.payment-option input[type='radio'] {
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+    margin: 0.1rem 0 0;
+    padding: 0;
+    accent-color: var(--color-brand-accent);
+}
+.payment-option span {
+    display: grid;
+    gap: 0.2rem;
+}
+.payment-option strong {
+    color: var(--color-brand-dark);
+}
+.payment-option small {
+    color: #8d6c58;
+    font-size: 0.78rem;
+    font-weight: 400;
+    line-height: 1.35;
+}
+.methods-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+.method-option {
+    flex: 1;
+    background: #fffcf9;
+    border: 1.5px solid #eeddcf;
+    border-radius: 24px;
+    padding: 0.8rem 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.method-option.selected {
+    border-color: var(--color-brand-accent);
+    background: #fef4ed;
+    box-shadow: 0 4px 12px rgba(216, 92, 50, 0.15);
+}
+.method-option input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-brand-accent);
+    margin: 0;
+}
+.method-option label {
+    margin: 0;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--color-brand-dark);
+}
+.method-option i {
+    font-size: 1.4rem;
+    color: var(--color-brand-accent);
+}
+
+.payment-details-container {
+    background: #fffaf5;
+    border-radius: 24px;
+    padding: 1.2rem;
+    margin-top: 1rem;
+    border: 1px solid #f1e2d6;
+    transition: all 0.2s;
+}
+
+.card-row {
+    display: flex;
+    gap: 1rem;
+}

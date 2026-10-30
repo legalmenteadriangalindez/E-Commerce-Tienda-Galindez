@@ -1,6 +1,16 @@
 const css = (...names) => names.map((name) => `/css/${name}`);
 const js = (...names) => names.map((name) => `/js/${name}`);
 
+const checkoutStyles = () =>
+    css(
+        'pages/checkout/layout.css',
+        'pages/checkout/form.css',
+        'pages/checkout/payment-methods.css',
+        'pages/checkout/summary.css',
+        'pages/checkout/responsive.css'
+    );
+const pointOfSaleStyles = () => [...checkoutStyles(), ...css('add-product-billing-point.css')];
+
 // Recursos propios de cada vista. Los estilos base de navegación, tema y pie
 // se cargan en los encabezados; todo lo demás se declara aquí para no enviar
 // CSS o JavaScript de otros módulos al navegador.
@@ -49,27 +59,35 @@ const resources = {
             'pages/cart/items.css',
             'pages/cart/summary.css',
             'pages/cart/responsive.css',
-            'pages/cart/pantry.css',
+            'pages/cart/pantry-layout.css',
+            'pages/cart/pantry-items.css',
+            'pages/cart/pantry-summary.css',
+            'pages/cart/pantry-responsive.css',
             'pages/cart/add-products.css'
         ),
-        pageJs: js('client_cart.js'),
+        pageJs: js('cart/cartView.js', 'cart/cartApi.js', 'client_cart.js'),
     },
     'client/profile/profile': { pageCss: css('profile.css') },
     'client/profile/Edit_profile': { pageCss: css('pages/edit-profile.css') },
-    'client/payment/payment_point': { pageCss: css('payment_point.css') },
+    'client/payment/payment_point': { pageCss: checkoutStyles() },
     'client/payment/orders': { pageCss: css('commerce.css') },
     'client/payment/order_status': { pageCss: css('commerce.css', 'delivery-tracking.css') },
-    'client/raffle/index': { pageCss: css('commerce.css', 'raffle.css') },
+    'client/raffle/index': { pageCss: css('commerce.css', 'pages/raffle/public.css') },
     'client/legal/page': { pageCss: css('legal.css') },
     'client/auth/forgot_password': { pageCss: css('commerce.css') },
     'client/auth/reset_password': { pageCss: css('commerce.css') },
 
     'admin/home/Billing_point': {
-        pageCss: css('payment_point.css', 'add-product-billing-point.css'),
-        pageJs: js('AdminPaymentPoint.js', 'commerce-ui.js'),
+        pageCss: pointOfSaleStyles(),
+        pageJs: js(
+            'point-of-sale/pointOfSaleApi.js',
+            'point-of-sale/pointOfSaleView.js',
+            'AdminPaymentPoint.js',
+            'commerce-ui.js'
+        ),
     },
-    'admin/payment/payment_point': { pageCss: css('payment_point.css') },
-    'admin/payment/checkout_confirmation': { pageCss: css('payment_point.css') },
+    'admin/payment/payment_point': { pageCss: checkoutStyles() },
+    'admin/payment/checkout_confirmation': { pageCss: checkoutStyles() },
     'admin/payment/manage': { pageCss: css('commerce.css', 'admin-pagination.css') },
     'admin/analytics/index': { pageCss: css('analytics.css') },
     'admin/analytics/stock': { pageCss: css('pages/stock.css', 'admin-pagination.css') },
@@ -79,7 +97,7 @@ const resources = {
     'admin/orders/detail_orders': { pageCss: css('detail_order.css', 'delivery-tracking.css') },
     'admin/orders/update_order': { pageCss: css('update_order.css') },
     'admin/delivery/index': { pageCss: css('admin-delivery.css', 'admin-pagination.css') },
-    'admin/raffle/manage': { pageCss: css('commerce.css', 'raffle.css', 'admin-pagination.css') },
+    'admin/raffle/manage': { pageCss: css('commerce.css', 'pages/raffle/admin.css', 'admin-pagination.css') },
     'admin/reviews/read_reviews': {
         pageCss: css('components/admin-reviews.css'),
         pageJs: js('admin-reviews.js'),

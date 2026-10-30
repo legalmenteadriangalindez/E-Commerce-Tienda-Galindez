@@ -1,0 +1,38 @@
+/* formulario */
+.input-group {
+    margin-bottom: 1.2rem;
+}
+
+.input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+label {
+    font-weight: 500;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+    display: block;
+    color: var(--color-brand-dark);
+}
+
+input,
+select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1.5px solid #e8ddd3;
+    border-radius: 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    background-color: var(--color-surface);
+    color: var(--color-brand-dark);
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--color-brand-accent);
+    box-shadow: 0 0 0 3px rgba(216, 92, 50, 0.2);
+}

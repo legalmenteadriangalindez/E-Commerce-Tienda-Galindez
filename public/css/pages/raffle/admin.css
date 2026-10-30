@@ -1,0 +1,211 @@
+.raffle-admin-page {
+    max-width: 1180px;
+    margin: 32px auto;
+    padding: 0 20px;
+}
+.raffle-admin-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: end;
+    margin-bottom: 20px;
+}
+.raffle-admin-heading h1 {
+    margin: 0.2rem 0;
+}
+.raffle-back-link {
+    color: #235d74;
+}
+.raffle-admin-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+    gap: 22px;
+}
+.raffle-field {
+    display: block;
+    margin: 0 0 16px;
+}
+.raffle-field > span {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.raffle-field input[type='text'],
+.raffle-field input[type='number'],
+.raffle-field input[type='file'],
+.raffle-field textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bac7cf;
+    border-radius: 7px;
+    box-sizing: border-box;
+}
+.raffle-field small {
+    display: block;
+    margin-top: 6px;
+    color: #65717c;
+    line-height: 1.4;
+}
+.raffle-toggle {
+    display: flex;
+    gap: 9px;
+    align-items: center;
+    font-weight: 700;
+}
+.raffle-toggle input {
+    width: 18px;
+    height: 18px;
+}
+.raffle-admin-page button {
+    padding: 10px 15px;
+    border: 0;
+    border-radius: 7px;
+    color: var(--color-surface);
+    background: #7b2cbf;
+    cursor: pointer;
+}
+.raffle-image-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.raffle-image-preview img {
+    width: 120px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.raffle-summary {
+    display: grid;
+    gap: 12px;
+}
+.raffle-summary div {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    border-bottom: 1px solid #edf0f2;
+    padding-bottom: 8px;
+}
+.raffle-summary dt {
+    color: #65717c;
+}
+.raffle-summary dd {
+    margin: 0;
+    font-weight: 700;
+}
+.raffle-confirm {
+    display: block;
+    margin: 16px 0;
+    line-height: 1.4;
+}
+.raffle-danger {
+    background: #a52828 !important;
+}
+.raffle-reset-form {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid #eadede;
+}
+.raffle-entries-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 14px;
+}
+.raffle-entries-heading h2 {
+    margin: 0;
+}
+.raffle-pagination-help {
+    margin: 5px 0 0;
+    color: #65717c;
+    font-size: 0.82rem;
+}
+.raffle-page-size {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.raffle-page-size label {
+    color: #65717c;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+.raffle-page-size select {
+    min-height: 36px;
+    padding: 6px 9px;
+    border: 1px solid #bac7cf;
+    border-radius: 7px;
+    background: var(--color-surface);
+}
+.raffle-page-size button {
+    padding: 8px 12px;
+    font-size: 0.82rem;
+}
+.raffle-table-wrap {
+    overflow-x: auto;
+}
+.raffle-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.raffle-table th,
+.raffle-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #edf0f2;
+    text-align: left;
+    vertical-align: top;
+}
+.raffle-table th {
+    color: #65717c;
+    font-size: 0.82rem;
+}
+.raffle-round-history {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+}
+.raffle-round-history__item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    border: 1px solid #eadce8;
+    border-radius: 10px;
+    color: #321642;
+    background: var(--color-surface);
+    text-decoration: none;
+}
+.raffle-round-history__item span {
+    color: #65717c;
+    font-size: 0.78rem;
+    line-height: 1.35;
+}
+.raffle-round-history__item.is-current {
+    border-color: #7b2cbf;
+    box-shadow: 0 0 0 2px rgba(123, 44, 191, 0.12);
+}
+
+@media (max-width: 760px) {
+    .raffle-admin-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .raffle-admin-heading {
+        align-items: start;
+        flex-direction: column;
+    }
+
+    .raffle-entries-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .raffle-page-size {
+        justify-content: flex-start;
+    }
+}

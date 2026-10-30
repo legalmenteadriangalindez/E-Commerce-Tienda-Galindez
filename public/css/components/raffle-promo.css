@@ -1,0 +1,82 @@
+.raffle-floating-card {
+    position: fixed;
+    top: 78px;
+    right: 14px;
+    /* Debe quedar por debajo del navbar y sus menús desplegables. */
+    z-index: 900;
+    width: 148px;
+    overflow: hidden;
+    color: var(--color-surface);
+    background: linear-gradient(145deg, #7b2cbf, #c9184a);
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(46, 12, 68, 0.28);
+    animation: raffle-pulse 2.6s ease-in-out infinite;
+    text-decoration: none;
+}
+.raffle-floating-card:hover,
+.raffle-floating-card:focus-visible {
+    color: var(--color-surface);
+    transform: translateY(-2px);
+}
+.raffle-floating-card img {
+    display: block;
+    width: 100%;
+    height: 88px;
+    object-fit: cover;
+}
+.raffle-floating-copy {
+    padding: 9px 10px 10px;
+}
+.raffle-floating-copy strong {
+    display: block;
+    font-size: 0.78rem;
+    line-height: 1.1;
+}
+.raffle-floating-copy span {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.67rem;
+    line-height: 1.15;
+}
+@keyframes raffle-pulse {
+    0%,
+    100% {
+        opacity: 0.92;
+        box-shadow: 0 8px 24px rgba(46, 12, 68, 0.28);
+    }
+    50% {
+        opacity: 1;
+        box-shadow: 0 8px 30px rgba(201, 24, 74, 0.6);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .raffle-floating-card {
+        animation: none;
+    }
+}
+
+@media (max-width: 760px) {
+    .raffle-floating-card {
+        top: 70px;
+        right: 8px;
+        width: 128px;
+    }
+
+    .raffle-floating-card img {
+        height: 72px;
+    }
+
+    .raffle-floating-copy {
+        padding: 7px 8px 8px;
+    }
+
+    .raffle-floating-copy strong {
+        font-size: 0.7rem;
+    }
+
+    .raffle-floating-copy span {
+        font-size: 0.6rem;
+    }
+}
