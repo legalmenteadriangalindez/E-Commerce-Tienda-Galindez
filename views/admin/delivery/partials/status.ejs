@@ -1,0 +1,4 @@
+<div class="delivery-card__header">
+    <div><p class="delivery-card__eyebrow"><%= order.numeroOrden %></p><h2><%= order.cliente?.nombre || order.usuario?.nombre || 'Cliente' %></h2></div>
+    <span class="delivery-status delivery-status--<%= order.estado.toLowerCase() %>"><%= statusLabels[order.estado] || order.estado %></span>
+</div>

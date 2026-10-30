@@ -1,0 +1,8 @@
+<section class="analytics-kpis" aria-label="Indicadores principales">
+    <article class="analytics-kpi"><span>Ingresos cobrados</span><strong>$ <%= money(kpis.revenue.current) %></strong><small class="<%= changeClass(kpis.revenue.change) %>"><%= changeText(kpis.revenue.change) %></small></article>
+    <article class="analytics-kpi"><span>Pedidos pagados</span><strong><%= money(kpis.orders.current) %></strong><small class="<%= changeClass(kpis.orders.change) %>"><%= changeText(kpis.orders.change) %></small></article>
+    <article class="analytics-kpi"><span>Unidades vendidas</span><strong><%= money(kpis.units.current) %></strong><small class="<%= changeClass(kpis.units.change) %>"><%= changeText(kpis.units.change) %></small></article>
+    <article class="analytics-kpi"><span>Ticket promedio</span><strong>$ <%= money(kpis.averageTicket.current) %></strong><small class="<%= changeClass(kpis.averageTicket.change) %>"><%= changeText(kpis.averageTicket.change) %></small></article>
+    <article class="analytics-kpi"><span>Ganancia bruta estimada</span><strong>$ <%= money(kpis.grossProfit.current) %></strong><small class="<%= changeClass(kpis.grossProfit.change) %>"><%= changeText(kpis.grossProfit.change) %></small></article>
+    <article class="analytics-kpi"><span>Margen sobre productos</span><strong><%= decimal(kpis.grossMargin) %>%</strong><small>Antes de envío, pasarela e impuestos</small></article>
+</section>

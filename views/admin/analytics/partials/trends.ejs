@@ -1,0 +1,14 @@
+<div class="analytics-grid analytics-grid-main">
+    <section class="analytics-card">
+        <div class="analytics-card-heading"><h2>Ingresos por día</h2><span>Valores cobrados</span></div>
+        <% if (!trend.length) { %><p class="analytics-empty">No hay ventas pagadas en este periodo.</p><% } %>
+        <% trend.forEach(day => { %>
+            <div class="analytics-bar-row"><span><%= day.label %></span><progress class="analytics-bar" max="100" value="<%= Math.max(0, Math.min(100, (day.revenue / (maxRevenue || 1)) * 100)) %>" aria-label="Ingresos de <%= day.label %>"></progress><strong>$ <%= money(day.revenue) %></strong></div>
+        <% }) %>
+    </section>
+    <section class="analytics-card">
+        <div class="analytics-card-heading"><h2>Canal de venta</h2><span>Ingresos del periodo</span></div>
+        <% if (!channels.length) { %><p class="analytics-empty">Sin ventas para comparar.</p><% } %>
+        <% channels.forEach(channel => { %><div class="analytics-stat-row"><span><%= channel.nombre %></span><strong>$ <%= money(channel.ingresos) %></strong><small><%= channel.pedidos %> pedidos</small></div><% }) %>
+    </section>
+</div>

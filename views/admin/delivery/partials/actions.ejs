@@ -1,0 +1,18 @@
+<div class="delivery-assignment">
+    <div class="delivery-assignment__heading"><h3><i class="bi bi-bicycle"></i> Repartidor</h3><% if (order.repartidor) { %><span class="delivery-assigned">Asignado</span><% } else { %><span class="delivery-unassigned">Sin asignar</span><% } %></div>
+    <% if (canAssign) { %>
+        <form method="post" action="/admin/delivery/<%= order._id %>/assign" class="delivery-assignment__form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="status" value="<%= status %>">
+            <label class="visually-hidden" for="dealer-<%= order._id %>">Repartidor para <%= order.numeroOrden %></label>
+            <select id="dealer-<%= order._id %>" name="repartidorId" required <%= dealers.length ? '' : 'disabled' %>><option value="">Seleccionar repartidor</option><% dealers.forEach(dealer => { %><option value="<%= dealer._id %>" <%= String(order.repartidor?._id || order.repartidor || '') === String(dealer._id) ? 'selected' : '' %>><%= dealer.nombre %> · <%= dealer.telefono || dealer.email %></option><% }) %></select>
+            <input type="text" name="nota" maxlength="500" placeholder="Nota interna opcional">
+            <button type="submit" class="delivery-button" <%= dealers.length ? '' : 'disabled' %>><%= order.repartidor ? 'Reasignar' : 'Asignar' %></button>
+        </form>
+    <% } else { %><p class="delivery-assignment__closed">La entrega ya terminó; se conserva el repartidor para auditoría.</p><% } %>
+    <% if (order.repartidor && ['PENDIENTE', 'PAGADA', 'PREPARANDO'].includes(order.estado)) { %>
+        <form method="post" action="/admin/delivery/<%= order._id %>/unassign" class="delivery-unassign-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="status" value="<%= status %>">
+            <input type="text" name="nota" maxlength="500" placeholder="Motivo opcional para retirar la asignación"><button type="submit" class="delivery-button delivery-button--danger">Retirar asignación</button>
+        </form>
+    <% } %>
+</div>

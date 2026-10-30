@@ -1,0 +1,11 @@
+<section class="analytics-heading">
+    <div>
+        <p class="analytics-eyebrow">Decisiones de tienda</p>
+        <h1>Informe de ventas</h1>
+        <p><%= period.label %> · <%= period.startLabel %> – <%= period.endLabel %></p>
+    </div>
+    <nav class="period-switcher" aria-label="Periodo del informe">
+        <a class="<%= period.key === 'week' ? 'active' : '' %>" href="/admin-analytics?period=week">7 días</a>
+        <a class="<%= period.key === 'month' ? 'active' : '' %>" href="/admin-analytics?period=month">30 días</a>
+    </nav>
+</section>

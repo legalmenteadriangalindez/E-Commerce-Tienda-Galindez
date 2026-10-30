@@ -1,0 +1,16 @@
+<div class="form-section">
+    <h3>Estado de la Orden</h3>
+    <div class="form-group">
+        <label>Estado</label>
+        <select name="estado" required>
+            <option value="<%= order.estado %>" selected>Estado actual: <%= statusLabels[order.estado] || order.estado %></option>
+            <% if (order.metodoPago === 'CASH_ON_DELIVERY' && order.estado === 'PENDIENTE') { %><option value="PREPARANDO">Marcar como en preparación</option><% } %>
+            <% if (order.estado === 'PAGADA') { %><option value="PREPARANDO">Marcar como en preparación</option><% } %>
+            <% if (order.estado === 'PREPARANDO') { %><option value="ENVIADA">Marcar como enviado</option><% } %>
+            <% if (order.estado === 'ENVIADA') { %><option value="ENTREGADA">Confirmar entrega</option><% } %>
+        </select>
+        <% if (order.metodoPago === 'CASH_ON_DELIVERY' && order.estado === 'ENVIADA') { %><label class="delivery-cash-confirmation"><input type="checkbox" name="confirmarPago" value="si" required> Confirmo que recibí el efectivo completo antes de marcar el pedido como entregado.</label><% } %>
+        <label for="delivery-note">Nota de seguimiento (visible para el cliente, opcional)</label>
+        <textarea id="delivery-note" name="nota" maxlength="300" rows="3" placeholder="Ejemplo: se dejó en portería o se coordinó la entrega."></textarea>
+    </div>
+</div>

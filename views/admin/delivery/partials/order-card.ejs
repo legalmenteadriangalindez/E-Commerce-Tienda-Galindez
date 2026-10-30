@@ -1,0 +1,15 @@
+<% const lastEvent = Array.isArray(order.seguimientoEntrega) && order.seguimientoEntrega.length ? order.seguimientoEntrega[order.seguimientoEntrega.length - 1] : null; %>
+<% const paymentMethod = order.metodoPago || (order.canal === 'CAJA' ? 'CASH_AT_COUNTER' : 'WOMPI_CARD'); %>
+<% const canAssign = order.metodoPago === 'CASH_ON_DELIVERY' ? order.estado === 'PENDIENTE' : ['PAGADA', 'PREPARANDO', 'ENVIADA'].includes(order.estado); %>
+<article class="delivery-card">
+    <%- include('./status', { order, statusLabels }) %>
+    <div class="delivery-card__facts">
+        <span><i class="bi bi-cash-coin"></i> $<%= Number(order.total || 0).toLocaleString('es-CO') %> COP</span>
+        <span><i class="bi bi-wallet2"></i> <%= paymentMethod === 'CASH_ON_DELIVERY' ? 'Contra entrega' : paymentMethod === 'CASH_AT_COUNTER' ? 'Efectivo en caja' : paymentMethod === 'WOMPI_NEQUI' ? 'Nequi · Wompi' : 'Tarjeta · Wompi' %></span>
+        <span><i class="bi bi-calendar3"></i> <%= new Date(order.createdAt).toLocaleDateString('es-CO') %></span>
+        <span><i class="bi bi-geo-alt"></i> <%= order.direccionEnvio?.ciudad || 'Ciudad no indicada' %></span>
+    </div>
+    <p class="delivery-card__address"><strong>Entrega:</strong> <%= order.direccionEnvio?.direccion || 'Dirección no indicada' %><% if (order.direccionEnvio?.referencia) { %> · <%= order.direccionEnvio.referencia %><% } %></p>
+    <%- include('./actions', { order, status, dealers, csrfToken, canAssign }) %>
+    <div class="delivery-card__footer"><span><strong>Última actualización:</strong> <%= lastEvent?.mensaje || 'Sin historial; el pedido es anterior al seguimiento.' %></span><a href="/order/<%= order._id %>" class="delivery-detail-link">Ver detalle</a></div>
+</article>

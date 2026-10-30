@@ -1,0 +1,29 @@
+<div class="form-section">
+    <h3>Información General</h3>
+    <div class="form-group"><label>Número de Orden</label><input type="text" value="<%= order.numeroOrden %>" disabled></div>
+    <div class="form-group"><label>Fecha</label><input type="text" value="<%= new Date(order.createdAt).toLocaleString() %>" disabled></div>
+</div>
+
+<% if (dealer) { %>
+    <div class="form-section delivery-assigned-summary">
+        <h3>Asignación</h3>
+        <p>Este pedido está asignado a tu cuenta como repartidor.</p>
+        <p><strong>Medio de pago:</strong> <% if (order.metodoPago === 'CASH_ON_DELIVERY') { %>Efectivo contra entrega · cobra al entregar y confirma el pago.<% } else if (order.metodoPago === 'WOMPI_NEQUI') { %>Nequi con Wompi · pago confirmado antes del despacho.<% } else { %>Tarjeta con Wompi · pago confirmado antes del despacho.<% } %></p>
+        <% if (order.asignacionReparto?.asignadoEn) { %><small>Asignado el <%= new Date(order.asignacionReparto.asignadoEn).toLocaleString('es-CO') %></small><% } %>
+    </div>
+<% } %>
+
+<div class="form-section">
+    <h3>Datos del Cliente</h3>
+    <div class="form-group"><label>Nombre</label><input type="text" value="<%= order.cliente.nombre %>" disabled></div>
+    <div class="form-group"><label>Email</label><input type="email" value="<%= order.cliente.email %>" disabled></div>
+    <div class="form-group"><label>Teléfono</label><input type="text" value="<%= order.cliente.telefono %>" disabled></div>
+</div>
+
+<div class="form-section">
+    <h3>Dirección de Envío</h3>
+    <div class="form-group"><label>Departamento</label><input type="text" value="<%= order.direccionEnvio.departamento %>" disabled></div>
+    <div class="form-group"><label>Ciudad</label><input type="text" value="<%= order.direccionEnvio.ciudad %>" disabled></div>
+    <div class="form-group"><label>Dirección</label><input type="text" value="<%= order.direccionEnvio.direccion %>" disabled></div>
+    <div class="form-group"><label>Referencia</label><input type="text" value="<%= order.direccionEnvio.referencia %>" disabled></div>
+</div>

@@ -1,146 +1,18 @@
 <%- include('../../include/_headerAdmin') %>
 
-
 <main class="admin-shell admin-list-page delivery-page">
     <header class="admin-list-heading">
-        <div>
-            <p class="admin-list-eyebrow">Operación logística</p>
-            <h1>Reparto y seguimiento</h1>
-            <p class="admin-list-description">
-                Asigna pedidos confirmados o contra entrega a un repartidor y consulta el avance de cada entrega.
-            </p>
-        </div>
+        <div><p class="admin-list-eyebrow">Operación logística</p><h1>Reparto y seguimiento</h1><p class="admin-list-description">Asigna pedidos confirmados o contra entrega a un repartidor y consulta el avance de cada entrega.</p></div>
         <a href="/read-order" class="admin-list-primary">Ver todos los pedidos</a>
     </header>
-
-    <% if (notice) { %>
-        <p class="delivery-notice" role="status"><%= notice %></p>
-    <% } %>
-
-    <section class="delivery-toolbar" aria-label="Filtros de reparto">
-        <form method="get" action="/admin/delivery" class="delivery-filter-form">
-            <label for="delivery-status">Estado</label>
-            <select id="delivery-status" name="status">
-                <option value="">Todos los pedidos en reparto</option>
-                <% statuses.forEach(value => { %>
-                    <option value="<%= value %>" <%= status === value ? 'selected' : '' %>>
-                        <%= statusLabels[value] %>
-                    </option>
-                <% }) %>
-            </select>
-            <button type="submit" class="delivery-button delivery-button--secondary">Filtrar</button>
-            <% if (status) { %><a href="/admin/delivery" class="delivery-clear">Limpiar</a><% } %>
-        </form>
-        <p class="delivery-count"><strong><%= pagination.totalItems %></strong> pedido(s) en el flujo de entrega.</p>
-    </section>
-
-    <% if (!dealers.length) { %>
-        <div class="delivery-empty delivery-warning">
-            <strong>No hay repartidores activos.</strong>
-            <span>Crea un usuario con el rol <code>dealer</code> desde Gestión → Usuarios para poder asignar pedidos.</span>
-        </div>
-    <% } %>
-
+    <% if (notice) { %><p class="delivery-notice" role="status"><%= notice %></p><% } %>
+    <%- include('./partials/filters', { statuses, status, statusLabels, pagination }) %>
+    <% if (!dealers.length) { %><div class="delivery-empty delivery-warning"><strong>No hay repartidores activos.</strong><span>Crea un usuario con el rol <code>dealer</code> desde Gestión → Usuarios para poder asignar pedidos.</span></div><% } %>
     <section class="delivery-grid" aria-label="Pedidos para reparto">
-        <% orders.forEach(order => { %>
-            <% const lastEvent = Array.isArray(order.seguimientoEntrega) && order.seguimientoEntrega.length
-                ? order.seguimientoEntrega[order.seguimientoEntrega.length - 1]
-                : null; %>
-            <% const paymentMethod = order.metodoPago || (order.canal === 'CAJA' ? 'CASH_AT_COUNTER' : 'WOMPI_CARD'); %>
-            <% const canAssign = order.metodoPago === 'CASH_ON_DELIVERY'
-                ? order.estado === 'PENDIENTE'
-                : ['PAGADA', 'PREPARANDO', 'ENVIADA'].includes(order.estado); %>
-            <article class="delivery-card">
-                <div class="delivery-card__header">
-                    <div>
-                        <p class="delivery-card__eyebrow"><%= order.numeroOrden %></p>
-                        <h2><%= order.cliente?.nombre || order.usuario?.nombre || 'Cliente' %></h2>
-                    </div>
-                    <span class="delivery-status delivery-status--<%= order.estado.toLowerCase() %>">
-                        <%= statusLabels[order.estado] || order.estado %>
-                    </span>
-                </div>
-
-                <div class="delivery-card__facts">
-                    <span><i class="bi bi-cash-coin"></i> $<%= Number(order.total || 0).toLocaleString('es-CO') %> COP</span>
-                    <span>
-                        <i class="bi bi-wallet2"></i>
-                        <%= paymentMethod === 'CASH_ON_DELIVERY'
-                            ? 'Contra entrega'
-                            : paymentMethod === 'CASH_AT_COUNTER'
-                                ? 'Efectivo en caja'
-                                : paymentMethod === 'WOMPI_NEQUI'
-                                ? 'Nequi · Wompi'
-                                : 'Tarjeta · Wompi' %>
-                    </span>
-                    <span><i class="bi bi-calendar3"></i> <%= new Date(order.createdAt).toLocaleDateString('es-CO') %></span>
-                    <span><i class="bi bi-geo-alt"></i> <%= order.direccionEnvio?.ciudad || 'Ciudad no indicada' %></span>
-                </div>
-
-                <p class="delivery-card__address">
-                    <strong>Entrega:</strong>
-                    <%= order.direccionEnvio?.direccion || 'Dirección no indicada' %>
-                    <% if (order.direccionEnvio?.referencia) { %> · <%= order.direccionEnvio.referencia %><% } %>
-                </p>
-
-                <div class="delivery-assignment">
-                    <div class="delivery-assignment__heading">
-                        <h3><i class="bi bi-bicycle"></i> Repartidor</h3>
-                        <% if (order.repartidor) { %>
-                            <span class="delivery-assigned">Asignado</span>
-                        <% } else { %>
-                            <span class="delivery-unassigned">Sin asignar</span>
-                        <% } %>
-                    </div>
-
-                    <% if (canAssign) { %>
-                        <form method="post" action="/admin/delivery/<%= order._id %>/assign" class="delivery-assignment__form">
-                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                            <input type="hidden" name="status" value="<%= status %>">
-                            <label class="visually-hidden" for="dealer-<%= order._id %>">Repartidor para <%= order.numeroOrden %></label>
-                            <select id="dealer-<%= order._id %>" name="repartidorId" required <%= dealers.length ? '' : 'disabled' %>>
-                                <option value="">Seleccionar repartidor</option>
-                                <% dealers.forEach(dealer => { %>
-                                    <option value="<%= dealer._id %>" <%= String(order.repartidor?._id || order.repartidor || '') === String(dealer._id) ? 'selected' : '' %>>
-                                        <%= dealer.nombre %> · <%= dealer.telefono || dealer.email %>
-                                    </option>
-                                <% }) %>
-                            </select>
-                            <input type="text" name="nota" maxlength="500" placeholder="Nota interna opcional">
-                            <button type="submit" class="delivery-button" <%= dealers.length ? '' : 'disabled' %>>
-                                <%= order.repartidor ? 'Reasignar' : 'Asignar' %>
-                            </button>
-                        </form>
-                    <% } else { %>
-                        <p class="delivery-assignment__closed">La entrega ya terminó; se conserva el repartidor para auditoría.</p>
-                    <% } %>
-
-                    <% if (order.repartidor && ['PENDIENTE', 'PAGADA', 'PREPARANDO'].includes(order.estado)) { %>
-                        <form method="post" action="/admin/delivery/<%= order._id %>/unassign" class="delivery-unassign-form">
-                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                            <input type="hidden" name="status" value="<%= status %>">
-                            <input type="text" name="nota" maxlength="500" placeholder="Motivo opcional para retirar la asignación">
-                            <button type="submit" class="delivery-button delivery-button--danger">Retirar asignación</button>
-                        </form>
-                    <% } %>
-                </div>
-
-                <div class="delivery-card__footer">
-                    <span>
-                        <strong>Última actualización:</strong>
-                        <%= lastEvent?.mensaje || 'Sin historial; el pedido es anterior al seguimiento.' %>
-                    </span>
-                    <a href="/order/<%= order._id %>" class="delivery-detail-link">Ver detalle</a>
-                </div>
-            </article>
-        <% }) %>
+        <% orders.forEach(order => { %><%- include('./partials/order-card', { order, status, statusLabels, dealers, csrfToken }) %><% }) %>
     </section>
-
-    <% if (!orders.length) { %>
-        <p class="admin-list-empty">No hay pedidos disponibles para este filtro.</p>
-    <% } %>
-
-    <%- include('../../include/_adminPagination', { pagination, label: 'pedidos de reparto' }) %>
+    <% if (!orders.length) { %><p class="admin-list-empty">No hay pedidos disponibles para este filtro.</p><% } %>
+    <%- include('./partials/pagination', { pagination }) %>
 </main>
 
 <%- include('../../include/_footerAdmin') %>

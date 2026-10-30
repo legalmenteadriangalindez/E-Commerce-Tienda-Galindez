@@ -1,0 +1,13 @@
+<section class="commerce-card">
+    <div class="raffle-entries-heading">
+        <div><h2>Participaciones</h2><p class="raffle-pagination-help">Ronda #<%= raffle.numeroRonda %>. Las rondas anteriores permanecen disponibles en modo de solo lectura.</p></div>
+        <%- include('./pagination', { pagination, selectedRoundId }) %>
+    </div>
+    <% if (!entries.length) { %><p>No hay participaciones todavía.</p><% } else { %>
+        <div class="raffle-table-wrap"><table class="raffle-table">
+            <thead><tr><th>Número</th><th>Cliente</th><th>Pedido</th><th>Monto</th><th>Estado</th></tr></thead>
+            <tbody><% entries.forEach(entry => { %><tr><td><strong><%= entry.numero %></strong></td><td><%= entry.clienteNombre %><br><small><%= entry.clienteEmail %></small></td><td><%= entry.order?.numeroOrden || 'Pedido histórico' %></td><td>$ <%= Number(entry.montoCompra).toLocaleString('es-CO') %></td><td><%= entry.ganador ? 'Ganador' : 'Participante' %></td></tr><% }) %></tbody>
+        </table></div>
+    <% } %>
+    <%- include('../../../include/_adminPagination', { pagination, label: 'participaciones' }) %>
+</section>

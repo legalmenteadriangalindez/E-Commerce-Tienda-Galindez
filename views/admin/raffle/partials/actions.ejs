@@ -1,0 +1,7 @@
+<% if (rounds && rounds.length > 1) { %>
+    <section class="commerce-card">
+        <h2>Historial de rondas</h2>
+        <p class="raffle-pagination-help">Las participaciones y resultados de una ronda finalizada no se modifican al iniciar la siguiente.</p>
+        <div class="raffle-round-history"><% rounds.forEach(round => { %><a class="raffle-round-history__item <%= String(round._id) === String(selectedRoundId) ? 'is-current' : '' %>" href="/admin/raffle?ronda=<%= round._id %>"><strong>Ronda #<%= round.numeroRonda %></strong><span><%= round.estadoRonda === 'FINALIZADA' ? 'Finalizada' : round.activo ? 'Activa' : 'Inactiva' %> · <%= round.totalEntries %> participaciones</span><% if (round.ganador?.numero) { %><span>Ganador #<%= round.ganador.numero %></span><% } %></a><% }) %></div>
+    </section>
+<% } %>

@@ -1,0 +1,25 @@
+<div class="analytics-grid analytics-grid-main">
+    <section class="analytics-card">
+        <div class="analytics-card-heading"><h2>Productos que generan resultado</h2><span>Ordenados por unidades</span></div>
+        <% if (!topProducts.length) { %><p class="analytics-empty">Aún no hay productos vendidos.</p><% } else { %>
+            <div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th>Producto</th><th>Unidades</th><th>Ingresos</th><th>Ganancia</th><th>Margen</th></tr></thead><tbody>
+                <% topProducts.forEach(product => { %><tr><td><strong><%= product.nombre %></strong></td><td><%= product.unidades %></td><td>$ <%= money(product.ingresos) %></td><td>$ <%= money(product.ganancia) %></td><td><%= decimal(product.margenPorcentaje) %>%</td></tr><% }) %>
+            </tbody></table></div>
+        <% } %>
+    </section>
+    <section class="analytics-card">
+        <div class="analytics-card-heading"><h2>Categorías</h2><span>Por ingresos</span></div>
+        <% if (!topCategories.length) { %><p class="analytics-empty">Sin categorías vendidas.</p><% } %>
+        <% topCategories.forEach(category => { %><div class="analytics-stat-row"><span><%= category.nombre %></span><strong>$ <%= money(category.ingresos) %></strong><small><%= category.unidades %> unidades · $ <%= money(category.ganancia) %> de ganancia</small></div><% }) %>
+    </section>
+</div>
+<div class="analytics-grid analytics-grid-main">
+    <section class="analytics-card">
+        <div class="analytics-card-heading"><h2>Stock para actuar</h2><a href="/read-Stock">Ver inventario</a></div>
+        <% if (!lowStock.length) { %><p class="analytics-empty">No hay productos con 10 unidades o menos.</p><% } else { %><div class="analytics-alert-list"><% lowStock.forEach(product => { %><div><span><%= product.nombre %></span><strong class="<%= product.stock <= 3 ? 'stock-danger' : '' %>"><%= product.stock %> disponibles</strong></div><% }) %></div><% } %>
+    </section>
+    <section class="analytics-card">
+        <div class="analytics-card-heading"><h2>Productos sin rotación</h2><span>Con stock disponible</span></div>
+        <% if (!noRotation.length) { %><p class="analytics-empty">Todos los productos con stock tuvieron ventas.</p><% } else { %><div class="analytics-alert-list"><% noRotation.forEach(product => { %><div><span><%= product.nombre %></span><strong><%= product.stock %> en stock</strong></div><% }) %></div><% } %>
+    </section>
+</div>

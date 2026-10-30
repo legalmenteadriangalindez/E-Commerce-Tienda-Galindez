@@ -1,0 +1,17 @@
+<article class="commerce-card">
+    <h2>Configuración</h2>
+    <% if (!isCurrentRound || raffle.estadoRonda === 'FINALIZADA') { %>
+        <p class="raffle-pagination-help">Esta ronda es histórica o finalizada y está protegida contra cambios.</p>
+    <% } else { %>
+        <form action="/admin/raffle" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <label class="raffle-field raffle-toggle"><input type="checkbox" name="activo" value="si" <%= raffle.activo ? 'checked' : '' %>><span>Rifa activa</span></label>
+            <label class="raffle-field"><span>Monto mínimo de compra (COP)</span><input type="number" name="montoMinimo" min="0" max="100000000" step="100" required value="<%= raffle.montoMinimo %>"><small>Se calcula con el total pagado del pedido.</small></label>
+            <label class="raffle-field"><span>Título del premio</span><input type="text" name="titulo" maxlength="120" required value="<%= raffle.titulo %>"></label>
+            <label class="raffle-field"><span>Descripción</span><textarea name="descripcion" maxlength="500" rows="4" required><%= raffle.descripcion %></textarea></label>
+            <label class="raffle-field"><span>Imagen de la promoción</span><input type="file" name="imagenPremio" accept="image/jpeg,image/png,image/webp"><small>Dimensiones recomendadas: 600 × 900 px, orientación vertical (relación 2:3). JPG, PNG o WEBP, máximo 2 MB.</small></label>
+            <% if (raffle.imagenUrl) { %><div class="raffle-image-preview"><img src="<%= raffle.imagenUrl %>" alt="Imagen actual de la promoción"><label><input type="checkbox" name="quitarImagen" value="si"> Quitar imagen actual</label></div><% } %>
+            <button type="submit">Guardar configuración</button>
+        </form>
+    <% } %>
+</article>

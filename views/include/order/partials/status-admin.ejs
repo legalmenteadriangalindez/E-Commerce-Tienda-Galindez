@@ -1,0 +1,14 @@
+<div class="form-section">
+    <h3>Estado de la Orden</h3>
+    <div class="form-group">
+        <label>Estado</label>
+        <select name="estado" required>
+            <option value="PENDIENTE" <%= order.estado === 'PENDIENTE' ? 'selected' : '' %>>PENDIENTE</option>
+            <option value="PAGADA" <%= order.estado === 'PAGADA' ? 'selected' : '' %>>PAGADA</option>
+            <option value="PREPARANDO" <%= order.estado === 'PREPARANDO' ? 'selected' : '' %>>PREPARANDO</option>
+            <option value="ENVIADA" <%= order.estado === 'ENVIADA' ? 'selected' : '' %>>ENVIADA</option>
+            <option value="ENTREGADA" <%= order.estado === 'ENTREGADA' ? 'selected' : '' %>>ENTREGADA</option>
+            <option value="CANCELADA" <%= order.estado === 'CANCELADA' ? 'selected' : '' %>>CANCELADA</option>
+        </select>
+    </div>
+</div>

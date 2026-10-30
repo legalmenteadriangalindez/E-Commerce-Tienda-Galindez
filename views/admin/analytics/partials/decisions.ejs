@@ -1,0 +1,12 @@
+<section class="analytics-card analytics-decisions">
+    <div class="analytics-card-heading">
+        <div><p class="analytics-eyebrow">Lectura rápida</p><h2>Qué revisar para decidir</h2></div>
+        <span class="analytics-period-tag"><%= period.label %></span>
+    </div>
+    <% if (decisionNotes.length) { %>
+        <ul><% decisionNotes.forEach(note => { %><li><%= note %></li><% }) %></ul>
+    <% } else { %>
+        <p>No hay alertas relevantes en este periodo. Mantén el seguimiento de margen, rotación y existencias.</p>
+    <% } %>
+    <p class="analytics-note">Los ingresos corresponden a ventas con pago confirmado. Las devoluciones registradas quedan fuera. La ganancia es bruta y usa el costo guardado al vender.</p>
+</section>

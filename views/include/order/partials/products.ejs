@@ -1,0 +1,16 @@
+<div class="form-section">
+    <h3>Productos</h3>
+    <div class="<%= dealer ? 'table-responsive' : '' %>">
+        <table class="table-orders">
+            <thead><tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Subtotal</th></tr></thead>
+            <tbody><% order.productos.forEach(producto => { %>
+                <tr>
+                    <td <%= dealer ? 'data-label="Producto"' : '' %>><%= producto.nombre %></td>
+                    <td <%= dealer ? 'data-label="Cantidad"' : '' %>><%= producto.cantidad %></td>
+                    <td <%= dealer ? 'data-label="Precio"' : '' %>>$ <%= producto.precioUnitario %></td>
+                    <td <%= dealer ? 'data-label="Subtotal"' : '' %>>$ <%= producto.subtotal %></td>
+                </tr>
+            <% }) %></tbody>
+        </table>
+    </div>
+</div>

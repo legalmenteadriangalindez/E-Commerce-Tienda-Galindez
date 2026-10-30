@@ -1,0 +1,12 @@
+<section class="delivery-toolbar" aria-label="Filtros de reparto">
+    <form method="get" action="/admin/delivery" class="delivery-filter-form">
+        <label for="delivery-status">Estado</label>
+        <select id="delivery-status" name="status">
+            <option value="">Todos los pedidos en reparto</option>
+            <% statuses.forEach(value => { %><option value="<%= value %>" <%= status === value ? 'selected' : '' %>><%= statusLabels[value] %></option><% }) %>
+        </select>
+        <button type="submit" class="delivery-button delivery-button--secondary">Filtrar</button>
+        <% if (status) { %><a href="/admin/delivery" class="delivery-clear">Limpiar</a><% } %>
+    </form>
+    <p class="delivery-count"><strong><%= pagination.totalItems %></strong> pedido(s) en el flujo de entrega.</p>
+</section>
