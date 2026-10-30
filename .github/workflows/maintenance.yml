@@ -68,7 +68,7 @@ jobs:
                           ;;
                   esac
 
-                  if (("${#missing[@]}" > 0)); then
+                  if (( ${#missing[@]} > 0 )); then
                       printf '::error title=Configuración incompleta::Faltan secrets de Actions: %s\n' "${missing[*]}"
                       exit 1
                   fi
