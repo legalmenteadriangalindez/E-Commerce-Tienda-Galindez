@@ -1,0 +1,46 @@
+name: Mantenimiento programado sin Cron de Render
+
+on:
+    workflow_dispatch:
+    schedule:
+        # GitHub ejecuta este horario en UTC. Se usa cada 15 minutos para
+        # vencer reservas, conciliar pagos pendientes y procesar correos.
+        - cron: '*/15 * * * *'
+
+permissions:
+    contents: read
+
+concurrency:
+    group: tienda-maintenance
+    cancel-in-progress: false
+
+jobs:
+    maintenance:
+        name: Ejecutar mantenimiento de la tienda
+        runs-on: ubuntu-22.04
+        timeout-minutes: 10
+        env:
+            NODE_ENV: production
+            BASE_URL: ${{ secrets.PROD_BASE_URL }}
+            MONGO_URI: ${{ secrets.PROD_MONGO_URI }}
+            SESSION_SECRET: ${{ secrets.PROD_SESSION_SECRET }}
+            BREVO_API_KEY: ${{ secrets.PROD_BREVO_API_KEY }}
+            EMAIL_USER: ${{ secrets.PROD_EMAIL_USER }}
+            PAYMENTS_ENABLED: ${{ secrets.PROD_PAYMENTS_ENABLED }}
+            WOMPI_ENV: ${{ secrets.PROD_WOMPI_ENV }}
+            WOMPI_PUBLIC_KEY: ${{ secrets.PROD_WOMPI_PUBLIC_KEY }}
+            WOMPI_PRIVATE_KEY: ${{ secrets.PROD_WOMPI_PRIVATE_KEY }}
+            WOMPI_INTEGRITY_KEY: ${{ secrets.PROD_WOMPI_INTEGRITY_KEY }}
+            WOMPI_EVENTS_KEY: ${{ secrets.PROD_WOMPI_EVENTS_KEY }}
+        steps:
+            - name: Descargar el código
+              uses: actions/checkout@v4
+            - name: Configurar Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22.23.4
+                  cache: npm
+            - name: Instalar dependencias de producción
+              run: npm ci --omit=dev --no-audit --no-fund
+            - name: Ejecutar mantenimiento
+              run: npm run maintenance
