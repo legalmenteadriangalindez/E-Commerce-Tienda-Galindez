@@ -1,0 +1,198 @@
+/* =========================================================
+   CARRITO DE COMPRAS - TIENDA GALINDEZ
+   Identidad visual:
+   Marrón oscuro + beige/tostado + naranja cálido
+   ========================================================= */
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+/* =========================================================
+   BODY
+   ========================================================= */
+
+body {
+    background-color: var(--color-cart-background);
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--color-brand-dark);
+    margin: 0;
+}
+
+/* =========================================================
+   TITULO PRINCIPAL
+   ========================================================= */
+
+.cart-page-header h1 {
+    color: var(--color-brand-dark);
+    font-weight: 700;
+    margin-top: 25px;
+    margin-bottom: 8px;
+}
+
+.cart-page-subtitle {
+    max-width: 1100px;
+    margin: 0 auto 25px;
+    padding: 0 20px;
+
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+}
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
+.main-cart {
+    max-width: 1200px;
+    margin: 35px auto 60px;
+    padding: 0 20px;
+}
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+.cart-wrapper {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 350px;
+    gap: 30px;
+    align-items: start;
+}
+
+/* =========================================================
+   SECCIÓN DE PRODUCTOS
+   ========================================================= */
+
+.items-section {
+    background: var(--color-surface);
+
+    padding: 28px;
+
+    border: 1px solid var(--color-cart-border);
+    border-radius: 16px;
+
+    box-shadow: var(--shadow-soft);
+
+    transition:
+        box-shadow 0.3s ease,
+        transform 0.3s ease;
+}
+
+.items-section:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+/* =========================================================
+   HEADER DEL CARRITO
+   ========================================================= */
+
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.cart-header h1 {
+    margin: 0;
+
+    color: var(--color-brand-dark);
+
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.cart-eyebrow {
+    margin: 0 0 4px;
+    color: var(--color-brand-tan);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.cart-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* =========================================================
+   BADGE
+   ========================================================= */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--color-brand-tan);
+
+    color: var(--color-surface);
+
+    padding: 6px 13px;
+
+    border-radius: 20px;
+
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    box-shadow: 0 3px 8px rgba(213, 141, 81, 0.25);
+}
+
+.continue-shopping {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+    border: 1px solid var(--color-cart-border);
+    border-radius: 999px;
+    background: var(--color-accent-soft);
+    color: var(--color-brand-dark);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.continue-shopping:hover {
+    background: var(--color-brand-accent);
+    color: var(--color-surface);
+    transform: translateY(-1px);
+}
+
+.continue-shopping--primary {
+    border-color: var(--color-brand-accent);
+    background: var(--color-brand-accent);
+    color: var(--color-surface);
+}
+
+.cart-status {
+    min-height: 20px;
+    margin: -7px 0 8px;
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
+}
+
+.cart-status--success {
+    color: #238a45;
+}
+
+.cart-status--error {
+    color: #b43131;
+}
+

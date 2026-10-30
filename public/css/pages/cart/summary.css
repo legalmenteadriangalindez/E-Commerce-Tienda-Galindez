@@ -1,0 +1,234 @@
+/* =========================================================
+   SUMMARY
+   ========================================================= */
+
+.summary-section {
+    min-width: 0;
+}
+
+/*
+   IMPORTANTE:
+   Antes tenías:
+
+   background: var(--color-brand-dark);
+   color: var(--color-brand-dark);
+
+   Eso hacía que el texto pudiera desaparecer.
+
+   Ahora usamos texto claro.
+*/
+
+.summary-card {
+    position: sticky;
+    top: 20px;
+
+    padding: 28px;
+
+    background-color: var(--color-brand-dark);
+
+    color: var(--color-surface);
+
+    border-radius: 16px;
+
+    box-shadow: 0 12px 30px rgba(49, 27, 20, 0.18);
+
+    overflow: hidden;
+}
+
+/* =========================================================
+   TITULO RESUMEN
+   ========================================================= */
+
+.summary-card .summary-text {
+    color: var(--color-surface);
+}
+
+.summary-card h2 {
+    margin: 0;
+
+    font-size: 1.35rem;
+
+    font-weight: 700;
+}
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.divider {
+    height: 1px;
+
+    background-color: rgba(213, 141, 81, 0.35);
+
+    margin: 20px 0;
+}
+
+/* =========================================================
+   LINEAS DEL RESUMEN
+   ========================================================= */
+
+.summary-line {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 15px;
+
+    color: rgba(255, 255, 255, 0.9);
+
+    font-size: 0.95rem;
+}
+
+.shipping-hint {
+    display: block;
+    margin-top: 0.35rem;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+.update-cart-btn {
+    width: 100%;
+    min-height: 42px;
+    margin-top: 14px;
+    padding: 10px 14px;
+    border: 1px solid rgba(213, 141, 81, 0.5);
+    border-radius: 11px;
+    background: transparent;
+    color: var(--color-surface);
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.update-cart-btn:hover:not(:disabled) {
+    border-color: var(--color-brand-tan);
+    background: rgba(213, 141, 81, 0.14);
+}
+
+.update-cart-btn:disabled {
+    cursor: wait;
+    opacity: 0.55;
+}
+
+/* =========================================================
+   ENVÍO GRATIS
+   ========================================================= */
+
+.free {
+    color: #75d889;
+
+    font-weight: 700;
+}
+
+/* =========================================================
+   TOTAL
+   ========================================================= */
+
+.total {
+    margin-bottom: 0;
+
+    font-size: 1.25rem;
+
+    font-weight: 700;
+}
+
+.total-amount {
+    color: var(--color-brand-tan) !important;
+
+    font-size: 1.4rem;
+
+    font-weight: 800;
+}
+
+/* =========================================================
+   BOTÓN DE PAGO
+   ========================================================= */
+
+/*
+   Tu HTML utiliza:
+
+   class="pay-btn"
+
+   Por eso debemos utilizar .pay-btn
+   y no .checkout-button.
+*/
+
+.pay-btn {
+    width: 100%;
+
+    min-height: 52px;
+
+    margin-top: 22px;
+
+    padding: 14px 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    background-color: var(--color-brand-accent);
+
+    color: var(--color-surface);
+
+    border: none;
+
+    border-radius: 12px;
+
+    font-size: 1rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow: 0 5px 12px rgba(216, 92, 50, 0.25);
+
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/*
+   Hover
+*/
+
+.pay-btn:hover {
+    background-color: #c84f29;
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 10px 20px rgba(216, 92, 50, 0.3);
+}
+
+/*
+   Active
+*/
+
+.pay-btn:active {
+    transform: scale(0.97);
+
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* =========================================================
+   LINK DE PAGO
+   ========================================================= */
+
+.payment-link {
+    text-decoration: none;
+
+    color: inherit;
+}
+

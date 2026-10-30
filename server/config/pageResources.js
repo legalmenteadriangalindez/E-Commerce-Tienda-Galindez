@@ -44,7 +44,14 @@ const resources = {
         pageJs: js('Add_to_cart_client_nav.js', 'product-reviews.js'),
     },
     'client/cart/cart': {
-        pageCss: css('car.css'),
+        pageCss: css(
+            'pages/cart/layout.css',
+            'pages/cart/items.css',
+            'pages/cart/summary.css',
+            'pages/cart/responsive.css',
+            'pages/cart/pantry.css',
+            'pages/cart/add-products.css'
+        ),
         pageJs: js('client_cart.js'),
     },
     'client/profile/profile': { pageCss: css('profile.css') },

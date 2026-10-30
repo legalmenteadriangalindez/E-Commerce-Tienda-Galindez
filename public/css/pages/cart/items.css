@@ -1,0 +1,343 @@
+/* =========================================================
+   LISTA DE PRODUCTOS
+   ========================================================= */
+
+.product-list {
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================================================
+   PRODUCT CARD
+   ========================================================= */
+
+.product-card {
+    display: grid;
+
+    grid-template-columns:
+        84px
+        minmax(180px, 1fr)
+        132px
+        120px
+        42px;
+
+    align-items: center;
+
+    gap: 16px;
+
+    padding: 16px 12px;
+
+    border-radius: 14px;
+
+    border-bottom: 1px solid var(--color-border-light);
+
+    transition:
+        background-color 0.25s ease,
+        transform 0.25s ease;
+}
+
+/*
+   Evita que la última tarjeta tenga
+   una línea innecesaria
+*/
+
+.product-card:last-child {
+    border-bottom: none;
+}
+
+/*
+   Hover de producto
+*/
+
+.product-card:hover {
+    background-color: var(--color-surface-warm);
+}
+
+/* =========================================================
+   IMAGEN
+   ========================================================= */
+
+.img-container {
+    width: 80px;
+    height: 80px;
+
+    overflow: hidden;
+
+    border-radius: 12px;
+
+    border: 1px solid var(--color-cart-border);
+
+    background-color: var(--color-cart-background);
+}
+
+.img-container img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition: transform 0.3s ease;
+}
+
+/*
+   Zoom igual al utilizado
+   en las cards de productos
+*/
+
+.product-card:hover .img-container img {
+    transform: scale(1.05);
+}
+
+/* =========================================================
+   INFORMACIÓN DEL PRODUCTO
+   ========================================================= */
+
+.product-info {
+    min-width: 0;
+}
+
+.product-info h3 {
+    margin: 0;
+
+    color: var(--color-cart-text);
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.category {
+    color: var(--color-brand-tan);
+
+    font-size: 0.8rem;
+
+    font-weight: 600;
+
+    margin: 5px 0 0;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* =========================================================
+   SELECTOR DE CANTIDAD
+   ========================================================= */
+
+.quantity-picker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 132px;
+
+    border: 1px solid var(--color-brand-tan);
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    background-color: var(--color-surface);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.quantity-picker:focus-within {
+    border-color: var(--color-brand-accent);
+
+    box-shadow: 0 0 0 3px rgba(216, 92, 50, 0.12);
+}
+
+/*
+   Input de cantidad
+
+   Importante:
+   reemplaza el estilo inline
+   que tienes actualmente en EJS.
+*/
+
+.quantity-picker input {
+    flex: 1;
+    min-width: 0;
+
+    height: 45px;
+
+    padding: 0 8px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: var(--color-brand-dark);
+
+    text-align: center;
+
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.quantity-btn {
+    width: 35px;
+    height: 45px;
+    flex: 0 0 35px;
+    border: 0;
+    background: var(--color-accent-soft);
+    color: var(--color-brand-dark);
+    font-size: 1.15rem;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.quantity-btn:hover:not(:disabled) {
+    background: var(--color-brand-accent);
+    color: var(--color-surface);
+}
+
+.quantity-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+/*
+   Elimina las flechas del input number
+*/
+
+.quantity-picker input::-webkit-inner-spin-button,
+.quantity-picker input::-webkit-outer-spin-button {
+    margin: 0;
+}
+
+/* Firefox */
+
+.quantity-picker input[type='number'] {
+    appearance: textfield;
+}
+
+/* =========================================================
+   PRECIO
+   ========================================================= */
+
+.price {
+    margin: 0;
+
+    color: var(--color-brand-dark);
+
+    font-size: 1rem;
+    font-weight: 700;
+
+    text-align: right;
+
+    white-space: nowrap;
+}
+
+.item-total {
+    color: var(--color-brand-accent);
+}
+
+/* =========================================================
+   BOTÓN ELIMINAR
+   ========================================================= */
+
+.remove-btn {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent;
+
+    border: none;
+
+    color: #c9c1bc;
+
+    cursor: pointer;
+
+    border-radius: 8px;
+
+    font-size: 1.1rem;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.remove-btn:hover {
+    color: var(--color-brand-accent);
+
+    background-color: var(--color-accent-soft);
+
+    transform: scale(1.05);
+}
+
+/* =========================================================
+   CARRITO VACÍO
+   ========================================================= */
+
+.product-list > p {
+    padding: 35px 15px;
+
+    margin: 0;
+
+    text-align: center;
+
+    color: var(--color-text-muted);
+
+    background-color: var(--color-cart-background);
+
+    border-radius: 12px;
+
+    border: 1px dashed var(--color-cart-border);
+}
+
+.empty-cart {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    padding: 42px 20px;
+    border: 1px dashed var(--color-cart-border);
+    border-radius: 16px;
+    background: var(--color-cart-background);
+    text-align: center;
+}
+
+.empty-cart-icon {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-accent-soft);
+    color: var(--color-brand-accent);
+    font-size: 1.5rem;
+}
+
+.empty-cart h2,
+.empty-cart p {
+    margin: 0;
+}
+
+.empty-cart h2 {
+    color: var(--color-brand-dark);
+    font-size: 1.15rem;
+}
+
+.empty-cart p {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
