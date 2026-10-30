@@ -1,11 +1,11 @@
-name: Mantenimiento programado sin Cron de Render
+name: Mantenimiento de la tienda
 
 on:
     workflow_dispatch:
     schedule:
-        # GitHub ejecuta este horario en UTC. Se usa cada 15 minutos para
-        # vencer reservas, conciliar pagos pendientes y procesar correos.
-        - cron: '*/15 * * * *'
+        # Horario UTC cada 15 minutos, desplazado del inicio de la hora
+        # para reducir las demoras de GitHub Actions en los minutos :00.
+        - cron: '7,22,37,52 * * * *'
 
 permissions:
     contents: read
@@ -35,12 +35,52 @@ jobs:
         steps:
             - name: Descargar el código
               uses: actions/checkout@v4
+
+            - name: Validar secretos requeridos sin exponer valores
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  missing=()
+                  require_secret() {
+                      if [[ -z "${2:-}" ]]; then
+                          missing+=("$1")
+                      fi
+                  }
+
+                  require_secret PROD_BASE_URL "${BASE_URL:-}"
+                  require_secret PROD_MONGO_URI "${MONGO_URI:-}"
+                  require_secret PROD_SESSION_SECRET "${SESSION_SECRET:-}"
+                  require_secret PROD_BREVO_API_KEY "${BREVO_API_KEY:-}"
+                  require_secret PROD_EMAIL_USER "${EMAIL_USER:-}"
+
+                  case "${PAYMENTS_ENABLED:-}" in
+                      false)
+                          ;;
+                      true)
+                          require_secret PROD_WOMPI_ENV "${WOMPI_ENV:-}"
+                          require_secret PROD_WOMPI_PUBLIC_KEY "${WOMPI_PUBLIC_KEY:-}"
+                          require_secret PROD_WOMPI_PRIVATE_KEY "${WOMPI_PRIVATE_KEY:-}"
+                          require_secret PROD_WOMPI_INTEGRITY_KEY "${WOMPI_INTEGRITY_KEY:-}"
+                          require_secret PROD_WOMPI_EVENTS_KEY "${WOMPI_EVENTS_KEY:-}"
+                          ;;
+                      *)
+                          missing+=("PROD_PAYMENTS_ENABLED (define true o false)")
+                          ;;
+                  esac
+
+                  if (( ${#missing[@]} > 0 )); then
+                      printf '::error title=Configuración incompleta::Faltan secrets de Actions: %s\n' "${missing[*]}"
+                      exit 1
+                  fi
+
             - name: Configurar Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: 22.23.4
                   cache: npm
+
             - name: Instalar dependencias de producción
               run: npm ci --omit=dev --no-audit --no-fund
+
             - name: Ejecutar mantenimiento
               run: npm run maintenance
