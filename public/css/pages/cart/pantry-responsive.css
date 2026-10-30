@@ -7,10 +7,6 @@
 }
 
 @media (max-width: 768px) {
-    .main-cart {
-        margin-top: 25px;
-    }
-
     .quantity-picker {
         grid-column: 3;
         grid-row: 1;
@@ -31,10 +27,6 @@
 @media (max-width: 576px) {
     .cart-page-subtitle {
         padding: 0 15px;
-    }
-
-    .main-cart {
-        margin-top: 20px;
     }
 
     .cart-header {
