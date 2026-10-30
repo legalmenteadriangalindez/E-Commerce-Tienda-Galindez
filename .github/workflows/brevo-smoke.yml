@@ -1,0 +1,38 @@
+name: Smoke test de Brevo
+
+on:
+    workflow_dispatch:
+        inputs:
+            confirm:
+                description: Escribe YES para enviar siete correos de prueba
+                required: true
+                default: 'NO'
+                type: string
+
+permissions:
+    contents: read
+
+jobs:
+    smoke:
+        name: Validar correos transaccionales de Brevo
+        runs-on: ubuntu-22.04
+        timeout-minutes: 10
+        env:
+            NODE_ENV: production
+            BASE_URL: ${{ secrets.PROD_BASE_URL }}
+            BREVO_API_KEY: ${{ secrets.PROD_BREVO_API_KEY }}
+            EMAIL_USER: ${{ secrets.PROD_EMAIL_USER }}
+            BREVO_SMOKE_EMAIL: ${{ secrets.PROD_BREVO_TEST_EMAIL }}
+            BREVO_SMOKE_CONFIRM: ${{ inputs.confirm }}
+        steps:
+            - name: Descargar el código
+              uses: actions/checkout@v4
+            - name: Configurar Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22.23.4
+                  cache: npm
+            - name: Instalar dependencias de producción
+              run: npm ci --omit=dev --no-audit --no-fund
+            - name: Ejecutar smoke test
+              run: npm run brevo:smoke

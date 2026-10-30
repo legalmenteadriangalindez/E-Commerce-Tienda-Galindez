@@ -17,6 +17,7 @@
         "migrate:status": "node scripts/run-migrations.js --status",
         "migrate:dry-run": "node scripts/run-migrations.js --dry-run",
         "maintenance": "node scripts/run-maintenance.js",
+        "brevo:smoke": "node scripts/brevo-smoke-test.js",
         "payments:reconcile": "node scripts/reconcile-payments.js",
         "audit:data": "node scripts/audit-data.js",
         "explain:queries": "node scripts/explain-queries.js",
