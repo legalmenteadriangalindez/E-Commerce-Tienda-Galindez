@@ -1,7 +1,5 @@
 const crypto = require('node:crypto');
 const mongoose = require('mongoose');
-const Order = require('../model/order');
-const PaymentEvent = require('../model/paymentEvent');
 const checkout = require('../business/checkoutService');
 const payments = require('../business/paymentService');
 const orders = require('../business/orderService');
@@ -19,13 +17,9 @@ exports.checkout = (admin) =>
         if (!cart.length) return res.redirect('/view_cart');
         const checkoutPrefixes = admin ? ['CAJA', 'WEB'] : ['WOMPI', 'WEB'];
         const prior = req.session[keyName]
-            ? await Order.findOne({
-                  claveCheckout: {
-                      $in: checkoutPrefixes.map(
-                          (prefix) => `${prefix}:${req.session.user._id}:${req.session[keyName]}`
-                      ),
-                  },
-              })
+            ? await orders.findByCheckoutKeys(
+                  checkoutPrefixes.map((prefix) => `${prefix}:${req.session.user._id}:${req.session[keyName]}`)
+              )
             : null;
         if (prior?.estadoPago === 'PAGADO') {
             req.session.cart = [];
@@ -93,12 +87,8 @@ exports.checkout = (admin) =>
     });
 exports.myOrders = wrap(async (req, res) => {
     const page = Math.max(1, Math.min(Number.parseInt(req.query.page, 10) || 1, 100000));
-    const orders = await Order.find({ usuario: req.session.user._id, canal: { $ne: 'CAJA' } })
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * 20)
-        .limit(21)
-        .lean();
-    const visibleOrders = orders.slice(0, 20);
+    const customerPage = await orders.listCustomerOrders(req.session.user._id, page, 20);
+    const visibleOrders = customerPage.orders;
     const raffleEntries = await raffle.entriesForOrders(
         req.session.user._id,
         visibleOrders.map((order) => order._id)
@@ -107,17 +97,14 @@ exports.myOrders = wrap(async (req, res) => {
     res.render('client/payment/orders', {
         orders: visibleOrders,
         raffleEntriesByOrder,
-        page,
-        more: orders.length > 20,
+        page: customerPage.page,
+        more: customerPage.more,
         user: req.usuarioActual,
     });
 });
 exports.orderStatus = wrap(async (req, res) => {
     if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new CommerceError('Pedido no encontrado.', 404);
-    let order = await Order.findOne({ _id: req.params.id, usuario: req.session.user._id }).populate(
-        'repartidor',
-        'nombre'
-    );
+    let order = await orders.findCustomerOrder(req.params.id, req.session.user._id);
     if (!order) throw new CommerceError('Pedido no encontrado.', 404);
     let notice = '';
     if (validTransactionId(req.query.id) && order.estadoPago === 'PENDIENTE') {
@@ -126,7 +113,7 @@ exports.orderStatus = wrap(async (req, res) => {
         } catch {
             notice = 'Estamos verificando el pago. Puedes consultar esta página de nuevo sin volver a pagar.';
         }
-        order = await Order.findById(order._id).populate('repartidor', 'nombre');
+        order = await orders.findCustomerOrder(order._id, req.session.user._id);
     }
     if (
         order.estadoPago === 'PAGADO' &&
@@ -140,7 +127,7 @@ exports.orderStatus = wrap(async (req, res) => {
         delete req.session.claveCheckout;
         await saveSession(req);
     }
-    const hasPaymentPending = Boolean(await PaymentEvent.exists({ order: order._id, estado: 'PENDIENTE' }));
+    const hasPaymentPending = await payments.hasPendingEvent(order._id);
     const raffleEntry = await raffle.entryForOrder(order._id, req.session.user._id);
     res.render('client/payment/order_status', {
         order,
@@ -152,28 +139,18 @@ exports.orderStatus = wrap(async (req, res) => {
 });
 exports.adminPayments = wrap(async (req, res) => {
     const page = Math.max(1, Math.min(Number.parseInt(req.query.page, 10) || 1, 100000));
-    const filter = mongoose.isObjectIdOrHexString(req.query.order) ? { _id: req.query.order } : {};
     const limit = 10;
-    const totalItems = await Order.countDocuments(filter);
+    const paymentPage = await orders.listAdminPayments(req.query.order, page, limit);
+    const totalItems = paymentPage.totalItems;
     const pagination = catalogPagination.buildPagination(req, {
-        page,
+        page: paymentPage.page,
         limit,
         totalItems,
-        totalPages: Math.ceil(totalItems / limit),
+        totalPages: paymentPage.totalPages,
     });
-    const [orders, events] = await Promise.all([
-        Order.find(filter)
-            .populate('repartidor', 'nombre email telefono')
-            .sort({ createdAt: -1, _id: -1 })
-            .skip((pagination.currentPage - 1) * limit)
-            .limit(limit)
-            .lean(),
-        PaymentEvent.find({ estado: { $in: ['REVISION', 'PENDIENTE'] } })
-            .sort({ updatedAt: -1 })
-            .limit(30)
-            .lean(),
-    ]);
-    const selectedOrder = orders[0];
+    const orderRows = paymentPage.orders;
+    const events = await payments.listPendingEvents(30);
+    const selectedOrder = orderRows[0];
     if (
         selectedOrder?.estadoPago === 'PAGADO' &&
         req.session.claveIdempotenciaCaja &&
@@ -186,7 +163,7 @@ exports.adminPayments = wrap(async (req, res) => {
     const notice = req.session.commerceNotice || '';
     delete req.session.commerceNotice;
     res.render('admin/payment/manage', {
-        orders,
+        orders: orderRows,
         events,
         page: pagination.currentPage,
         more: pagination.nextUrl !== null,

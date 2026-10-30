@@ -145,7 +145,7 @@ test('los módulos eliminados no vuelven a introducir exports heredados', () => 
 
     const renderCart = fs.readFileSync(path.join(root, 'server/pages/renderCart.js'), 'utf8');
     const renderSales = fs.readFileSync(path.join(root, 'server/pages/renderSales.js'), 'utf8');
-    const saleController = fs.readFileSync(path.join(root, 'server/controller/sale_controller.js'), 'utf8');
+    const saleController = fs.readFileSync(path.join(root, 'server/controller/saleController.js'), 'utf8');
 
     assert.doesNotMatch(
         renderCart,

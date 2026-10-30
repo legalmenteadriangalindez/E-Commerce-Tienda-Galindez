@@ -1,4 +1,3 @@
-const Reviewdb = require('../model/review');
 const adminReviews = require('../business/reviewAdminService');
 const { validId } = require('../business/reviewService');
 
@@ -59,7 +58,7 @@ function mutation(form, buildUpdate) {
             return respond(req, res, 400, 'Recarga el panel para obtener la versión actual de la reseña.', form);
 
         try {
-            const review = await Reviewdb.findById(req.params.id).select('oculta respuestaTienda __v').lean();
+            const review = await adminReviews.findForMutation(req.params.id);
             if (!review) return respond(req, res, 404, 'La reseña ya no existe.', form);
             const actualVersion = Number.isSafeInteger(review.__v) ? review.__v : 0;
             if (actualVersion !== version)
@@ -74,27 +73,15 @@ function mutation(form, buildUpdate) {
             const date = new Date();
             const result = buildUpdate(req.body || {}, review, date);
             if (result.error) return respond(req, res, result.error.status, result.error.message, form);
-            const filter = { _id: review._id };
-            if (version === 0) filter.$or = [{ __v: 0 }, { __v: { $exists: false } }];
-            else filter.__v = version;
-
             const adminId = req.usuarioActual._id;
-            if (result.update.$set?.respuestaTienda) result.update.$set.respuestaTienda.administrador = adminId;
-            if (result.update.$set?.moderacion) result.update.$set.moderacion.administrador = adminId;
-            const updated = await Reviewdb.findOneAndUpdate(
-                filter,
-                {
-                    ...result.update,
-                    $inc: { __v: 1 },
-                    $push: {
-                        historialGestion: {
-                            $each: [{ ...result.event, administrador: adminId, fecha: date }],
-                            $slice: -50,
-                        },
-                    },
-                },
-                { returnDocument: 'after', runValidators: true }
-            ).select('__v');
+            const updated = await adminReviews.saveMutation({
+                id: review._id,
+                version,
+                update: result.update,
+                event: result.event,
+                adminId,
+                date,
+            });
 
             if (!updated)
                 return respond(

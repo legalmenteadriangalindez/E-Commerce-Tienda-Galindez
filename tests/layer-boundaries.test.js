@@ -31,6 +31,18 @@ test('las páginas consultan servicios directamente y no contienen clientes HTTP
     }
 });
 
+test('las páginas y controladores no acceden directamente a modelos', () => {
+    const boundaryFiles = [
+        ...files(path.join(root, 'server/pages')),
+        ...files(path.join(root, 'server/controller')),
+    ].filter((filename) => filename.endsWith('.js'));
+
+    for (const filename of boundaryFiles) {
+        const source = fs.readFileSync(filename, 'utf8');
+        assert.doesNotMatch(source, /require\(['"][^'"]*\/model\/[^'"]+['"]\)/, path.relative(root, filename));
+    }
+});
+
 test('los módulos del servidor no tienen dependencias circulares', () => {
     const graph = new Map();
     for (const file of files(path.join(root, 'server')).filter((file) => file.endsWith('.js'))) {

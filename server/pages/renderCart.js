@@ -1,7 +1,7 @@
 const { publicError } = require('../services/publicError');
-const Ordendb = require('../model/order');
 const checkout = require('../business/checkoutService');
 const catalog = require('../business/catalogService');
+const orders = require('../business/orderService');
 const storeSettings = require('../business/storeSettingsService');
 const money = require('../services/money');
 
@@ -40,7 +40,7 @@ exports.car = async (req, res) => {
 
 exports.order_success_admin = async (req, res) => {
     try {
-        const orden = await Ordendb.findById(req.params.id);
+        const orden = await orders.findConfirmation(req.params.id);
 
         if (!orden) {
             return res.status(404).send('Orden no encontrada');

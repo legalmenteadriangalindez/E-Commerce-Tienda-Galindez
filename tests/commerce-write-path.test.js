@@ -6,7 +6,7 @@ const path = require('node:path');
 const read = (relative) => fs.readFileSync(path.join(__dirname, '..', relative), 'utf8');
 
 test('el controlador de ventas es de solo lectura', () => {
-    const source = read('server/controller/sale_controller.js');
+    const source = read('server/controller/saleController.js');
 
     assert.doesNotMatch(source, /exports\.(create|delete|finalizarVenta)\s*=/);
     assert.doesNotMatch(
@@ -19,12 +19,13 @@ test('los servicios de comercio conservan una única ruta de escritura', () => {
     const facade = read('server/business/commerceService.js');
     const checkout = read('server/business/checkoutService.js');
     const payment = read('server/business/paymentService.js');
+    const paymentPersistence = read('server/business/paymentPersistence.js');
     const orders = read('server/business/orderService.js');
 
     assert.match(facade, /checkoutService|checkout/);
     assert.match(checkout, /Order\.create\(/);
-    assert.match(payment, /Sale\.create\(/);
-    assert.match(payment, /SaleDetail\.insertMany\(/);
+    assert.match(paymentPersistence, /Sale\.create\(/);
+    assert.match(paymentPersistence, /SaleDetail\.insertMany\(/);
     assert.match(checkout, /async function createOrder\(/);
     assert.match(orders, /async function confirmCash\(/);
     assert.doesNotMatch(facade, /Order\.create\(|Sale\.create\(|SaleDetail\.insertMany\(/);

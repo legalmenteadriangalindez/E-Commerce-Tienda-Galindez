@@ -4,7 +4,7 @@ const router = express.Router();
 const { requirePermission } = require('../middleware/auth');
 const { PERMISSIONS: P } = require('../config/permissions');
 
-const userController = require('../controller/user_controller');
+const userController = require('../controller/userController');
 const servicesRenderUser = require('../pages/renderUsers');
 const { validate } = require('../middleware/validateRequest');
 const schemas = require('../validation/schemas');

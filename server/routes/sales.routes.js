@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const saleController = require('../controller/sale_controller');
+const saleController = require('../controller/saleController');
 
 // Middleware que ya creamos en el paso 2.2
 const { requirePermission } = require('../middleware/auth');

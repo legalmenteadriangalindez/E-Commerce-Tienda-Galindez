@@ -1,5 +1,3 @@
-const Reviewdb = require('../model/review');
-const Productdb = require('../model/product');
 const reviewService = require('../business/reviewService');
 const { hasPermission } = require('../middleware/auth');
 const { PERMISSIONS: P } = require('../config/permissions');
@@ -60,10 +58,6 @@ exports.create = async (req, res) => {
     }
 
     try {
-        if (!(await Productdb.exists({ _id: productId }))) {
-            return respond(req, res, 404, 'El producto ya no existe.');
-        }
-
         const input = readInput(req.body);
         if (input.error) {
             return respond(req, res, 400, input.error, productId, draft(req.body));
@@ -71,19 +65,15 @@ exports.create = async (req, res) => {
 
         // El autor procede de la sesión validada, nunca de los datos del formulario.
         const userId = req.usuarioActual._id;
-        // Esta consulta también reconoce reseñas anteriores a la clave de unicidad.
-        if (await Reviewdb.exists({ producto: productId, usuario: userId })) {
+        const result = await reviewService.create(productId, userId, input);
+        if (result.status === 'missing_product') {
+            return respond(req, res, 404, 'El producto ya no existe.');
+        }
+        if (result.status === 'duplicate') {
             return respond(req, res, 409, 'Ya publicaste una reseña para este producto. Puedes editarla.', productId);
         }
-
-        // El índice único lo administra la migración de esquema, no la
-        // solicitud individual. Así autoIndex puede permanecer desactivado.
-        await Reviewdb.create({ producto: productId, usuario: userId, ...input });
         return respond(req, res, 201, 'Tu reseña se publicó correctamente.', productId);
     } catch (error) {
-        if (error.code === 11000) {
-            return respond(req, res, 409, 'Ya publicaste una reseña para este producto. Puedes editarla.', productId);
-        }
         console.error('No se pudo publicar la reseña:', error.message);
         return respond(req, res, 500, 'No se pudo publicar la reseña. Inténtalo de nuevo.', productId);
     }
@@ -95,20 +85,15 @@ exports.find = async (req, res) => {
             if (!reviewService.validId(req.query.id)) {
                 return res.status(400).json({ message: 'El identificador de reseña no es válido.' });
             }
-            const review = await Reviewdb.findOne({ _id: req.query.id, oculta: { $ne: true } })
-                .select(reviewService.PUBLIC_FIELDS)
-                .populate('usuario', 'nombre')
-                .lean();
-            return review
-                ? res.json(reviewService.publicReview(review))
-                : res.status(404).json({ message: 'Reseña no encontrada.' });
+            const review = await reviewService.findPublicById(req.query.id);
+            return review ? res.json(review) : res.status(404).json({ message: 'Reseña no encontrada.' });
         }
 
         const productId = req.query.producto;
         if (!reviewService.validId(productId)) {
             return res.status(400).json({ message: 'Indica un producto válido para consultar sus reseñas.' });
         }
-        if (!(await Productdb.exists({ _id: productId }))) {
+        if (!(await reviewService.productExists(productId))) {
             return res.status(404).json({ message: 'Producto no encontrado.' });
         }
 
@@ -126,12 +111,12 @@ exports.update = async (req, res) => {
     }
 
     try {
-        const review = await Reviewdb.findById(req.params.id);
+        const review = await reviewService.findById(req.params.id);
         if (!review) return respond(req, res, 404, 'Reseña no encontrada.');
 
-        const productId = review.producto.toString();
+        const productId = review.producto?.toString();
         const userId = req.usuarioActual._id;
-        if (review.usuario.toString() !== userId.toString()) {
+        if (!review.usuario || review.usuario.toString() !== userId.toString()) {
             return respond(req, res, 403, 'Solo el autor puede editar esta reseña.', productId);
         }
 
@@ -140,13 +125,12 @@ exports.update = async (req, res) => {
             return respond(req, res, 400, input.error, productId, draft(req.body));
         }
 
-        const updated = await Reviewdb.findOneAndUpdate(
-            { _id: review._id, usuario: userId },
-            { $set: { ...input, fechaEdicion: new Date() }, $inc: { __v: 1 } },
-            { returnDocument: 'after', runValidators: true }
-        );
-
-        if (!updated) return respond(req, res, 404, 'La reseña ya no existe.', productId);
+        const result = await reviewService.update(req.params.id, userId, input);
+        if (result.status === 'not_found') return respond(req, res, 404, 'La reseña ya no existe.', productId);
+        if (result.status === 'forbidden') {
+            return respond(req, res, 403, 'Solo el autor puede editar esta reseña.', result.productId);
+        }
+        const updated = result.review;
         return respond(
             req,
             res,
@@ -168,22 +152,15 @@ exports.delete = async (req, res) => {
     }
 
     try {
-        const review = await Reviewdb.findById(req.params.id);
-        if (!review) return respond(req, res, 404, 'Reseña no encontrada.');
-
-        const productId = review.producto.toString();
         const userId = req.usuarioActual._id;
         const isModerator = hasPermission(req.usuarioActual, P.REVIEWS_MODERATE);
-        if (!isModerator && review.usuario.toString() !== userId.toString()) {
-            return respond(req, res, 403, 'No puedes eliminar esta reseña.', productId);
+        const result = await reviewService.remove(req.params.id, userId, isModerator);
+        if (result.status === 'not_found') return respond(req, res, 404, 'Reseña no encontrada.');
+        if (result.status === 'forbidden') {
+            return respond(req, res, 403, 'No puedes eliminar esta reseña.', result.productId);
         }
 
-        const filter = { _id: review._id };
-        if (!isModerator) filter.usuario = userId;
-        const deleted = await Reviewdb.findOneAndDelete(filter);
-        if (!deleted) return respond(req, res, 404, 'La reseña ya no existe.', productId);
-
-        return respond(req, res, 200, 'La reseña se eliminó correctamente.', productId);
+        return respond(req, res, 200, 'La reseña se eliminó correctamente.', result.productId);
     } catch (error) {
         console.error('No se pudo eliminar la reseña:', error.message);
         return respond(req, res, 500, 'No se pudo eliminar la reseña. Inténtalo de nuevo.');

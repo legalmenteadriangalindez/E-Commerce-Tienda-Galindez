@@ -1,6 +1,7 @@
 const Sale = require('../model/sales');
 const SaleDetail = require('../model/saleDetails');
 const salesCsv = require('../services/salesCsv');
+const adminPagination = require('../services/adminPagination');
 const queryPage = require('./queryPage');
 const { validId, BusinessError } = require('./errors');
 
@@ -39,4 +40,23 @@ async function get(id) {
         .lean();
     return sale;
 }
-module.exports = { list, get };
+
+async function details(venta, query = {}) {
+    const { page, limit } = adminPagination.requested(query, 50);
+    const filter = { venta };
+    const totalItems = await SaleDetail.countDocuments(filter);
+    const pagination = adminPagination.metadata(page, limit, totalItems);
+    const items = await SaleDetail.find(filter)
+        .populate('producto')
+        .sort({ createdAt: 1, _id: 1 })
+        .skip((pagination.page - 1) * limit)
+        .limit(limit)
+        .lean();
+    return { items, pagination };
+}
+
+function csvCursor(filters) {
+    return Sale.aggregate(salesCsv.aggregatePipeline(filters)).allowDiskUse(true).cursor({ batchSize: 500 });
+}
+
+module.exports = { list, get, details, csvCursor };

@@ -8,17 +8,27 @@ const root = path.join(__dirname, '..');
 const canonicalFiles = [
     'server/controller/authController.js',
     'server/controller/productController.js',
+    'server/controller/userController.js',
+    'server/controller/saleController.js',
     'server/controller/reviewAdminController.js',
     'server/pages/paymentPointPage.js',
     'public/css/add-product-billing-point.css',
+    'public/css/create-products.css',
+    'public/css/edit-profile.css',
+    'public/css/read-orders.css',
     'public/css/stock.css',
 ];
 
 const legacyFiles = [
     'server/controller/auth_controller.js',
     'server/controller/product_controller.js',
+    'server/controller/user_controller.js',
+    'server/controller/sale_controller.js',
     'server/pages/RenderPaymentPoint.js',
     'public/css/Add_product_billing_point.css',
+    'public/css/create_products.css',
+    'public/css/Edit_profile.css',
+    'public/css/read_orders.css',
     'public/css/stok.css',
 ];
 

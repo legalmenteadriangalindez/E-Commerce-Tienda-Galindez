@@ -8,7 +8,7 @@ const roles = require('../server/business/roleService');
 
 const permissions = require('../server/config/permissions');
 const auth = require('../server/middleware/auth');
-const userController = require('../server/controller/user_controller');
+const userController = require('../server/controller/userController');
 
 const P = permissions.PERMISSIONS;
 

@@ -1,15 +1,7 @@
-const Userdb = require('../model/user');
-const Roldb = require('../model/rol');
-const bcrypt = require('bcrypt');
-const { randomInt } = require('crypto');
 const sendEmail = require('../config/sendEmail');
 const accounts = require('../business/accountService');
 const { permissionsForRole } = require('../middleware/auth');
 const { PERMISSIONS: P } = require('../config/permissions');
-
-function generateCode() {
-    return randomInt(100000, 1000000).toString();
-}
 
 // LOGIN
 
@@ -26,20 +18,11 @@ exports.login = async (req, res) => {
             return res.status(400).send('Correo y contraseña requeridos');
         }
 
-        const usuario = await Userdb.findOne(accounts.emailFilter(accounts.normalizeEmail(email))).populate(
-            'rol',
-            'nombre permisos'
-        );
+        const usuario = await accounts.authenticate(email, password);
 
         // Respuesta genérica para evitar revelar
         // información sobre cuentas existentes
         if (!usuario || usuario.estado !== 'Activo' || !usuario.rol?.nombre) {
-            return res.status(401).send('Credenciales inválidas');
-        }
-
-        const passwordValida = await bcrypt.compare(password, usuario.password);
-
-        if (!passwordValida) {
             return res.status(401).send('Credenciales inválidas');
         }
 
@@ -152,19 +135,10 @@ exports.register = async (req, res, next) => {
         }
         const target = '/verify-email?email=' + encodeURIComponent(email);
         // El registro repetido no reenvía códigos ni cambia la contraseña.
-        if (await Userdb.exists(accounts.emailFilter(email))) return res.redirect(303, target);
-        const role = await Roldb.findOne({ nombre: 'Cliente' });
-        if (!role) return res.status(503).send('El registro todavía no está disponible.');
-        const challenge = accounts.verification(email);
-        await Userdb.create({
-            ...data,
-            email,
-            password: await bcrypt.hash(req.body.password, 12),
-            rol: role._id,
-            verified: false,
-            ...challenge.values,
-        });
-        await sendEmail(email, challenge.code);
+        const registration = await accounts.register({ data, email, password: req.body.password });
+        if (registration.existing) return res.redirect(303, target);
+        if (!registration.available) return res.status(503).send('El registro todavía no está disponible.');
+        await sendEmail(registration.email, registration.code);
         res.redirect(303, target);
     } catch (error) {
         if (error.code === 11000) return res.redirect(303, '/login');

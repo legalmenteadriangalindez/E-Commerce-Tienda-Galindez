@@ -21,9 +21,22 @@ comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
 
 - Las rutas aplican autenticación, permisos y CSRF antes de ejecutar una operación.
   Los servicios no reciben `req` ni `res`. Los campos de control no se persisten.
+- Las páginas y controladores no importan `server/model` ni construyen consultas
+  MongoDB. Usan servicios de negocio como `cartService`, `orderService`,
+  `reviewService`, `accountService` y `salesService`; así las mismas reglas se
+  comparten entre HTML, API y tareas de mantenimiento.
 - Perfil, catálogo, proveedores, usuarios, roles, pedidos y ventas comparten
   servicios entre páginas y API. Pedidos y ventas se escriben mediante
   `commerceService`; los servicios de lectura no crean caminos alternativos.
+- Los dominios grandes conservan una fachada pequeña y separan sus
+  responsabilidades internas: pagos usa `paymentValidation`,
+  `paymentPersistence`, `paymentSettlement`, `paymentMaintenance` y
+  `paymentResolution`; entregas usa `deliveryRules` y
+  `deliveryOperations`; usuarios usa `userRules` y `userRepository`; la rifa
+  usa `raffleRules` y `raffleRepository`; las analíticas de ventas usan
+  `salesAnalyticsPipelines`, `salesAnalyticsRepository` y
+  `salesAnalyticsPresentation`. Estos módulos siguen formando un único
+  monolito y no cambian el contrato de las rutas existentes.
 - Los listados administrativos siempre tienen límites. `queryPage` centraliza
   conteo, orden, desplazamiento y máximo de 50 registros. Los detalles de una
   página de ventas también están acotados.
@@ -50,11 +63,12 @@ comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
   desde servicios de negocio. Los cambios de esquema e índices requieren una
   migración nueva; las migraciones publicadas conservan su checksum.
 - Los módulos JavaScript nuevos y ya normalizados usan `camelCase`
-  (`authController.js`, `productController.js`, `paymentPointPage.js`) y los
-  estilos propios usan `kebab-case` en minúsculas
-  (`add-product-billing-point.css`, `stock.css`). Los nombres heredados se
-  migran de forma gradual para no romper rutas ni referencias de despliegues
-  existentes.
+  (`authController.js`, `productController.js`, `userController.js`,
+  `saleController.js`, `paymentPointPage.js`) y los estilos propios usan
+  `kebab-case` en minúsculas (`add-product-billing-point.css`,
+  `create-products.css`, `edit-profile.css`, `read-orders.css`, `stock.css`).
+  Los nombres heredados se migran de forma gradual para no romper rutas ni
+  referencias de despliegues existentes.
 
 ## Comprobaciones locales
 

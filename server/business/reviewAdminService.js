@@ -125,4 +125,32 @@ async function getPage(query = {}) {
     };
 }
 
-module.exports = { getPage, normalizeFilters, panelUrl };
+async function findForMutation(id) {
+    return Reviewdb.findById(id).select('oculta respuestaTienda __v').lean();
+}
+
+async function saveMutation({ id, version, update, event, adminId, date }) {
+    const filter = { _id: id };
+    if (version === 0) filter.$or = [{ __v: 0 }, { __v: { $exists: false } }];
+    else filter.__v = version;
+
+    if (update.$set?.respuestaTienda) update.$set.respuestaTienda.administrador = adminId;
+    if (update.$set?.moderacion) update.$set.moderacion.administrador = adminId;
+
+    return Reviewdb.findOneAndUpdate(
+        filter,
+        {
+            ...update,
+            $inc: { __v: 1 },
+            $push: {
+                historialGestion: {
+                    $each: [{ ...event, administrador: adminId, fecha: date }],
+                    $slice: -50,
+                },
+            },
+        },
+        { returnDocument: 'after', runValidators: true }
+    ).select('__v');
+}
+
+module.exports = { getPage, normalizeFilters, panelUrl, findForMutation, saveMutation };

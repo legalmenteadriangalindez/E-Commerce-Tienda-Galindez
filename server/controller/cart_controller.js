@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-const Product = require('../model/product');
-const Order = require('../model/order');
 const commerce = require('../business/commerceService');
-const money = require('../services/money');
+const cartService = require('../business/cartService');
+const orders = require('../business/orderService');
+const payments = require('../business/paymentService');
 const { verificarFirmaWompi } = require('../business/wompiService');
 const save = (req) =>
     new Promise((resolve, reject) => req.session.save((error) => (error ? reject(error) : resolve())));
@@ -18,37 +18,15 @@ exports.add_to_carrito = wrap(async (req, res) => {
     if (!mongoose.isObjectIdOrHexString(productoId) || !Number.isInteger(cantidad) || cantidad < 1 || cantidad > 999) {
         throw new commerce.CommerceError('Producto o cantidad inválida.');
     }
-    const product = await Product.findById(productoId).populate('categoria');
-    if (!product) throw new commerce.CommerceError('Producto no encontrado.', 404);
     const cart = req.session.cart || [];
-    const prior = cart.find((item) => item.productoId === productoId);
-    if ((prior?.cantidad || 0) + cantidad > product.stock)
-        throw new commerce.CommerceError('No hay suficientes unidades disponibles.', 409);
-    if (prior) prior.cantidad += cantidad;
-    else {
-        if (cart.length >= 100) throw new commerce.CommerceError('El carrito admite hasta 100 productos distintos.');
-        cart.push({
-            _id: productoId,
-            productoId,
-            nombre: product.nombre,
-            precio: money.display(product.precioVentaCents, product.precioVenta),
-            precioCents: money.readCents(product.precioVentaCents, product.precioVenta),
-            cantidad,
-            foto: product.fotos?.[0] || '/img/default.jpg',
-            categoria: product.categoria?.nombre || '',
-        });
-    }
-    req.session.cart = cart;
+    req.session.cart = await cartService.addProduct(cart, productoId, cantidad);
     invalidate(req);
     await save(req);
-    res.json({ success: true, message: 'Se agregó el producto al carrito', cart });
+    res.json({ success: true, message: 'Se agregó el producto al carrito', cart: req.session.cart });
 });
 exports.get_carrito = wrap(async (req, res) => {
     const cart = req.session.cart || [];
-    const subtotalCents = cart.reduce(
-        (total, item) => total + money.readCents(item.precioCents, item.precio) * Number(item.cantidad || 0),
-        0
-    );
+    const subtotalCents = cartService.subtotalCents(cart);
     const shippingPolicy = await commerce.loadShippingPolicy();
     const quote = commerce.totals(subtotalCents, shippingPolicy);
     res.json({ success: true, totalItems: cart.length, cart, quote, shippingPolicy });
@@ -58,10 +36,7 @@ exports.remove_from_carrito = wrap(async (req, res) => {
     req.session.cart = (req.session.cart || []).filter((item) => item.productoId !== req.body.productoId);
     invalidate(req);
     await save(req);
-    const subtotalCents = req.session.cart.reduce(
-        (acc, item) => acc + money.readCents(item.precioCents, item.precio) * Number(item.cantidad || 0),
-        0
-    );
+    const subtotalCents = cartService.subtotalCents(req.session.cart);
     res.json({
         success: true,
         message: 'Producto eliminado',
@@ -70,33 +45,11 @@ exports.remove_from_carrito = wrap(async (req, res) => {
     });
 });
 async function updateCartQuantities(req) {
-    const products = commerce.normalizedCart(req.body.productos);
-    const cart = req.session.cart || [];
-    for (const item of products) {
-        if (!cart.some((old) => old.productoId === item.productoId))
-            throw new commerce.CommerceError('Producto fuera del carrito.');
-    }
-    const updated = cart.map((item) => ({
-        ...item,
-        cantidad: products.find((product) => product.productoId === item.productoId)?.cantidad || item.cantidad,
-    }));
-    const priced = await commerce.quote(updated);
-    const pricedById = new Map(priced.productos.map((item) => [String(item.producto), item]));
-    req.session.cart = updated.map((item) => {
-        const current = pricedById.get(String(item.productoId));
-        return current
-            ? {
-                  ...item,
-                  nombre: current.nombre,
-                  precio: current.precioUnitario,
-                  precioCents: current.precioUnitarioCents,
-                  cantidad: current.cantidad,
-              }
-            : item;
-    });
+    const updated = await cartService.updateQuantities(req.session.cart || [], req.body.productos);
+    req.session.cart = updated.cart;
     invalidate(req);
     await save(req);
-    return { cart: req.session.cart, ...priced };
+    return { ...updated, cart: req.session.cart };
 }
 exports.update_carrito = wrap(async (req, res) => {
     const updated = await updateCartQuantities(req);
@@ -124,8 +77,7 @@ exports.checkout = wrap(async (req, res) => {
         return res.redirect(303, '/venta-finalizada/' + order._id);
     }
     if (order.estadoPago === 'PAGADO') return res.redirect(303, '/venta-finalizada/' + order._id);
-    if (await require('../model/paymentEvent').exists({ order: order._id, estado: 'PENDIENTE' }))
-        return res.redirect(303, '/venta-finalizada/' + order._id);
+    if (await payments.hasPendingEvent(order._id)) return res.redirect(303, '/venta-finalizada/' + order._id);
     res.redirect(303, commerce.checkoutUrl(order));
 });
 exports.checkout_admin = wrap(async (req, res) => {
@@ -178,13 +130,9 @@ exports.wompiWebhook = wrap(async (req, res) => {
 });
 exports.retryPayment = wrap(async (req, res) => {
     if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new commerce.CommerceError('Pedido inválido.');
-    const order = await Order.findOne({
-        _id: req.params.id,
-        usuario: req.session.user._id,
-        $or: [{ metodoPago: { $in: [...commerce.WOMPI_METHODS] } }, { canal: 'WOMPI', metodoPago: { $exists: false } }],
-    });
+    const order = await orders.findRetryablePaymentOrder(req.params.id, req.session.user._id, commerce.WOMPI_METHODS);
     if (!order) throw new commerce.CommerceError('Pedido no encontrado.', 404);
-    if (await require('../model/paymentEvent').exists({ order: order._id, estado: 'PENDIENTE' }))
+    if (await payments.hasPendingEvent(order._id))
         throw new commerce.CommerceError('Espera la confirmación del pago en proceso.', 409);
     res.redirect(303, commerce.checkoutUrl(order));
 });

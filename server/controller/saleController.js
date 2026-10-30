@@ -1,4 +1,3 @@
-const Saledb = require('../model/sales');
 const salesCsv = require('../services/salesCsv');
 const adminPagination = require('../services/adminPagination');
 const analytics = require('../business/analyticsService');
@@ -26,11 +25,9 @@ exports.exportCsv = async (req, res) => {
     const filename = `ventas${suffix}.csv`;
 
     try {
-        // Mongoose 9 devuelve aquí un AggregationCursor async iterable;
-        // no es una Query y ya no expone .exec().
-        const cursor = Saledb.aggregate(salesCsv.aggregatePipeline(filters))
-            .allowDiskUse(true)
-            .cursor({ batchSize: 500 });
+        // El cursor y la agregación viven en el servicio de ventas; el
+        // controlador solo transforma sus filas en una respuesta HTTP.
+        const cursor = sales.csvCursor(filters);
 
         res.status(200);
         res.set({

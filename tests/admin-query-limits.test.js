@@ -17,12 +17,14 @@ test('las peticiones administrativas tienen límites máximos de página', () =>
 test('ventas y analíticas no cargan todos los detalles en memoria', () => {
     const sales = read('server/business/salesService.js');
     const analytics = read('server/business/analytics/salesAnalytics.js');
+    const analyticsPipelines = read('server/business/analytics/salesAnalyticsPipelines.js');
+    const analyticsRepository = read('server/business/analytics/salesAnalyticsRepository.js');
 
     assert.match(sales, /queryPage\(Sale, query/);
     assert.match(sales, /\.limit\(5000\)/);
     assert.doesNotMatch(analytics, /Detail\.find\(/);
-    assert.match(analytics, /Sale\.aggregate\(/);
-    assert.match(analytics, /\$lookup: \{ from: Detail\.collection\.name/);
+    assert.match(analyticsRepository, /Sale\.aggregate\(/);
+    assert.match(analyticsPipelines, /\$lookup: \{ from: Detail\.collection\.name/);
 });
 
 test('los servicios administrativos acotan consultas y corrigen páginas fuera de rango', async (t) => {
@@ -55,7 +57,7 @@ test('los servicios administrativos acotan consultas y corrigen páginas fuera d
 });
 
 test('el sorteo elige una participación con MongoDB sin traer toda la ronda', () => {
-    const raffle = read('server/business/raffleService.js');
+    const raffle = read('server/business/raffleRepository.js');
     assert.match(raffle, /RaffleEntry\.aggregate\(\[/);
     assert.match(raffle, /\$sample: \{ size: 1 \}/);
     assert.doesNotMatch(raffle, /crypto\.randomInt/);

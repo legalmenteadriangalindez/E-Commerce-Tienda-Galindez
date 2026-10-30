@@ -25,6 +25,64 @@ async function get(id) {
     return order;
 }
 
+async function findByCheckoutKeys(keys = []) {
+    const values = Array.isArray(keys) ? keys.filter((value) => typeof value === 'string' && value) : [];
+    if (!values.length) return null;
+    return Order.findOne({ claveCheckout: { $in: values } }).lean();
+}
+
+async function listCustomerOrders(userId, page = 1, limit = 20) {
+    const safePage = Math.max(1, Math.min(Number(page) || 1, 100000));
+    const safeLimit = Math.max(1, Math.min(Number(limit) || 20, 50));
+    const rows = await Order.find({ usuario: userId, canal: { $ne: 'CAJA' } })
+        .sort({ createdAt: -1, _id: -1 })
+        .skip((safePage - 1) * safeLimit)
+        .limit(safeLimit + 1)
+        .lean();
+
+    return {
+        orders: rows.slice(0, safeLimit),
+        page: safePage,
+        more: rows.length > safeLimit,
+    };
+}
+
+async function findCustomerOrder(id, userId) {
+    return Order.findOne({ _id: validId(id, 'Pedido'), usuario: userId })
+        .populate('repartidor', 'nombre')
+        .lean();
+}
+
+async function findConfirmation(id) {
+    if (!mongoose.isObjectIdOrHexString(id)) return null;
+    return Order.findById(id).lean();
+}
+
+async function listAdminPayments(orderId, page = 1, limit = 10) {
+    const filter = orderId && mongoose.isObjectIdOrHexString(orderId) ? { _id: orderId } : {};
+    const safeLimit = Math.max(1, Math.min(Number(limit) || 10, 50));
+    const totalItems = await Order.countDocuments(filter);
+    const totalPages = Math.max(1, Math.ceil(totalItems / safeLimit));
+    const requestedPage = Math.max(1, Math.min(Number(page) || 1, 100000));
+    const safePage = Math.min(requestedPage, totalPages);
+    const rows = await Order.find(filter)
+        .populate('repartidor', 'nombre email telefono')
+        .sort({ createdAt: -1, _id: -1 })
+        .skip((safePage - 1) * safeLimit)
+        .limit(safeLimit)
+        .lean();
+    return { orders: rows, totalItems, page: safePage, limit: safeLimit, totalPages };
+}
+
+async function findRetryablePaymentOrder(id, userId, wompiMethods) {
+    const methods = Array.isArray(wompiMethods) ? wompiMethods : [...(wompiMethods || [])];
+    return Order.findOne({
+        _id: validId(id, 'Pedido'),
+        usuario: userId,
+        $or: [{ metodoPago: { $in: methods } }, { canal: 'WOMPI', metodoPago: { $exists: false } }],
+    });
+}
+
 async function changeState(id, state, actorId, dealer = false, note = '', cashConfirmed = false) {
     if (!mongoose.isObjectIdOrHexString(id)) throw new commerce.CommerceError('Pedido inválido.');
     return mongoose.connection.transaction(async (session) => {
@@ -145,6 +203,12 @@ async function confirmCash(id, adminId) {
 
 module.exports = {
     get,
+    findByCheckoutKeys,
+    listCustomerOrders,
+    findCustomerOrder,
+    findConfirmation,
+    listAdminPayments,
+    findRetryablePaymentOrder,
     list: (query) => queryPage(Order, query, { populate, sort: { createdAt: -1, _id: -1 } }),
     changeState,
     confirmCash,
