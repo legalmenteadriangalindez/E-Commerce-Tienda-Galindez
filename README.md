@@ -73,7 +73,7 @@ Si una migración de índice encuentra datos duplicados u opciones incompatibles
 se detiene y debe corregirse con una operación revisada; no elimina índices de
 forma automática.
 
-El proceso web no ejecuta tareas periódicas. En Render, `render.yaml` define el Cron Job `tienda-galindez-maintenance`, que ejecuta `npm run maintenance` cada minuto. En local puedes ejecutarlo manualmente después de configurar `MONGO_URI`.
+El proceso web no ejecuta tareas periódicas. El workflow `.github/workflows/maintenance.yml` ejecuta `npm run maintenance` cada 15 minutos mediante GitHub Actions (horarios UTC: minutos 7, 22, 37 y 52). Configura los secrets requeridos en GitHub según **PRODUCCION.md**. En local puedes ejecutarlo manualmente después de configurar `MONGO_URI`.
 
 Las vistas públicas de catálogo consultan directamente `server/business/catalogService.js`, que también utiliza la API pública. No hacen peticiones Axios al propio dominio ni dependen de `BASE_URL` para cargar productos; `BASE_URL` se reserva para enlaces públicos, SEO e integraciones externas.
 
@@ -81,7 +81,7 @@ Las vistas públicas de catálogo consultan directamente `server/business/catalo
 
 Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicación de esta actualización, variables de Render, pruebas de pagos, imágenes, administrador inicial, pedidos anteriores, copias de seguridad y límites de la implementación.
 
-- Configuración de Render en `render.yaml`: servicio web Docker con health check `/healthz`, despliegue después de CI y Cron Job de mantenimiento.
+- Configuración de Render en `render.yaml`: servicio web Docker con health check `/healthz` y despliegue después de CI. El mantenimiento programado se ejecuta mediante GitHub Actions; no se crea un Cron Job adicional en Render.
 - Comprobación de variables: `npm run check:production`.
 - Auditoría de datos anteriores, de solo lectura: `npm run audit:data`.
 - Copias y restauración: `npm run backup:restore-drill` crea una copia completa,
