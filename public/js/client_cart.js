@@ -11,7 +11,7 @@
         view.setBusy(true);
         view.setStatus('Agregando producto…');
         try {
-            const data = await api.requestCart('/carrito/add', { productoId, cantidad: 1 });
+            const data = await api.requestCart('/carrito/add', { productoId: productId, cantidad: 1 });
             view.setStatus(data.message || 'Producto agregado.', 'success');
             window.setTimeout(() => window.location.reload(), 250);
         } catch (error) {

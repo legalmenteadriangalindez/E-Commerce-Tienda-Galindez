@@ -62,10 +62,6 @@
     .cart-wrapper {
         grid-template-columns: 1fr;
     }
-
-    .summary-card {
-        position: static;
-    }
 }
 
 @media (max-width: 760px) {
@@ -156,11 +152,6 @@
         align-items: flex-start;
         flex-direction: column;
         gap: 12px;
-    }
-
-    .cart-header-actions {
-        width: 100%;
-        justify-content: space-between;
     }
 
     .items-section {
