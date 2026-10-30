@@ -39,6 +39,8 @@ comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
   `salesExportQuery.js`, serialización CSV en `salesCsvFormat.js` y métricas en
   `salesAnalyticsReports.js`; `analyticsExport.js` conserva la fachada pública. Estos módulos siguen formando un único
   monolito y no cambian el contrato de las rutas existentes.
+- El controlador legado `cart_controller.js` conserva sus exportaciones como fachada. Las operaciones del carrito viven en `cartController.js`, el checkout en `checkoutController.js` y los webhooks/reintentos de pago en `paymentController.js`.
+- Las notificaciones separan la creación de eventos y la cola en `emailNotificationQueue.js` del envío, la recuperación de reclamos vencidos y los reintentos en `emailNotificationWorker.js`. `emailNotificationService.js` conserva las exportaciones que consumen los flujos actuales.
 - Los listados administrativos siempre tienen límites. `queryPage` centraliza
   conteo, orden, desplazamiento y máximo de 50 registros. Los detalles de una
   página de ventas también están acotados.
