@@ -35,7 +35,9 @@ comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
   `deliveryOperations`; usuarios usa `userRules` y `userRepository`; la rifa
   usa `raffleRules` y `raffleRepository`; las analíticas de ventas usan
   `salesAnalyticsPipelines`, `salesAnalyticsRepository` y
-  `salesAnalyticsPresentation`. Estos módulos siguen formando un único
+  `salesAnalyticsPresentation`. La exportación separa filtros y consultas en
+  `salesExportQuery.js`, serialización CSV en `salesCsvFormat.js` y métricas en
+  `salesAnalyticsReports.js`; `analyticsExport.js` conserva la fachada pública. Estos módulos siguen formando un único
   monolito y no cambian el contrato de las rutas existentes.
 - Los listados administrativos siempre tienen límites. `queryPage` centraliza
   conteo, orden, desplazamiento y máximo de 50 registros. Los detalles de una
