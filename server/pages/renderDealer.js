@@ -1,4 +1,4 @@
-const commerce = require('../business/commerceService');
+const orders = require('../business/orderService');
 const delivery = require('../business/deliveryService');
 const catalogPagination = require('../services/catalogPagination');
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
@@ -24,7 +24,7 @@ exports.update_order = wrap(async (req, res) =>
 );
 exports.update_order_data = wrap(async (req, res) => {
     await delivery.orderForDealer(req.params.id, req.session.user._id);
-    await commerce.changeState(
+    await orders.changeState(
         req.params.id,
         req.body.estado,
         req.session.user._id,

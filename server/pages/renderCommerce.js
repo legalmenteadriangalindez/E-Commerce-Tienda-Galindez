@@ -2,7 +2,10 @@ const crypto = require('node:crypto');
 const mongoose = require('mongoose');
 const Order = require('../model/order');
 const PaymentEvent = require('../model/paymentEvent');
-const commerce = require('../business/commerceService');
+const checkout = require('../business/checkoutService');
+const payments = require('../business/paymentService');
+const orders = require('../business/orderService');
+const { CommerceError, validTransactionId } = require('../business/commerceShared');
 const raffle = require('../business/raffleService');
 const catalogPagination = require('../services/catalogPagination');
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
@@ -35,8 +38,8 @@ exports.checkout = (admin) =>
         }
         if (prior) delete req.session[keyName];
         req.session[keyName] ||= crypto.randomUUID();
-        const priced = await commerce.quote(cart);
-        const shipping = commerce.shippingPolicy();
+        const priced = await checkout.quote(cart);
+        const shipping = checkout.shippingPolicy();
         await saveSession(req);
         res.render(admin ? 'admin/payment/payment_point' : 'client/payment/payment_point', {
             user: req.usuarioActual || req.session.user,
@@ -110,16 +113,16 @@ exports.myOrders = wrap(async (req, res) => {
     });
 });
 exports.orderStatus = wrap(async (req, res) => {
-    if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new commerce.CommerceError('Pedido no encontrado.', 404);
+    if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new CommerceError('Pedido no encontrado.', 404);
     let order = await Order.findOne({ _id: req.params.id, usuario: req.session.user._id }).populate(
         'repartidor',
         'nombre'
     );
-    if (!order) throw new commerce.CommerceError('Pedido no encontrado.', 404);
+    if (!order) throw new CommerceError('Pedido no encontrado.', 404);
     let notice = '';
-    if (commerce.validTransactionId(req.query.id) && order.estadoPago === 'PENDIENTE') {
+    if (validTransactionId(req.query.id) && order.estadoPago === 'PENDIENTE') {
         try {
-            await commerce.reconcile(req.query.id, undefined, order);
+            await payments.reconcile(req.query.id, undefined, order);
         } catch {
             notice = 'Estamos verificando el pago. Puedes consultar esta página de nuevo sin volver a pagar.';
         }
@@ -192,9 +195,9 @@ exports.adminPayments = wrap(async (req, res) => {
     });
 });
 exports.confirmCash = wrap(async (req, res) => {
-    if (req.body.confirmar !== 'si') throw new commerce.CommerceError('Confirma que recibiste el dinero.');
-    if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new commerce.CommerceError('Pedido inválido.');
-    const order = await commerce.confirmCash(req.params.id, req.session.user._id);
+    if (req.body.confirmar !== 'si') throw new CommerceError('Confirma que recibiste el dinero.');
+    if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new CommerceError('Pedido inválido.');
+    const order = await orders.confirmCash(req.params.id, req.session.user._id);
     if (order.claveCheckout === `CAJA:${req.session.user._id}:${req.session.claveIdempotenciaCaja}`) {
         req.session.cart = [];
         delete req.session.claveIdempotenciaCaja;
@@ -204,20 +207,19 @@ exports.confirmCash = wrap(async (req, res) => {
     res.redirect(303, '/admin/payments?order=' + order._id);
 });
 exports.adminReconcile = wrap(async (req, res) => {
-    if (!commerce.validTransactionId(req.body.transactionId))
-        throw new commerce.CommerceError('ID de transacción inválido.');
-    await commerce.reconcile(req.body.transactionId);
+    if (!validTransactionId(req.body.transactionId)) throw new CommerceError('ID de transacción inválido.');
+    await payments.reconcile(req.body.transactionId);
     req.session.commerceNotice = 'Transacción consultada con Wompi. Revisa el estado y las incidencias.';
     await saveSession(req);
     res.redirect(303, '/admin/payments');
 });
 exports.cancel = wrap(async (req, res) => {
-    await commerce.changeState(req.params.id, 'CANCELADA', req.session.user._id);
+    await orders.changeState(req.params.id, 'CANCELADA', req.session.user._id);
     res.redirect(303, '/admin/payments?order=' + req.params.id);
 });
 exports.resolveOrder = wrap(async (req, res) => {
-    if (req.body.confirmar !== 'si') throw new commerce.CommerceError('Confirma la revisión antes de guardar.');
-    await commerce.resolveOrder(
+    if (req.body.confirmar !== 'si') throw new CommerceError('Confirma la revisión antes de guardar.');
+    await payments.resolveOrder(
         req.params.id,
         req.body.accion,
         req.body.motivo,
@@ -230,9 +232,8 @@ exports.resolveOrder = wrap(async (req, res) => {
     res.redirect(303, '/admin/payments?order=' + req.params.id);
 });
 exports.resolveEvent = wrap(async (req, res) => {
-    if (req.body.confirmar !== 'si')
-        throw new commerce.CommerceError('Confirma que resolviste la incidencia con el proveedor.');
-    await commerce.resolveEvent(req.params.id, req.body.motivo, req.body.comprobante, req.session.user._id);
+    if (req.body.confirmar !== 'si') throw new CommerceError('Confirma que resolviste la incidencia con el proveedor.');
+    await payments.resolveEvent(req.params.id, req.body.motivo, req.body.comprobante, req.session.user._id);
     req.session.commerceNotice = 'Incidencia revisada y comprobante registrado.';
     await saveSession(req);
     res.redirect(303, '/admin/payments');

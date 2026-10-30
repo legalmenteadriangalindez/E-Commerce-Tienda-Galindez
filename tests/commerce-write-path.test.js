@@ -15,14 +15,19 @@ test('el controlador de ventas es de solo lectura', () => {
     );
 });
 
-test('commerceService conserva la única escritura de pedidos, ventas y detalles', () => {
-    const commerce = read('server/business/commerceService.js');
+test('los servicios de comercio conservan una única ruta de escritura', () => {
+    const facade = read('server/business/commerceService.js');
+    const checkout = read('server/business/checkoutService.js');
+    const payment = read('server/business/paymentService.js');
+    const orders = read('server/business/orderService.js');
 
-    assert.match(commerce, /Order\.create\(/);
-    assert.match(commerce, /Sale\.create\(/);
-    assert.match(commerce, /SaleDetail\.insertMany\(/);
-    assert.match(commerce, /async function createOrder\(/);
-    assert.match(commerce, /async function confirmCash\(/);
+    assert.match(facade, /checkoutService|checkout/);
+    assert.match(checkout, /Order\.create\(/);
+    assert.match(payment, /Sale\.create\(/);
+    assert.match(payment, /SaleDetail\.insertMany\(/);
+    assert.match(checkout, /async function createOrder\(/);
+    assert.match(orders, /async function confirmCash\(/);
+    assert.doesNotMatch(facade, /Order\.create\(|Sale\.create\(|SaleDetail\.insertMany\(/);
 });
 
 test('las rutas antiguas de escritura permanecen bloqueadas', () => {

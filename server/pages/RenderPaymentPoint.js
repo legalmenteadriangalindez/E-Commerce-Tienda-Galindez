@@ -1,8 +1,8 @@
-const commerce = require('../business/commerceService');
+const storeSettings = require('../business/storeSettingsService');
 
 exports.billing_point = async (req, res, next) => {
     try {
-        const shipping = await commerce.loadShippingPolicy();
+        const shipping = await storeSettings.getShippingPolicy();
         return res.render('admin/home/Billing_point', {
             user: req.session.user,
             shippingPriceCents: shipping.shippingPriceCents,

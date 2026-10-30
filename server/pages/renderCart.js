@@ -1,7 +1,8 @@
 const { publicError } = require('../services/publicError');
 const Ordendb = require('../model/order');
-const commerce = require('../business/commerceService');
+const checkout = require('../business/checkoutService');
 const catalog = require('../business/catalogService');
+const storeSettings = require('../business/storeSettingsService');
 const money = require('../services/money');
 
 // RENDER CART
@@ -14,8 +15,8 @@ exports.car = async (req, res) => {
             (acc, item) => acc + money.readCents(item.precioCents, item.precio) * item.cantidad,
             0
         );
-        const shipping = await commerce.loadShippingPolicy();
-        const summary = commerce.totals(subtotalCents, shipping);
+        const shipping = await storeSettings.getShippingPolicy();
+        const summary = checkout.totals(subtotalCents, shipping);
         const suggested = await catalog.listPublic({
             page: 1,
             limit: 6,

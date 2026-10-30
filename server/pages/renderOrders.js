@@ -1,7 +1,6 @@
 const { wrap } = require('../http/handlers');
 const pagination = require('../services/catalogPagination');
 const orders = require('../business/orderService');
-const commerce = require('../business/commerceService');
 const { validId, BusinessError } = require('../business/errors');
 exports.create_order_form = (req, res) => res.redirect('/read-order');
 exports.create_order = wrap(async () => {
@@ -18,7 +17,7 @@ exports.update_order = wrap(async (req, res) =>
     res.render('admin/orders/update_order', { order: await orders.get(req.query.id) })
 );
 exports.update_order_data = wrap(async (req, res) => {
-    await commerce.changeState(validId(req.params.id, 'Pedido'), req.body.estado, req.session.user._id);
+    await orders.changeState(validId(req.params.id, 'Pedido'), req.body.estado, req.session.user._id);
     res.redirect(303, '/read-order');
 });
 exports.delete_order = wrap(async () => {
