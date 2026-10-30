@@ -44,10 +44,6 @@ body {
     box-shadow: 0 0 15px rgba(255, 45, 85, 0.5);
 }
 
-.hero-image img {
-    width: 600%;
-}
-
 /* CARAS */
 
 .anime-face {
@@ -658,28 +654,6 @@ body {
         max-width: 300px;
 
         margin: 15px auto 0;
-    }
-
-    /* ==============================================
-       IMAGEN HERO
-    ============================================== */
-
-    .hero-image {
-        width: 100%;
-
-        display: flex;
-        justify-content: center;
-
-        position: relative;
-        z-index: 1;
-    }
-
-    .hero-image img {
-        width: 100%;
-        max-width: 320px;
-        height: auto;
-
-        object-fit: contain;
     }
 
     /* ==============================================
