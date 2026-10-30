@@ -6,6 +6,15 @@ const test = require('node:test');
 const root = path.join(__dirname, '..');
 const routesDirectory = path.join(root, 'server', 'routes');
 const routesIndexPath = path.join(routesDirectory, 'index.js');
+const adminRoutesDirectory = path.join(routesDirectory, 'admin');
+const adminRouteModules = [
+    'catalog.routes.js',
+    'users.routes.js',
+    'orders.routes.js',
+    'payments.routes.js',
+    'reviews.routes.js',
+    'settings.routes.js',
+];
 
 function routeModuleFiles() {
     return fs
@@ -64,6 +73,27 @@ test('todos los módulos de rutas se cargan y están montados', () => {
             `${file} no está montado en server/routes/index.js`
         );
         assert.doesNotThrow(() => require(path.join(routesDirectory, file)), `${file} no se puede cargar`);
+    }
+});
+
+test('las rutas administrativas están divididas por dominio', () => {
+    const facadePath = path.join(routesDirectory, 'admin.routes.js');
+    const facadeSource = fs.readFileSync(facadePath, 'utf8');
+
+    assert.ok(facadeSource.length < 2000, 'la fachada administrativa volvió a crecer demasiado');
+
+    for (const moduleName of adminRouteModules) {
+        const modulePath = path.join(adminRoutesDirectory, moduleName);
+        assert.ok(fs.existsSync(modulePath), `${moduleName} no existe`);
+        assert.match(
+            facadeSource,
+            new RegExp(`require\\(['"]\\./admin/${moduleName.slice(0, -3)}['"]\\)`),
+            `${moduleName} no está conectado a la fachada administrativa`
+        );
+
+        const router = require(modulePath);
+        assert.ok(Array.isArray(router.stack), `${moduleName} no exporta un router de Express`);
+        assert.ok(router.stack.length > 0, `${moduleName} no registra rutas`);
     }
 });
 
