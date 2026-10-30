@@ -82,4 +82,3 @@ exports.resolveEvent = wrap(async (req, res) => {
     await saveSession(req);
     res.redirect(303, '/admin/payments');
 });
-
