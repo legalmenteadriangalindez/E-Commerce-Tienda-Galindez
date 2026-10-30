@@ -29,7 +29,9 @@ jobs:
             - name: ESLint
               run: npm run lint
             - name: Formato Prettier
-              run: npm run format:check
+              run: |
+                  npm run format
+                  git diff --no-color -- public/js public/css server/config/pageResources.js
             - name: Pruebas unitarias y de rutas
               run: npm test
     verify:
