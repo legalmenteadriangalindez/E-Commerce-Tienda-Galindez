@@ -7,14 +7,18 @@ const ejs = require('ejs');
 const template = fs.readFileSync(path.join(__dirname, '../views/include/_header.ejs'), 'utf8');
 
 function render(sessionUser = null) {
-    return ejs.render(template, {
-        categorias: [],
-        cart: [],
-        csrfToken: 'csrf-test',
-        cspNonce: 'nonce-test',
-        sessionUser,
-        activeRaffle: null,
-    });
+    return ejs.render(
+        template,
+        {
+            categorias: [],
+            cart: [],
+            csrfToken: 'csrf-test',
+            cspNonce: 'nonce-test',
+            sessionUser,
+            activeRaffle: null,
+        },
+        { filename: path.join(__dirname, '../views/include/_header.ejs') }
+    );
 }
 
 test('el menú de perfil ofrece autenticación cuando no hay sesión', () => {

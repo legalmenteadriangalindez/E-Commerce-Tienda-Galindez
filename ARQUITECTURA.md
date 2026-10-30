@@ -35,7 +35,9 @@ comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
   `deliveryOperations`; usuarios usa `userRules` y `userRepository`; la rifa
   usa `raffleRules` y `raffleRepository`; las analíticas de ventas usan
   `salesAnalyticsPipelines`, `salesAnalyticsRepository` y
-  `salesAnalyticsPresentation`. Estos módulos siguen formando un único
+  `salesAnalyticsPresentation`. La exportación separa filtros y consultas en
+  `salesExportQuery.js`, serialización CSV en `salesCsvFormat.js` y métricas en
+  `salesAnalyticsReports.js`; `analyticsExport.js` conserva la fachada pública. Estos módulos siguen formando un único
   monolito y no cambian el contrato de las rutas existentes.
 - Los listados administrativos siempre tienen límites. `queryPage` centraliza
   conteo, orden, desplazamiento y máximo de 50 registros. Los detalles de una
@@ -60,10 +62,14 @@ comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
   `.product-description-truncated` y `.summary-text`), nunca `.container`.
   La navegación y el pie usan prefijos `.app-*` para que sus reglas no
   interfieran con Bootstrap ni con las pantallas de catálogo, carrito o pago.
-- Las vistas grandes se componen con parciales por responsabilidad: `views/include/orders/`
-  contiene bloques compartidos de pedidos; carrito, reseñas y puntos de pago mantienen
-  sus parciales junto a la vista (`partials/`). Los parciales no cargan CSS ni JavaScript;
-  esos recursos se cargan una sola vez en la vista principal.
+- Las vistas grandes se componen con parciales por responsabilidad. El encabezado público divide metadatos, navegación y
+  promoción del sorteo en `views/include/header/`; `views/include/orders/` contiene bloques compartidos de pedidos.
+  El carrito, las reseñas y los puntos de pago mantienen sus parciales junto a la vista (`partials/`).
+  El CSS del carrito se divide por layout, artículos, resumen, responsive, catálogo y agregado de productos
+  en `public/css/pages/cart/`. Los parciales no cargan CSS ni JavaScript; esos recursos se cargan una sola vez
+  en la vista principal.
+- Las páginas de comercio separan checkout, pedidos del cliente y administración de pagos.
+  `renderCommerce.js` conserva una fachada pequeña para las rutas existentes y delega en sus módulos de página.
 - Los encabezados (`_header`, `_headerAdmin` y `_headerDealer`) cargan únicamente los
   recursos base. `server/config/pageResources.js` registra `pageCss` y `pageJs` por
   plantilla; el layout los valida, elimina duplicados y los inserta de forma diferida.

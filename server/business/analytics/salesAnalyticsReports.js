@@ -1,0 +1,44 @@
+const money = require('../../services/money');
+const salesAnalytics = require('./salesAnalytics');
+const common = require('./common');
+
+async function totalProfit() {
+    const totals = await salesAnalytics.aggregateTotals();
+    const ingresosTotales = money.fromCents(Number(totals.productRevenueCents || 0));
+    const costosTotales = money.fromCents(Number(totals.costsCents || 0));
+    const gananciasTotales = money.fromSignedCents(
+        Number(totals.productRevenueCents || 0) - Number(totals.costsCents || 0)
+    );
+    return {
+        ingresosTotales,
+        costosTotales,
+        gananciasTotales,
+        margenPorcentaje: ingresosTotales > 0 ? ((gananciasTotales / ingresosTotales) * 100).toFixed(2) : 0,
+    };
+}
+
+async function bestSellingProducts(limit = common.PRODUCT_LIMIT) {
+    const rows = await salesAnalytics.aggregateProductRows(undefined, undefined, limit, 'units');
+    return rows.map((row) => ({
+        productoId: String(row.productoId),
+        nombre: row.nombre || 'Producto histórico',
+        fotos: row.fotos || [],
+        unidadesVendidas: Number(row.unidades || 0),
+        ingresosGenerados: money.fromCents(Number(row.ingresosCents || 0)),
+    }));
+}
+
+async function profitByProduct(limit = common.ALL_TIME_PRODUCT_LIMIT) {
+    const rows = await salesAnalytics.aggregateProductRows(undefined, undefined, limit, 'profit');
+    return rows.map((row) => ({
+        productoId: String(row.productoId),
+        nombre: row.nombre || 'Producto histórico',
+        fotos: row.fotos || [],
+        vendidos: Number(row.unidades || 0),
+        ingresos: money.fromCents(Number(row.ingresosCents || 0)),
+        costos: money.fromCents(Number(row.costosCents || 0)),
+        ganancias: money.fromSignedCents(Number(row.profitCents || 0)),
+    }));
+}
+
+module.exports = { totalProfit, bestSellingProducts, profitByProduct };
