@@ -104,7 +104,7 @@
         const pageJsValues = typeof pageJs === 'undefined' ? [] : pageJs;
         const headerPageCss = [...new Set((Array.isArray(pageCssValues) ? pageCssValues : []).filter(value => validPageResource(value, '/css/')))];
         const headerPageJs = [...new Set((Array.isArray(pageJsValues) ? pageJsValues : []).filter(value => validPageResource(value, '/js/')))];
-        if (typeof activeRaffle !== 'undefined' && activeRaffle && !headerPageCss.includes('/css/raffle.css')) headerPageCss.push('/css/raffle.css');
+        if (typeof activeRaffle !== 'undefined' && activeRaffle && !headerPageCss.includes('/css/components/raffle-promo.css')) headerPageCss.push('/css/components/raffle-promo.css');
     %>
     <% headerPageCss.forEach(href => { %><link rel="stylesheet" href="<%= href %>"><% }) %>
     <% headerPageJs.forEach(src => { %><script nonce="<%= cspNonce %>" defer src="<%= src %>"></script><% }) %>

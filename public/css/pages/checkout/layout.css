@@ -1,0 +1,103 @@
+input,
+select,
+button {
+    box-sizing: border-box;
+}
+
+.checkout-wrapper {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+/* header moderno */
+.checkout-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.checkout-header h1 {
+    font-weight: 700;
+    font-size: 1.9rem;
+    background: linear-gradient(135deg, var(--color-brand-dark), var(--color-brand-tan));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: -0.3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.checkout-header h1 i {
+    background: none;
+    color: var(--color-brand-accent);
+    font-size: 2rem;
+}
+
+.badge-secure {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(216, 92, 50, 0.12);
+    backdrop-filter: blur(4px);
+    padding: 0.4rem 1.2rem;
+    border-radius: 60px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-brand-accent);
+    margin-top: 12px;
+}
+
+/* layout 2 columnas */
+.checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr 0.95fr;
+    gap: 2rem;
+}
+
+/* tarjetas blancas con sombras cálidas */
+.form-card,
+.summary-card {
+    background: var(--color-surface);
+    border-radius: 32px;
+    box-shadow: 0 20px 35px -12px rgba(49, 27, 20, 0.08);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    border: 1px solid rgba(213, 141, 81, 0.15);
+}
+
+.form-card {
+    padding: 1.8rem 2rem 2rem 2rem;
+}
+
+.summary-card {
+    padding: 1.8rem 1.8rem 2rem 1.8rem;
+    position: sticky;
+    top: 1.5rem;
+    height: fit-content;
+}
+
+.shipping-hint {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--color-brand-dark);
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+/* títulos sección */
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-brand-dark);
+    letter-spacing: -0.2px;
+}
+.section-title i {
+    color: var(--color-brand-accent);
+    font-size: 1.3rem;
+}

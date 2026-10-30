@@ -1,112 +1,10 @@
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
-/* -----------------------------------------
-   TABLETS
------------------------------------------ */
-
 @media (max-width: 1000px) {
-    .cart-wrapper {
-        grid-template-columns: 1fr;
-    }
-
-    .summary-card {
-        position: static;
-    }
-
     .summary-section {
         width: 100%;
     }
 }
 
-/* -----------------------------------------
-   TABLETS PEQUEÑAS
------------------------------------------ */
-
-@media (max-width: 768px) {
-    .main-cart {
-        margin-top: 25px;
-
-        padding: 0 15px;
-    }
-
-    .items-section {
-        padding: 20px;
-    }
-
-    .product-card {
-        grid-template-columns:
-            70px
-            minmax(0, 1fr)
-            116px
-            42px;
-
-        gap: 15px;
-
-        padding: 18px 0;
-    }
-
-    .img-container {
-        width: 70px;
-        height: 70px;
-    }
-
-    .quantity-picker {
-        grid-column: 3;
-        grid-row: 1;
-        width: 116px;
-    }
-
-    .price {
-        grid-column: 2;
-        grid-row: 2;
-        justify-self: start;
-    }
-
-    .remove-btn {
-        grid-column: 4;
-        grid-row: 1;
-    }
-}
-
-/* -----------------------------------------
-   MÓVILES
------------------------------------------ */
-
 @media (max-width: 576px) {
-    .cart-page-header h1 {
-        font-size: 1.5rem;
-    }
-
-    .cart-page-subtitle {
-        font-size: 0.85rem;
-
-        padding: 0 15px;
-    }
-
-    .main-cart {
-        padding: 0 10px;
-
-        margin-top: 20px;
-    }
-
-    .items-section {
-        padding: 15px;
-
-        border-radius: 14px;
-    }
-
-    .cart-header {
-        align-items: flex-start;
-
-        flex-direction: column;
-
-        gap: 10px;
-
-        margin-bottom: 10px;
-    }
-
     .cart-header-actions {
         width: 100%;
         justify-content: space-between;
@@ -114,71 +12,6 @@
 
     .cart-header h1 {
         font-size: 1.25rem;
-    }
-
-    .product-card {
-        grid-template-columns:
-            65px
-            minmax(0, 1fr)
-            40px;
-
-        gap: 12px;
-
-        padding: 15px 0;
-    }
-
-    .img-container {
-        width: 65px;
-        height: 65px;
-    }
-
-    .product-info h3 {
-        font-size: 0.9rem;
-    }
-
-    .category {
-        font-size: 0.75rem;
-    }
-
-    .quantity-picker {
-        grid-column: 2;
-        grid-row: 2;
-
-        width: 116px;
-
-        margin-top: 5px;
-    }
-
-    .quantity-picker input {
-        height: 40px;
-
-        font-size: 0.9rem;
-    }
-
-    .price {
-        grid-column: 2;
-
-        grid-row: 3;
-
-        justify-self: start;
-
-        font-size: 0.95rem;
-    }
-
-    .remove-btn {
-        grid-column: 3;
-        grid-row: 2;
-        justify-self: end;
-    }
-
-    .summary-card {
-        padding: 22px;
-
-        border-radius: 14px;
-    }
-
-    .summary-card h2 {
-        font-size: 1.2rem;
     }
 
     .summary-line {
@@ -191,51 +24,5 @@
 
     .total-amount {
         font-size: 1.25rem;
-    }
-
-    .pay-btn {
-        min-height: 48px;
-
-        font-size: 0.9rem;
-    }
-}
-
-/* -----------------------------------------
-   MÓVILES MUY PEQUEÑOS
------------------------------------------ */
-
-@media (max-width: 380px) {
-    .main-cart {
-        padding: 0 8px;
-    }
-
-    .items-section {
-        padding: 12px;
-    }
-
-    .product-card {
-        grid-template-columns:
-            55px
-            minmax(0, 1fr)
-            36px;
-
-        gap: 10px;
-    }
-
-    .img-container {
-        width: 55px;
-        height: 55px;
-    }
-
-    .product-info h3 {
-        font-size: 0.82rem;
-    }
-
-    .quantity-picker {
-        width: 106px;
-    }
-
-    .price {
-        font-size: 0.85rem;
     }
 }
