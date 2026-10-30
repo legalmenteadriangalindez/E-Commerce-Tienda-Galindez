@@ -65,7 +65,7 @@ El comando es idempotente, no elimina campos antiguos y muestra cuántos documen
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Compra                   | Precios consultados en MongoDB, cálculo en centavos, cantidades enteras y protección contra doble clic.                                                                                                                                                                                                                                              |
 | Inventario               | Reserva atómica al crear la orden; una unidad no puede venderse a dos compradores.                                                                                                                                                                                                                                                                   |
-| Vencimiento              | La reserva dura 30 minutos. El Cron de mantenimiento revisa vencimientos cada minuto. Un pago conocido que sigue pendiente conserva su reserva hasta conciliación.                                                                                                                                                                                   |
+| Vencimiento              | La reserva dura 30 minutos. GitHub Actions ejecuta el mantenimiento cada 15 minutos (UTC); los pagos conocidos que siguen pendientes conservan su reserva hasta que se concilien.                                                                                                                                                |
 | Wompi                    | Firma del webhook, consulta privada al proveedor y comparación de referencia, importe y moneda. Bandeja de eventos persistente y reintentos.                                                                                                                                                                                                         |
 | Correo de pedidos        | Confirmación de pedido, cambios de estado, aviso de envío y entrega. Los eventos se guardan en MongoDB, se envían por Brevo y se reintentan si el proveedor falla.                                                                                                                                                                                   |
 | Sorteo                   | Cada pedido pagado que cumple el monto recibe un número único dentro de una ronda. Al seleccionar ganador se encola un aviso por Brevo y `/sorteo` publica el número ganador, la fecha y el total de participaciones, sin nombres ni correos.                                                                                                        |
@@ -117,16 +117,21 @@ Configura además las cuatro claves `WOMPI_PUBLIC_KEY`, `WOMPI_PRIVATE_KEY`, `WO
 
 ### Mantenimiento programado
 
-El servicio web no ejecuta conciliaciones, vencimientos, limpieza de imágenes ni envío de la bandeja de correos. El segundo servicio de `render.yaml`, `tienda-galindez-maintenance`, usa la misma imagen Docker y ejecuta `npm run maintenance` cada minuto con la expresión `* * * * *` (UTC). Sus variables sensibles usan `fromService` para heredar los valores del servicio web existente `E-Commerce-Tienda-Galindez`; no las dupliques manualmente. Si el nombre de tu servicio es diferente, cambia ese nombre en las referencias antes de sincronizar el Blueprint.
+El servidor web no ejecuta conciliaciones, vencimientos, limpieza de imágenes ni envío de la bandeja de correos. El workflow `.github/workflows/maintenance.yml` ejecuta `npm run maintenance` cada 15 minutos, en los minutos 7, 22, 37 y 52 de cada hora UTC. El horario se desplaza del inicio de la hora para reducir demoras de GitHub Actions. El workflow puede iniciarse manualmente desde **Actions → Mantenimiento de la tienda → Run workflow**.
 
-Después de modificar `render.yaml`, sincroniza el Blueprint desde Render. La
-configuración declarativa no cambia por sí sola un servicio existente. Verifica
-que el servicio web muestre `Health Check Path: /healthz` y que exista el Cron
-Job `tienda-galindez-maintenance` con sus variables heredadas. No crees el Cron
-Job con valores vacíos para `MONGO_URI`, `SESSION_SECRET`, `BREVO_API_KEY` o
-`EMAIL_USER`.
+Para activar el mantenimiento, configura los siguientes **Secrets** en **GitHub → Settings → Secrets and variables → Actions**. Usa los valores del entorno de producción y no los publiques en el repositorio, en issues ni en el chat:
 
-Para probarlo en local, ejecuta `npm run maintenance` con el `.env` apuntando a una base de datos de desarrollo. El proceso aplica las migraciones pendientes, valida que Atlas o un replica set estén disponibles, registra un resultado JSON en los logs y termina; si falla devuelve un código distinto de cero para que Render marque la ejecución como fallida. Render no solapa dos ejecuciones del mismo Cron Job.
+- `PROD_BASE_URL`: origen HTTPS público de la tienda, sin rutas.
+- `PROD_MONGO_URI`: URI de Atlas de producción.
+- `PROD_SESSION_SECRET`: secreto de producción, de al menos 32 caracteres.
+- `PROD_BREVO_API_KEY` y `PROD_EMAIL_USER`: clave de Brevo y remitente verificado.
+- `PROD_PAYMENTS_ENABLED`: define exactamente `true` o `false`, igual que en el servicio web.
+
+Si `PROD_PAYMENTS_ENABLED=true`, configura también `PROD_WOMPI_ENV`, `PROD_WOMPI_PUBLIC_KEY`, `PROD_WOMPI_PRIVATE_KEY`, `PROD_WOMPI_INTEGRITY_KEY` y `PROD_WOMPI_EVENTS_KEY). Las claves deben corresponder al ambiente de Wompi configurado.
+
+El workflow comprueba que las variables requeridas estén presentes antes de conectarse y nombra las que falten sin imprimir sus valores. Tras agregarlas, revisa **Actions → Mantenimiento de la tienda** y confirma que una ejecución termine en verde. Una ejecución manual corre el mantenimiento real de producción: concilia eventos Wompi, libera reservas vencidas cuando corresponde, procesa correos pendientes y limpia imágenes sin referencias. El uso de GitHub Actions evita crear otro servicio de Cron en Render; como el repositorio es público, los runners estándar de GitHub están disponibles sin coste. GitHub puede retrasar o descartar una ejecución programada bajo carga alta, por lo que revisa el historial de ejecuciones.
+
+Para probar el código en local, ejecuta `npm run maintenance` con `.env` apuntando a una base de datos de desarrollo. El proceso aplica migraciones pendientes, valida que Atlas o un replica set estén disponibles, registra un resultado JSON en los logs y termina; un fallo general devuelve un código distinto de cero. Los errores temporales de conciliación se registran para reintento en los ciclos siguientes.
 
 El proceso falla de forma explícita si faltan variables esenciales o si intentas usar el secreto local de ejemplo en producción. Revisa **Logs** si `/healthz` devuelve error. El inicio exige Atlas o un replica set: MongoDB independiente no ofrece las transacciones que necesita la tienda.
 
