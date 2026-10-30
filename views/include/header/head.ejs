@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <link rel="stylesheet" href="/css/core/theme.css">
+    <link rel="stylesheet" href="/css/core/reset.css">
+    <link rel="stylesheet" href="/css/core/layout.css">
+    <link rel="stylesheet" href="/css/components/ui.css">
+
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <!-- ==================== SEO ==================== -->
+
+    <title>
+        <%= typeof seoTitle !== 'undefined'
+            ? seoTitle
+            : 'Tienda Galindez'
+        %>
+    </title>
+
+    <meta
+        name="description"
+        content="<%= typeof seoDescription !== 'undefined'
+            ? seoDescription
+            : 'Compra productos de alimentación, dulcería, lácteos, ropa y más en Tienda Galindez.'
+        %>"
+    >
+
+    <% if (typeof seoCanonical !== 'undefined') { %>
+        <link
+            rel="canonical"
+            href="<%= seoCanonical %>"
+        >
+    <% } %>
+
+    <% if (typeof seoImage !== 'undefined') { %>
+        <meta
+            property="og:image"
+            content="<%= seoImage %>"
+        >
+    <% } %>
+
+    <meta
+        property="og:title"
+        content="<%= typeof seoTitle !== 'undefined'
+            ? seoTitle
+            : 'Tienda Galindez'
+        %>"
+    >
+
+    <meta
+        property="og:description"
+        content="<%= typeof seoDescription !== 'undefined'
+            ? seoDescription
+            : 'Compra productos de alimentación, dulcería, lácteos, ropa y más en Tienda Galindez.'
+        %>"
+    >
+
+    <meta property="og:type" content="website">
+
+    <!-- FAVICON -->
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="/img/favicon.png"
+    >
+
+    <!-- CSS -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+        crossorigin="anonymous"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+        integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+        crossorigin="anonymous"
+    >
+
+    <link rel="stylesheet" href="/css/core/header.css">
+    <link rel="stylesheet" href="/css/core/footer.css">
+    <%
+        const validPageResource = (value, prefix) => typeof value === 'string'
+            && value.startsWith(prefix)
+            && !value.includes('..')
+            && !/[\r\n"'<>]/.test(value);
+        const pageCssValues = typeof pageCss === 'undefined' ? [] : pageCss;
+        const pageJsValues = typeof pageJs === 'undefined' ? [] : pageJs;
+        const headerPageCss = [...new Set((Array.isArray(pageCssValues) ? pageCssValues : []).filter(value => validPageResource(value, '/css/')))];
+        const headerPageJs = [...new Set((Array.isArray(pageJsValues) ? pageJsValues : []).filter(value => validPageResource(value, '/js/')))];
+        if (typeof activeRaffle !== 'undefined' && activeRaffle && !headerPageCss.includes('/css/raffle.css')) headerPageCss.push('/css/raffle.css');
+    %>
+    <% headerPageCss.forEach(href => { %><link rel="stylesheet" href="<%= href %>"><% }) %>
+    <% headerPageJs.forEach(src => { %><script nonce="<%= cspNonce %>" defer src="<%= src %>"></script><% }) %>
+</head>

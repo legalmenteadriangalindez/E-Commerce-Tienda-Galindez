@@ -23,7 +23,7 @@ test('el registro de recursos de vistas solo apunta a archivos públicos existen
 
 test('los encabezados solo cargan recursos base y delegan los de cada página', () => {
     for (const relative of [
-        'views/include/_header.ejs',
+        'views/include/header/head.ejs',
         'views/include/_headerAdmin.ejs',
         'views/include/_headerDealer.ejs',
     ]) {
