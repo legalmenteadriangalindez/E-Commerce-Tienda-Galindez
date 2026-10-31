@@ -12,6 +12,11 @@
     </div>
     <a href="/add-user-form" class="admin-list-primary">Crear usuario</a>
   </header>
+  <% if (verificationNotice === 'sent') { %>
+    <p class="admin-list-description" role="status">Usuario creado. Enviamos un código de verificación al correo; deberá verificarlo antes de iniciar sesión.</p>
+  <% } else if (verificationNotice === 'failed') { %>
+    <p class="admin-list-description" role="status">Usuario creado, pero no se pudo enviar el correo de verificación. La cuenta no podrá iniciar sesión hasta verificar el correo. Puede solicitar otro código en <a href="/verify-email">Verificar correo</a>.</p>
+  <% } %>
   <div class="admin-table-wrap ui-table-wrap">
   <table class="table ui-table">
   <thead>
