@@ -69,9 +69,7 @@ exports.login = async (req, res) => {
 
             req.session.cart = carritoAnterior;
             const rememberClient = rememberMe && usuario.rol.nombre === 'Cliente';
-            req.session.cookie.maxAge = rememberClient
-                ? REMEMBERED_SESSION_MAX_AGE_MS
-                : DEFAULT_SESSION_MAX_AGE_MS;
+            req.session.cookie.maxAge = rememberClient ? REMEMBERED_SESSION_MAX_AGE_MS : DEFAULT_SESSION_MAX_AGE_MS;
 
             req.session.save((error) => {
                 if (error) {
