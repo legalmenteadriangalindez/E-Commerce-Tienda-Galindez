@@ -1,7 +1,6 @@
 const commerce = require('../business/commerceService');
 const payments = require('../business/paymentService');
-const save = (req) =>
-    new Promise((resolve, reject) => req.session.save((error) => (error ? reject(error) : resolve())));
+const cartSession = require('./cartSession');
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 
 exports.checkout = wrap(async (req, res) => {
@@ -22,7 +21,7 @@ exports.checkout = wrap(async (req, res) => {
     if (paymentMethod === commerce.PAYMENT_METHODS.CASH_ON_DELIVERY) {
         req.session.cart = [];
         delete req.session.claveCheckout;
-        await save(req);
+        await cartSession.saveSession(req);
         return res.redirect(303, '/venta-finalizada/' + order._id);
     }
     if (order.estadoPago === 'PAGADO') return res.redirect(303, '/venta-finalizada/' + order._id);
@@ -54,7 +53,12 @@ exports.checkout_admin = wrap(async (req, res) => {
     if (paymentMethod === commerce.PAYMENT_METHODS.CASH_ON_DELIVERY) {
         req.session.cart = [];
         delete req.session.claveIdempotenciaCaja;
-        await save(req);
+        await cartSession.saveSession(req);
     }
     res.redirect(303, '/admin/payments?order=' + order._id);
+});
+
+exports.paymentPoint = wrap(async (req, res) => {
+    await cartSession.updateCartQuantities(req);
+    res.redirect(303, '/payment-point');
 });
