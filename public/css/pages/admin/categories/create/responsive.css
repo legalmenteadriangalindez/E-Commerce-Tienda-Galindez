@@ -1,0 +1,56 @@
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+    .category-create-page .page-wrapper {
+        margin: 25px auto;
+        padding: 0 15px;
+    }
+
+    .category-create-page .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .category-create-page .form-card {
+        padding: 20px;
+    }
+
+    .category-create-page .category-form .form-actions {
+        justify-content: stretch;
+    }
+
+    .category-create-page .category-form .form-actions button {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+    .category-create-page .page-wrapper {
+        padding: 0 10px;
+    }
+
+    .category-create-page .page-header h1 {
+        font-size: 1.35rem;
+    }
+
+    .category-create-page .page-header p {
+        font-size: 0.85rem;
+    }
+
+    .category-create-page .form-card {
+        padding: 15px;
+    }
+
+    .category-create-page .alert {
+        font-size: 0.8rem;
+    }
+
+    .category-create-page .category-form input[type='text'] {
+        padding: 10px;
+    }
+}

@@ -122,7 +122,13 @@ const resources = {
     'admin/products/create_producto': { pageCss: css('pages/create-products.css') },
     'admin/products/update_products': { pageCss: css('edit_products.css') },
     'admin/categories/read_categories': { pageCss: css('read_categories.css', 'admin-pagination.css') },
-    'admin/categories/create_categoria': { pageCss: css('create_categories.css') },
+    'admin/categories/create_categoria': {
+        pageCss: css(
+            'pages/admin/categories/create/layout.css',
+            'pages/admin/categories/create/form.css',
+            'pages/admin/categories/create/responsive.css'
+        ),
+    },
     'admin/categories/update_category': { pageCss: css('update_categories.css') },
     'admin/brands/read_brands': { pageCss: css('read_brands.css', 'admin-pagination.css') },
     'admin/brands/create_marca': { pageCss: css('create_brands.css') },

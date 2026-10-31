@@ -1,0 +1,78 @@
+/* =========================================================
+   CREATE CATEGORY
+   GESTIÓN DE CATEGORÍAS
+   TIENDA GALINDEZ
+   ========================================================= */
+
+/* =========================================================
+   PAGE ROOT
+   ========================================================= */
+
+.category-create-page {
+    display: flow-root;
+    background: var(--color-background);
+    font-family: Arial, sans-serif;
+}
+
+/* =========================================================
+   PAGE WRAPPER
+   ========================================================= */
+
+.category-create-page .page-wrapper {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.category-create-page .page-header {
+    margin-bottom: 20px;
+}
+
+.category-create-page .page-header h1 {
+    margin: 0 0 6px;
+
+    color: var(--color-brand-dark);
+
+    font-size: 1.8rem;
+
+    font-weight: 700;
+}
+
+.category-create-page .page-header p {
+    margin: 0;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.95rem;
+}
+
+/* =========================================================
+   FORM CARD
+   ========================================================= */
+
+.category-create-page .form-card {
+    background: var(--color-surface);
+
+    border: 1px solid rgba(213, 141, 81, 0.2);
+
+    border-radius: 14px;
+
+    padding: 25px;
+
+    box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
+
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   SMALL CARD
+   ========================================================= */
+
+.category-create-page .form-card.small-card {
+    max-width: 600px;
+}
