@@ -23,7 +23,7 @@ router.post(
     validate(schemas.cartCheckout),
     checkoutController.checkout_admin
 );
-router.post('/payment_point', isLogged, validate(schemas.paymentPoint), cartController.payment_point);
+router.post('/payment_point', isLogged, validate(schemas.paymentPoint), checkoutController.paymentPoint);
 router.get('/get_carrito', isLogged, cartController.get_carrito);
 router.post('/get_wompi_webhook', paymentController.wompiWebhook);
 
