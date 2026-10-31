@@ -1,0 +1,32 @@
+@media (max-width: 1100px) {
+    .analytics-kpis {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+@media (max-width: 780px) {
+    .analytics-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .analytics-grid-main {
+        grid-template-columns: 1fr;
+    }
+    .analytics-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (max-width: 480px) {
+    .analytics-kpis {
+        grid-template-columns: 1fr;
+    }
+    .analytics-operation-links {
+        grid-template-columns: 1fr;
+    }
+    .period-switcher {
+        width: 100%;
+    }
+    .period-switcher a {
+        flex: 1;
+        text-align: center;
+    }
+}

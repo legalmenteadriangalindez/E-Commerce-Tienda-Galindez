@@ -2,6 +2,7 @@ const payments = require('../business/paymentService');
 const orders = require('../business/orderService');
 const { CommerceError, isValidObjectId, validTransactionId } = require('../business/commerceShared');
 const catalogPagination = require('../services/catalogPagination');
+const { presentAdminPaymentEvent, presentAdminPaymentOrder } = require('./paymentOrderViewModel');
 const { saveSession, wrap } = require('./commercePageShared');
 
 exports.adminPayments = wrap(async (req, res) => {
@@ -15,8 +16,8 @@ exports.adminPayments = wrap(async (req, res) => {
         totalItems,
         totalPages: paymentPage.totalPages,
     });
-    const orderRows = paymentPage.orders;
-    const events = await payments.listPendingEvents(30);
+    const orderRows = paymentPage.orders.map(presentAdminPaymentOrder);
+    const events = (await payments.listPendingEvents(30)).map(presentAdminPaymentEvent);
     const selectedOrder = orderRows[0];
     if (
         selectedOrder?.estadoPago === 'PAGADO' &&

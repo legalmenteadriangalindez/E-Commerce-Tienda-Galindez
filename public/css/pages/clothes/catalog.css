@@ -1,0 +1,245 @@
+/*==================================================
+=            PRODUCT CARDS (AISLADAS)
+==================================================*/
+
+/*==================================================
+=            PRODUCTOS
+==================================================*/
+
+.products {
+    padding: 80px 40px;
+}
+
+.products h2 {
+    color: var(--color-surface);
+
+    font-size: 2.4rem;
+
+    text-align: center;
+
+    margin-bottom: 50px;
+}
+
+/*==================================================
+=            GRID
+==================================================*/
+
+.products-cards {
+    display: grid;
+
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+
+    gap: 24px;
+
+    width: 100%;
+}
+
+/*==================================================
+=            CARD
+==================================================*/
+
+.products-cards .anime-product-card {
+    width: 100%;
+
+    height: 500px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+    border-radius: 18px;
+
+    background: linear-gradient(180deg, #181818 0%, #101010 100%);
+
+    border: 1px solid #252525;
+
+    transition: 0.35s;
+}
+
+.products-cards .anime-product-card:hover {
+    transform: translateY(-8px);
+
+    border-color: var(--color-clothes-accent);
+
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.5),
+        0 0 18px rgba(255, 45, 85, 0.25);
+}
+
+/*==================================================
+=            IMAGEN
+==================================================*/
+
+.products-cards .anime-product-image {
+    width: 100%;
+
+    height: 220px;
+
+    overflow: hidden;
+
+    background: #090909;
+}
+
+.products-cards .anime-product-image img {
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: 0.4s;
+}
+
+.products-cards .anime-product-card:hover img {
+    transform: scale(1.08);
+}
+
+/*==================================================
+=            BODY
+==================================================*/
+
+.products-cards .anime-product-body {
+    flex: 1;
+
+    display: flex;
+
+    flex-direction: column;
+
+    padding: 18px;
+}
+
+.products-cards .anime-product-title {
+    color: var(--color-surface);
+
+    font-size: 1.2rem;
+
+    font-weight: 700;
+
+    margin-bottom: 10px;
+}
+
+.products-cards .anime-product-description {
+    color: #bdbdbd;
+
+    font-size: 0.9rem;
+
+    line-height: 1.5;
+
+    height: 45px;
+
+    overflow: hidden;
+
+    margin-bottom: 18px;
+}
+
+/*==================================================
+=            INFO
+==================================================*/
+
+.products-cards .anime-product-info {
+    border-top: 1px solid #252525;
+
+    border-bottom: 1px solid #252525;
+
+    padding: 15px 0;
+
+    margin-bottom: 18px;
+}
+
+.products-cards .info-item {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 10px;
+
+    color: #d4d4d4;
+}
+
+.products-cards .info-item:last-child {
+    margin-bottom: 0;
+}
+
+.products-cards .price {
+    color: var(--color-clothes-accent);
+
+    font-size: 1.3rem;
+
+    font-weight: bold;
+}
+
+.products-cards .stock-ok {
+    color: #47ff88;
+
+    font-weight: 600;
+}
+
+/*==================================================
+=            BOTONES
+==================================================*/
+
+.products-cards .anime-product-actions {
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: auto;
+}
+
+.products-cards .btn-details {
+    flex: 1;
+
+    background: #1b1b1b;
+
+    color: var(--color-surface);
+
+    text-align: center;
+
+    text-decoration: none;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    border: 1px solid #333;
+
+    transition: 0.3s;
+}
+
+.products-cards .btn-details:hover {
+    border-color: var(--color-clothes-accent);
+
+    background: #222;
+}
+
+.products-cards .btn-buy {
+    flex: 1;
+
+    border: none;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    background: var(--color-clothes-accent);
+
+    color: var(--color-surface);
+
+    font-weight: bold;
+
+    transition: 0.3s;
+}
+
+.products-cards .btn-buy:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 0 15px rgba(255, 45, 85, 0.45);
+}
+
+/*==================================================
+=            RESPONSIVE
+==================================================*/
