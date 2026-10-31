@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { isLogged, requirePermission } = require('../middleware/auth');
+const { isLogged, isLoggedApi, requirePermission } = require('../middleware/auth');
 const { PERMISSIONS: P } = require('../config/permissions');
 
 const cartController = require('../controller/cartController');
@@ -10,11 +10,11 @@ const paymentController = require('../controller/paymentController');
 const { validate } = require('../middleware/validateRequest');
 const schemas = require('../validation/schemas');
 
-// API
+// API JSON: las peticiones de JavaScript reciben 401 en vez de seguir una redirección a /login.
 // agregar producto
-router.post('/add', isLogged, validate(schemas.cartAdd), cartController.add_to_carrito);
-router.post('/remove', isLogged, validate(schemas.cartRemove), cartController.remove_from_carrito);
-router.post('/update', isLogged, validate(schemas.paymentPoint), cartController.update_carrito);
+router.post('/add', isLoggedApi, validate(schemas.cartAdd), cartController.add_to_carrito);
+router.post('/remove', isLoggedApi, validate(schemas.cartRemove), cartController.remove_from_carrito);
+router.post('/update', isLoggedApi, validate(schemas.paymentPoint), cartController.update_carrito);
 router.post('/checkout', isLogged, validate(schemas.cartCheckout), checkoutController.checkout);
 router.post('/pay/:id', isLogged, validate(schemas.idParams, 'params'), paymentController.retryPayment);
 router.post(
@@ -24,7 +24,7 @@ router.post(
     checkoutController.checkout_admin
 );
 router.post('/payment_point', isLogged, validate(schemas.paymentPoint), checkoutController.paymentPoint);
-router.get('/get_carrito', isLogged, cartController.get_carrito);
+router.get('/get_carrito', isLoggedApi, cartController.get_carrito);
 router.post('/get_wompi_webhook', paymentController.wompiWebhook);
 
 module.exports = router;
