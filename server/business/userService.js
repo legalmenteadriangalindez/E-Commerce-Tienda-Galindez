@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const sendEmail = require('../config/sendEmail');
 const mongoose = require('mongoose');
 const accounts = require('./accountService');
 const repository = require('./userRepository');
@@ -32,6 +33,7 @@ async function create(input, actor) {
         rolAsignado = requestedRole;
     }
 
+    const challenge = accounts.verification(email);
     const user = await repository.create({
         nombre,
         email,
@@ -45,12 +47,31 @@ async function create(input, actor) {
         ubicacion,
         rol: rolAsignado._id,
         estado: 'Activo',
+        verified: false,
+        ...challenge.values,
     });
+
+    let verificationEmailSent = false;
+    try {
+        await sendEmail(email, challenge.code);
+        verificationEmailSent = true;
+    } catch (error) {
+        console.error('No se pudo enviar el correo de verificación de la cuenta creada por administración:', error.message);
+    }
+
     const userResponse = user.toObject();
-    delete userResponse.password;
-    delete userResponse.verificationCode;
-    delete userResponse.verificationExpire;
-    return userResponse;
+    for (const field of [
+        'password',
+        'verificationCode',
+        'verificationCodeHash',
+        'verificationExpire',
+        'verificationSentAt',
+        'resetPasswordHash',
+        'resetPasswordExpire',
+    ]) {
+        delete userResponse[field];
+    }
+    return { ...userResponse, verificationEmailSent };
 }
 
 async function find(query = {}, actor, id) {
