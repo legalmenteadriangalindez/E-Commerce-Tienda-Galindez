@@ -56,7 +56,10 @@ async function create(input, actor) {
         await sendEmail(email, challenge.code);
         verificationEmailSent = true;
     } catch (error) {
-        console.error('No se pudo enviar el correo de verificación de la cuenta creada por administración:', error.message);
+        console.error(
+            'No se pudo enviar el correo de verificación de la cuenta creada por administración:',
+            error.message
+        );
     }
 
     const userResponse = user.toObject();
