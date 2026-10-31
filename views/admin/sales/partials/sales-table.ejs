@@ -1,0 +1,108 @@
+<div class="admin-table-wrap ui-table-wrap">
+  <table class="table ui-table">
+    <thead>
+        <tr>
+            <th hidden>#</th>
+            <th>Fecha</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Cliente</th>
+            <th>Pago</th>
+            <th>Canal</th>
+            <th>Total</th>
+            <th>Detalles</th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+
+        <% sales.forEach(function(sale) { %>
+        <tr>
+            <th hidden>
+                <%= sale._id %>
+            </th>
+
+            <!-- FECHA -->
+            <td>
+                <%= sale.createdAt
+                    ? new Date(sale.createdAt).toLocaleDateString('es-CO')
+                    : sale.fechaOrden
+                        ? new Date(sale.fechaOrden).toLocaleDateString('es-CO')
+                        : 'Sin fecha'
+                %>
+            </td>
+
+            <!-- PRODUCTO -->
+            <td>
+                <% if (sale.detalles && sale.detalles.length > 0) { %>
+
+                    <% sale.detalles.forEach(function(detalle) { %>
+
+                        <div>
+                            <%= detalle.producto ? detalle.producto.nombre : 'Sin producto' %>
+                        </div>
+
+                    <% }); %>
+
+                <% } else { %>
+
+                    Sin productos
+
+                <% } %>
+            </td>
+
+            <!-- CANTIDAD -->
+            <td>
+                <% if (sale.detalles && sale.detalles.length > 0) { %>
+
+                    <% sale.detalles.forEach(function(detalle) { %>
+
+                        <div>
+                            <%= detalle.cantidad || 0 %>
+                        </div>
+
+                    <% }); %>
+
+                <% } else { %>
+
+                    0
+
+                <% } %>
+            </td>
+
+            <!-- CLIENTE -->
+            <td>
+                <%= sale.cliente?.nombre || 'Consumidor Final' %>
+            </td>
+
+            <td>
+                <span class="sales-status-badge sales-status-badge--<%= String(sale.estadoPago || '').toLowerCase() %>">
+                    <%= sale.estadoPago || 'Sin estado' %>
+                </span>
+            </td>
+
+            <td>
+                <%= sale.order?.canal || 'Sin canal' %>
+            </td>
+
+            <!-- TOTAL -->
+            <td class="sales-total">
+                $ <%= sale.total %>
+            </td>
+
+            <!-- DETALLES -->
+            <td>
+                <a href="/sale/<%= sale._id %>" class="btn btn-info">Detalles</a>
+            </td>
+
+        </tr>
+
+        <% }); %>
+
+    </tbody>
+</table>
+  </div>
+  <% if (!sales.length) { %>
+    <p class="admin-list-empty">No hay ventas que coincidan con los filtros.</p>
+  <% } %>

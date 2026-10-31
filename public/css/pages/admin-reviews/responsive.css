@@ -1,0 +1,44 @@
+/* Ajustes de la página de reseñas para pantallas pequeñas. */
+
+@media (max-width: 800px) {
+    .ar-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .ar-card-heading {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 560px) {
+    .admin-reviews {
+        padding: 24px 14px 40px;
+    }
+    .ar-heading {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .ar-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+    .ar-stats > div {
+        padding: 14px;
+    }
+    .ar-filters,
+    .ar-actions {
+        grid-template-columns: 1fr;
+    }
+    .ar-filters,
+    .ar-card {
+        padding: 16px;
+    }
+    .ar-results-heading {
+        flex-direction: column;
+        gap: 4px;
+    }
+    .ar-actions form {
+        padding: 0 12px 14px;
+    }
+}

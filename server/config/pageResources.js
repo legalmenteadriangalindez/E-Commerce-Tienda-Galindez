@@ -105,11 +105,18 @@ const resources = {
     'admin/delivery/index': { pageCss: css('admin-delivery.css', 'admin-pagination.css') },
     'admin/raffle/manage': { pageCss: css('commerce.css', 'pages/raffle/admin.css', 'admin-pagination.css') },
     'admin/reviews/read_reviews': {
-        pageCss: css('components/admin-reviews.css'),
+        pageCss: css(
+            'pages/admin-reviews/layout.css',
+            'pages/admin-reviews/filters.css',
+            'pages/admin-reviews/cards.css',
+            'pages/admin-reviews/responsive.css'
+        ),
         pageJs: js('admin-reviews.js'),
     },
     'admin/settings/shipping': { pageCss: css('admin-settings.css') },
-    'admin/sales/read_sales': { pageCss: css('read_sales.css', 'admin-pagination.css') },
+    'admin/sales/read_sales': {
+        pageCss: css('pages/sales/table.css', 'pages/sales/export.css', 'admin-pagination.css'),
+    },
     'admin/sales/read_detailsSales': { pageCss: css('read_detailsSales.css') },
     'admin/products/read_products': { pageCss: css('read_products.css', 'admin-pagination.css') },
     'admin/products/create_producto': { pageCss: css('pages/create-products.css') },
