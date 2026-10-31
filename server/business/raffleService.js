@@ -1,7 +1,7 @@
 const money = require('../services/money');
-const emailNotifications = require('./emailNotificationService');
 const repository = require('./raffleRepository');
 const rules = require('./raffleRules');
+const rounds = require('./raffleRoundService');
 
 async function updateConfig(body, file) {
     const config = rules.parseConfig(body);
@@ -33,12 +33,6 @@ async function updateConfig(body, file) {
     return raffle;
 }
 
-async function drawWinner() {
-    return repository.drawWinner((winnerEntry, raffle, session) =>
-        emailNotifications.queueRaffleWinner(winnerEntry, raffle, session)
-    );
-}
-
 module.exports = {
     KEY: rules.KEY,
     getOrCreate: repository.getOrCreate,
@@ -49,7 +43,7 @@ module.exports = {
     entriesForUser: repository.entriesForUser,
     entryForOrder: repository.entryForOrder,
     entriesForOrders: repository.entriesForOrders,
-    recordEligibleOrder: repository.recordEligibleOrder,
-    drawWinner,
-    resetRaffle: repository.resetRaffle,
+    recordEligibleOrder: rounds.recordEligibleOrder,
+    drawWinner: rounds.drawWinner,
+    resetRaffle: rounds.resetRaffle,
 };
