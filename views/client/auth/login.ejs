@@ -38,8 +38,26 @@
 
                 <div class="input-group">
                     <span class="icon">🔒</span>
-                    <input id="login-password" type="password" name="password" placeholder="Tu Contraseña" autocomplete="current-password" data-password-input required>
-                    <button class="password-toggle" type="button" data-password-toggle aria-controls="login-password" aria-label="Visibilidad de la contraseña" aria-pressed="false" hidden><span data-password-toggle-label aria-hidden="true">Mostrar</span></button>
+                    <input
+                        id="login-password"
+                        type="password"
+                        name="password"
+                        placeholder="Tu Contraseña"
+                        autocomplete="current-password"
+                        data-password-input
+                        required
+                    >
+                    <button
+                        class="password-toggle"
+                        type="button"
+                        data-password-toggle
+                        aria-controls="login-password"
+                        aria-label="Visibilidad de la contraseña"
+                        aria-pressed="false"
+                        hidden
+                    >
+                        <span data-password-toggle-label aria-hidden="true">Mostrar</span>
+                    </button>
                 </div>
 
                 <div class="options">
@@ -48,6 +66,7 @@
                     </label>
                     <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
                 </div>
+                <p class="remember-session-note">Por seguridad, las cuentas del personal conservan sesiones de 2 horas.</p>
 
                 <button type="submit" class="btn">Iniciar Sesión</button>
             </form>

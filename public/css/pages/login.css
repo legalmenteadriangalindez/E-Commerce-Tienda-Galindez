@@ -76,6 +76,12 @@ h3 {
     text-decoration: none;
 }
 
+.remember-session-note {
+    color: var(--color-text-on-dark);
+    font-size: 0.75rem;
+    margin: -12px 0 16px;
+}
+
 /* BOTON */
 .btn {
     width: 100%;

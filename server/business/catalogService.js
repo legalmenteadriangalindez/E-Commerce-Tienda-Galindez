@@ -26,6 +26,26 @@ function normalizeFilterValue(value) {
     return typeof value === 'string' ? value.trim().slice(0, 100) : '';
 }
 
+async function buildSearchFilter(value) {
+    const search = normalizeFilterValue(value);
+    if (!search) return {};
+
+    const pattern = new RegExp(escapeRegex(search), 'i');
+    const [brandIds, categoryIds] = await Promise.all([
+        Brand.find({ nombre: pattern }).distinct('_id'),
+        Category.find({ nombre: pattern }).distinct('_id'),
+    ]);
+
+    return {
+        $or: [
+            { nombre: pattern },
+            { descripcion: pattern },
+            { marca: { $in: brandIds } },
+            { categoria: { $in: categoryIds } },
+        ],
+    };
+}
+
 function emptyPage(limit) {
     return {
         productos: [],
@@ -45,9 +65,8 @@ async function listPublic(options = {}) {
     const brandName = normalizeFilterValue(options.brand);
     const search = normalizeFilterValue(options.search);
     const filter = {};
-    const searchPattern = search ? new RegExp(escapeRegex(search), 'i') : null;
 
-    const [category, brand, matchingBrands, matchingCategories] = await Promise.all([
+    const [category, brand] = await Promise.all([
         categoryName
             ? Category.findOne({
                   nombre: new RegExp(`^${escapeRegex(categoryName)}$`, 'i'),
@@ -62,8 +81,6 @@ async function listPublic(options = {}) {
                   .select('_id')
                   .lean()
             : null,
-        searchPattern ? Brand.find({ nombre: searchPattern }).distinct('_id') : [],
-        searchPattern ? Category.find({ nombre: searchPattern }).distinct('_id') : [],
     ]);
 
     if (categoryName && !category) return emptyPage(limit);
@@ -71,14 +88,7 @@ async function listPublic(options = {}) {
 
     if (category) filter.categoria = category._id;
     if (brand) filter.marca = brand._id;
-    if (searchPattern) {
-        filter.$or = [
-            { nombre: searchPattern },
-            { descripcion: searchPattern },
-            { marca: { $in: matchingBrands } },
-            { categoria: { $in: matchingCategories } },
-        ];
-    }
+    if (search) Object.assign(filter, await buildSearchFilter(search));
     if (options.available === true || options.available === 'true') {
         filter.stock = { $gt: 0 };
     }
@@ -107,6 +117,21 @@ async function listPublic(options = {}) {
         productos,
         pagination: { page, limit, totalItems, totalPages },
     };
+}
+
+async function searchSuggestions(value, limit = 6) {
+    const search = normalizeFilterValue(value);
+    if (search.length < 2) return [];
+
+    const filter = await buildSearchFilter(search);
+    const safeLimit = Math.max(1, Math.min(Number.parseInt(limit, 10) || 6, 10));
+    const products = await Product.find({ stock: { $gt: 0 }, ...filter })
+        .select('nombre')
+        .sort({ fechaIngreso: -1, _id: -1 })
+        .limit(safeLimit)
+        .lean();
+
+    return products.map((product) => product.nombre);
 }
 
 async function listAllPublic() {
@@ -145,6 +170,7 @@ module.exports = {
     parsePositiveInteger,
     escapeRegex,
     listPublic,
+    searchSuggestions,
     listAllPublic,
     findPublicOne,
     listClothes,

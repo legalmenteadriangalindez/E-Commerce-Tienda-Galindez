@@ -9,7 +9,7 @@ const { DEFAULT_SESSION_MAX_AGE_MS, REMEMBERED_SESSION_MAX_AGE_MS } = require('.
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body || {};
-        const rememberMe = req.body?.rememberMe === 'true';
+        const rememberMe = req.body?.rememberMe === 'true' || req.body?.rememberMe === true;
 
         if (
             typeof email !== 'string' ||
@@ -68,7 +68,10 @@ exports.login = async (req, res) => {
             };
 
             req.session.cart = carritoAnterior;
-            req.session.cookie.maxAge = rememberMe ? REMEMBERED_SESSION_MAX_AGE_MS : DEFAULT_SESSION_MAX_AGE_MS;
+            const rememberClient = rememberMe && usuario.rol.nombre === 'Cliente';
+            req.session.cookie.maxAge = rememberClient
+                ? REMEMBERED_SESSION_MAX_AGE_MS
+                : DEFAULT_SESSION_MAX_AGE_MS;
 
             req.session.save((error) => {
                 if (error) {

@@ -11,6 +11,7 @@
     input.addEventListener('input', () => {
         window.clearTimeout(debounceTimer);
         activeRequest?.abort();
+        list.replaceChildren();
 
         const search = input.value.trim();
         if (search.length < 2) {
