@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const data = await res.json();
+            if (res.status === 401) {
+                window.location.assign('/login');
+                return;
+            }
+            if (!res.ok) throw new Error(data.message || 'No se pudo agregar el producto al carrito.');
             const cartCount = document.getElementById('cart-count');
             const payload = data.data || data;
             if (cartCount && Array.isArray(payload.cart)) {
