@@ -16,14 +16,17 @@ exports.create_user_form = wrap(async (req, res) =>
     res.render('admin/users/add_user', await roleOptions(req.usuarioActual))
 );
 exports.add_user = wrap(async (req, res) => {
-    await users.create(req.body, req.usuarioActual);
-    res.redirect(303, '/read-user');
+    const user = await users.create(req.body, req.usuarioActual);
+    const verification = user.verificationEmailSent ? 'sent' : 'failed';
+    res.redirect(303, `/read-user?verification=${verification}`);
 });
 exports.read_users = wrap(async (req, res) => {
     const result = await users.find({ page: req.query.page, limit: 10 }, req.usuarioActual);
+    const verificationNotice = ['sent', 'failed'].includes(req.query.verification) ? req.query.verification : null;
     res.render('admin/users/read_users', {
         users: result.items,
         pagination: pagination.buildPagination(req, result.pagination),
+        verificationNotice,
     });
 });
 exports.update_user = wrap(async (req, res) => {
