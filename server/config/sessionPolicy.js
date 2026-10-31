@@ -1,0 +1,9 @@
+'use strict';
+
+const DEFAULT_SESSION_MAX_AGE_MS = 2 * 60 * 60 * 1000;
+const REMEMBERED_SESSION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+
+module.exports = {
+    DEFAULT_SESSION_MAX_AGE_MS,
+    REMEMBERED_SESSION_MAX_AGE_MS,
+};

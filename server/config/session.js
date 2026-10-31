@@ -1,4 +1,5 @@
 const session = require('express-session');
+const { DEFAULT_SESSION_MAX_AGE_MS } = require('./sessionPolicy');
 const MongoStore = require('connect-mongo');
 
 if (!process.env.MONGO_URI) {
@@ -24,7 +25,7 @@ module.exports = session({
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 1000 * 60 * 60 * 2,
+        maxAge: DEFAULT_SESSION_MAX_AGE_MS,
     },
 });
 module.exports.store = store;

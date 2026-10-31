@@ -184,13 +184,22 @@
                     class="app-search-form"
                     action="/search"
                     method="GET"
+                    role="search"
+                    aria-label="Buscar productos en el catálogo"
                 >
 
                     <input
                         type="search"
                         name="search"
+                        value="<%= typeof search !== 'undefined' ? search : '' %>"
                         placeholder="Buscar..."
+                        aria-label="Nombre, descripción, marca o categoría"
+                        list="catalog-search-suggestions"
+                        autocomplete="off"
+                        minlength="2"
+                        maxlength="100"
                     >
+                    <datalist id="catalog-search-suggestions"></datalist>
 
                     <button type="submit">
                         <i class="bi bi-search"></i>
