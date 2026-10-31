@@ -30,12 +30,21 @@
         <!-- Contraseña -->
         <div class="form-group full">
           <label>Contraseña</label>
-          <input
-            type="password"
-            name="password"
-            required
-            minlength="12"
-          >
+          <div class="password-field">
+            <input
+              id="admin-new-password"
+              type="password"
+              name="password"
+              required
+              minlength="12"
+              maxlength="72"
+              autocomplete="new-password"
+              data-password-input
+            >
+            <button class="password-toggle" type="button" data-password-toggle aria-controls="admin-new-password" aria-label="Visibilidad de la contraseña" aria-pressed="false" hidden>
+              <span data-password-toggle-label aria-hidden="true">Mostrar</span>
+            </button>
+          </div>
           <small>
             La cuenta recibirá un código de verificación en este correo antes de poder iniciar sesión.
           </small>

@@ -2,12 +2,14 @@ const sendEmail = require('../config/sendEmail');
 const accounts = require('../business/accountService');
 const { permissionsForRole } = require('../middleware/auth');
 const { PERMISSIONS: P } = require('../config/permissions');
+const { DEFAULT_SESSION_MAX_AGE_MS, REMEMBERED_SESSION_MAX_AGE_MS } = require('../config/sessionPolicy');
 
 // LOGIN
 
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body || {};
+        const rememberMe = req.body?.rememberMe === 'true';
 
         if (
             typeof email !== 'string' ||
@@ -66,6 +68,7 @@ exports.login = async (req, res) => {
             };
 
             req.session.cart = carritoAnterior;
+            req.session.cookie.maxAge = rememberMe ? REMEMBERED_SESSION_MAX_AGE_MS : DEFAULT_SESSION_MAX_AGE_MS;
 
             req.session.save((error) => {
                 if (error) {

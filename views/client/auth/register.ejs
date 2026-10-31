@@ -9,6 +9,7 @@
     <meta name="csrf-token" content="<%= csrfToken %>">
     <title>Registro</title>
     <link rel="stylesheet" href="/css/pages/register.css">
+    <link rel="stylesheet" href="/css/components/password-visibility.css">
         <!-- ICONO DE LA PESTAÑA -->
     <link rel="icon" type="image/png" href="/img/favicon.png">
 </head>
@@ -37,7 +38,8 @@
 
                 <div class="input-group">
                     <span class="icon">🔒</span>
-                    <input type="password" name="password" minlength="12" maxlength="72" autocomplete="new-password" placeholder="Contraseña" required>
+                    <input id="register-password" type="password" name="password" minlength="12" maxlength="72" autocomplete="new-password" placeholder="Contraseña" data-password-input required>
+                    <button class="password-toggle" type="button" data-password-toggle aria-controls="register-password" aria-label="Visibilidad de la contraseña" aria-pressed="false" hidden><span data-password-toggle-label aria-hidden="true">Mostrar</span></button>
                 </div>
 
                 <div class="input-group">
@@ -102,5 +104,6 @@
 
 </div>
 
+    <script nonce="<%= cspNonce %>" src="/js/password-visibility.js" defer></script>
 </body>
 </html>

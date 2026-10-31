@@ -25,6 +25,7 @@ const optionalIdQuery = pagination.extend({ id: objectId.optional() });
 const login = passthrough({
     email: z.string().trim().email().max(254),
     password: z.string().min(1).max(72),
+    rememberMe: z.union([z.literal('true'), z.boolean()]).optional(),
 });
 
 const register = passthrough({

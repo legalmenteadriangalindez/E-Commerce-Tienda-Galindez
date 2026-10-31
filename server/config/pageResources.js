@@ -81,7 +81,10 @@ const resources = {
     'client/raffle/index': { pageCss: css('commerce.css', 'pages/raffle/public.css') },
     'client/legal/page': { pageCss: css('legal.css') },
     'client/auth/forgot_password': { pageCss: css('commerce.css') },
-    'client/auth/reset_password': { pageCss: css('commerce.css') },
+    'client/auth/reset_password': {
+        pageCss: css('commerce.css', 'components/password-visibility.css'),
+        pageJs: js('password-visibility.js'),
+    },
 
     'admin/home/Billing_point': {
         pageCss: pointOfSaleStyles(),
@@ -131,7 +134,10 @@ const resources = {
     'admin/providers/create_proveedor': { pageCss: css('create_providers.css') },
     'admin/providers/update_provider': { pageCss: css('update_providers.css') },
     'admin/users/read_users': { pageCss: css('read_users.css', 'admin-pagination.css') },
-    'admin/users/add_user': { pageCss: css('create_users.css') },
+    'admin/users/add_user': {
+        pageCss: css('create_users.css', 'components/password-visibility.css'),
+        pageJs: js('password-visibility.js'),
+    },
     'admin/users/update_user': { pageCss: css('update_users.css') },
     'admin/rols/read_rols': { pageCss: css('read_rols.css', 'admin-pagination.css') },
     'admin/rols/create_rol': { pageCss: css('create_roles.css') },

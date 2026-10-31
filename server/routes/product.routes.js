@@ -11,6 +11,7 @@ const schemas = require('../validation/schemas');
 // CONSULTAR PRODUCTOS
 router.get('/catalogo', validate(schemas.pagination, 'query'), productController.findPublic);
 router.get('/catalogo/pagina', validate(schemas.pagination, 'query'), productController.findPublicPaginated);
+router.get('/catalogo/sugerencias', validate(schemas.searchQuery, 'query'), productController.searchSuggestions);
 router.get('/catalogo/:id', validate(schemas.idParams, 'params'), productController.findPublicOne);
 router.get('/', requirePermission(P.CATALOG_READ, true), validate(schemas.pagination, 'query'), productController.find);
 router.post(

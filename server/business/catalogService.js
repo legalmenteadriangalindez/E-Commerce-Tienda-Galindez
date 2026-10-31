@@ -45,8 +45,9 @@ async function listPublic(options = {}) {
     const brandName = normalizeFilterValue(options.brand);
     const search = normalizeFilterValue(options.search);
     const filter = {};
+    const searchPattern = search ? new RegExp(escapeRegex(search), 'i') : null;
 
-    const [category, brand] = await Promise.all([
+    const [category, brand, matchingBrands, matchingCategories] = await Promise.all([
         categoryName
             ? Category.findOne({
                   nombre: new RegExp(`^${escapeRegex(categoryName)}$`, 'i'),
@@ -61,6 +62,8 @@ async function listPublic(options = {}) {
                   .select('_id')
                   .lean()
             : null,
+        searchPattern ? Brand.find({ nombre: searchPattern }).distinct('_id') : [],
+        searchPattern ? Category.find({ nombre: searchPattern }).distinct('_id') : [],
     ]);
 
     if (categoryName && !category) return emptyPage(limit);
@@ -68,7 +71,14 @@ async function listPublic(options = {}) {
 
     if (category) filter.categoria = category._id;
     if (brand) filter.marca = brand._id;
-    if (search) filter.nombre = new RegExp(escapeRegex(search), 'i');
+    if (searchPattern) {
+        filter.$or = [
+            { nombre: searchPattern },
+            { descripcion: searchPattern },
+            { marca: { $in: matchingBrands } },
+            { categoria: { $in: matchingCategories } },
+        ];
+    }
     if (options.available === true || options.available === 'true') {
         filter.stock = { $gt: 0 };
     }
