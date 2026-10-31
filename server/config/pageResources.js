@@ -46,7 +46,13 @@ const resources = {
         pageCss: css('brand-cards.css', 'components/buttons.css'),
     },
     'client/clothes/clothes': {
-        pageCss: css('clothes.css', 'pagination.css'),
+        pageCss: css(
+            'pages/clothes/landing.css',
+            'pages/clothes/catalog.css',
+            'pages/clothes/catalog-responsive.css',
+            'pages/clothes/landing-responsive.css',
+            'pagination.css'
+        ),
         pageJs: js('Add_to_cart_client_nav.js', 'clothes.js'),
     },
     'client/products/product_detail': {
@@ -89,7 +95,7 @@ const resources = {
     'admin/payment/payment_point': { pageCss: checkoutStyles() },
     'admin/payment/checkout_confirmation': { pageCss: checkoutStyles() },
     'admin/payment/manage': { pageCss: css('commerce.css', 'admin-pagination.css') },
-    'admin/analytics/index': { pageCss: css('analytics.css') },
+    'admin/analytics/index': { pageCss: css('pages/analytics/dashboard.css', 'pages/analytics/responsive.css') },
     'admin/analytics/stock': { pageCss: css('pages/stock.css', 'admin-pagination.css') },
     'admin/analytics/profit_margins': { pageCss: css('profit_margins.css') },
     'admin/analytics/best_selling_products': { pageCss: css('best_selling_products.css') },

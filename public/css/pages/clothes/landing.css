@@ -1,0 +1,125 @@
+body {
+    background: var(--color-clothes-background);
+    color: white;
+}
+
+.home {
+    position: relative;
+    overflow: hidden;
+}
+
+/* HERO */
+
+.hero {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+    padding: 80px;
+    margin-top: 60px;
+}
+
+.hero-content {
+    max-width: 500px;
+}
+
+.hero h1 {
+    font-size: 5rem;
+    line-height: 1;
+}
+
+.hero h1 span {
+    color: var(--color-clothes-accent);
+}
+
+/* CARAS */
+
+.anime-face {
+    position: absolute;
+    width: 200px;
+
+    animation: animeBreath 4s ease-in-out infinite;
+
+    filter: drop-shadow(0 0 15px var(--color-clothes-accent));
+}
+
+.face-1 {
+    top: 100px;
+    left: 50px;
+}
+
+.face-2 {
+    top: 120px;
+    right: 50px;
+}
+
+.face-3 {
+    top: 400px;
+    right: 100px;
+}
+
+/* BENEFICIOS */
+
+.benefits {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 40px 80px;
+}
+
+.benefit {
+    background: var(--color-clothes-card);
+    padding: 25px;
+    text-align: center;
+    border: 1px solid #222;
+}
+
+/* CATEGORIAS */
+
+.categories {
+    padding: 80px;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+.category-card {
+    height: 250px;
+    background: var(--color-clothes-card);
+    border: 1px solid #222;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.3s;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(255, 45, 85, 0.4);
+}
+
+/* PRODUCTOS */
+
+.products {
+    padding: 80px;
+}
+
+@keyframes animeBreath {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.08);
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+    }
+}
