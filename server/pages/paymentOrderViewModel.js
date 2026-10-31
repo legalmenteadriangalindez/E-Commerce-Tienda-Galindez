@@ -23,18 +23,13 @@ function presentAdminPaymentOrder(value) {
         ...order,
         paymentMethodLabel,
         canConfirmCash:
-            isCashPayment &&
-            order.estadoPago === 'PENDIENTE' &&
-            ['RESERVADO', 'CONFIRMADO'].includes(order.inventario),
+            isCashPayment && order.estadoPago === 'PENDIENTE' && ['RESERVADO', 'CONFIRMADO'].includes(order.inventario),
         confirmCashLabel: cashOnDelivery ? 'Confirmar efectivo recibido' : 'Confirmar pago recibido',
         canCancelOrder:
             order.estadoPago === 'PENDIENTE' &&
-            (order.inventario === 'RESERVADO' ||
-                (cashOnDelivery && order.inventario === 'CONFIRMADO')) &&
+            (order.inventario === 'RESERVADO' || (cashOnDelivery && order.inventario === 'CONFIRMADO')) &&
             ['PENDIENTE', 'PREPARANDO', 'ENVIADA'].includes(order.estado),
-        cancelOrderLabel: cashOnDelivery
-            ? 'Cancelar pedido contra entrega'
-            : 'Cancelar reserva pendiente',
+        cancelOrderLabel: cashOnDelivery ? 'Cancelar pedido contra entrega' : 'Cancelar reserva pendiente',
         canManageDelivery:
             ['PAGADA', 'PREPARANDO', 'ENVIADA', 'ENTREGADA'].includes(order.estado) &&
             (order.estadoPago === 'PAGADO' || cashOnDelivery),
