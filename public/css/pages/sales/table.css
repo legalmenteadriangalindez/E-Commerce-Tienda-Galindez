@@ -1,3 +1,5 @@
+/* Tabla y presentación del listado de ventas. */
+
 /* =========================================================
    READ SALES
    GESTIÓN DE VENTAS
@@ -8,7 +10,7 @@
    CONTENEDOR PRINCIPAL
    ========================================================= */
 
-main {
+.admin-sales-page {
     width: 100%;
     padding: 30px;
     box-sizing: border-box;
@@ -18,11 +20,11 @@ main {
    TITULO
    ========================================================= */
 
-main > div:first-child {
+.admin-sales-page > div:first-child {
     margin-bottom: 25px;
 }
 
-main > div:first-child h1 {
+.admin-sales-page > div:first-child h1 {
     margin: 0;
     color: var(--color-brand-dark);
     font-size: 28px;
@@ -33,7 +35,7 @@ main > div:first-child h1 {
    TABLA
    ========================================================= */
 
-main .table {
+.admin-sales-page .table {
     width: 100%;
     margin-bottom: 0;
     background-color: var(--color-surface);
@@ -47,12 +49,12 @@ main .table {
    ENCABEZADO
    ========================================================= */
 
-main .table thead {
+.admin-sales-page .table thead {
     background-color: var(--color-brand-dark);
     color: var(--color-surface);
 }
 
-main .table thead th {
+.admin-sales-page .table thead th {
     padding: 14px 12px;
     border: none;
     font-size: 14px;
@@ -66,8 +68,8 @@ main .table thead th {
    CUERPO
    ========================================================= */
 
-main .table tbody td,
-main .table tbody th {
+.admin-sales-page .table tbody td,
+.admin-sales-page .table tbody th {
     padding: 13px 12px;
     border-top: 1px solid #eee5df;
     vertical-align: middle;
@@ -78,11 +80,11 @@ main .table tbody th {
    FILAS
    ========================================================= */
 
-main .table tbody tr {
+.admin-sales-page .table tbody tr {
     transition: background-color 0.2s ease;
 }
 
-main .table tbody tr:hover {
+.admin-sales-page .table tbody tr:hover {
     background-color: #faf6f2;
 }
 
@@ -90,11 +92,11 @@ main .table tbody tr:hover {
    PRODUCTOS
    ========================================================= */
 
-main .table tbody td:nth-child(3) div {
+.admin-sales-page .table tbody td:nth-child(3) div {
     margin-bottom: 4px;
 }
 
-main .table tbody td:nth-child(3) div:last-child {
+.admin-sales-page .table tbody td:nth-child(3) div:last-child {
     margin-bottom: 0;
 }
 
@@ -102,12 +104,12 @@ main .table tbody td:nth-child(3) div:last-child {
    CANTIDADES
    ========================================================= */
 
-main .table tbody td:nth-child(4) div {
+.admin-sales-page .table tbody td:nth-child(4) div {
     margin-bottom: 4px;
     font-weight: 600;
 }
 
-main .table tbody td:nth-child(4) div:last-child {
+.admin-sales-page .table tbody td:nth-child(4) div:last-child {
     margin-bottom: 0;
 }
 
@@ -115,7 +117,7 @@ main .table tbody td:nth-child(4) div:last-child {
    CLIENTE
    ========================================================= */
 
-main .table tbody td:nth-child(5) {
+.admin-sales-page .table tbody td:nth-child(5) {
     font-weight: 600;
     color: var(--color-brand-dark);
 }
@@ -124,7 +126,7 @@ main .table tbody td:nth-child(5) {
    TOTAL
    ========================================================= */
 
-main .table tbody td:nth-child(6) {
+.admin-sales-page .table tbody td:nth-child(6) {
     font-weight: 700;
     color: var(--color-success);
     white-space: nowrap;
@@ -134,7 +136,7 @@ main .table tbody td:nth-child(6) {
    BOTÓN DETALLES
    ========================================================= */
 
-main .table .btn-info {
+.admin-sales-page .table .btn-info {
     display: inline-block;
     padding: 7px 14px;
     border-radius: 7px;
@@ -146,7 +148,7 @@ main .table .btn-info {
         transform 0.2s ease;
 }
 
-main .table .btn-info:hover {
+.admin-sales-page .table .btn-info:hover {
     transform: translateY(-2px);
 }
 
@@ -159,16 +161,16 @@ main .table .btn-info:hover {
    --------------------------------------------------------- */
 
 @media (max-width: 992px) {
-    main {
+    .admin-sales-page {
         padding: 25px 20px;
     }
 
-    main .table {
+    .admin-sales-page .table {
         font-size: 13px;
     }
 
-    main .table thead th,
-    main .table tbody td {
+    .admin-sales-page .table thead th,
+    .admin-sales-page .table tbody td {
         padding: 10px 8px;
     }
 }
@@ -178,11 +180,11 @@ main .table .btn-info:hover {
    --------------------------------------------------------- */
 
 @media (max-width: 768px) {
-    main {
+    .admin-sales-page {
         padding: 20px 15px;
     }
 
-    main > div:first-child h1 {
+    .admin-sales-page > div:first-child h1 {
         font-size: 24px;
     }
 
@@ -191,11 +193,11 @@ main .table .btn-info:hover {
        sin romper el diseño.
     */
 
-    main {
+    .admin-sales-page {
         overflow-x: auto;
     }
 
-    main .table {
+    .admin-sales-page .table {
         min-width: 750px;
     }
 }
@@ -205,188 +207,19 @@ main .table .btn-info:hover {
    --------------------------------------------------------- */
 
 @media (max-width: 576px) {
-    main {
+    .admin-sales-page {
         padding: 15px 10px;
     }
 
-    main > div:first-child {
+    .admin-sales-page > div:first-child {
         margin-bottom: 18px;
     }
 
-    main > div:first-child h1 {
+    .admin-sales-page > div:first-child h1 {
         font-size: 21px;
     }
 
-    main .table {
+    .admin-sales-page .table {
         min-width: 700px;
-    }
-}
-
-/* =========================================================
-   FILTROS Y EXPORTACIÓN CSV
-   ========================================================= */
-
-.sales-export-panel {
-    margin: 0 0 24px;
-    padding: 22px;
-    border: 1px solid #e4d8d0;
-    border-radius: 14px;
-    background: var(--color-surface-warm);
-    box-shadow: 0 5px 18px rgba(49, 27, 20, 0.05);
-}
-
-.sales-export-panel__heading {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 16px;
-}
-
-.sales-export-panel h2 {
-    margin: 0;
-    color: var(--color-brand-dark);
-    font-size: 1.15rem;
-}
-
-.sales-export-panel .admin-list-eyebrow {
-    margin-bottom: 4px;
-}
-
-.sales-export-panel__hint {
-    color: var(--color-text-muted);
-    font-size: 0.84rem;
-}
-
-.sales-filters {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(130px, 1fr)) auto;
-    align-items: end;
-    gap: 13px;
-}
-
-.sales-filters label {
-    display: grid;
-    gap: 6px;
-    color: #4e3e37;
-    font-size: 0.82rem;
-    font-weight: 700;
-}
-
-.sales-filters input,
-.sales-filters select {
-    width: 100%;
-    min-height: 40px;
-    padding: 8px 10px;
-    border: 1px solid #d9c8bd;
-    border-radius: 8px;
-    background: var(--color-surface);
-    color: var(--color-brand-dark);
-    font: inherit;
-    font-weight: 400;
-}
-
-.sales-filters input:focus,
-.sales-filters select:focus {
-    border-color: var(--color-brand-accent);
-    outline: 3px solid rgba(216, 92, 50, 0.14);
-}
-
-.sales-filters__actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 40px;
-}
-
-.sales-filter-button {
-    min-height: 40px;
-    padding: 8px 13px;
-    border: 0;
-    border-radius: 8px;
-    background: var(--color-brand-dark);
-    color: var(--color-surface);
-    cursor: pointer;
-    font-size: 0.84rem;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.sales-filter-button:hover {
-    background: var(--color-brand-accent);
-}
-
-.sales-filter-reset {
-    color: #6b3f2d;
-    font-size: 0.84rem;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.sales-status-badge {
-    display: inline-flex;
-    padding: 4px 8px;
-    border-radius: 999px;
-    background: #f1ece8;
-    color: var(--color-text-muted);
-    font-size: 0.72rem;
-    font-weight: 800;
-    white-space: nowrap;
-}
-
-.sales-status-badge--pagado {
-    background: #e2f5ea;
-    color: #146c43;
-}
-
-.sales-status-badge--pendiente {
-    background: #fff1d8;
-    color: #8a5a00;
-}
-
-.sales-status-badge--rechazado,
-.sales-status-badge--fallido {
-    background: #fde7e7;
-    color: #a12b2b;
-}
-
-.sales-status-badge--reembolsado {
-    background: #e9e6fb;
-    color: #51449a;
-}
-
-.sales-total {
-    color: var(--color-success);
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-@media (max-width: 1100px) {
-    .sales-filters {
-        grid-template-columns: repeat(2, minmax(150px, 1fr));
-    }
-
-    .sales-filters__actions {
-        grid-column: 1 / -1;
-    }
-}
-
-@media (max-width: 700px) {
-    .sales-export-panel {
-        padding: 17px;
-    }
-
-    .sales-export-panel__heading {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .sales-filters {
-        grid-template-columns: 1fr;
-    }
-
-    .sales-filters__actions {
-        grid-column: auto;
-        justify-content: space-between;
     }
 }

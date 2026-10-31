@@ -1,0 +1,224 @@
+/* Estructura y estados generales de la moderación de reseñas. */
+
+.admin-reviews {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 36px 24px 64px;
+    color: var(--color-review-ink);
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    line-height: 1.5;
+}
+
+.admin-reviews *,
+.admin-reviews *::before,
+.admin-reviews *::after {
+    box-sizing: border-box;
+}
+
+.admin-reviews h1 {
+    margin: 0 0 8px;
+    font-size: clamp(2rem, 4vw, 2.6rem);
+    font-weight: 750;
+}
+
+.admin-reviews h2 {
+    margin: 0;
+    font-size: 1.18rem;
+    font-weight: 700;
+}
+
+.admin-reviews h3 {
+    font-size: 1.2rem;
+}
+
+.admin-reviews p {
+    margin: 0 0 12px;
+}
+
+.admin-reviews a {
+    color: var(--color-review-accent);
+    text-underline-offset: 3px;
+}
+
+.ar-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.ar-heading p {
+    color: var(--color-review-muted);
+}
+
+.admin-reviews .ar-eyebrow {
+    color: var(--color-review-accent);
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    font-weight: 750;
+}
+
+.ar-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid var(--color-review-accent);
+    border-radius: 8px;
+    background: var(--color-review-accent);
+    color: white !important;
+    font: inherit;
+    font-weight: 650;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.ar-button:hover {
+    background: #503019;
+}
+
+.ar-button--secondary {
+    background: white;
+    color: var(--color-review-accent) !important;
+    white-space: nowrap;
+}
+
+.ar-button--secondary:hover {
+    background: #f4ede5;
+}
+
+.ar-button--warning {
+    background: #865022;
+    border-color: #865022;
+}
+
+.admin-reviews button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.admin-reviews :focus-visible {
+    outline: 3px solid #2f737a;
+    outline-offset: 3px;
+}
+
+.ar-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.ar-stats > div {
+    border: 1px solid var(--color-review-line);
+    border-radius: 12px;
+    padding: 18px 20px;
+    background: #fcfaf7;
+}
+
+.ar-stats span {
+    display: block;
+    color: var(--color-review-muted);
+    font-size: 0.87rem;
+}
+
+.ar-stats strong {
+    display: block;
+    margin-top: 6px;
+    font-size: 1.9rem;
+    line-height: 1.2;
+}
+
+.ar-results-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.ar-results-heading > span {
+    color: var(--color-review-muted);
+    font-size: 0.85rem;
+}
+
+.admin-reviews .ar-policy {
+    max-width: 900px;
+    color: var(--color-review-muted);
+    font-size: 0.88rem;
+    margin-bottom: 22px;
+}
+
+.ar-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 28px 0 0;
+    font-size: 0.85rem;
+    color: var(--color-review-muted);
+}
+
+.ar-pagination > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.ar-pagination a,
+.ar-pagination [aria-current] {
+    display: inline-flex;
+    min-width: 38px;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border: 1px solid var(--color-review-line);
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.ar-pagination [aria-current] {
+    color: white;
+    background: var(--color-review-accent);
+}
+
+.ar-empty {
+    text-align: center;
+    padding: 48px 24px;
+    border: 1px dashed var(--color-review-line);
+    border-radius: 12px;
+}
+
+.ar-empty p {
+    color: var(--color-review-muted);
+}
+
+.ar-notice {
+    padding: 14px 18px;
+    border-radius: 8px;
+    overflow-wrap: anywhere;
+}
+
+.ar-notice--success {
+    color: #225b43;
+    background: #eaf4ed;
+}
+
+.ar-notice--error,
+.admin-reviews .ar-form-error {
+    color: #922d27;
+    background: #fff0ed;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.ar-form-error[hidden] {
+    display: none;
+}

@@ -1,0 +1,48 @@
+/* Filtros y controles de entrada de la página de reseñas. */
+
+.ar-filters {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: end;
+    gap: 16px;
+    border: 1px solid var(--color-review-line);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 0 0 28px;
+    background: white;
+}
+
+.ar-field {
+    min-width: 0;
+}
+
+.admin-reviews label {
+    display: block;
+    font-weight: 650;
+    font-size: 0.86rem;
+    margin-bottom: 6px;
+}
+
+.admin-reviews input:not([type='hidden']),
+.admin-reviews select,
+.admin-reviews textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #bfb3a6;
+    border-radius: 7px;
+    background: white;
+    color: var(--color-review-ink);
+    font: inherit;
+}
+
+.admin-reviews textarea {
+    resize: vertical;
+}
+
+.ar-filter-actions {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+}
