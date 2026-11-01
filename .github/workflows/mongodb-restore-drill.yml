@@ -25,7 +25,6 @@ jobs:
             TARGET_DB_NAME: ${{ secrets.PROD_BACKUP_DRILL_DB_NAME }}
             BACKUP_DRILL_CONFIRM: ${{ inputs.confirm }}
             TARGET_DISPOSABLE: YES
-            BACKUP_DIR: ${{ runner.temp }}/mongodb-restore-drill
         steps:
             - name: Descargar el código
               uses: actions/checkout@v4
@@ -47,6 +46,8 @@ jobs:
             - name: Instalar dependencias de producción
               run: npm ci --omit=dev --no-audit --no-fund
             - name: Ejecutar copia y restauración controlada
+              env:
+                  BACKUP_DIR: ${{ runner.temp }}/mongodb-restore-drill
               run: npm run backup:restore-drill
             - name: Guardar evidencia (sin el volcado de datos)
               if: always()
