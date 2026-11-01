@@ -56,7 +56,13 @@ const resources = {
         pageJs: js('Add_to_cart_client_nav.js', 'clothes.js'),
     },
     'client/products/product_detail': {
-        pageCss: css('carousel.css', 'components/product-info.css', 'components/reviews.css', 'components/buttons.css'),
+        pageCss: css(
+            'carousel.css',
+            'components/carousel.css',
+            'components/product-info.css',
+            'components/reviews.css',
+            'components/buttons.css'
+        ),
         pageJs: js('Add_to_cart_client_nav.js', 'product-reviews.js'),
     },
     'client/cart/cart': {
@@ -106,7 +112,9 @@ const resources = {
     'admin/analytics/stock': { pageCss: css('pages/stock.css', 'admin-pagination.css') },
     'admin/analytics/profit_margins': { pageCss: css('profit_margins.css') },
     'admin/analytics/best_selling_products': { pageCss: css('best_selling_products.css') },
-    'admin/orders/read_orders': { pageCss: css('pages/read-orders.css', 'admin-pagination.css') },
+    'admin/orders/read_orders': {
+        pageCss: css('pages/read-orders.css', 'admin-pagination.css', 'components/admin-mobile-table-cards.css'),
+    },
     'admin/orders/detail_orders': { pageCss: css('detail_order.css', 'delivery-tracking.css') },
     'admin/orders/update_order': { pageCss: css('update_order.css') },
     'admin/delivery/index': { pageCss: css('admin-delivery.css', 'admin-pagination.css') },
@@ -125,7 +133,9 @@ const resources = {
         pageCss: css('pages/sales/table.css', 'pages/sales/export.css', 'admin-pagination.css'),
     },
     'admin/sales/read_detailsSales': { pageCss: css('read_detailsSales.css') },
-    'admin/products/read_products': { pageCss: css('read_products.css', 'admin-pagination.css') },
+    'admin/products/read_products': {
+        pageCss: css('read_products.css', 'admin-pagination.css', 'components/admin-mobile-table-cards.css'),
+    },
     'admin/products/create_producto': { pageCss: css('pages/create-products.css', 'components/product-promotion.css') },
     'admin/products/update_products': { pageCss: css('edit_products.css', 'components/product-promotion.css') },
     'admin/categories/read_categories': { pageCss: css('read_categories.css', 'admin-pagination.css') },
@@ -137,7 +147,9 @@ const resources = {
     'admin/providers/read_providers': { pageCss: css('read_providers.css', 'admin-pagination.css') },
     'admin/providers/create_proveedor': { pageCss: css('create_providers.css') },
     'admin/providers/update_provider': { pageCss: css('update_providers.css') },
-    'admin/users/read_users': { pageCss: css('read_users.css', 'admin-pagination.css') },
+    'admin/users/read_users': {
+        pageCss: css('read_users.css', 'admin-pagination.css', 'components/admin-mobile-table-cards.css'),
+    },
     'admin/users/add_user': {
         pageCss: css('create_users.css', 'components/password-visibility.css'),
         pageJs: js('password-visibility.js'),

@@ -1,19 +1,16 @@
 /*============================== carousel ============================*/
 .container-carousel {
     border-bottom: 5px solid var(--color-brand-tan);
+    width: 100%;
     max-width: 1400px;
+    overflow: hidden;
     margin: auto;
     transition: transform 0.3s ease;
 }
 
-/* hover suave en todo el carrusel */
-.container-carousel:hover {
-    transform: scale(1.01);
-}
-
 /* ITEM DEL CARRUSEL */
 .carousel-item {
-    height: 600px;
+    height: clamp(220px, 42vw, 600px);
     overflow: hidden;
 }
 
@@ -26,11 +23,6 @@
 
     /* suavidad */
     transition: transform 0.5s ease;
-}
-
-/* zoom suave en hover del slide */
-.carousel-item:hover img {
-    transform: scale(1.03);
 }
 
 /* CAPTION */
@@ -47,4 +39,32 @@
 .carousel-caption h5 {
     color: var(--color-brand-tan);
     font-weight: bold;
+}
+
+@media (max-width: 767px) {
+    #carouselExampleCaptions .carousel-item {
+        height: clamp(190px, 58vw, 320px);
+    }
+
+    .container-carousel:hover,
+    #carouselExampleCaptions .carousel-item:hover img {
+        transform: none;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .container-carousel:hover {
+        transform: scale(1.01);
+    }
+
+    .carousel-item:hover img {
+        transform: scale(1.03);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .container-carousel,
+    .carousel-item img {
+        transition: none;
+    }
 }
