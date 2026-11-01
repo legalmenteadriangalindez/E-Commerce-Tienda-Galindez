@@ -62,21 +62,10 @@
         </div>
 
         <div class="form-group">
-          <label>Stock</label>
-          <input
-            type="number"
-            name="stock"
-            value="<%= producto.stock || 0 %>"
-            min="0"
-            required
-          >
-
-<input
-    type="hidden"
-    name="stockOriginal"
-    value="<%= producto.stock %>"
->
-
+          <label>Stock actual</label>
+          <input type="number" value="<%= producto.stock || 0 %>" readonly aria-describedby="stock-movement-link">
+          <input type="hidden" name="stockOriginal" value="<%= producto.stock %>">
+          <small id="stock-movement-link"><a href="/inventory/movements?producto=<%= producto._id %>">Consultar o ajustar en el historial</a></small>
         </div>
 
         <div class="form-group">

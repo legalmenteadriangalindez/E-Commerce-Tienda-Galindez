@@ -81,6 +81,7 @@
             <% if (canAccess('analytics:read')) { %><li><a class="dropdown-item" href="/admin-analytics"><i class="bi bi-speedometer2"></i> Informe de ventas</a></li><% } %>
             <% if (canAccess('orders:read')) { %><li><a class="dropdown-item" href="/read-order"><i class="bi bi-receipt-cutoff"></i> Ordenes </a></li><% } %>
             <% if (canAccess('inventory:read')) { %><li><a class="dropdown-item" href="/read-Stock"><i class="bi bi-box-seam"></i> Stock </a></li><% } %>
+            <% if (canAccess('inventory:read') || canAccess('catalog:write')) { %><li><a class="dropdown-item" href="/inventory/movements"><i class="bi bi-clock-history"></i> Historial de movimientos</a></li><% } %>
             <% if (canAccess('sales:read')) { %><li><a class="dropdown-item" href="/admin-best_selling_products"><i class="bi bi-box-seam"></i> Productos mas vendidos </a></li><% } %>
             <% if (canAccess('raffle:manage')) { %><li><a class="dropdown-item" href="/admin/raffle"><i class="bi bi-gift"></i> Sorteo de regalos</a></li><% } %>
             <% if (canAccess('sales:read')) { %><li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/read-sales"><i class="bi bi-cart-check"></i> Ventas</a></li><% } %>

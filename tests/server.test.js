@@ -34,6 +34,14 @@ test(
         const health = await fetch(`http://127.0.0.1:${port}/healthz`);
         assert.equal(health.status, 200);
         assert.equal((await health.json()).status, 'ok');
+        const InventoryMovement = require('../server/model/inventoryMovement');
+        const openingBalance = await InventoryMovement.findOne({
+            producto: fixture.product._id,
+            tipo: 'SALDO_INICIAL',
+        });
+        assert.equal(openingBalance.cantidad, fixture.product.stock);
+        assert.equal(openingBalance.stockAntes, 0);
+        assert.equal(openingBalance.stockDespues, fixture.product.stock);
         const login = await fetch(`http://127.0.0.1:${port}/login`, { headers: { 'X-Forwarded-Proto': 'https' } });
         await login.text();
         assert.equal(login.status, 200);

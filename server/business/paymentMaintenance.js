@@ -28,7 +28,10 @@ async function expireReservations() {
                 return;
             const uncertain = await persistence.hasPendingEvent(order._id, session);
             if (uncertain) return;
-            await inventory.release(order, session);
+            await inventory.release(order, session, {
+                actorName: 'Mantenimiento automático',
+                reason: 'Reserva vencida por superar el tiempo permitido para pagar',
+            });
             order.estado = 'CANCELADA';
             delivery.trackState(order, order.estado);
             await notifications.queueStatus(order, session);

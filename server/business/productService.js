@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Product = require('../model/product');
+const InventoryMovement = require('../model/inventoryMovement');
 const Category = require('../model/categories');
 const Brand = require('../model/brands');
 const Provider = require('../model/provider');
@@ -10,6 +11,7 @@ const pagination = require('../services/adminPagination');
 const money = require('../services/money');
 const { BusinessError, validId, parse } = require('./errors');
 const { product: schema } = require('../validation/schemas');
+const inventory = require('./inventoryService');
 
 function priceCents(value) {
     if (String(value).trim() === '') throw new BusinessError('El precio es obligatorio.');
@@ -97,7 +99,7 @@ function updatedPhotos(original, input, files = {}) {
     return result;
 }
 
-async function create(body, files = []) {
+async function create(body, files = [], actor) {
     let committed = false;
     try {
         if (body.precioCosto === undefined || body.precioVenta === undefined)
@@ -105,7 +107,19 @@ async function create(body, files = []) {
         const fields = await productFields(body);
         const fotos = uploadedFiles(files).map((file) => file.url);
         if (fotos.length > 4) throw new BusinessError('Máximo 4 fotografías por producto.');
-        const product = await Product.create({ ...fields, fotos });
+        let product;
+        await mongoose.connection.transaction(async (session) => {
+            [product] = await Product.create([{ ...fields, fotos }], { session });
+            await inventory.recordInitialEntry(
+                product,
+                {
+                    actorId: actor?._id,
+                    actorName: actor?.nombre,
+                    reason: String(body.motivoStockInicial || '').trim() || 'Stock inicial del producto',
+                },
+                session
+            );
+        });
         committed = true;
         return product;
     } finally {
@@ -128,6 +142,9 @@ async function update(id, body, files = {}) {
     try {
         const product = await Product.findById(validId(id, 'Producto'));
         if (!product) throw new BusinessError('Producto no encontrado.', 404);
+        if (Object.hasOwn(body, 'stock')) {
+            throw new BusinessError('El stock se cambia desde el historial de movimientos.');
+        }
         const fields = await productFields(body, product);
         const original = [...(product.fotos || [])];
         const fotos = updatedPhotos(original, body, files);
@@ -165,6 +182,19 @@ async function remove(id) {
         if (await Order.exists({ 'productos.producto': id }).session(session)) {
             throw new BusinessError(
                 'Este producto tiene pedidos. Conserva su historial; ajusta su stock a cero para retirarlo de la venta.',
+                409
+            );
+        }
+        if (await InventoryMovement.exists({ producto: id }).session(session)) {
+            throw new BusinessError(
+                'Este producto tiene historial de inventario. Consérvalo y ajusta el stock a cero para retirarlo de la venta.',
+                409
+            );
+        }
+        const current = await Product.findById(id).select('stock').session(session);
+        if (current?.stock > 0) {
+            throw new BusinessError(
+                'No puedes eliminar un producto con existencias. Registra primero el ajuste correspondiente.',
                 409
             );
         }

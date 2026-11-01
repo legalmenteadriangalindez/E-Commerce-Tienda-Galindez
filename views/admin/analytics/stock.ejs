@@ -17,6 +17,8 @@
             </p>
         </div>
 
+        <a class="btn btn-outline-primary" href="/inventory/movements">Historial y ajustes</a>
+
     </div>
 
     <!-- RESUMEN -->
@@ -64,6 +66,7 @@
                             <th>Categoría</th>
                             <th>Stock</th>
                             <th>Estado</th>
+                            <th>Historial</th>
                         </tr>
 
                     </thead>
@@ -125,6 +128,8 @@
                                     <% } %>
 
                                 </td>
+
+                            <td><a href="/inventory/movements?producto=<%= producto.id %>">Ver movimientos</a></td>
 
                             </tr>
 

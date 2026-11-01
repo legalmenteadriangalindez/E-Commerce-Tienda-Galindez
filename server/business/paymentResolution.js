@@ -25,18 +25,33 @@ async function resolveOrder(id, action, note, receipt, adminId, restock = false)
                     409
                 );
             }
-            await inventory.debit(order.productos, session);
+            await inventory.debit(order.productos, session, {
+                order,
+                reference: `reserva-recuperada:${order._id}`,
+                actorId: adminId,
+                reason: `Reserva recuperada durante la conciliación: ${motivo}`,
+            });
             order.inventario = 'CONFIRMADO';
             order.estado = 'PAGADA';
             order.incidenciaPago = '';
+            await inventory.recordSale(order, session, {
+                actorId: adminId,
+                reason: `Venta confirmada tras recuperar inventario: ${motivo}`,
+            });
             delivery.trackState(order, order.estado, adminId);
             await notifications.queueStatus(order, session);
         } else if (action === 'DEVOLUCION') {
             if (restock && order.inventario !== 'CONFIRMADO')
                 throw new CommerceError('No hay un descuento de inventario confirmado para reponer.', 409);
             if (restock) {
-                await inventory.restock(order.productos, session);
+                await inventory.restock(order.productos, session, {
+                    order,
+                    actorId: adminId,
+                    reason: `Devolución reintegrada al inventario: ${motivo}`,
+                });
                 order.inventario = 'LIBERADO';
+            } else {
+                await inventory.recordReturnWithoutRestock(order, session, { actorId: adminId, reason: motivo });
             }
             order.estadoPago = 'REEMBOLSADO';
             order.estado = 'CANCELADA';

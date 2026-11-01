@@ -26,6 +26,7 @@ const models = [
     require('../server/model/rateLimitBucket'),
     require('../server/model/orderEmailEvent'),
     require('../server/model/storeSetting'),
+    require('../server/model/inventoryMovement'),
 ];
 
 function fakeDb() {

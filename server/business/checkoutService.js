@@ -119,7 +119,6 @@ async function createOrder({ userId, cart, body, key, channel = 'WOMPI' }) {
                 throw new CommerceError('El precio cambió. Recarga el formulario para revisar el nuevo total.', 409);
             }
             if (priced.totalCents <= 0) throw new CommerceError('El total debe ser mayor que cero.');
-            await inventory.debit(priced.productos, session);
             [order] = await Order.create(
                 [
                     {
@@ -139,6 +138,11 @@ async function createOrder({ userId, cart, body, key, channel = 'WOMPI' }) {
                 ],
                 { session }
             );
+            await inventory.debit(order.productos, session, {
+                order,
+                actorId: userId,
+                reason: 'Unidades reservadas al crear el pedido',
+            });
             delivery.trackState(order, 'PENDIENTE', userId);
             await order.save({ session });
             await notifications.queueOrderReceived(order, session);

@@ -7,6 +7,7 @@ const router = express.Router();
 router.use('/', require('./admin/reviews.routes'));
 router.use('/', require('./admin/payments.routes'));
 router.use('/', require('./admin/catalog.routes'));
+router.use('/', require('./admin/inventory.routes'));
 router.use('/', require('./admin/orders.routes'));
 router.use('/', require('./admin/users.routes'));
 router.use('/', require('./admin/settings.routes'));

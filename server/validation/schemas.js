@@ -80,11 +80,42 @@ const product = passthrough({
     precioVenta: z.union([z.string(), z.number()]).optional(),
     precioCosto: z.union([z.string(), z.number()]).optional(),
     stock: z.coerce.number().int().min(0).max(100000000).optional(),
+    motivoStockInicial: optionalText(500),
     categoria: z.union([objectId, z.literal('')]).optional(),
     marca: z.union([objectId, z.literal('')]).optional(),
     proveedor: z.union([objectId, z.literal('')]).optional(),
     eliminarFotos: z.union([z.array(z.string().max(500)), z.string().max(500)]).optional(),
     _csrf: optionalText(200),
+});
+const inventoryMovementTypes = [
+    'SALDO_INICIAL',
+    'ENTRADA',
+    'RESERVA',
+    'VENTA',
+    'LIBERACION',
+    'DEVOLUCION',
+    'DANO',
+    'AJUSTE',
+];
+const inventoryMovementQuery = pagination.extend({
+    producto: objectId.optional(),
+    tipo: z.enum(inventoryMovementTypes).optional(),
+});
+const inventoryAdjustment = passthrough({
+    producto: objectId,
+    tipo: z.enum(['ENTRADA', 'DANO', 'AJUSTE']),
+    cantidad: z.coerce.number().int().min(1).max(1000000),
+    direccion: z.preprocess((value) => (value === '' ? undefined : value), z.enum(['SUMAR', 'RESTAR']).optional()),
+    motivo: text(500).min(1),
+    claveIdempotencia: z.string().uuid(),
+}).superRefine((value, context) => {
+    if (value.tipo === 'AJUSTE' && !value.direccion) {
+        context.addIssue({
+            code: 'custom',
+            path: ['direccion'],
+            message: 'Selecciona si el ajuste suma o resta stock.',
+        });
+    }
 });
 const user = passthrough({
     nombre: optionalText(200),
@@ -193,6 +224,9 @@ module.exports = {
     brand,
     role,
     product,
+    inventoryMovementTypes,
+    inventoryMovementQuery,
+    inventoryAdjustment,
     user,
     userCreate,
     orderUpdate,

@@ -8,9 +8,11 @@ const Sale = require('../server/model/sales');
 const Detail = require('../server/model/saleDetails');
 const Event = require('../server/model/paymentEvent');
 const EmailEvent = require('../server/model/orderEmailEvent');
+const InventoryMovement = require('../server/model/inventoryMovement');
 const Raffle = require('../server/model/raffle');
 const RaffleEntry = require('../server/model/raffleEntry');
 const raffle = require('../server/business/raffleService');
+const inventoryMovements = require('../server/business/inventoryMovementService');
 
 test('importes en centavos y validación del carrito', () => {
     assert.equal(commerce.cents(123.45), 12345);
@@ -32,9 +34,18 @@ test(
         skip: process.env.COMMERCE_TEST_MONGO_URI ? false : 'Ejecuta npm run test:integration.',
     },
     async (t) => {
-        const app = await require('./helpers/reviewApp').startReviewApp(process.env.COMMERCE_TEST_MONGO_URI);
+        const app = await require('./helpers/reviewApp').startReviewApp(
+            process.env.COMMERCE_TEST_MONGO_URI,
+            (testApp) => {
+                testApp.use(require('../server/routes/admin/inventory.routes'));
+            }
+        );
         t.after(() => app.close());
-        await Promise.all([Order, Sale, Detail, Event, EmailEvent, Raffle, RaffleEntry].map((model) => model.init()));
+        await Promise.all(
+            [Order, Sale, Detail, Event, EmailEvent, Raffle, RaffleEntry, InventoryMovement].map((model) =>
+                model.init()
+            )
+        );
         const body = {
             fullName: 'Cliente de prueba',
             email: 'cliente@example.test',
@@ -59,7 +70,9 @@ test(
         });
         const reset = async (stock) => {
             await Promise.all(
-                [Order, Sale, Detail, Event, EmailEvent, Raffle, RaffleEntry].map((model) => model.deleteMany({}))
+                [Order, Sale, Detail, Event, EmailEvent, Raffle, RaffleEntry, InventoryMovement].map((model) =>
+                    model.deleteMany({})
+                )
             );
             await Raffle.create({
                 clave: 'principal',
@@ -78,6 +91,99 @@ test(
             assert.equal(await Order.countDocuments(), 1);
             assert.equal((await app.Product.findById(app.product._id)).stock, 8);
             assert.equal(await Sale.countDocuments(), 0);
+            assert.equal(await InventoryMovement.countDocuments({ pedido: orders[0]._id, tipo: 'RESERVA' }), 1);
+            assert.equal(await InventoryMovement.countDocuments({ tipo: 'RESERVA' }), 1);
+        });
+        await t.test('entradas, daños y ajustes manuales guardan actor, motivo y control idempotente', async () => {
+            await reset(10);
+            const key = randomUUID();
+            await inventoryMovements.adjust(
+                {
+                    producto: app.product.id,
+                    tipo: 'ENTRADA',
+                    cantidad: 4,
+                    motivo: 'Compra al proveedor de prueba',
+                    claveIdempotencia: key,
+                },
+                app.users.owner
+            );
+            const repeated = await inventoryMovements.adjust(
+                {
+                    producto: app.product.id,
+                    tipo: 'ENTRADA',
+                    cantidad: 4,
+                    motivo: 'Compra al proveedor de prueba',
+                    claveIdempotencia: key,
+                },
+                app.users.owner
+            );
+            assert.equal(repeated.changed, false);
+            await inventoryMovements.adjust(
+                {
+                    producto: app.product.id,
+                    tipo: 'DANO',
+                    cantidad: 2,
+                    motivo: 'Dos unidades averiadas',
+                    claveIdempotencia: randomUUID(),
+                },
+                app.users.admin
+            );
+            await inventoryMovements.adjust(
+                {
+                    producto: app.product.id,
+                    tipo: 'AJUSTE',
+                    cantidad: 3,
+                    direccion: 'RESTAR',
+                    motivo: 'Conteo físico',
+                    claveIdempotencia: randomUUID(),
+                },
+                app.users.admin
+            );
+            assert.equal((await app.Product.findById(app.product._id)).stock, 9);
+            const result = await inventoryMovements.list({ producto: app.product.id, tipo: 'DANO' });
+            assert.equal(result.movimientos.length, 1);
+            assert.equal(result.movimientos[0].deltaStock, -2);
+            assert.equal(result.movimientos[0].stockAntes, 14);
+            assert.equal(result.movimientos[0].stockDespues, 12);
+            assert.equal(result.movimientos[0].actorNombre, 'Persona admin');
+            assert.equal(result.movimientos[0].motivo, 'Dos unidades averiadas');
+        });
+        await t.test('el historial exige permisos y CSRF y muestra los movimientos guardados', async () => {
+            await reset(10);
+            const client = await app.actor('owner');
+            const denied = await app.request(client, '/inventory/movements');
+            assert.equal(denied.status, 403);
+
+            const admin = await app.actor('admin');
+            const noCsrf = await app.request(
+                admin,
+                '/inventory/movements/adjust',
+                'POST',
+                {
+                    producto: app.product.id,
+                    tipo: 'ENTRADA',
+                    cantidad: 1,
+                    motivo: 'Entrada desde la pantalla',
+                    claveIdempotencia: randomUUID(),
+                },
+                false
+            );
+            assert.equal(noCsrf.status, 403);
+
+            const saved = await app.request(admin, '/inventory/movements/adjust', 'POST', {
+                producto: app.product.id,
+                tipo: 'ENTRADA',
+                cantidad: 1,
+                motivo: 'Entrada desde la pantalla',
+                claveIdempotencia: randomUUID(),
+            });
+            assert.equal(saved.status, 303);
+            const page = await app.request(admin, '/inventory/movements?tipo=ENTRADA');
+            assert.equal(page.status, 200);
+            const html = await page.text();
+            assert.match(html, /Historial de movimientos/);
+            assert.match(html, /Entrada desde la pantalla/);
+            assert.match(html, /Persona admin/);
         });
         await t.test('dos compradores compiten por la última unidad sin sobreventa', async () => {
             await reset(1);
@@ -96,6 +202,11 @@ test(
             assert.equal((await Order.findById(order._id)).estado, 'PAGADA');
             assert.equal(await RaffleEntry.countDocuments(), 1);
             assert.equal((await RaffleEntry.findOne({ order: order._id })).numero, 1);
+            const movements = await InventoryMovement.find({ pedido: order._id }).sort({ tipo: 1 }).lean();
+            assert.deepEqual(movements.map((movement) => movement.tipo).sort(), ['RESERVA', 'VENTA']);
+            assert.equal(movements.find((movement) => movement.tipo === 'RESERVA').deltaStock, -2);
+            assert.equal(movements.find((movement) => movement.tipo === 'VENTA').deltaStock, 0);
+            assert.ok(movements.every((movement) => movement.motivo && movement.createdAt));
             await commerce.applyTransaction(tx(order));
             assert.equal(await Event.countDocuments({ estado: 'REVISION' }), 1);
             assert.equal(await Sale.countDocuments(), 1);
@@ -163,6 +274,10 @@ test(
             assert.equal((await app.Product.findById(app.product._id)).stock, 10);
             assert.equal((await Order.findById(order._id)).estadoPago, 'RECHAZADO');
             assert.equal(await Sale.countDocuments(), 0);
+            assert.deepEqual((await InventoryMovement.find({ pedido: order._id }).distinct('tipo')).sort(), [
+                'LIBERACION',
+                'RESERVA',
+            ]);
         });
         await t.test('un importe o moneda alterados nunca confirman el pago', async () => {
             await reset(10);
@@ -261,6 +376,8 @@ test(
             );
             assert.equal((await require('../server/business/analyticsService').summary()).totalSales, 1);
             assert.equal((await app.Product.findById(app.product._id)).stock, 8);
+            assert.equal(await InventoryMovement.countDocuments({ pedido: order._id, tipo: 'RESERVA' }), 2);
+            assert.equal(await InventoryMovement.countDocuments({ pedido: order._id, tipo: 'VENTA' }), 1);
             await assert.rejects(
                 commerce.resolveOrder(
                     order.id,
@@ -279,6 +396,7 @@ test(
                 true
             );
             assert.equal((await app.Product.findById(app.product._id)).stock, 10);
+            assert.equal(await InventoryMovement.countDocuments({ pedido: order._id, tipo: 'DEVOLUCION' }), 1);
             assert.equal((await Sale.findOne({ order: order._id })).estadoPago, 'REEMBOLSADO');
             assert.equal((await require('../server/business/analyticsService').summary()).totalSales, 0);
             assert.equal((await require('../server/business/analyticsService').summary()).topProducts.length, 0);
