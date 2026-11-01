@@ -47,6 +47,12 @@
           >
         </div>
 
+        <div class="form-group">
+          <label for="provider-lead-days">Plazo de entrega (días)</label>
+          <input id="provider-lead-days" type="number" name="diasEntrega" value="<%= provider.diasEntrega ?? '' %>" min="0" max="365" step="1" required>
+          <small>Días calendario desde que se solicita hasta que se recibe el producto.</small>
+        </div>
+
         <div class="form-group full">
           <label>Descripción</label>
           <textarea

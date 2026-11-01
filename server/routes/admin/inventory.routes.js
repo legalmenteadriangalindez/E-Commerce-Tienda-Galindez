@@ -7,6 +7,7 @@ const csrfProtection = require('../../middleware/csrfProtection');
 const { validate } = require('../../middleware/validateRequest');
 const schemas = require('../../validation/schemas');
 const controller = require('../../pages/renderInventoryMovements');
+const replenishmentController = require('../../pages/renderInventoryReplenishment');
 
 const router = express.Router();
 
@@ -22,6 +23,12 @@ router.post(
     csrfProtection.validateToken,
     validate(schemas.inventoryAdjustment),
     controller.adjust
+);
+router.get(
+    '/inventory/replenishment',
+    requireAnyPermission([P.INVENTORY_READ, P.CATALOG_WRITE]),
+    validate(schemas.pagination, 'query'),
+    replenishmentController.index
 );
 
 module.exports = router;

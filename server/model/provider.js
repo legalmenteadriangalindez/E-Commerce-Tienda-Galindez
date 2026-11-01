@@ -25,6 +25,16 @@ var schema = new mongoose.Schema({
     descripcion: {
         type: String,
     },
+
+    diasEntrega: {
+        type: Number,
+        min: [0, 'Los días de entrega no pueden ser negativos'],
+        max: [365, 'El plazo de entrega no puede superar 365 días'],
+        validate: {
+            validator: Number.isInteger,
+            message: 'Los días de entrega deben ser un número entero',
+        },
+    },
 });
 
 schema.index({ nombre: 1, _id: 1 });

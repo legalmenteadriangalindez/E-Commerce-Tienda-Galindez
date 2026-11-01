@@ -7,7 +7,7 @@ const { provider: schema } = require('../validation/schemas');
 function fields(input) {
     const body = parse(schema, input);
     return Object.fromEntries(
-        ['nombre', 'telefono', 'direccion', 'descripcion']
+        ['nombre', 'telefono', 'direccion', 'descripcion', 'diasEntrega']
             .filter((key) => body[key] !== undefined)
             .map((key) => [key, body[key]])
     );

@@ -27,6 +27,7 @@
         <th scope="col">Inversión</th>
         <th scope="col">Venta</th>
         <th scope="col">Stock</th>
+        <th scope="col">Mínimo</th>
         <th scope="col">Fecha Ingreso</th>
         <th scope="col">Editar</th>
         <th scope="col">Eliminar</th>
@@ -83,7 +84,7 @@
           </td>
 
           <td>
-            <% if (product.stock <= 5) { %>
+            <% if (product.stock <= Number(product.stockMinimo || 0)) { %>
               <span class="stock-warning">
                 <%= product.stock %>
               </span>
@@ -91,6 +92,8 @@
               <%= product.stock %>
             <% } %>
           </td>
+
+          <td><%= Number(product.stockMinimo || 0) %></td>
 
           <td>
             <%= product.fechaIngreso

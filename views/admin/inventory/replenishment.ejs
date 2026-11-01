@@ -1,0 +1,100 @@
+<%- include('../../include/_headerAdmin') %>
+
+<main class="container-fluid py-4">
+    <header class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <p class="text-uppercase text-muted small mb-1">Inventario</p>
+            <h1>Reposición guiada</h1>
+            <p class="text-muted mb-0">Calcula sugerencias con las ventas pagadas de los últimos <%= resumen.diasVentas %> días y el plazo de entrega de cada proveedor.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <% if (can('inventory:read')) { %><a class="btn btn-outline-primary" href="/read-stock">Control de stock</a><% } %>
+            <a class="btn btn-outline-secondary" href="/inventory/movements">Historial de movimientos</a>
+        </div>
+    </header>
+
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-4">
+            <section class="card h-100"><div class="card-body"><div class="text-muted">Productos evaluados</div><strong class="fs-3"><%= resumen.productos %></strong></div></section>
+        </div>
+        <div class="col-sm-6 col-xl-4">
+            <section class="card h-100"><div class="card-body"><div class="text-muted">Con compra sugerida</div><strong class="fs-3"><%= resumen.sugerencias %></strong></div></section>
+        </div>
+        <div class="col-sm-6 col-xl-4">
+            <section class="card h-100"><div class="card-body"><div class="text-muted">Requieren proveedor o plazo</div><strong class="fs-3"><%= resumen.pendientesConfiguracion %></strong></div></section>
+        </div>
+    </div>
+
+    <div class="alert alert-info" role="note">
+        <strong>Cálculo:</strong> máx(0, mínimo del producto + venta diaria promedio × días de entrega − stock disponible). La demanda durante la entrega se redondea hacia arriba. El sistema muestra una recomendación; no crea órdenes de compra automáticamente.
+    </div>
+
+    <section class="card">
+        <div class="card-body">
+            <% if (items.length) { %>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Stock</th>
+                                <th>Mínimo</th>
+                                <th>Ventas 30 días</th>
+                                <th>Promedio diario</th>
+                                <th>Proveedor / entrega</th>
+                                <th>Nivel de reposición</th>
+                                <th>Compra sugerida</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% items.forEach(item => { %>
+                                <tr>
+                                    <td>
+                                        <strong><%= item.producto.nombre %></strong>
+                                        <% if (can('catalog:write')) { %><a class="d-block small" href="/update-producto/<%= item.producto._id %>">Configurar mínimo</a><% } %>
+                                    </td>
+                                    <td><%= item.stock %></td>
+                                    <td><%= item.stockMinimo %></td>
+                                    <td><%= item.unidadesVendidas %> unidades</td>
+                                    <td><%= item.promedioDiario.toFixed(2) %> unidades/día</td>
+                                    <td>
+                                        <% if (item.producto.proveedor) { %>
+                                            <%= item.producto.proveedor.nombre %><br>
+                                            <% if (item.diasEntrega === null) { %>
+                                                <span class="text-warning">Plazo sin configurar</span>
+                                                <% if (can('providers:manage')) { %><a class="d-block small" href="/update-proveedor?id=<%= item.producto.proveedor._id %>">Configurar proveedor</a><% } %>
+                                            <% } else { %>
+                                                <span class="text-muted"><%= item.diasEntrega %> días</span>
+                                            <% } %>
+                                        <% } else { %>
+                                            <span class="text-warning">Sin proveedor asignado</span>
+                                            <% if (can('catalog:write')) { %><a class="d-block small" href="/update-producto/<%= item.producto._id %>">Asignar proveedor</a><% } %>
+                                        <% } %>
+                                    </td>
+                                    <td><%= item.nivelReposicion === null ? '—' : item.nivelReposicion %></td>
+                                    <td>
+                                        <% if (item.cantidadSugerida === null) { %>
+                                            <span class="text-muted">Configura el plazo</span>
+                                        <% } else if (item.cantidadSugerida > 0) { %>
+                                            <span class="badge text-bg-warning">Comprar <%= item.cantidadSugerida %></span>
+                                        <% } else { %>
+                                            <span class="badge text-bg-success">Sin compra</span>
+                                        <% } %>
+                                    </td>
+                                    <td><a href="/inventory/movements?producto=<%= item.producto._id %>">Ver / registrar entrada</a></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="alert alert-light border mb-0">No hay productos registrados para calcular una reposición.</div>
+            <% } %>
+        </div>
+    </section>
+
+    <%- include('../../include/_adminPagination', { pagination, label: 'productos evaluados' }) %>
+</main>
+
+<%- include('../../include/_footerAdmin') %>

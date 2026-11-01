@@ -69,6 +69,12 @@
         </div>
 
         <div class="form-group">
+          <label for="product-min-stock">Stock mínimo</label>
+          <input id="product-min-stock" type="number" min="0" max="100000000" step="1" name="stockMinimo" value="<%= producto.stockMinimo ?? 0 %>" required>
+          <small>Se usa junto con las ventas recientes y los días de entrega del proveedor.</small>
+        </div>
+
+        <div class="form-group">
           <label>Categoría</label>
           <select name="categoria" required>
             <option value="">Seleccione una categoría</option>
@@ -117,6 +123,7 @@
             <% }) %>
 
           </select>
+          <small>El plazo de entrega se configura en los datos del proveedor.</small>
         </div>
 
       </div>

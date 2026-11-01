@@ -58,6 +58,16 @@ var schema = new mongoose.Schema({
         },
     },
 
+    stockMinimo: {
+        type: Number,
+        default: 0,
+        min: [0, 'El stock mínimo no puede ser negativo'],
+        validate: {
+            validator: Number.isInteger,
+            message: 'El stock mínimo debe ser un número entero',
+        },
+    },
+
     fechaIngreso: {
         type: Date,
         default: Date.now,

@@ -16,7 +16,7 @@
 <div class="analytics-grid analytics-grid-main">
     <section class="analytics-card">
         <div class="analytics-card-heading"><h2>Stock para actuar</h2><a href="/read-Stock">Ver inventario</a></div>
-        <% if (!lowStock.length) { %><p class="analytics-empty">No hay productos con 10 unidades o menos.</p><% } else { %><div class="analytics-alert-list"><% lowStock.forEach(product => { %><div><span><%= product.nombre %></span><strong class="<%= product.stock <= 3 ? 'stock-danger' : '' %>"><%= product.stock %> disponibles</strong></div><% }) %></div><% } %>
+        <% if (!lowStock.length) { %><p class="analytics-empty">No hay productos agotados o por debajo de su mínimo.</p><% } else { %><div class="analytics-alert-list"><% lowStock.forEach(product => { %><div><span><%= product.nombre %></span><strong class="<%= product.stock <= 0 ? 'stock-danger' : '' %>"><%= product.stock %> / mínimo <%= product.stockMinimo || 0 %></strong></div><% }) %></div><% } %>
     </section>
     <section class="analytics-card">
         <div class="analytics-card-heading"><h2>Productos sin rotación</h2><span>Con stock disponible</span></div>
