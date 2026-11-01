@@ -19,7 +19,7 @@
   <% } else if (verificationNotice === 'failed') { %>
     <p class="admin-list-description" role="status">
       Usuario creado, pero no se pudo enviar el correo de verificación. La cuenta no podrá iniciar sesión hasta verificar el correo.
-      Puede solicitar otro código en <a href="/verify-email">Verificar correo</a>.
+      La persona puede iniciar sesión con su contraseña inicial para solicitar otro código. También puedes abrir «Verificar correo» en la fila de su cuenta.
     </p>
   <% } %>
   <div class="admin-table-wrap ui-table-wrap">
@@ -38,6 +38,7 @@
       <th scope="col">punto de Referencia</th>
       <th scope="col">ubicacion</th>
       <th scope="col">estado</th>
+      <th scope="col">Correo verificado</th>
       <th scope="col">fecha de Registro</th>
       <th scope="col">Editar</th>
       <th scope="col">Eliminar</th>
@@ -58,6 +59,14 @@
       <td><%= user.puntoReferencia %></td>
       <td><%= user.ubicacion ? user.ubicacion.lat + ", " + user.ubicacion.lng : "" %></td>
       <td><%= user.estado %></td>
+      <td>
+        <% if (user.verified) { %>
+          Verificado
+        <% } else { %>
+          Pendiente de verificación<br>
+          <a href="/verify-email?email=<%= encodeURIComponent(user.email) %>">Verificar correo</a>
+        <% } %>
+      </td>
       <td><%= user.fechaRegistro %></td>
       <td><a href="/update-user/<%= user._id %>" class="btn btn-warning">Editar</a></td>
       <td>

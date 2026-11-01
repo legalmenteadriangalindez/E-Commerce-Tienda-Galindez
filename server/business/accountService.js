@@ -2,6 +2,8 @@ const crypto = require('node:crypto');
 const bcrypt = require('bcrypt');
 const User = require('../model/user');
 const Role = require('../model/rol');
+const { BusinessError, validId, parse } = require('./errors');
+const schemas = require('../validation/schemas');
 function normalizeEmail(value) {
     if (typeof value !== 'string' || value.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()))
         return null;
@@ -127,6 +129,31 @@ async function resetPassword(token, password) {
     );
 }
 
+async function changePassword(id, input) {
+    const { currentPassword, password, confirmPassword } = parse(schemas.changePassword, input);
+    if (!validPassword(password) || Buffer.byteLength(currentPassword, 'utf8') > 72) {
+        throw new BusinessError('Usa una contraseña de al menos 12 caracteres y máximo 72 bytes.');
+    }
+    if (password !== confirmPassword) throw new BusinessError('Las contraseñas nuevas no coinciden.');
+    const user = await User.findOne({ _id: validId(id, 'Usuario'), estado: 'Activo', verified: true });
+    if (!user || !(await bcrypt.compare(currentPassword, user.password))) {
+        throw new BusinessError('La contraseña actual no es correcta.');
+    }
+    if (currentPassword === password) throw new BusinessError('Elige una contraseña diferente de la actual.');
+    const passwordHash = await bcrypt.hash(password, 12);
+    // Comparar el hash leído evita sobrescribir una recuperación o un cambio
+    // de contraseña simultáneo. authVersion revoca las demás sesiones.
+    const changed = await User.findOneAndUpdate(
+        { _id: user._id, estado: 'Activo', verified: true, password: user.password },
+        {
+            $set: { password: passwordHash },
+            $inc: { authVersion: 1 },
+            $unset: { resetPasswordHash: 1, resetPasswordExpire: 1 },
+        }
+    );
+    if (!changed) throw new BusinessError('La cuenta cambió durante la operación. Vuelve a iniciar sesión.', 409);
+}
+
 module.exports = {
     normalizeEmail,
     emailFilter,
@@ -139,4 +166,5 @@ module.exports = {
     resendVerification,
     requestPasswordReset,
     resetPassword,
+    changePassword,
 };

@@ -6,10 +6,13 @@
 
   <div class="page-header">
     <h1>Usuarios</h1>
-    <p>Crea nuevos usuarios del sistema con sus datos de contacto</p>
+    <p>Crea una cuenta, asigna su contraseña inicial y envía la verificación al correo.</p>
   </div>
 
   <div class="form-card ui-card ui-card--form">
+    <% if (error) { %>
+      <p role="alert"><%= error %> Los demás datos se conservaron; vuelve a escribir la contraseña.</p>
+    <% } %>
 
     <form action="/add-user" method="POST" class="user-form">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -18,18 +21,18 @@
 
         <!-- Nombre -->
         <div class="form-group full">
-          <label>Nombre completo</label>
-          <input type="text" name="nombre" required>
+          <label for="new-user-name">Nombre completo</label>
+          <input id="new-user-name" type="text" name="nombre" value="<%= values.nombre %>" maxlength="200" autocomplete="name" required>
         </div>
 
         <!-- Email -->
         <div class="form-group full">
-          <label>Correo electrónico</label>
-          <input type="email" name="email" required>
+          <label for="new-user-email">Correo electrónico</label>
+          <input id="new-user-email" type="email" name="email" value="<%= values.email %>" maxlength="254" autocomplete="email" required>
         </div>
         <!-- Contraseña -->
         <div class="form-group full">
-          <label>Contraseña</label>
+          <label for="admin-new-password">Contraseña inicial</label>
           <div class="password-field">
             <input
               id="admin-new-password"
@@ -46,71 +49,77 @@
             </button>
           </div>
           <small>
-            La cuenta recibirá un código de verificación en este correo antes de poder iniciar sesión.
+            Usa al menos 12 caracteres. La persona verificará su correo con el código recibido y podrá cambiar esta contraseña desde el menú de su cuenta.
           </small>
         </div>
         <!-- Rol -->
         <% if (canManageRoles) { %>
           <div class="form-group">
-            <label>Rol</label>
+            <label for="new-user-role">Rol</label>
 
-            <select name="rol">
-              <option value="">Cliente (predeterminado)</option>
+            <select id="new-user-role" name="rol">
+              <option value="" <%= !values.rol ? 'selected' : '' %>>Cliente (predeterminado)</option>
 
               <% roles.forEach(rol => { %>
-                <option value="<%= rol._id %>">
+                <option value="<%= rol._id %>" <%= String(rol._id) === values.rol ? 'selected' : '' %>>
                   <%= rol.nombre %>
                 </option>
               <% }) %>
             </select>
-            <small>Asignar roles requiere el permiso roles:manage. SuperAdmin solo puede asignarlo otro SuperAdmin.</small>
+            <small>La cuenta conservará este rol después de verificar el correo. Solo SuperAdmin puede crear otro SuperAdmin.</small>
+          </div>
+        <% } else { %>
+          <div class="form-group">
+            <label for="new-user-role">Rol</label>
+            <select id="new-user-role" disabled><option>Cliente</option></select>
+            <small>Tu cuenta puede crear clientes. Para elegir otro rol necesitas el permiso de gestionar roles.</small>
           </div>
         <% } %>
         <!-- Teléfono -->
         <div class="form-group">
-          <label>Teléfono</label>
-          <input type="text" name="telefono" required>
+          <label for="new-user-phone">Teléfono</label>
+          <input id="new-user-phone" type="tel" name="telefono" value="<%= values.telefono %>" inputmode="numeric" pattern="[0-9]{7,15}" minlength="7" maxlength="15" autocomplete="tel" required>
+          <small>Entre 7 y 15 dígitos, sin espacios ni símbolos.</small>
         </div>
 
         <!-- Género -->
         <div class="form-group">
-          <label>Género</label>
-          <select name="genero">
+          <label for="new-user-gender">Género (opcional)</label>
+          <select id="new-user-gender" name="genero">
             <option value="">Seleccione...</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Femenino">Femenino</option>
-            <option value="Otro">Otro</option>
+            <% ['Masculino', 'Femenino', 'Otro'].forEach(genero => { %>
+              <option value="<%= genero %>" <%= values.genero === genero ? 'selected' : '' %>><%= genero %></option>
+            <% }) %>
           </select>
         </div>
 
         <!-- Dirección -->
         <div class="form-group full">
-          <label>Dirección</label>
-          <input type="text" name="direccion" required>
+          <label for="new-user-address">Dirección</label>
+          <input id="new-user-address" type="text" name="direccion" value="<%= values.direccion %>" maxlength="200" required>
         </div>
 
         <!-- Barrio -->
         <div class="form-group">
-          <label>Barrio</label>
-          <input type="text" name="barrio">
+          <label for="new-user-neighborhood">Barrio (opcional)</label>
+          <input id="new-user-neighborhood" type="text" name="barrio" value="<%= values.barrio %>" maxlength="120">
         </div>
 
         <!-- Ciudad -->
         <div class="form-group">
-          <label>Ciudad</label>
-          <input type="text" name="ciudad" value="Bogotá">
+          <label for="new-user-city">Ciudad (opcional)</label>
+          <input id="new-user-city" type="text" name="ciudad" value="<%= values.ciudad %>" maxlength="120" placeholder="Timbío">
         </div>
 
         <!-- Punto de referencia -->
         <div class="form-group full">
-          <label>Punto de referencia</label>
-          <input type="text" name="puntoReferencia">
+          <label for="new-user-reference">Punto de referencia (opcional)</label>
+          <input id="new-user-reference" type="text" name="puntoReferencia" value="<%= values.puntoReferencia %>" maxlength="200">
         </div>
 
         <!-- Estado -->
         <div class="form-group full">
-          <label>Estado</label>
-          <input type="text" name="estado" value="Activo" readonly>
+          <p>El acceso quedará pendiente hasta que la persona verifique su correo. Entrará con la contraseña inicial que le entregues.</p>
         </div>
 
       </div>

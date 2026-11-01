@@ -22,7 +22,7 @@ router.get('/', validate(schemas.optionalIdQuery, 'query'), userController.find)
 router.get('/:id', validate(schemas.idParams, 'params'), userController.find);
 
 // Crear usuario desde administración
-router.post('/', validate(schemas.user), userController.create);
+router.post('/', validate(schemas.userCreate), userController.create);
 
 // Actualizar usuario desde administración
 router.put('/:id', validate(schemas.idParams, 'params'), validate(schemas.user), userController.update);

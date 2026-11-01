@@ -3,6 +3,8 @@ const accounts = require('../business/accountService');
 const { permissionsForRole } = require('../middleware/auth');
 const { PERMISSIONS: P } = require('../config/permissions');
 const { DEFAULT_SESSION_MAX_AGE_MS, REMEMBERED_SESSION_MAX_AGE_MS } = require('../config/sessionPolicy');
+const { parse } = require('../business/errors');
+const schemas = require('../validation/schemas');
 
 // LOGIN
 
@@ -124,25 +126,29 @@ exports.logout = (req, res) => {
 // ======================= REGISTER =======================
 exports.register = async (req, res, next) => {
     try {
+        const body = parse(schemas.register, req.body);
         const data = {};
         for (const field of ['nombre', 'telefono', 'direccion', 'genero', 'barrio', 'ciudad', 'puntoReferencia']) {
-            if (typeof req.body[field] !== 'string' || !req.body[field].trim() || req.body[field].length > 200) {
-                return res.status(400).send('Completa los datos del formulario con texto válido.');
-            }
-            data[field] = req.body[field].trim();
+            if (body[field] !== undefined) data[field] = body[field];
         }
-        const email = accounts.normalizeEmail(req.body.email);
-        if (!email || !accounts.validPassword(req.body.password)) {
+        if (!data.ciudad) delete data.ciudad;
+        const email = accounts.normalizeEmail(body.email);
+        if (!email || !accounts.validPassword(body.password)) {
             return res
                 .status(400)
                 .send('Revisa el correo y usa una contraseña de al menos 12 caracteres y máximo 72 bytes.');
         }
         const target = '/verify-email?email=' + encodeURIComponent(email);
         // El registro repetido no reenvía códigos ni cambia la contraseña.
-        const registration = await accounts.register({ data, email, password: req.body.password });
+        const registration = await accounts.register({ data, email, password: body.password });
         if (registration.existing) return res.redirect(303, target);
         if (!registration.available) return res.status(503).send('El registro todavía no está disponible.');
-        await sendEmail(registration.email, registration.code);
+        try {
+            await sendEmail(registration.email, registration.code);
+        } catch {
+            console.error('No se pudo enviar el correo de verificación de la nueva cuenta.');
+            return res.redirect(303, target + '&delivery=failed');
+        }
         res.redirect(303, target);
     } catch (error) {
         if (error.code === 11000) return res.redirect(303, '/login');

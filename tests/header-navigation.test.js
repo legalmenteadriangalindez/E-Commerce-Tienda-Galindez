@@ -28,6 +28,7 @@ test('el menú de perfil ofrece autenticación cuando no hay sesión', () => {
     assert.match(html, /href="\/register"/);
     assert.doesNotMatch(html, /href="\/perfil"/);
     assert.doesNotMatch(html, /href="\/mis-pedidos"/);
+    assert.doesNotMatch(html, /href="\/change-password"/);
     assert.doesNotMatch(html, /Cerrar sesión/);
 });
 
@@ -36,6 +37,7 @@ test('el menú de perfil muestra las acciones de la cuenta autenticada', () => {
 
     assert.match(html, /href="\/perfil"/);
     assert.match(html, /href="\/mis-pedidos"/);
+    assert.match(html, /href="\/change-password"/);
     assert.match(html, /Cerrar sesión/);
     assert.doesNotMatch(html, /Crear cuenta/);
 });
