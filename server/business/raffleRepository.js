@@ -128,7 +128,7 @@ async function reserveEntryNumber(raffleId, session) {
     return Raffle.findOneAndUpdate(
         { _id: raffleId, estadoRonda: 'ACTIVA', activo: true, 'ganador.entrada': { $exists: false } },
         { $inc: { siguienteNumero: 1 } },
-        { new: true, ...(session ? { session } : {}) }
+        { returnDocument: 'after', ...(session ? { session } : {}) }
     );
 }
 

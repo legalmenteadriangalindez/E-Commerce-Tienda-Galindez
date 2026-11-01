@@ -65,7 +65,7 @@ async function queue(type, order, key, session) {
                     proximoIntento: new Date(),
                 },
             },
-            { upsert: true, new: true, session }
+            { upsert: true, returnDocument: 'after', session }
         );
     } catch (error) {
         if (error.code === 11000) return OrderEmailEvent.findOne({ clave: key }).session(session || null);
@@ -125,7 +125,7 @@ async function queueRaffleWinner(entry, raffle, session) {
                     proximoIntento: new Date(),
                 },
             },
-            { upsert: true, new: true, session }
+            { upsert: true, returnDocument: 'after', session }
         );
     } catch (error) {
         if (error.code === 11000) return OrderEmailEvent.findOne({ clave: key }).session(session || null);

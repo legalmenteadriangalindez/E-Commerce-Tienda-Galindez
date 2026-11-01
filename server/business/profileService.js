@@ -32,7 +32,7 @@ async function update(id, input) {
     const user = await User.findOneAndUpdate(
         { _id: validId(id, 'Usuario'), estado: 'Activo' },
         { $set: data },
-        { new: true, runValidators: true }
+        { returnDocument: 'after', runValidators: true }
     )
         .select(FIELDS)
         .populate('rol', 'nombre');

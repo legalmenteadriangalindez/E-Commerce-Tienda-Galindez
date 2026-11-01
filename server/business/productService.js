@@ -143,7 +143,7 @@ async function update(id, body, files = {}) {
         const updated = await Product.findOneAndUpdate(
             { _id: id, stock: stockOriginal, fotos: original },
             { $set: { ...fields, fotos } },
-            { new: true, runValidators: true }
+            { returnDocument: 'after', runValidators: true }
         );
         if (!updated)
             throw new BusinessError(

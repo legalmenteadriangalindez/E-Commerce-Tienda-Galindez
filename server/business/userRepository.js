@@ -42,13 +42,13 @@ function create(data) {
 }
 
 function updateById(id, update) {
-    return Userdb.findByIdAndUpdate(id, update, { new: true, runValidators: true })
+    return Userdb.findByIdAndUpdate(id, update, { returnDocument: 'after', runValidators: true })
         .select(rules.CAMPOS_USUARIO_ADMIN)
         .populate('rol', 'nombre');
 }
 
 function deactivate(id) {
-    return Userdb.findByIdAndUpdate(id, { $set: { estado: 'Inactivo' } }, { new: true });
+    return Userdb.findByIdAndUpdate(id, { $set: { estado: 'Inactivo' } }, { returnDocument: 'after' });
 }
 
 function search(filter) {

@@ -28,7 +28,7 @@ async function update(id, input) {
     const provider = await Provider.findByIdAndUpdate(
         validId(id, 'Proveedor'),
         { $set: data },
-        { new: true, runValidators: true }
+        { returnDocument: 'after', runValidators: true }
     );
     if (!provider) throw new BusinessError('Proveedor no encontrado.', 404);
     return provider;

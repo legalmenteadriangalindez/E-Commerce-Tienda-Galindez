@@ -45,7 +45,7 @@ async function verify(email, code) {
             verificationExpire: { $gt: new Date() },
         },
         { $set: { verified: true, verificationCode: null, verificationCodeHash: null, verificationExpire: null } },
-        { new: true }
+        { returnDocument: 'after' }
     );
     return user;
 }

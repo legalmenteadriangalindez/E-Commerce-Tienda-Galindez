@@ -123,7 +123,7 @@ async function update(id, input, actor) {
             },
         },
         {
-            new: true,
+            returnDocument: 'after',
             runValidators: true,
         }
     );

@@ -22,7 +22,7 @@ async function update(id, input) {
     const category = await Category.findByIdAndUpdate(
         validId(id, 'Categoría'),
         { $set: { nombre } },
-        { new: true, runValidators: true }
+        { returnDocument: 'after', runValidators: true }
     );
     if (!category) throw new BusinessError('Categoría no encontrada.', 404);
     cache.invalidate();
