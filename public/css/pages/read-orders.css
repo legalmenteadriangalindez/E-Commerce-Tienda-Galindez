@@ -1,1 +1,201 @@
-cat: public/css/pages/read-orders.css: No such file or directory
+/* Estilos de la lista de órdenes del panel administrativo. */
+.admin-orders-page .admin-list-heading {
+    align-items: center;
+    margin-bottom: 1.35rem;
+}
+
+.admin-orders-page .admin-list-heading h1 {
+    margin: 0;
+    color: var(--color-brand-dark);
+    font-size: clamp(1.55rem, 2vw, 2.05rem);
+    font-weight: 750;
+}
+
+.admin-orders-page .admin-list-description {
+    max-width: 720px;
+    margin-top: 0.45rem;
+}
+
+.admin-orders-page .admin-table-wrap {
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-soft);
+}
+
+.admin-orders-page .ui-table {
+    width: 100%;
+    min-width: 930px;
+    table-layout: auto;
+}
+
+.admin-orders-page .ui-table th,
+.admin-orders-page .ui-table td {
+    padding: 0.9rem 1rem;
+}
+
+.admin-orders-page .ui-table thead th {
+    background: var(--color-brand-dark);
+    color: var(--color-surface);
+    font-size: 0.75rem;
+    font-weight: 750;
+    letter-spacing: 0.045em;
+    white-space: nowrap;
+}
+
+.admin-orders-page .ui-table tbody td {
+    color: var(--color-text-strong);
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.admin-orders-page .ui-table tbody td[data-label="Orden"] {
+    color: var(--color-brand-dark);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.admin-orders-page .ui-table tbody td[data-label="Total"] {
+    color: var(--color-brand-dark);
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.admin-orders-page .ui-table tbody td[data-label="Medio de pago"] {
+    min-width: 145px;
+}
+
+.admin-orders-page .ui-table tbody tr:hover {
+    background: var(--color-surface-warm);
+}
+
+.admin-order-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0.3rem 0.65rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 750;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.admin-order-status--pending {
+    border-color: #ecd9a8;
+    background: #fff7e5;
+    color: #805910;
+}
+
+.admin-order-status--paid {
+    border-color: #cbe1d0;
+    background: #eff8f1;
+    color: #28613a;
+}
+
+.admin-order-status--shipped {
+    border-color: #c9dfed;
+    background: #edf6fb;
+    color: #285d7a;
+}
+
+.admin-order-status--delivered {
+    border-color: #d1d8ed;
+    background: #f0f2fa;
+    color: #4b5687;
+}
+
+.admin-order-status--cancelled {
+    border-color: #efcfca;
+    background: #fdf0ee;
+    color: #9b4037;
+}
+
+.admin-order-status--neutral {
+    border-color: var(--color-border);
+    background: var(--color-surface-warm);
+    color: var(--color-text-muted);
+}
+
+.admin-order-action {
+    display: inline-flex;
+    min-width: 78px;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.admin-order-action--edit {
+    border-color: #e8c5b8;
+    background: #fff4ef;
+    color: #8e3d26;
+}
+
+.admin-order-action--edit:hover {
+    border-color: var(--color-brand-accent);
+    background: var(--color-brand-accent);
+    color: var(--color-surface);
+}
+
+.admin-order-action--detail {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-brand-dark);
+}
+
+.admin-order-action--detail:hover {
+    border-color: var(--color-brand-dark);
+    background: var(--color-brand-dark);
+    color: var(--color-surface);
+}
+
+.admin-orders-page :focus-visible {
+    outline: 3px solid rgb(216 92 50 / 35%);
+    outline-offset: 3px;
+}
+
+@media (max-width: 1100px) {
+    .admin-orders-page .admin-table-wrap {
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .admin-orders-page .ui-table tbody td[data-label="Estado"] .admin-order-status {
+        justify-self: start;
+    }
+
+    .admin-orders-page .ui-table tbody td[data-label="Editar"] .admin-order-action,
+    .admin-orders-page .ui-table tbody td[data-label="Detalle"] .admin-order-action {
+        width: 100%;
+        min-height: 42px;
+    }
+}
+
+@media (max-width: 700px) {
+    .admin-orders-page .admin-list-heading {
+        margin-bottom: 1rem;
+    }
+
+    .admin-orders-page .ui-table tbody td[data-label="Fecha"] {
+        white-space: nowrap;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-order-action {
+        transition: none;
+    }
+}

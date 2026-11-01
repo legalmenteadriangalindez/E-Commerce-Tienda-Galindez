@@ -1,1 +1,84 @@
-cat: views/admin/orders/read_orders.ejs: No such file or directory
+<!-- include header -->
+<%- include('../../include/_headerAdmin') %>
+<!-- /include header -->
+
+<main class="admin-shell admin-list-page admin-orders-page">
+  <header class="admin-list-heading">
+    <div>
+      <p class="admin-list-eyebrow">Operación</p>
+      <h1>Gestionar órdenes</h1>
+      <p class="admin-list-description">Supervisa el estado de los pedidos y continúa su proceso de entrega.</p>
+    </div>
+  </header>
+
+  <div class="admin-table-wrap ui-table-wrap admin-mobile-card-wrap">
+    <table
+      class="ui-table admin-mobile-card-table admin-orders-card-table"
+      aria-label="Órdenes de la tienda"
+    >
+      <thead>
+        <tr>
+          <th scope="col" hidden>#</th>
+          <th scope="col">Orden</th>
+          <th scope="col">Usuario</th>
+          <th scope="col">Total</th>
+          <th scope="col">Medio de pago</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Fecha</th>
+          <th scope="col">Editar</th>
+          <th scope="col">Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(function(order) { %>
+          <tr>
+            <th scope="row" hidden><%= order._id %></th>
+            <td data-label="Orden"><strong><%= order.numeroOrden || '—' %></strong></td>
+            <td data-label="Usuario"><%= order.usuario?.nombre || 'Sin usuario' %></td>
+            <td data-label="Total"><strong>$ <%= Number(order.total || 0).toLocaleString('es-CO') %></strong></td>
+            <td data-label="Medio de pago">
+              <%= order.metodoPago === 'CASH_ON_DELIVERY'
+                ? 'Contra entrega'
+                : order.metodoPago === 'CASH_AT_COUNTER' || (order.canal === 'CAJA' && !order.metodoPago)
+                  ? 'Efectivo en caja'
+                  : order.metodoPago === 'WOMPI_NEQUI'
+                    ? 'Nequi · Wompi'
+                    : 'Tarjeta · Wompi' %>
+            </td>
+            <td data-label="Estado">
+              <% if (order.estado === 'PENDIENTE') { %>
+                <span class="admin-order-status admin-order-status--pending"><%= order.estado %></span>
+              <% } else if (order.estado === 'PAGADA') { %>
+                <span class="admin-order-status admin-order-status--paid"><%= order.estado %></span>
+              <% } else if (order.estado === 'ENVIADA') { %>
+                <span class="admin-order-status admin-order-status--shipped"><%= order.estado %></span>
+              <% } else if (order.estado === 'ENTREGADA') { %>
+                <span class="admin-order-status admin-order-status--delivered"><%= order.estado %></span>
+              <% } else if (order.estado === 'CANCELADA') { %>
+                <span class="admin-order-status admin-order-status--cancelled"><%= order.estado %></span>
+              <% } else { %>
+                <span class="admin-order-status admin-order-status--neutral"><%= order.estado || 'Sin estado' %></span>
+              <% } %>
+            </td>
+            <td data-label="Fecha"><%= new Date(order.createdAt).toLocaleDateString('es-CO') %></td>
+            <td data-label="Editar">
+              <a href="/update-order?id=<%= order._id %>" class="admin-order-action admin-order-action--edit">Editar</a>
+            </td>
+            <td data-label="Detalle">
+              <a href="/order/<%= order._id %>" class="admin-order-action admin-order-action--detail">Detalle</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if (!orders.length) { %>
+    <p class="admin-list-empty">No hay órdenes registradas.</p>
+  <% } %>
+  <%- include('../../include/_adminPagination', { pagination, label: 'órdenes' }) %>
+</main>
+
+<!-- include footer -->
+<%- include('../../include/_footerAdmin') %>
+<!-- /include footer -->
