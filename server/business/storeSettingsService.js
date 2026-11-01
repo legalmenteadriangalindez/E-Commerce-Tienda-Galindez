@@ -86,7 +86,7 @@ async function updateShippingPolicy(input = {}, actorId) {
             },
             $setOnInsert: { clave: SHIPPING_KEY },
         },
-        { upsert: true, new: true, returnDocument: 'after', setDefaultsOnInsert: true, runValidators: true }
+        { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true, runValidators: true }
     );
 
     if (!document) throw new StoreSettingsError('No se pudo guardar la configuración de envío.', 503);

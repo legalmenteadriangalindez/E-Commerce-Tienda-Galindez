@@ -31,7 +31,7 @@ async function incrementBucket(id, expiresAt) {
             },
             {
                 upsert: true,
-                new: true,
+                returnDocument: 'after',
                 setDefaultsOnInsert: false,
             }
         ).lean();
@@ -41,7 +41,7 @@ async function incrementBucket(id, expiresAt) {
             throw error;
         }
 
-        return RateLimitBucket.findByIdAndUpdate(id, { $inc: { hits: 1 } }, { new: true }).lean();
+        return RateLimitBucket.findByIdAndUpdate(id, { $inc: { hits: 1 } }, { returnDocument: 'after' }).lean();
     }
 }
 

@@ -64,7 +64,7 @@ async function enqueue(id) {
         return await PaymentEvent.findOneAndUpdate(
             { transactionId: id },
             { $setOnInsert: { transactionId: id } },
-            { upsert: true, new: true }
+            { upsert: true, returnDocument: 'after' }
         );
     } catch (error) {
         if (error.code === 11000) return PaymentEvent.findOne({ transactionId: id });

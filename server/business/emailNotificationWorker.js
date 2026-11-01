@@ -37,7 +37,7 @@ async function processPending(limit = 10) {
                 $or: [{ proximoIntento: { $exists: false } }, { proximoIntento: { $lte: now } }],
             },
             { $set: { estado: 'ENVIANDO', ultimoIntento: new Date() }, $inc: { intentos: 1 } },
-            { sort: { createdAt: 1 }, new: true, lean: true }
+            { sort: { createdAt: 1 }, returnDocument: 'after', lean: true }
         );
         if (!event) break;
 
