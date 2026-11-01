@@ -80,7 +80,7 @@ test(
                 body: new URLSearchParams({ _csrf: actor.csrfToken, ...body }),
             });
         const savedUser = (email) =>
-            User.findOne({ email }).select('+verificationCodeHash +resetPasswordHash +resetPasswordExpire');
+            User.findOne({ email }).select('+password +verificationCodeHash +resetPasswordHash +resetPasswordExpire');
         const mailFor = (email) => sent.findLast((mail) => mail.email === email);
 
         await t.test('formulario administrativo acepta Cliente predeterminado y campos opcionales vacíos', async () => {
@@ -340,13 +340,16 @@ test(
             }
             const anonymous = await fixture.actor('anonymous');
             assert.equal((await fixture.request(anonymous, '/change-password')).headers.get('location'), '/login');
-            assert.equal((await User.findById(fixture.users.owner._id)).password, 'hash-no-utilizable-en-pruebas');
+            assert.equal(
+                (await User.findById(fixture.users.owner._id).select('+password')).password,
+                'hash-no-utilizable-en-pruebas'
+            );
         });
 
         await t.test('el cambio de contraseña limita intentos por usuario y no por correo enviado', async () => {
             const actor = await fixture.actor('second');
             const password = 'Una contraseña personal nueva';
-            const before = await User.findById(fixture.users.second._id);
+            const before = await User.findById(fixture.users.second._id).select('+password');
             for (let index = 0; index < 10; index++) {
                 const response = await fixture.request(actor, '/change-password', 'POST', {
                     currentPassword: 'incorrecta',
@@ -363,7 +366,7 @@ test(
             });
             assert.equal(blocked.status, 429);
             assert.ok(Number(blocked.headers.get('retry-after')) > 0);
-            const after = await User.findById(fixture.users.second._id);
+            const after = await User.findById(fixture.users.second._id).select('+password');
             assert.equal(after.password, before.password);
             assert.equal(after.authVersion, before.authVersion);
         });
@@ -383,7 +386,7 @@ test(
             assert.equal(outcomes.filter((result) => result.status === 'fulfilled').length, 1);
             const failure = outcomes.find((result) => result.status === 'rejected');
             assert.ok([400, 409].includes(failure.reason.status));
-            const saved = await User.findById(id);
+            const saved = await User.findById(id).select('+password');
             assert.equal(saved.authVersion, 1);
             const winner =
                 outcomes[0].status === 'fulfilled' ? 'Primera contraseña diferente' : 'Segunda contraseña diferente';

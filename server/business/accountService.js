@@ -54,9 +54,7 @@ async function authenticate(email, password) {
     const normalized = normalizeEmail(email);
     if (!normalized || typeof password !== 'string' || Buffer.byteLength(password, 'utf8') > 72) return null;
 
-    const user = await User.findOne(emailFilter(normalized))
-        .select('+password')
-        .populate('rol', 'nombre permisos');
+    const user = await User.findOne(emailFilter(normalized)).select('+password').populate('rol', 'nombre permisos');
     if (!user || user.estado !== 'Activo' || !user.rol?.nombre) return null;
     return (await bcrypt.compare(password, user.password)) ? user : null;
 }
