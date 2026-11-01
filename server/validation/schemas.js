@@ -75,6 +75,13 @@ const role = passthrough({
     descripcion: optionalText(500),
     permisos: z.union([z.array(z.string().max(100)), z.string().max(2000)]).optional(),
 });
+const checkboxBoolean = z.preprocess((value) => {
+    if (value === undefined) return undefined;
+    const values = Array.isArray(value) ? value : [value];
+    if (values.some((item) => item === true || item === 'true' || item === 'on')) return true;
+    if (values.every((item) => item === false || item === 'false' || item === 'off')) return false;
+    return value;
+}, z.boolean().optional());
 const product = passthrough({
     nombre: optionalText(200),
     descripcion: optionalText(5000),
@@ -82,6 +89,7 @@ const product = passthrough({
     precioCosto: z.union([z.string(), z.number()]).optional(),
     stock: z.coerce.number().int().min(0).max(100000000).optional(),
     stockMinimo: z.coerce.number().int().min(0).max(100000000).optional(),
+    enPromocion: checkboxBoolean,
     motivoStockInicial: optionalText(500),
     categoria: z.union([objectId, z.literal('')]).optional(),
     marca: z.union([objectId, z.literal('')]).optional(),

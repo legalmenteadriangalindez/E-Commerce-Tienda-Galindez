@@ -28,6 +28,7 @@
         <th scope="col">Venta</th>
         <th scope="col">Stock</th>
         <th scope="col">Mínimo</th>
+        <th scope="col">Promoción</th>
         <th scope="col">Fecha Ingreso</th>
         <th scope="col">Editar</th>
         <th scope="col">Eliminar</th>
@@ -94,6 +95,8 @@
           </td>
 
           <td><%= Number(product.stockMinimo || 0) %></td>
+
+          <td><%= product.enPromocion ? 'Activa' : 'No' %></td>
 
           <td>
             <%= product.fechaIngreso

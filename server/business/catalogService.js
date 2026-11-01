@@ -3,7 +3,8 @@ const Product = require('../model/product');
 const Category = require('../model/categories');
 const Brand = require('../model/brands');
 
-const PUBLIC_FIELDS = 'nombre descripcion fotos marca categoria precioVenta precioVentaCents stock fechaIngreso';
+const PUBLIC_FIELDS =
+    'nombre descripcion fotos marca categoria precioVenta precioVentaCents stock enPromocion fechaIngreso';
 
 class CatalogError extends Error {
     constructor(message, status = 400) {
@@ -88,6 +89,7 @@ async function listPublic(options = {}) {
 
     if (category) filter.categoria = category._id;
     if (brand) filter.marca = brand._id;
+    if (options.promotionOnly === true) filter.enPromocion = true;
     if (search) Object.assign(filter, await buildSearchFilter(search));
     if (options.available === true || options.available === 'true') {
         filter.stock = { $gt: 0 };

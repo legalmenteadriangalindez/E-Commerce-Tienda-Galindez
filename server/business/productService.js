@@ -44,6 +44,7 @@ async function productFields(input, current = {}) {
     const stockMinimo = body.stockMinimo === undefined ? Number(current.stockMinimo || 0) : body.stockMinimo;
     if (!Number.isSafeInteger(stockMinimo) || stockMinimo < 0)
         throw new BusinessError('El stock mínimo debe ser un entero no negativo.');
+    const enPromocion = body.enPromocion === undefined ? Boolean(current.enPromocion) : body.enPromocion;
     const precioCostoCents =
         body.precioCosto === undefined
             ? money.readCents(current.precioCostoCents, current.precioCosto)
@@ -70,6 +71,7 @@ async function productFields(input, current = {}) {
         descripcion: body.descripcion ?? current.descripcion ?? '',
         stock,
         stockMinimo,
+        enPromocion,
         precioCostoCents,
         precioVentaCents,
         precioCosto: money.fromCents(precioCostoCents),

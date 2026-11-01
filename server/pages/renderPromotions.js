@@ -7,7 +7,8 @@ exports.promotions = async (req, res) => {
         const data = await catalog.listPublic({
             page: req.query.page,
             limit: catalogPagination.PRODUCTS_PER_PAGE,
-            stockMin: 20,
+            promotionOnly: true,
+            available: true,
         });
 
         return res.render('client/promotions/promotions', {
