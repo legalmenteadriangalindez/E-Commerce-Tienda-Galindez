@@ -113,6 +113,9 @@ const resources = {
     'admin/inventory/replenishment': {
         pageCss: css('admin-pagination.css', 'pages/inventory/replenishment.css'),
     },
+    'admin/inventory/movements': {
+        pageCss: css('admin-pagination.css', 'pages/inventory/movements.css'),
+    },
     'admin/analytics/profit_margins': { pageCss: css('profit_margins.css') },
     'admin/analytics/best_selling_products': { pageCss: css('best_selling_products.css') },
     'admin/orders/read_orders': {

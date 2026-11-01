@@ -1,132 +1,179 @@
 <%- include('../../include/_headerAdmin') %>
 
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+<main class="admin-shell admin-list-page im-page">
+    <header class="admin-list-heading im-heading">
         <div>
-            <h1>Historial de movimientos</h1>
-            <p class="text-muted mb-0">Consulta quién cambió el inventario, cuándo ocurrió y el motivo.</p>
+            <p class="admin-list-eyebrow">Control de inventario</p>
+            <h1><span class="im-heading__icon" aria-hidden="true"><i class="bi bi-clock-history"></i></span>Historial de movimientos</h1>
+            <p class="admin-list-description">Consulta quién cambió el inventario, cuándo ocurrió y el motivo registrado.</p>
         </div>
-        <a class="btn btn-outline-secondary" href="/read-stock">Volver a control de stock</a>
-    </div>
+
+        <nav class="im-actions" aria-label="Acciones de inventario">
+            <% if (can('inventory:read')) { %>
+                <a class="im-action im-action--secondary" href="/read-Stock">
+                    <i class="bi bi-box-seam" aria-hidden="true"></i>
+                    Control de stock
+                </a>
+            <% } %>
+            <% if (can('inventory:read') || can('catalog:write')) { %>
+                <a class="im-action im-action--primary" href="/inventory/replenishment">
+                    <i class="bi bi-basket2" aria-hidden="true"></i>
+                    Reposición guiada
+                </a>
+            <% } %>
+        </nav>
+    </header>
 
     <% if (notice) { %>
-        <div class="alert alert-success" role="status"><%= notice %></div>
+        <p class="im-notice" role="status"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><%= notice %></p>
     <% } %>
 
     <% if (can('catalog:write')) { %>
-        <section class="card shadow-sm mb-4">
-            <div class="card-body">
-                <h2 class="h4">Registrar movimiento manual</h2>
-                <p class="text-muted">Las entradas, daños y ajustes quedan vinculados a tu usuario. El motivo es obligatorio.</p>
-                <form action="/inventory/movements/adjust" method="post" class="row g-3">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                    <input type="hidden" name="claveIdempotencia" value="<%= idempotencyKey %>">
-                    <div class="col-lg-4 col-md-6">
-                        <label class="form-label" for="movement-product">Producto</label>
-                        <select class="form-select" id="movement-product" name="producto" required>
-                            <option value="">Selecciona un producto</option>
-                            <% productos.forEach(product => { %>
-                                <option value="<%= product._id %>" <%= filtros.producto === String(product._id) ? 'selected' : '' %>>
-                                    <%= product.nombre %> (stock: <%= product.stock %>)
-                                </option>
-                            <% }) %>
-                        </select>
-                    </div>
-                    <div class="col-lg-2 col-md-3">
-                        <label class="form-label" for="movement-type">Tipo</label>
-                        <select class="form-select" id="movement-type" name="tipo" required>
-                            <option value="ENTRADA">Entrada</option>
-                            <option value="DANO">Daño o pérdida</option>
-                            <option value="AJUSTE">Ajuste</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-2 col-md-3">
-                        <label class="form-label" for="movement-quantity">Cantidad</label>
-                        <input class="form-control" id="movement-quantity" type="number" name="cantidad" min="1" max="1000000" step="1" required>
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <label class="form-label" for="movement-direction">Dirección (solo para ajustes)</label>
-                        <select class="form-select" id="movement-direction" name="direccion">
-                            <option value="" selected>Selecciona</option>
-                            <option value="SUMAR">Suma stock</option>
-                            <option value="RESTAR">Resta stock</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-8 col-md-8">
-                        <label class="form-label" for="movement-reason">Motivo</label>
-                        <input class="form-control" id="movement-reason" type="text" name="motivo" maxlength="500" required placeholder="Ej.: ingreso de proveedor, producto averiado, conteo físico">
-                    </div>
-                    <div class="col-12">
-                        <button class="btn btn-primary" type="submit">Guardar movimiento</button>
-                    </div>
-                </form>
-            </div>
+        <section class="im-panel im-manual" aria-labelledby="im-manual-title">
+            <header class="im-panel__heading">
+                <span class="im-panel__icon" aria-hidden="true"><i class="bi bi-pencil-square"></i></span>
+                <div>
+                    <p class="admin-list-eyebrow">Ajuste manual</p>
+                    <h2 id="im-manual-title">Registrar movimiento</h2>
+                    <p>Entradas, daños y ajustes quedarán vinculados a tu usuario. Indica siempre el motivo.</p>
+                </div>
+            </header>
+
+            <form action="/inventory/movements/adjust" method="post" class="im-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="claveIdempotencia" value="<%= idempotencyKey %>">
+
+                <label class="im-field im-field--product" for="movement-product">
+                    <span>Producto</span>
+                    <select class="form-select" id="movement-product" name="producto" required>
+                        <option value="">Selecciona un producto</option>
+                        <% productos.forEach(product => { %>
+                            <option value="<%= product._id %>" <%= filtros.producto === String(product._id) ? 'selected' : '' %>>
+                                <%= product.nombre %> (stock: <%= product.stock %>)
+                            </option>
+                        <% }) %>
+                    </select>
+                </label>
+
+                <label class="im-field" for="movement-type">
+                    <span>Tipo</span>
+                    <select class="form-select" id="movement-type" name="tipo" required>
+                        <option value="ENTRADA">Entrada</option>
+                        <option value="DANO">Daño o pérdida</option>
+                        <option value="AJUSTE">Ajuste</option>
+                    </select>
+                </label>
+
+                <label class="im-field" for="movement-quantity">
+                    <span>Cantidad</span>
+                    <input class="form-control" id="movement-quantity" type="number" name="cantidad" min="1" max="1000000" step="1" required>
+                </label>
+
+                <label class="im-field im-field--direction" for="movement-direction">
+                    <span>Dirección <small>Solo para ajustes</small></span>
+                    <select class="form-select" id="movement-direction" name="direccion">
+                        <option value="" selected>Selecciona</option>
+                        <option value="SUMAR">Sumar stock</option>
+                        <option value="RESTAR">Restar stock</option>
+                    </select>
+                </label>
+
+                <label class="im-field im-field--reason" for="movement-reason">
+                    <span>Motivo</span>
+                    <input class="form-control" id="movement-reason" type="text" name="motivo" maxlength="500" required placeholder="Ej.: ingreso de proveedor, producto averiado o conteo físico">
+                </label>
+
+                <div class="im-form__actions">
+                    <button class="im-action im-action--primary" type="submit">
+                        <i class="bi bi-save" aria-hidden="true"></i>
+                        Guardar movimiento
+                    </button>
+                </div>
+            </form>
         </section>
     <% } %>
 
-    <section class="card shadow-sm">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
-                <h2 class="h4 mb-0">Movimientos registrados</h2>
-                <form action="/inventory/movements" method="get" class="d-flex flex-wrap gap-2">
-                    <select class="form-select" name="producto" aria-label="Filtrar por producto">
-                        <option value="">Todos los productos</option>
-                        <% productos.forEach(product => { %>
-                            <option value="<%= product._id %>" <%= filtros.producto === String(product._id) ? 'selected' : '' %>><%= product.nombre %></option>
-                        <% }) %>
-                    </select>
-                    <select class="form-select" name="tipo" aria-label="Filtrar por tipo">
-                        <option value="">Todos los tipos</option>
-                        <% Object.entries(labels).forEach(([key, label]) => { %>
-                            <option value="<%= key %>" <%= filtros.tipo === key ? 'selected' : '' %>><%= label %></option>
-                        <% }) %>
-                    </select>
-                    <button class="btn btn-outline-primary" type="submit">Filtrar</button>
-                    <a class="btn btn-outline-secondary" href="/inventory/movements">Limpiar</a>
-                </form>
+    <section class="im-panel im-history" aria-labelledby="im-history-title">
+        <header class="im-history__heading">
+            <div>
+                <p class="admin-list-eyebrow">Trazabilidad</p>
+                <h2 id="im-history-title">Movimientos registrados</h2>
+                <p>Entradas, ventas, reservas, liberaciones, devoluciones, daños y ajustes.</p>
             </div>
-
-            <% if (movimientos.length) { %>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>Fecha y hora</th>
-                                <th>Producto</th>
-                                <th>Movimiento</th>
-                                <th>Cantidad</th>
-                                <th>Stock</th>
-                                <th>Quién</th>
-                                <th>Motivo</th>
-                                <th>Pedido</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% movimientos.forEach(movement => { %>
-                                <tr>
-                                    <td><%= new Date(movement.createdAt).toLocaleString('es-CO', { timeZone: 'America/Bogota' }) %></td>
-                                    <td><%= movement.producto?.nombre || 'Producto eliminado' %></td>
-                                    <td><%= labels[movement.tipo] || movement.tipo %></td>
-                                    <td><%= movement.cantidad %></td>
-                                    <td>
-                                        <%= movement.stockAntes %> → <%= movement.stockDespues %>
-                                        <% if (movement.tipo === 'VENTA') { %><small class="d-block text-muted">Stock descontado al reservar</small><% } %>
-                                    </td>
-                                    <td><%= movement.actorNombre || movement.actor?.nombre || movement.actor?.email || 'Sistema' %></td>
-                                    <td><%= movement.motivo %></td>
-                                    <td><%= movement.pedido?.numeroOrden || '—' %></td>
-                                </tr>
-                            <% }) %>
-                        </tbody>
-                    </table>
-                </div>
-            <% } else { %>
-                <div class="alert alert-light border mb-0">Todavía no hay movimientos para estos filtros.</div>
+            <% if (pagination.totalItems > 0) { %>
+                <span class="im-count"><strong><%= pagination.totalItems %></strong> <%= pagination.totalItems === 1 ? 'registro' : 'registros' %></span>
             <% } %>
-        </div>
+        </header>
+
+        <form action="/inventory/movements" method="get" class="im-filters" aria-label="Filtrar movimientos">
+            <label class="visually-hidden" for="movement-filter-product">Filtrar por producto</label>
+            <select class="form-select" id="movement-filter-product" name="producto">
+                <option value="">Todos los productos</option>
+                <% productos.forEach(product => { %>
+                    <option value="<%= product._id %>" <%= filtros.producto === String(product._id) ? 'selected' : '' %>><%= product.nombre %></option>
+                <% }) %>
+            </select>
+
+            <label class="visually-hidden" for="movement-filter-type">Filtrar por tipo</label>
+            <select class="form-select" id="movement-filter-type" name="tipo">
+                <option value="">Todos los tipos</option>
+                <% Object.entries(labels).forEach(([key, label]) => { %>
+                    <option value="<%= key %>" <%= filtros.tipo === key ? 'selected' : '' %>><%= label %></option>
+                <% }) %>
+            </select>
+
+            <button class="im-action im-action--primary" type="submit">
+                <i class="bi bi-funnel" aria-hidden="true"></i>
+                Filtrar
+            </button>
+            <a class="im-action im-action--secondary" href="/inventory/movements">Limpiar</a>
+        </form>
+
+        <% if (movimientos.length) { %>
+            <div class="im-table-scroll" role="region" aria-label="Historial de movimientos de inventario" tabindex="0">
+                <table class="table im-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Fecha y hora</th>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Movimiento</th>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Cambio de stock</th>
+                            <th scope="col">Responsable</th>
+                            <th scope="col">Motivo</th>
+                            <th scope="col">Pedido</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% movimientos.forEach(movement => { %>
+                            <tr>
+                                <td data-label="Fecha y hora"><%= new Date(movement.createdAt).toLocaleString('es-CO', { timeZone: 'America/Bogota' }) %></td>
+                                <td data-label="Producto"><strong class="im-product-name"><%= movement.producto?.nombre || 'Producto eliminado' %></strong></td>
+                                <td data-label="Movimiento"><span class="im-type"><%= labels[movement.tipo] || movement.tipo %></span></td>
+                                <td data-label="Cantidad"><strong><%= movement.cantidad %></strong> <span class="im-unit">unidades</span></td>
+                                <td data-label="Cambio de stock">
+                                    <strong class="im-stock-change"><%= movement.stockAntes %><i class="bi bi-arrow-right" aria-hidden="true"></i><%= movement.stockDespues %></strong>
+                                    <% if (movement.tipo === 'VENTA') { %><small class="im-cell-note">Stock descontado al reservar</small><% } %>
+                                </td>
+                                <td data-label="Responsable"><%= movement.actorNombre || movement.actor?.nombre || movement.actor?.email || 'Sistema' %></td>
+                                <td class="im-reason" data-label="Motivo"><%= movement.motivo %></td>
+                                <td data-label="Pedido"><%= movement.pedido?.numeroOrden || '—' %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="im-empty admin-list-empty">
+                <span class="im-empty__icon" aria-hidden="true"><i class="bi bi-journal-x"></i></span>
+                <h3>No hay movimientos para mostrar</h3>
+                <p>Prueba otros filtros o registra un movimiento cuando cambie el stock.</p>
+                <a href="/inventory/movements">Ver todo el historial</a>
+            </div>
+        <% } %>
     </section>
 
     <%- include('../../include/_adminPagination', { pagination, label: 'movimientos de inventario' }) %>
-</div>
+</main>
 
 <%- include('../../include/_footerAdmin') %>
