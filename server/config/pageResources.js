@@ -110,6 +110,9 @@ const resources = {
     'admin/payment/manage': { pageCss: css('commerce.css', 'admin-pagination.css') },
     'admin/analytics/index': { pageCss: css('pages/analytics/dashboard.css', 'pages/analytics/responsive.css') },
     'admin/analytics/stock': { pageCss: css('pages/stock.css', 'admin-pagination.css') },
+    'admin/inventory/replenishment': {
+        pageCss: css('admin-pagination.css', 'pages/inventory/replenishment.css'),
+    },
     'admin/analytics/profit_margins': { pageCss: css('profit_margins.css') },
     'admin/analytics/best_selling_products': { pageCss: css('best_selling_products.css') },
     'admin/orders/read_orders': {
