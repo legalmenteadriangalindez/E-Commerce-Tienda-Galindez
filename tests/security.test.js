@@ -142,7 +142,12 @@ test(
                 (await fixture.request(nextActor, '/reset-password', 'POST', { token, password })).status,
                 400
             );
-            assert.ok(await bcrypt.compare(password, (await fixture.User.findById(fixture.users.owner._id)).password));
+            assert.ok(
+                await bcrypt.compare(
+                    password,
+                    (await fixture.User.findById(fixture.users.owner._id).select('+password')).password
+                )
+            );
         });
         await t.test('un cliente no puede confirmar pagos de caja ni ver el panel', async () => {
             const customer = await fixture.actor('second');
