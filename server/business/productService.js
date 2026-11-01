@@ -41,6 +41,9 @@ async function productFields(input, current = {}) {
     if (!nombre) throw new BusinessError('El nombre es obligatorio.');
     const stock = body.stock === undefined ? current.stock : body.stock;
     if (!Number.isSafeInteger(stock) || stock < 0) throw new BusinessError('El stock debe ser un entero no negativo.');
+    const stockMinimo = body.stockMinimo === undefined ? Number(current.stockMinimo || 0) : body.stockMinimo;
+    if (!Number.isSafeInteger(stockMinimo) || stockMinimo < 0)
+        throw new BusinessError('El stock mínimo debe ser un entero no negativo.');
     const precioCostoCents =
         body.precioCosto === undefined
             ? money.readCents(current.precioCostoCents, current.precioCosto)
@@ -66,6 +69,7 @@ async function productFields(input, current = {}) {
         nombre,
         descripcion: body.descripcion ?? current.descripcion ?? '',
         stock,
+        stockMinimo,
         precioCostoCents,
         precioVentaCents,
         precioCosto: money.fromCents(precioCostoCents),
@@ -220,15 +224,16 @@ async function search(value) {
 
 async function stockAlerts(query = {}) {
     const { page, limit } = pagination.requested(query, 10);
-    const filter = { stock: { $lte: 10 } };
+    const filter = { $expr: { $lte: [{ $ifNull: ['$stock', 0] }, { $ifNull: ['$stockMinimo', 0] }] } };
     const totalItems = await Product.countDocuments(filter);
     const metadata = pagination.metadata(page, limit, totalItems);
     const productos = await Product.aggregate([
         { $match: filter },
         {
             $addFields: {
-                prioridad: { $cond: [{ $lte: ['$stock', 3] }, 3, 2] },
-                estado: { $cond: [{ $lte: ['$stock', 3] }, 'CRITICO', 'BAJO'] },
+                stockMinimo: { $ifNull: ['$stockMinimo', 0] },
+                prioridad: { $cond: [{ $lte: ['$stock', 0] }, 3, 2] },
+                estado: { $cond: [{ $lte: ['$stock', 0] }, 'CRITICO', 'BAJO'] },
             },
         },
         { $sort: { prioridad: -1, stock: 1, nombre: 1, _id: 1 } },
@@ -242,6 +247,7 @@ async function stockAlerts(query = {}) {
                 id: '$_id',
                 nombre: 1,
                 stock: 1,
+                stockMinimo: 1,
                 categoria: { $ifNull: ['$category.nombre', 'Sin categoría'] },
                 estado: 1,
                 prioridad: 1,

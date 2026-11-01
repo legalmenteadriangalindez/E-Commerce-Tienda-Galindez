@@ -67,6 +67,7 @@ const provider = passthrough({
     telefono: optionalText(40),
     direccion: optionalText(200),
     descripcion: optionalText(500),
+    diasEntrega: z.coerce.number().int().min(0).max(365).optional(),
 });
 const brand = passthrough({ nombre: text(100).min(1) });
 const role = passthrough({
@@ -80,6 +81,7 @@ const product = passthrough({
     precioVenta: z.union([z.string(), z.number()]).optional(),
     precioCosto: z.union([z.string(), z.number()]).optional(),
     stock: z.coerce.number().int().min(0).max(100000000).optional(),
+    stockMinimo: z.coerce.number().int().min(0).max(100000000).optional(),
     motivoStockInicial: optionalText(500),
     categoria: z.union([objectId, z.literal('')]).optional(),
     marca: z.union([objectId, z.literal('')]).optional(),

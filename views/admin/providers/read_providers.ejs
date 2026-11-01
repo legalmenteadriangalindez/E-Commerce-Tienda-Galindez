@@ -20,6 +20,7 @@
         <th scope="col" hidden>#</th>
         <th scope="col">Nombre</th>
         <th scope="col">Teléfono</th>
+        <th scope="col">Entrega (días)</th>
         <th scope="col">Dirección</th>
         <th scope="col">Descripcion</th>
         <th scope="col">Editar</th>
@@ -32,6 +33,7 @@
         <th scope="row" hidden><%= provider._id %></th>
         <td><%= provider.nombre %></td>
         <td><%= provider.telefono %></td>
+        <td><%= Number.isInteger(provider.diasEntrega) ? provider.diasEntrega : 'Sin configurar' %></td>
         <td><%= provider.direccion %></td>
         <td><%= provider.descripcion %></td>
         <td>

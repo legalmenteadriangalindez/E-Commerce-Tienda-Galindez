@@ -45,15 +45,26 @@ router.post('/delete-marca/:id', requirePermission(P.CATALOG_WRITE), servicesRen
 
 // Proveedores
 router.get('/create-proveedor', requirePermission(P.PROVIDERS_MANAGE), servicesRenderProvider.create_provider_form);
-router.post('/create-proveedor', requirePermission(P.PROVIDERS_MANAGE), servicesRenderProvider.create_provider);
+router.post(
+    '/create-proveedor',
+    requirePermission(P.PROVIDERS_MANAGE),
+    csrfProtection.validateToken,
+    servicesRenderProvider.create_provider
+);
 router.get('/read-proveedor', requirePermission(P.PROVIDERS_MANAGE), servicesRenderProvider.read_providers);
 router.post('/read-proveedor', requirePermission(P.PROVIDERS_MANAGE), servicesRenderProvider.read_providers);
 router.get('/update-proveedor', requirePermission(P.PROVIDERS_MANAGE), servicesRenderProvider.edit_provider_form);
 router.post(
     '/update-proveedor/:id',
     requirePermission(P.PROVIDERS_MANAGE),
+    csrfProtection.validateToken,
     servicesRenderProvider.update_provider_data
 );
-router.post('/delete-proveedor/:id', requirePermission(P.PROVIDERS_MANAGE), servicesRenderProvider.delete_provider);
+router.post(
+    '/delete-proveedor/:id',
+    requirePermission(P.PROVIDERS_MANAGE),
+    csrfProtection.validateToken,
+    servicesRenderProvider.delete_provider
+);
 
 module.exports = router;

@@ -36,7 +36,7 @@
 
 <% const canAccess = typeof can === 'function' ? can : () => true; %>
 <% const adminHome = canAccess('payments:manage') ? '/billing-point' : canAccess('analytics:read') ? '/admin-analytics' : canAccess('catalog:read') ? '/read-producto' : canAccess('orders:read') ? '/read-order' : canAccess('payments:read') ? '/admin/payments' : canAccess('sales:read') ? '/read-sales' : canAccess('delivery:manage') ? '/admin/delivery' : canAccess('roles:manage') ? '/read-rol' : canAccess('users:manage') ? '/read-user' : '/'; %>
-<% const showManagement = ['payments:read', 'delivery:manage', 'catalog:read', 'providers:manage', 'roles:manage', 'reviews:moderate', 'users:manage'].some(canAccess); %>
+<% const showManagement = ['payments:read', 'delivery:manage', 'catalog:read', 'catalog:write', 'inventory:read', 'providers:manage', 'roles:manage', 'reviews:moderate', 'users:manage'].some(canAccess); %>
 <% const showAnalytics = ['analytics:read', 'orders:read', 'inventory:read', 'sales:read', 'raffle:manage'].some(canAccess); %>
 
 <header id="header">
@@ -64,6 +64,7 @@
             <% if (canAccess('payments:read')) { %><li><a class="dropdown-item" href="/admin/payments">Pagos y conciliación</a></li><% } %>
             <% if (canAccess('delivery:manage')) { %><li><a class="dropdown-item" href="/admin/delivery"><i class="bi bi-bicycle"></i> Reparto y seguimiento</a></li><% } %>
             <% if (canAccess('catalog:read')) { %><li><a class="dropdown-item" href="/read-producto"><i class="bi bi-box-seam"></i> Productos</a></li><% } %>
+            <% if (canAccess('inventory:read') || canAccess('catalog:write')) { %><li><a class="dropdown-item" href="/inventory/replenishment"><i class="bi bi-basket"></i> Reposición guiada</a></li><% } %>
             <% if (canAccess('catalog:read')) { %><li><a class="dropdown-item" href="/read-categoria"><i class="bi bi-tags"></i> Categorías</a></li><% } %>
             <% if (canAccess('catalog:read')) { %><li><a class="dropdown-item" href="/admin/brands/read-brands"><i class="bi bi-bookmark-star"></i> Marcas</a></li><% } %>
             <% if (canAccess('providers:manage')) { %><li><a class="dropdown-item" href="/read-proveedor"><i class="bi bi-truck"></i> Proveedores</a></li><% } %>
