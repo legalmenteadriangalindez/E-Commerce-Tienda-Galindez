@@ -76,9 +76,12 @@
 
         <div class="form-group full">
           <input type="hidden" name="enPromocion" value="false">
-          <label for="product-promotion" class="d-flex align-items-center gap-2">
-            <input id="product-promotion" class="form-check-input" type="checkbox" name="enPromocion" value="true" <%= producto.enPromocion ? 'checked' : '' %>>
-            Mostrar este producto en Promociones
+          <label for="product-promotion" class="promotion-toggle">
+            <input id="product-promotion" class="promotion-toggle__checkbox" type="checkbox" name="enPromocion" value="true" aria-describedby="promotion-help" <%= producto.enPromocion ? 'checked' : '' %>>
+            <span class="promotion-toggle__content">
+              <span class="promotion-toggle__title">Mostrar este producto en Promociones</span>
+              <small id="promotion-help" class="promotion-toggle__help">Aparecerá en la tienda mientras tenga existencias disponibles.</small>
+            </span>
           </label>
         </div>
 

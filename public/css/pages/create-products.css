@@ -108,7 +108,7 @@ body {
    INPUTS
    ========================================================= */
 
-.form-group input,
+.form-group input:not([type='checkbox']):not([type='hidden']),
 .form-group textarea,
 .form-group select {
     width: 100%;
@@ -134,7 +134,7 @@ body {
    INPUT FOCUS
    ========================================================= */
 
-.form-group input:focus,
+.form-group input:not([type='checkbox']):not([type='hidden']):focus,
 .form-group textarea:focus,
 .form-group select:focus {
     border-color: var(--color-brand-accent);
