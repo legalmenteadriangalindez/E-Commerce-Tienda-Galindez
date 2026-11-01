@@ -1,89 +1,252 @@
 <%- include('../../include/_headerAdmin') %>
-<main class="admin-shell commerce-panel admin-list-page">
-  <header class="admin-list-heading">
+<%
+  const paymentStateClass = {
+    PENDIENTE: 'pending',
+    PAGADO: 'success',
+    RECHAZADO: 'danger',
+    REEMBOLSADO: 'muted',
+  };
+  const orderStateClass = {
+    PENDIENTE: 'pending',
+    PAGADA: 'success',
+    PREPARANDO: 'info',
+    ENVIADA: 'info',
+    ENTREGADA: 'success',
+    CANCELADA: 'muted',
+    REQUIERE_REVISION: 'danger',
+  };
+  const inventoryStateClass = {
+    RESERVADO: 'info',
+    CONFIRMADO: 'success',
+    LIBERADO: 'muted',
+    REVISION: 'warning',
+  };
+%>
+
+<main class="admin-shell admin-list-page admin-payments">
+  <header class="admin-list-heading ap-heading">
     <div>
       <p class="admin-list-eyebrow">Operación financiera</p>
       <h1>Pagos y conciliación</h1>
       <p class="admin-list-description">Confirma los pagos recibidos en caja y revisa las respuestas de Wompi.</p>
     </div>
+    <% if (can('payments:manage')) { %>
+      <a class="ap-button ap-button--secondary" href="/billing-point">
+        <i class="bi bi-cash-coin" aria-hidden="true"></i>
+        Abrir punto de pago
+      </a>
+    <% } %>
   </header>
-  <% if (notice) { %><p class="commerce-notice" role="status"><%= notice %></p><% } %>
-  <section class="commerce-card">
-    <h2>Consultar una transacción</h2>
-    <form action="/admin/payments/reconcile" method="post">
-      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-      <label>ID de transacción de Wompi <input name="transactionId" required maxlength="150" pattern="[a-zA-Z0-9_-]+"></label>
-      <button type="submit">Consultar y conciliar</button>
-    </form>
-    <p>Esta consulta no cobra ni devuelve dinero. Las devoluciones se gestionan en Wompi y requieren revisión de inventario.</p>
-  </section>
-  <% if (events.length) { %>
-  <section class="commerce-card">
-    <h2>Pagos pendientes e incidencias</h2>
-    <% events.forEach(event => { %>
-      <p><strong><%= event.transactionId %></strong> · <%= event.status || 'POR CONSULTAR' %> · <%= event.detalle || 'Pendiente de verificación' %></p>
-      <% if (event.canResolve) { %>
-      <details><summary>Registrar resolución externa de esta incidencia</summary>
-        <form action="/admin/payments/events/<%= event._id %>/resolve" method="post">
-          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <label>Resolución<input name="motivo" required minlength="10" maxlength="500"></label>
-          <label>Referencia del comprobante<input name="comprobante" required maxlength="150"></label>
-          <label><input type="checkbox" name="confirmar" value="si" required> Verifiqué y resolví la incidencia con el proveedor.</label>
-          <button type="submit">Guardar resolución</button>
-        </form>
-      </details><% } %>
-    <% }) %>
-  </section><% } %>
-  <h2>Pedidos recientes</h2>
-  <% orders.forEach(order => { %>
-    <article class="commerce-card">
-      <h3><a href="/order/<%= order._id %>"><%= order.numeroOrden %></a></h3>
-      <p><%= order.cliente.nombre %> · $<%= order.total.toLocaleString('es-CO') %> COP · <%= order.canal || 'ANTERIOR A ESTA VERSIÓN' %></p>
-      <p>Medio: <strong><%= order.paymentMethodLabel %></strong> · Pago: <strong><%= order.estadoPago %></strong> · Pedido: <%= order.estado %> · Inventario: <%= order.inventario || 'REVISAR HISTORIAL' %></p>
-      <% if (order.metodoPagoConfirmado) { %><p>Wompi reportó el método: <strong><%= order.metodoPagoConfirmado %></strong></p><% } %>
-      <p>Repartidor: <strong><%= order.repartidor?.nombre || 'Sin asignar' %></strong></p>
-      <% if (order.incidenciaPago) { %><p class="commerce-notice"><%= order.incidenciaPago %></p><% } %>
-      <% if (order.canConfirmCash) { %>
-        <form action="/admin/payments/<%= order._id %>/confirm-cash" method="post">
-          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <label><input type="checkbox" name="confirmar" value="si" required> Confirmé el efectivo correspondiente a este pedido.</label>
-          <button type="submit"><%= order.confirmCashLabel %></button>
-        </form>
-      <% } %>
-      <% if (order.canCancelOrder) { %>
-        <form action="/admin/payments/<%= order._id %>/cancel" method="post">
-          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <button type="submit"><%= order.cancelOrderLabel %></button>
-        </form>
-      <% } %>
-      <a href="/update-order?id=<%= order._id %>">Gestionar entrega</a>
-      <% if (order.canManageDelivery) { %>
-        · <a href="/admin/delivery">Asignar o revisar reparto</a>
-      <% } %>
-      <% if (order.canResolvePayment) { %>
-        <details><summary>Disponibilidad o devolución ya realizada</summary>
-          <p>Registrar una devolución no mueve dinero. Primero debes efectuarla y comprobarla en Wompi o en caja. Solo admite devolución total.</p>
-          <form action="/admin/payments/<%= order._id %>/resolve" method="post">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <label>Acción<select name="accion" required>
-              <option value="">Selecciona una acción</option>
-              <% if (order.canReserveAgain) { %><option value="RESERVAR">Confirmar existencias y reservar de nuevo</option><% } %>
-              <option value="DEVOLUCION">Registrar devolución total ya realizada</option>
-            </select></label>
-            <label>Motivo<input name="motivo" required minlength="10" maxlength="500"></label>
-            <label>Referencia del comprobante<input name="comprobante" required maxlength="150"></label>
-            <label><input type="checkbox" name="reponer" value="si"> Al registrar la devolución, reponer todas las unidades: están en tienda y aptas para vender.</label>
-            <label><input type="checkbox" name="confirmar" value="si" required> Comprobé el pago, la acción y el inventario.</label>
-            <button type="submit">Registrar revisión</button>
-          </form>
-        </details>
-      <% } %>
-      <% if (order.revisionPago?.fecha) { %><p>Última revisión: <%= order.revisionPago.accion %> · <%= order.revisionPago.motivo %> · Comprobante: <%= order.revisionPago.comprobante %></p><% } %>
-    </article>
-  <% }) %>
-  <% if (!orders.length) { %>
-    <p class="admin-list-empty">No hay pedidos para mostrar.</p>
+
+  <% if (notice) { %>
+    <p class="ap-notice" role="status"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><%= notice %></p>
   <% } %>
-  <%- include('../../include/_adminPagination', { pagination, label: 'pedidos' }) %>
+
+  <section class="ap-panel ap-reconcile" aria-labelledby="ap-reconcile-title">
+    <header class="ap-panel__heading">
+      <span class="ap-icon" aria-hidden="true"><i class="bi bi-arrow-repeat"></i></span>
+      <div>
+        <p class="admin-list-eyebrow">Consulta segura</p>
+        <h2 id="ap-reconcile-title">Consultar una transacción</h2>
+        <p>Busca su estado actual en Wompi y concilia el resultado con el pedido.</p>
+      </div>
+    </header>
+
+    <form action="/admin/payments/reconcile" method="post" class="ap-reconcile__form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label class="ap-field" for="wompi-transaction-id">
+        <span>ID de transacción de Wompi</span>
+        <input id="wompi-transaction-id" name="transactionId" required maxlength="150" pattern="[a-zA-Z0-9_-]+" placeholder="Ej.: 123abc_456">
+      </label>
+      <button class="ap-button ap-button--primary" type="submit">
+        <i class="bi bi-search" aria-hidden="true"></i>
+        Consultar y conciliar
+      </button>
+    </form>
+    <p class="ap-helper"><i class="bi bi-info-circle" aria-hidden="true"></i> La consulta no cobra ni devuelve dinero. Las devoluciones se gestionan en Wompi y requieren revisar el inventario.</p>
+  </section>
+
+  <% if (events.length) { %>
+    <section class="ap-panel ap-incidents" aria-labelledby="ap-incidents-title">
+      <header class="ap-section-heading">
+        <div>
+          <p class="admin-list-eyebrow">Revisión requerida</p>
+          <h2 id="ap-incidents-title">Pagos pendientes e incidencias</h2>
+        </div>
+        <span class="ap-count"><strong><%= events.length %></strong> <%= events.length === 1 ? 'incidencia' : 'incidencias' %></span>
+      </header>
+
+      <div class="ap-incident-list">
+        <% events.forEach(event => { %>
+          <article class="ap-incident">
+            <header class="ap-incident__heading">
+              <div>
+                <span class="ap-overline">Transacción</span>
+                <strong class="ap-transaction-id"><%= event.transactionId %></strong>
+              </div>
+              <span class="ap-state ap-state--warning"><%= event.status || 'POR CONSULTAR' %></span>
+            </header>
+            <p><%= event.detalle || 'Pendiente de verificación' %></p>
+            <% if (event.canResolve) { %>
+              <details class="ap-details">
+                <summary>Registrar resolución externa</summary>
+                <form action="/admin/payments/events/<%= event._id %>/resolve" method="post" class="ap-form ap-form--stack">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <label class="ap-field" for="event-resolution-<%= event._id %>">
+                    <span>Resolución</span>
+                    <input id="event-resolution-<%= event._id %>" name="motivo" required minlength="10" maxlength="500">
+                  </label>
+                  <label class="ap-field" for="event-proof-<%= event._id %>">
+                    <span>Referencia del comprobante</span>
+                    <input id="event-proof-<%= event._id %>" name="comprobante" required maxlength="150">
+                  </label>
+                  <label class="ap-check">
+                    <input type="checkbox" name="confirmar" value="si" required>
+                    <span>Verifiqué y resolví la incidencia con el proveedor.</span>
+                  </label>
+                  <button class="ap-button ap-button--primary" type="submit">Guardar resolución</button>
+                </form>
+              </details>
+            <% } %>
+          </article>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+
+  <section class="ap-orders" aria-labelledby="ap-orders-title">
+    <header class="ap-section-heading ap-orders__heading">
+      <div>
+        <p class="admin-list-eyebrow">Seguimiento de pedidos</p>
+        <h2 id="ap-orders-title">Pedidos recientes</h2>
+        <p>Consulta el pago, el estado de entrega y las acciones disponibles para cada pedido.</p>
+      </div>
+      <% if (pagination.totalItems > 0) { %>
+        <span class="ap-count"><strong><%= pagination.totalItems %></strong> <%= pagination.totalItems === 1 ? 'pedido' : 'pedidos' %></span>
+      <% } %>
+    </header>
+
+    <% if (orders.length) { %>
+      <div class="ap-order-list">
+        <% orders.forEach(order => { %>
+          <article class="ap-order-card">
+            <header class="ap-order-card__heading">
+              <div>
+                <span class="ap-overline">Pedido</span>
+                <h3><a href="/order/<%= order._id %>"><%= order.numeroOrden %></a></h3>
+              </div>
+              <div class="ap-total">
+                <span>Total</span>
+                <strong>$<%= order.total.toLocaleString('es-CO') %> <small>COP</small></strong>
+              </div>
+            </header>
+
+            <div class="ap-order-facts">
+              <div><span>Cliente</span><strong><%= order.cliente.nombre %></strong></div>
+              <div><span>Medio de pago</span><strong><%= order.paymentMethodLabel %></strong></div>
+              <div><span>Canal</span><strong><%= order.canal || 'Anterior a esta versión' %></strong></div>
+              <div><span>Inventario</span><strong><%= order.inventario || 'Revisar historial' %></strong></div>
+              <div><span>Repartidor</span><strong><%= order.repartidor?.nombre || 'Sin asignar' %></strong></div>
+              <% if (order.metodoPagoConfirmado) { %>
+                <div><span>Método reportado por Wompi</span><strong><%= order.metodoPagoConfirmado %></strong></div>
+              <% } %>
+            </div>
+
+            <div class="ap-order-states" aria-label="Estados del pedido">
+              <span class="ap-state ap-state--<%= paymentStateClass[order.estadoPago] || 'neutral' %>">Pago: <%= order.estadoPago %></span>
+              <span class="ap-state ap-state--<%= orderStateClass[order.estado] || 'neutral' %>">Pedido: <%= order.estado %></span>
+              <span class="ap-state ap-state--<%= inventoryStateClass[order.inventario] || 'neutral' %>">Inventario: <%= order.inventario || 'Sin dato' %></span>
+            </div>
+
+            <% if (order.incidenciaPago) { %>
+              <p class="ap-order-alert"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i><%= order.incidenciaPago %></p>
+            <% } %>
+
+            <% if (order.canConfirmCash || order.canCancelOrder || order.canResolvePayment) { %>
+              <div class="ap-order-actions">
+                <% if (order.canConfirmCash) { %>
+                  <form action="/admin/payments/<%= order._id %>/confirm-cash" method="post" class="ap-action-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <label class="ap-check">
+                      <input type="checkbox" name="confirmar" value="si" required>
+                      <span>Confirmé el efectivo correspondiente a este pedido.</span>
+                    </label>
+                    <button class="ap-button ap-button--primary" type="submit"><%= order.confirmCashLabel %></button>
+                  </form>
+                <% } %>
+
+                <% if (order.canCancelOrder) { %>
+                  <form action="/admin/payments/<%= order._id %>/cancel" method="post" class="ap-action-form ap-action-form--compact">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="ap-button ap-button--danger" type="submit"><%= order.cancelOrderLabel %></button>
+                  </form>
+                <% } %>
+
+                <% if (order.canResolvePayment) { %>
+                  <details class="ap-details ap-details--wide">
+                    <summary>Disponibilidad o devolución ya realizada</summary>
+                    <p>Registrar una devolución no mueve dinero. Primero debes efectuarla y comprobarla en Wompi o en caja. Solo admite devolución total.</p>
+                    <form action="/admin/payments/<%= order._id %>/resolve" method="post" class="ap-form ap-form--stack">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <label class="ap-field" for="order-resolution-action-<%= order._id %>">
+                        <span>Acción</span>
+                        <select id="order-resolution-action-<%= order._id %>" name="accion" required>
+                          <option value="">Selecciona una acción</option>
+                          <% if (order.canReserveAgain) { %><option value="RESERVAR">Confirmar existencias y reservar de nuevo</option><% } %>
+                          <option value="DEVOLUCION">Registrar devolución total ya realizada</option>
+                        </select>
+                      </label>
+                      <label class="ap-field" for="order-resolution-reason-<%= order._id %>">
+                        <span>Motivo</span>
+                        <input id="order-resolution-reason-<%= order._id %>" name="motivo" required minlength="10" maxlength="500">
+                      </label>
+                      <label class="ap-field" for="order-resolution-proof-<%= order._id %>">
+                        <span>Referencia del comprobante</span>
+                        <input id="order-resolution-proof-<%= order._id %>" name="comprobante" required maxlength="150">
+                      </label>
+                      <label class="ap-check">
+                        <input type="checkbox" name="reponer" value="si">
+                        <span>Al registrar la devolución, reponer las unidades: están en tienda y aptas para vender.</span>
+                      </label>
+                      <label class="ap-check">
+                        <input type="checkbox" name="confirmar" value="si" required>
+                        <span>Comprobé el pago, la acción y el inventario.</span>
+                      </label>
+                      <button class="ap-button ap-button--primary" type="submit">Registrar revisión</button>
+                    </form>
+                  </details>
+                <% } %>
+              </div>
+            <% } %>
+
+            <footer class="ap-order-links">
+              <a href="/update-order?id=<%= order._id %>"><i class="bi bi-truck" aria-hidden="true"></i>Gestionar entrega</a>
+              <% if (order.canManageDelivery) { %>
+                <a href="/admin/delivery"><i class="bi bi-geo-alt" aria-hidden="true"></i>Asignar o revisar reparto</a>
+              <% } %>
+            </footer>
+
+            <% if (order.revisionPago?.fecha) { %>
+              <div class="ap-review-history">
+                <strong>Última revisión</strong>
+                <span><%= order.revisionPago.accion %></span>
+                <span><%= order.revisionPago.motivo %></span>
+                <span>Comprobante: <%= order.revisionPago.comprobante %></span>
+              </div>
+            <% } %>
+          </article>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="admin-list-empty ap-empty">
+        <span class="ap-empty__icon" aria-hidden="true"><i class="bi bi-receipt"></i></span>
+        <h3>No hay pedidos para mostrar</h3>
+        <p>Cuando se registren pedidos, aquí podrás revisar su estado de pago y conciliación.</p>
+      </div>
+    <% } %>
+
+    <%- include('../../include/_adminPagination', { pagination, label: 'pedidos' }) %>
+  </section>
 </main>
+
 <%- include('../../include/_footerAdmin') %>
