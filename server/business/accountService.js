@@ -54,7 +54,9 @@ async function authenticate(email, password) {
     const normalized = normalizeEmail(email);
     if (!normalized || typeof password !== 'string' || Buffer.byteLength(password, 'utf8') > 72) return null;
 
-    const user = await User.findOne(emailFilter(normalized)).populate('rol', 'nombre permisos');
+    const user = await User.findOne(emailFilter(normalized))
+        .select('+password')
+        .populate('rol', 'nombre permisos');
     if (!user || user.estado !== 'Activo' || !user.rol?.nombre) return null;
     return (await bcrypt.compare(password, user.password)) ? user : null;
 }
@@ -135,7 +137,9 @@ async function changePassword(id, input) {
         throw new BusinessError('Usa una contraseña de al menos 12 caracteres y máximo 72 bytes.');
     }
     if (password !== confirmPassword) throw new BusinessError('Las contraseñas nuevas no coinciden.');
-    const user = await User.findOne({ _id: validId(id, 'Usuario'), estado: 'Activo', verified: true });
+    const user = await User.findOne({ _id: validId(id, 'Usuario'), estado: 'Activo', verified: true }).select(
+        '+password'
+    );
     if (!user || !(await bcrypt.compare(currentPassword, user.password))) {
         throw new BusinessError('La contraseña actual no es correcta.');
     }

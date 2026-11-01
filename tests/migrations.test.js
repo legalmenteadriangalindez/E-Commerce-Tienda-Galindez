@@ -25,6 +25,7 @@ const models = [
     require('../server/model/raffleEntry'),
     require('../server/model/rateLimitBucket'),
     require('../server/model/orderEmailEvent'),
+    require('../server/model/storeSetting'),
 ];
 
 function fakeDb() {
