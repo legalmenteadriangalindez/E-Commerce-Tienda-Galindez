@@ -3,13 +3,17 @@
 <!-- /include header -->
 
 
-<main>
-<div>
-<h1>Detalles de la venta</h1>
-<p>Las ventas confirmadas se conservan como comprobante. Consulta los pedidos para gestionar su estado.</p>
-<a href="/read-sales" class="btn btn-secondary">Volver a ventas</a>
-</div>
-  <table class="table">
+<main class="admin-shell admin-sales-detail-page">
+<header class="admin-list-heading">
+  <div>
+    <p class="admin-list-eyebrow">Ventas</p>
+    <h1>Detalles de la venta</h1>
+    <p class="admin-list-description">Las ventas confirmadas se conservan como comprobante. Consulta los pedidos para gestionar su estado.</p>
+  </div>
+  <a href="/read-sales" class="btn btn-secondary">Volver a ventas</a>
+</header>
+  <div class="table-responsive ui-table-wrap admin-sales-detail-table">
+  <table class="table ui-table">
     <thead>
       <tr>
         <th scope="col" hidden>#</th>
@@ -46,6 +50,7 @@
       <% }); %>
     </tbody>
   </table>
+  </div>
 
 </main>
 

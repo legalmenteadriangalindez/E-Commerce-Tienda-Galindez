@@ -30,9 +30,10 @@
         const headerPageJs = [...new Set((Array.isArray(pageJsValues) ? pageJsValues : []).filter(value => validPageResource(value, '/js/')))];
     %>
     <% headerPageCss.forEach(href => { %><link rel="stylesheet" href="<%= href %>"><% }) %>
+    <link rel="stylesheet" href="/css/components/admin-ui.css">
     <% headerPageJs.forEach(src => { %><script nonce="<%= cspNonce %>" defer src="<%= src %>"></script><% }) %>
 </head>
-<body>
+<body class="admin-app">
 
 <% const canAccess = typeof can === 'function' ? can : () => true; %>
 <% const adminHome = canAccess('payments:manage') ? '/billing-point' : canAccess('analytics:read') ? '/admin-analytics' : canAccess('catalog:read') ? '/read-producto' : canAccess('orders:read') ? '/read-order' : canAccess('payments:read') ? '/admin/payments' : canAccess('sales:read') ? '/read-sales' : canAccess('delivery:manage') ? '/admin/delivery' : canAccess('roles:manage') ? '/read-rol' : canAccess('users:manage') ? '/read-user' : '/'; %>

@@ -1,255 +1,75 @@
-/* =========================================================
-   READ DETAILS SALES
-   GESTIÓN DE DETALLES DE VENTAS
-   TIENDA GALINDEZ
-   ========================================================= */
+/* Detalle de ventas, con el mismo contenedor y tabla del panel administrativo. */
+.admin-sales-detail-page {
+    min-width: 0;
+    padding: 0;
+}
 
-/* =========================================================
-   CONTENEDOR PRINCIPAL
-   ========================================================= */
+.admin-sales-detail-table {
+    max-width: 100%;
+    overflow-x: auto;
+}
 
-main {
+.admin-sales-detail-table .ui-table {
     width: 100%;
-    padding: 30px;
-    box-sizing: border-box;
-}
-
-/* =========================================================
-   TÍTULO
-   ========================================================= */
-
-main > div:first-child {
-    margin-bottom: 25px;
-}
-
-main > div:first-child h1 {
+    min-width: 800px;
     margin: 0;
-    color: var(--color-brand-dark);
-    font-size: 28px;
-    font-weight: 700;
-}
-
-/* =========================================================
-   TABLA
-   ========================================================= */
-
-main .table {
-    width: 100%;
-    margin-bottom: 0;
-    background-color: var(--color-surface);
     border-collapse: collapse;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
+    background: var(--color-surface);
 }
 
-/* =========================================================
-   ENCABEZADO
-   ========================================================= */
-
-main .table thead {
-    background-color: var(--color-brand-dark);
+.admin-sales-detail-table .ui-table thead th {
+    padding: 0.9rem 0.8rem;
+    border-bottom: 0;
+    background: var(--color-brand-dark);
     color: var(--color-surface);
-}
-
-main .table thead th {
-    padding: 14px 12px;
-    border: none;
-    font-size: 14px;
-    font-weight: 700;
-    text-align: center;
+    font-size: 0.76rem;
+    font-weight: 750;
+    text-align: left;
     vertical-align: middle;
     white-space: nowrap;
 }
 
-/* =========================================================
-   CUERPO
-   ========================================================= */
-
-main .table tbody td,
-main .table tbody th {
-    padding: 13px 12px;
-    border-top: 1px solid #eee5df;
+.admin-sales-detail-table .ui-table tbody td,
+.admin-sales-detail-table .ui-table tbody th {
+    padding: 0.85rem 0.8rem;
+    border-bottom: 1px solid var(--color-border-light);
+    color: var(--color-text-strong);
+    font-size: 0.88rem;
     vertical-align: middle;
-    font-size: 14px;
 }
 
-/* =========================================================
-   FILAS
-   ========================================================= */
-
-main .table tbody tr {
-    transition: background-color 0.2s ease;
+.admin-sales-detail-table .ui-table tbody tr:hover {
+    background: var(--color-surface-warm);
 }
 
-main .table tbody tr:hover {
-    background-color: #faf6f2;
-}
-
-/* =========================================================
-   VENTA
-   ========================================================= */
-
-main .table tbody td:nth-child(2) {
+.admin-sales-detail-table .ui-table tbody td:nth-child(2) {
     color: var(--color-text-muted);
-    font-size: 13px;
+    font-size: 0.82rem;
 }
 
-/* =========================================================
-   CLIENTE
-   ========================================================= */
-
-main .table tbody td:nth-child(3) {
-    font-weight: 600;
+.admin-sales-detail-table .ui-table tbody td:nth-child(3),
+.admin-sales-detail-table .ui-table tbody td:nth-child(4) {
     color: var(--color-brand-dark);
+    font-weight: 650;
 }
 
-/* =========================================================
-   PRODUCTO
-   ========================================================= */
-
-main .table tbody td:nth-child(4) {
-    font-weight: 600;
-}
-
-/* =========================================================
-   CANTIDAD
-   ========================================================= */
-
-main .table tbody td:nth-child(5) {
+.admin-sales-detail-table .ui-table tbody td:nth-child(5) {
     text-align: center;
     font-weight: 700;
 }
 
-/* =========================================================
-   PRECIO UNITARIO
-   ========================================================= */
-
-main .table tbody td:nth-child(6) {
-    color: #555;
+.admin-sales-detail-table .ui-table tbody td:nth-child(6),
+.admin-sales-detail-table .ui-table tbody td:nth-child(7) {
     white-space: nowrap;
 }
 
-/* =========================================================
-   TOTAL
-   ========================================================= */
-
-main .table tbody td:nth-child(7) {
+.admin-sales-detail-table .ui-table tbody td:nth-child(7) {
     color: var(--color-success);
-    font-weight: 700;
-    white-space: nowrap;
+    font-weight: 750;
 }
 
-/* =========================================================
-   BOTONES
-   ========================================================= */
-
-main .table .btn {
-    display: inline-block;
-    padding: 7px 14px;
-    border-radius: 7px;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-/* =========================================================
-   BOTÓN EDITAR
-   ========================================================= */
-
-main .table .btn-success {
-    border: none;
-}
-
-main .table .btn-success:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(25, 135, 84, 0.25);
-}
-
-/* =========================================================
-   BOTÓN ELIMINAR
-   ========================================================= */
-
-main .table .btn-danger {
-    border: none;
-}
-
-main .table .btn-danger:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.25);
-}
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
-/* ---------------------------------------------------------
-   TABLETS
-   --------------------------------------------------------- */
-
-@media (max-width: 992px) {
-    main {
-        padding: 25px 20px;
-    }
-
-    main .table thead th,
-    main .table tbody td {
-        padding: 10px 8px;
-        font-size: 13px;
-    }
-}
-
-/* ---------------------------------------------------------
-   TABLETS PEQUEÑAS
-   --------------------------------------------------------- */
-
-@media (max-width: 768px) {
-    main {
-        padding: 20px 15px;
-        overflow-x: auto;
-    }
-
-    main > div:first-child h1 {
-        font-size: 24px;
-    }
-
-    /*
-       La tabla conserva todas sus columnas.
-       Se permite desplazamiento horizontal
-       para no modificar el HTML.
-    */
-
-    main .table {
-        min-width: 850px;
-    }
-}
-
-/* ---------------------------------------------------------
-   MÓVILES
-   --------------------------------------------------------- */
-
-@media (max-width: 576px) {
-    main {
-        padding: 15px 10px;
-    }
-
-    main > div:first-child {
-        margin-bottom: 18px;
-    }
-
-    main > div:first-child h1 {
-        font-size: 21px;
-    }
-
-    main .table {
-        min-width: 800px;
-    }
-
-    main .table .btn {
-        padding: 6px 10px;
-        font-size: 12px;
+@media (max-width: 700px) {
+    .admin-sales-detail-page .admin-list-heading {
+        align-items: stretch;
     }
 }

@@ -1,0 +1,373 @@
+/*
+ * Base visual compartida por todas las pantallas administrativas.
+ * Los estilos de cada módulo conservan sus colores semánticos y layouts;
+ * esta capa unifica controles, foco, medidas táctiles y desplazamiento móvil.
+ */
+body.admin-app {
+    --admin-control-radius: 0.65rem;
+    --admin-control-height: 2.7rem;
+    --admin-control-height-touch: 2.85rem;
+    background-color: var(--color-background);
+    color: var(--color-text-strong);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body.admin-app > :not(header):not(footer) {
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+}
+
+body.admin-app > :not(header):not(footer) :is(img, video, canvas) {
+    max-width: 100%;
+}
+
+body.admin-app > :not(header):not(footer) h1 {
+    margin-top: 0;
+    color: var(--color-brand-dark);
+    font-size: clamp(1.5rem, 2vw, 2rem);
+    font-weight: 750;
+    line-height: 1.2;
+}
+
+body.admin-app > :not(header):not(footer) :is(h2, h3) {
+    color: var(--color-brand-dark);
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+body.admin-app > :not(header):not(footer) .admin-list-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+body.admin-app > :not(header):not(footer) .admin-list-eyebrow {
+    margin: 0 0 0.3rem;
+    color: var(--color-brand-accent);
+    font-size: 0.73rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+body.admin-app > :not(header):not(footer) .admin-list-description {
+    max-width: 720px;
+    margin: 0.45rem 0 0;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
+body.admin-app > :not(header):not(footer) .admin-list-primary {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--admin-control-height);
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--color-brand-accent);
+    border-radius: var(--admin-control-radius);
+    background: var(--color-brand-accent);
+    color: var(--color-surface);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+body.admin-app > :not(header):not(footer) .admin-list-primary:hover {
+    border-color: var(--color-brand-accent-dark);
+    background: var(--color-brand-accent-dark);
+    color: var(--color-surface);
+    transform: translateY(-1px);
+}
+
+body.admin-app > :not(header):not(footer) .admin-list-empty {
+    margin: 1.1rem 0 0;
+    padding: 1.35rem;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-warm);
+    color: var(--color-text-muted);
+    text-align: center;
+}
+
+body.admin-app > :not(header):not(footer) :is(
+    button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not([data-password-toggle]):not([data-bs-dismiss]),
+    input[type='submit'],
+    a.btn,
+    a.admin-list-primary,
+    a[class*='button'],
+    a[class*='-btn'],
+    .admin-order-action,
+    .ui-button,
+    [role='button']
+) {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: var(--admin-control-height);
+    max-width: 100%;
+    padding: 0.65rem 0.95rem;
+    border-radius: var(--admin-control-radius);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        color 160ms ease,
+        transform 160ms ease;
+}
+
+body.admin-app > :not(header):not(footer) :is(.btn-primary, .btn-success, .btn-warning) {
+    border-color: var(--color-brand-accent);
+    background: var(--color-brand-accent);
+    color: var(--color-surface);
+}
+
+body.admin-app > :not(header):not(footer) :is(.btn-primary, .btn-success, .btn-warning):hover {
+    border-color: var(--color-brand-accent-dark);
+    background: var(--color-brand-accent-dark);
+    color: var(--color-surface);
+}
+
+body.admin-app > :not(header):not(footer) :is(.btn-info, .btn-secondary, .btn-outline-primary, .btn-outline-secondary) {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-brand-dark);
+}
+
+body.admin-app > :not(header):not(footer) :is(.btn-info, .btn-secondary, .btn-outline-primary, .btn-outline-secondary):hover {
+    border-color: var(--color-brand-dark);
+    background: var(--color-brand-dark);
+    color: var(--color-surface);
+}
+
+body.admin-app > :not(header):not(footer) .btn-danger {
+    border-color: var(--color-danger);
+    background: var(--color-danger);
+    color: var(--color-surface);
+}
+
+body.admin-app > :not(header):not(footer) .btn-dark {
+    border-color: var(--color-brand-dark);
+    background: var(--color-brand-dark);
+    color: var(--color-surface);
+}
+
+body.admin-app > :not(header):not(footer) :is(
+    button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not([data-password-toggle]):not([data-bs-dismiss]),
+    input[type='submit'],
+    a.btn,
+    a.admin-list-primary,
+    a[class*='button'],
+    a[class*='-btn'],
+    .admin-order-action,
+    .ui-button,
+    [role='button']
+):focus-visible,
+body.admin-app > :not(header):not(footer) :is(
+    input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='submit']),
+    select,
+    textarea
+):focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-brand-accent) 35%, transparent);
+    outline-offset: 2px;
+}
+
+body.admin-app > :not(header):not(footer) :is(
+    input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='submit']),
+    select,
+    textarea
+) {
+    box-sizing: border-box;
+    max-width: 100%;
+    min-height: var(--admin-control-height);
+    border-radius: var(--admin-control-radius);
+    color: var(--color-text-strong);
+    font: inherit;
+}
+
+body.admin-app > :not(header):not(footer) textarea {
+    min-height: 7rem;
+}
+
+body.admin-app > :not(header):not(footer) :is(
+    .admin-panel,
+    .ui-card,
+    .ui-table-wrap,
+    .admin-table-wrap,
+    .commerce-card,
+    .analytics-card,
+    .ap-panel,
+    .ar-card,
+    .delivery-card,
+    .im-panel,
+    .raffle-panel,
+    .admin-settings-card,
+    .settings-card,
+    .profile-card,
+    .sales-export-panel,
+    .export-panel,
+    .order-card,
+    .summary-card,
+    .table-card
+) {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+}
+
+body.admin-app > :not(header):not(footer) :is(
+    .table-responsive,
+    .admin-table-wrap,
+    .ui-table-wrap,
+    [class*='table-wrap'],
+    [class*='table-scroll']
+):not(.admin-mobile-card-wrap) {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+body.admin-app > :not(header):not(footer) :is(
+    button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not([data-password-toggle]):not([data-bs-dismiss]),
+    input[type='submit'],
+    a.btn,
+    a.admin-list-primary,
+    a[class*='button'],
+    a[class*='-btn'],
+    .admin-order-action,
+    .ui-button,
+    [role='button']
+):disabled {
+    cursor: not-allowed;
+    opacity: 0.62;
+    transform: none;
+}
+
+body.admin-app > :not(header):not(footer) :is(
+    a.btn,
+    a.admin-list-primary,
+    a[class*='button'],
+    a[class*='-btn'],
+    [role='button']
+)[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.62;
+    transform: none;
+}
+
+@media (max-width: 760px) {
+    body.admin-app > :not(header):not(footer) .admin-shell {
+        width: min(100% - 1.25rem, 1440px);
+        margin: 1.25rem auto 2.5rem;
+    }
+
+    body.admin-app > :not(header):not(footer) .admin-list-page {
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    body.admin-app > :not(header):not(footer) .admin-list-heading {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 0.9rem;
+    }
+
+    body.admin-app > :not(header):not(footer) .admin-list-primary {
+        width: 100%;
+    }
+
+    body.admin-app > :not(header):not(footer) :is(.admin-toolbar, .admin-toolbar__filters) {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    body.admin-app > :not(header):not(footer) .admin-toolbar__filters > * {
+        width: 100%;
+        min-width: 0;
+    }
+
+    body.admin-app > :not(header):not(footer) :is(.ui-form-grid, .admin-form-grid) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    body.admin-app > :not(header):not(footer) .ui-form__actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    body.admin-app > :not(header):not(footer) .ui-form__actions > * {
+        width: 100%;
+    }
+
+    body.admin-app > :not(header):not(footer) .admin-pagination__links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    body.admin-app > :not(header):not(footer) .admin-pagination {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    body.admin-app > :not(header):not(footer) :is(
+        .table-responsive,
+        .admin-table-wrap,
+        .ui-table-wrap,
+        [class*='table-wrap'],
+        [class*='table-scroll']
+    ):not(.admin-mobile-card-wrap) {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 540px) {
+    body.admin-app > :not(header):not(footer) :is(
+        button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not([data-password-toggle]):not([data-bs-dismiss]),
+        input[type='submit'],
+        a.btn,
+        a.admin-list-primary,
+        a[class*='button'],
+        a[class*='-btn'],
+        .admin-order-action,
+        .ui-button,
+        [role='button']
+    ) {
+        min-height: var(--admin-control-height-touch);
+        max-width: 100%;
+    }
+
+    body.admin-app > :not(header):not(footer) form > :is(button[type='submit'], input[type='submit']) {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.admin-app > :not(header):not(footer) :is(
+        button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not([data-password-toggle]):not([data-bs-dismiss]),
+        input[type='submit'],
+        a.btn,
+        a.admin-list-primary,
+        a[class*='button'],
+        a[class*='-btn'],
+        .admin-order-action,
+        .ui-button,
+        [role='button']
+    ) {
+        transition: none;
+    }
+}
