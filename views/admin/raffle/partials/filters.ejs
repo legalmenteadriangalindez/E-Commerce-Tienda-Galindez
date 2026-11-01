@@ -1,5 +1,12 @@
-<section class="raffle-admin-heading">
-    <div><p class="raffle-eyebrow">Promociones de la tienda</p><h1>Sorteo de regalos</h1><p>Configura el monto mínimo y administra las participaciones generadas por pedidos pagados.</p></div>
-    <a class="raffle-back-link" href="/admin-analytics">Volver al informe</a>
+<section class="admin-list-heading raffle-admin-heading">
+    <div>
+        <p class="admin-list-eyebrow">Promociones de la tienda</p>
+        <h1>Sorteo de regalos</h1>
+        <p class="admin-list-description">Configura el monto mínimo y administra las participaciones generadas por pedidos pagados.</p>
+    </div>
+    <a class="raffle-back-link" href="/admin-analytics">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        Volver al informe
+    </a>
 </section>
-<% if (raffleNotice) { %><p class="commerce-notice" role="status"><%= raffleNotice %></p><% } %>
+<% if (raffleNotice) { %><p class="raffle-notice" role="status"><i class="bi bi-info-circle" aria-hidden="true"></i><%= raffleNotice %></p><% } %>

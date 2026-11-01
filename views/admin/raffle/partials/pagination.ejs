@@ -2,5 +2,5 @@
     <input type="hidden" name="ronda" value="<%= selectedRoundId %>">
     <label for="raffle-limit">Filas por página</label>
     <select id="raffle-limit" name="limit"><% for (const pageSize of [10, 25, 50]) { %><option value="<%= pageSize %>" <%= Number(pagination.limit) === pageSize ? 'selected' : '' %>><%= pageSize %></option><% } %></select>
-    <button type="submit">Aplicar</button>
+    <button class="raffle-button raffle-button--secondary" type="submit">Aplicar</button>
 </form>

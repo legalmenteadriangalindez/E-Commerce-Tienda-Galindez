@@ -124,7 +124,7 @@ const resources = {
     'admin/orders/detail_orders': { pageCss: css('detail_order.css', 'delivery-tracking.css') },
     'admin/orders/update_order': { pageCss: css('update_order.css') },
     'admin/delivery/index': { pageCss: css('admin-delivery.css', 'admin-pagination.css') },
-    'admin/raffle/manage': { pageCss: css('commerce.css', 'pages/raffle/admin.css', 'admin-pagination.css') },
+    'admin/raffle/manage': { pageCss: css('pages/raffle/admin.css', 'admin-pagination.css') },
     'admin/reviews/read_reviews': {
         pageCss: css(
             'pages/admin-reviews/layout.css',

@@ -1,12 +1,19 @@
-<section class="commerce-card">
+<section class="raffle-panel raffle-panel--entries">
     <div class="raffle-entries-heading">
-        <div><h2>Participaciones</h2><p class="raffle-pagination-help">Ronda #<%= raffle.numeroRonda %>. Las rondas anteriores permanecen disponibles en modo de solo lectura.</p></div>
+        <div class="raffle-section-title">
+            <span class="raffle-panel__icon" aria-hidden="true"><i class="bi bi-ticket-perforated"></i></span>
+            <div>
+                <p class="admin-list-eyebrow">Ronda #<%= raffle.numeroRonda %></p>
+                <h2>Participaciones</h2>
+                <p class="raffle-pagination-help">Las rondas anteriores permanecen disponibles en modo de solo lectura.</p>
+            </div>
+        </div>
         <%- include('./pagination', { pagination, selectedRoundId }) %>
     </div>
-    <% if (!entries.length) { %><p>No hay participaciones todavía.</p><% } else { %>
+    <% if (!entries.length) { %><p class="raffle-empty">No hay participaciones todavía.</p><% } else { %>
         <div class="raffle-table-wrap"><table class="raffle-table">
             <thead><tr><th>Número</th><th>Cliente</th><th>Pedido</th><th>Monto</th><th>Estado</th></tr></thead>
-            <tbody><% entries.forEach(entry => { %><tr><td><strong><%= entry.numero %></strong></td><td><%= entry.clienteNombre %><br><small><%= entry.clienteEmail %></small></td><td><%= entry.order?.numeroOrden || 'Pedido histórico' %></td><td>$ <%= Number(entry.montoCompra).toLocaleString('es-CO') %></td><td><%= entry.ganador ? 'Ganador' : 'Participante' %></td></tr><% }) %></tbody>
+            <tbody><% entries.forEach(entry => { %><tr><td><strong><%= entry.numero %></strong></td><td><%= entry.clienteNombre %><br><small><%= entry.clienteEmail %></small></td><td><%= entry.order?.numeroOrden || 'Pedido histórico' %></td><td>$ <%= Number(entry.montoCompra).toLocaleString('es-CO') %></td><td><span class="raffle-entry-status <%= entry.ganador ? 'is-winner' : '' %>"><%= entry.ganador ? 'Ganador' : 'Participante' %></span></td></tr><% }) %></tbody>
         </table></div>
     <% } %>
     <%- include('../../../include/_adminPagination', { pagination, label: 'participaciones' }) %>
