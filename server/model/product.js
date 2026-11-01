@@ -68,6 +68,11 @@ var schema = new mongoose.Schema({
         },
     },
 
+    enPromocion: {
+        type: Boolean,
+        default: false,
+    },
+
     fechaIngreso: {
         type: Date,
         default: Date.now,
@@ -78,6 +83,7 @@ schema.index({ fechaIngreso: -1, _id: -1 });
 schema.index({ stock: 1, nombre: 1 });
 schema.index({ categoria: 1, fechaIngreso: -1 });
 schema.index({ marca: 1, fechaIngreso: -1 });
+schema.index({ enPromocion: 1, fechaIngreso: -1, _id: -1 });
 
 const Productdb = mongoose.model('productdb', schema);
 

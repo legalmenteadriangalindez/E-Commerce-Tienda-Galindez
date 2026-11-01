@@ -6,6 +6,7 @@
     >
 
     <div class="product-card-body">
+        <% if (p.enPromocion) { %><span class="product-promotion-badge">Promoción</span><% } %>
         <h5 class="product-card-title"><%= p.nombre %></h5>
         <p class="product-card-text"><%= p.descripcion %></p>
     </div>
