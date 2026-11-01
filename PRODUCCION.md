@@ -65,7 +65,7 @@ El comando es idempotente, no elimina campos antiguos y muestra cuántos documen
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Compra                   | Precios consultados en MongoDB, cálculo en centavos, cantidades enteras y protección contra doble clic.                                                                                                                                                                                                                                              |
 | Inventario               | Reserva atómica al crear la orden; una unidad no puede venderse a dos compradores.                                                                                                                                                                                                                                                                   |
-| Vencimiento              | La reserva dura 30 minutos. El Cron de mantenimiento revisa vencimientos cada minuto. Un pago conocido que sigue pendiente conserva su reserva hasta conciliación.                                                                                                                                                                                   |
+| Vencimiento              | La reserva dura 30 minutos. GitHub Actions ejecuta el mantenimiento en un horario programado cada 15 minutos (UTC), por lo que la liberación puede ocurrir en la siguiente ejecución. Un pago conocido que sigue pendiente conserva su reserva hasta conciliación.                                                                                   |
 | Wompi                    | Firma del webhook, consulta privada al proveedor y comparación de referencia, importe y moneda. Bandeja de eventos persistente y reintentos.                                                                                                                                                                                                         |
 | Correo de pedidos        | Confirmación de pedido, cambios de estado, aviso de envío y entrega. Los eventos se guardan en MongoDB, se envían por Brevo y se reintentan si el proveedor falla.                                                                                                                                                                                   |
 | Sorteo                   | Cada pedido pagado que cumple el monto recibe un número único dentro de una ronda. Al seleccionar ganador se encola un aviso por Brevo y `/sorteo` publica el número ganador, la fecha y el total de participaciones, sin nombres ni correos.                                                                                                        |
@@ -117,24 +117,33 @@ Configura además las cuatro claves `WOMPI_PUBLIC_KEY`, `WOMPI_PRIVATE_KEY`, `WO
 
 ### Mantenimiento programado
 
-El servicio web no ejecuta conciliaciones, vencimientos, limpieza de imágenes ni envío de la bandeja de correos. El segundo servicio de `render.yaml`, `tienda-galindez-maintenance`, usa la misma imagen Docker y ejecuta `npm run maintenance` cada minuto con la expresión `* * * * *` (UTC). Sus variables sensibles usan `fromService` para heredar los valores del servicio web existente `E-Commerce-Tienda-Galindez`; no las dupliques manualmente. Si el nombre de tu servicio es diferente, cambia ese nombre en las referencias antes de sincronizar el Blueprint.
+El servicio web de Render no ejecuta conciliaciones, vencimientos, limpieza de imágenes ni envío de correos en segundo plano. El workflow `.github/workflows/maintenance.yml` ejecuta `npm run maintenance` en un runner de GitHub Actions cada 15 minutos (UTC); `workflow_dispatch` permite iniciarlo manualmente. El workflow instala las dependencias de producción y termina al completar el trabajo; no crea otro servicio en Render.
 
-Después de modificar `render.yaml`, sincroniza el Blueprint desde Render. La
-configuración declarativa no cambia por sí sola un servicio existente. Verifica
-que el servicio web muestre `Health Check Path: /healthz` y que exista el Cron
-Job `tienda-galindez-maintenance` con sus variables heredadas. No crees el Cron
-Job con valores vacíos para `MONGO_URI`, `SESSION_SECRET`, `BREVO_API_KEY` o
-`EMAIL_USER`.
+Configura los siguientes secretos en el repositorio, en **Settings → Secrets and variables → Actions**. Render no comparte automáticamente sus variables con GitHub Actions:
 
-Para probarlo en local, ejecuta `npm run maintenance` con el `.env` apuntando a una base de datos de desarrollo. El proceso aplica las migraciones pendientes, valida que Atlas o un replica set estén disponibles, registra un resultado JSON en los logs y termina; si falla devuelve un código distinto de cero para que Render marque la ejecución como fallida. Render no solapa dos ejecuciones del mismo Cron Job.
+| Secreto de GitHub          | Variable que recibe el proceso |
+| -------------------------- | ------------------------------ |
+| `PROD_BASE_URL`            | `BASE_URL`                     |
+| `PROD_MONGO_URI`           | `MONGO_URI`                    |
+| `PROD_SESSION_SECRET`      | `SESSION_SECRET`               |
+| `PROD_BREVO_API_KEY`       | `BREVO_API_KEY`                |
+| `PROD_EMAIL_USER`          | `EMAIL_USER`                   |
+| `PROD_PAYMENTS_ENABLED`    | `PAYMENTS_ENABLED`             |
+| `PROD_WOMPI_ENV`           | `WOMPI_ENV`                    |
+| `PROD_WOMPI_PUBLIC_KEY`    | `WOMPI_PUBLIC_KEY`             |
+| `PROD_WOMPI_PRIVATE_KEY`   | `WOMPI_PRIVATE_KEY`            |
+| `PROD_WOMPI_INTEGRITY_KEY` | `WOMPI_INTEGRITY_KEY`          |
+| `PROD_WOMPI_EVENTS_KEY`    | `WOMPI_EVENTS_KEY`             |
 
-El proceso falla de forma explícita si faltan variables esenciales o si intentas usar el secreto local de ejemplo en producción. Revisa **Logs** si `/healthz` devuelve error. El inicio exige Atlas o un replica set: MongoDB independiente no ofrece las transacciones que necesita la tienda.
+El job tiene un máximo de 10 minutos y un grupo de concurrencia que evita ejecutar dos mantenimientos a la vez sin cancelar el que ya está activo. Si faltan variables esenciales, el workflow informa el error y termina con fallo. Los pagos Wompi requieren sus claves solo cuando `PROD_PAYMENTS_ENABLED` es `true`. Si `/healthz` devuelve error, revisa los logs del servicio web en Render.
+
+Para probarlo en local, ejecuta `npm run maintenance` con las variables apuntando a una base de datos de desarrollo. El proceso aplica migraciones pendientes, valida que Atlas o un replica set estén disponibles, ejecuta la conciliación de pagos, vence reservas elegibles, limpia imágenes no utilizadas y procesa la bandeja de correos. Registra el resultado en los logs y devuelve un código distinto de cero si falla. El servidor requiere Atlas o un replica set porque las compras usan transacciones.
 
 ### Diagnóstico temporal de formularios CSRF
 
 Si un formulario con imagen devuelve `403`, configura temporalmente `CSRF_DEBUG_LOGS=true` en Render y reproduce la operación. Los logs mostrarán la ruta, `requestId`, presencia y longitud de los tokens, cookie de sesión, origen y etapa del parser; nunca imprimen el token ni la cookie. La página HTML del error también muestra esos metadatos y el encabezado `X-CSRF-Reason`. Después de identificar el problema, vuelve a `false` o elimina la variable.
 
-El servicio web puede suspenderse sin detener estas tareas: el Cron de Render las ejecuta por separado. Revisa también memoria, almacenamiento de Atlas y límites del plan. Las imágenes nuevas consumen espacio de MongoDB, no del disco efímero de Render.
+El workflow de GitHub Actions corre separado del servicio web, así que el mantenimiento puede ejecutarse aunque el servicio de Render esté suspendido, siempre que el workflow siga habilitado y sus secretos estén configurados. Revisa también memoria, almacenamiento de Atlas y límites del plan. Las imágenes nuevas consumen espacio de MongoDB, no del disco efímero de Render.
 
 ### Copias de MongoDB y prueba de restauración
 
