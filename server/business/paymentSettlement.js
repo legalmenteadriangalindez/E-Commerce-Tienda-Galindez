@@ -59,6 +59,7 @@ async function applyTransaction(transaction) {
             return order;
         }
         if (transaction.status === 'APPROVED') {
+            const inventoryWasReserved = order.inventario === 'RESERVADO';
             order.estadoPago = 'PAGADO';
             order.wompiTransactionId = id;
             order.pagoConfirmadoEn = new Date();
@@ -77,11 +78,20 @@ async function applyTransaction(transaction) {
                 event.detalle = order.incidenciaPago;
             }
             await persistence.recordSale(order, session);
+            if (inventoryWasReserved) {
+                await inventory.recordSale(order, session, {
+                    actorName: 'Wompi',
+                    reason: 'Pago aprobado y venta confirmada por Wompi',
+                });
+            }
             await raffle.recordEligibleOrder(order, session);
             delivery.trackState(order, order.estado);
             await notifications.queueStatus(order, session);
         } else {
-            await inventory.release(order, session);
+            await inventory.release(order, session, {
+                actorName: 'Wompi',
+                reason: 'Reserva liberada porque Wompi rechazó el pago',
+            });
             order.estadoPago = 'RECHAZADO';
             order.estado = 'CANCELADA';
             event.estado = 'PROCESADO';

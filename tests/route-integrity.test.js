@@ -12,6 +12,7 @@ const adminRouteModules = [
     'users.routes.js',
     'orders.routes.js',
     'payments.routes.js',
+    'inventory.routes.js',
     'reviews.routes.js',
     'settings.routes.js',
 ];
@@ -107,6 +108,8 @@ test('el router expone las rutas de página y API esperadas', () => {
     assert.ok(has('POST', '/carrito/add'), 'la API para agregar al carrito no está registrada');
     assert.ok(has('POST', '/carrito/checkout'), 'el checkout del carrito no está registrado');
     assert.ok(has('POST', '/carrito/payment_point'), 'el pago en punto físico no está registrado');
+    assert.ok(has('GET', '/inventory/movements'), 'el historial de inventario no está registrado');
+    assert.ok(has('POST', '/inventory/movements/adjust'), 'los ajustes de inventario no están registrados');
     assert.ok(!has('GET', '/carrito'), 'no debe existir una página GET heredada /carrito');
 });
 

@@ -3,7 +3,7 @@ const catalog = require('../business/catalogService');
 const { BusinessError } = require('../business/errors');
 const { wrap } = require('../http/handlers');
 exports.create = wrap(async (req, res) => {
-    const product = await products.create(req.body, req.files);
+    const product = await products.create(req.body, req.files, req.usuarioActual);
     return req.is('application/json') ? res.status(201).json(product) : res.redirect('/read-producto');
 });
 exports.update = wrap(async (req, res) => {

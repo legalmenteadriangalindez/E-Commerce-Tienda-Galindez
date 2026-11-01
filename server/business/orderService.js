@@ -120,8 +120,12 @@ async function changeState(id, state, actorId, dealer = false, note = '', cashCo
             ) {
                 throw new commerce.CommerceError('Espera la respuesta del proveedor antes de cancelar.', 409);
             }
-            if (cashDelivery) await inventory.releaseConfirmed(order, session);
-            else await inventory.release(order, session);
+            const releaseMetadata = {
+                actorId,
+                reason: `Pedido cancelado${note ? `: ${note}` : ''}`,
+            };
+            if (cashDelivery) await inventory.releaseConfirmed(order, session, releaseMetadata);
+            else await inventory.release(order, session, releaseMetadata);
         } else {
             const next = { PAGADA: 'PREPARANDO', PREPARANDO: 'ENVIADA', ENVIADA: 'ENTREGADA' };
             const cashDelivery = commerce.isCashOnDelivery(order);
@@ -147,6 +151,10 @@ async function changeState(id, state, actorId, dealer = false, note = '', cashCo
                 order.pagoConfirmadoEn = new Date();
                 order.estado = 'ENTREGADA';
                 await payments.recordSale(order, session);
+                await inventory.recordSale(order, session, {
+                    actorId,
+                    reason: 'Pago contra entrega confirmado al marcar la entrega',
+                });
                 await raffle.recordEligibleOrder(order, session);
             }
         }
@@ -193,6 +201,10 @@ async function confirmCash(id, adminId) {
         order.confirmadoPor = adminId;
         order.pagoConfirmadoEn = new Date();
         await payments.recordSale(order, session);
+        await inventory.recordSale(order, session, {
+            actorId: adminId,
+            reason: 'Pago en efectivo confirmado por administrador',
+        });
         await raffle.recordEligibleOrder(order, session);
         delivery.trackState(order, order.estado, adminId);
         await notifications.queueStatus(order, session);

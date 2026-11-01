@@ -82,7 +82,7 @@ exports.create_product_form = wrap(async (req, res) =>
     res.render('admin/products/create_producto', await options(req.usuarioActual))
 );
 exports.create_product = wrap(async (req, res) => {
-    await products.create(req.body, req.files);
+    await products.create(req.body, req.files, req.usuarioActual);
     res.redirect(303, '/read-producto');
 });
 exports.update_products = wrap(async (req, res) => {
