@@ -13,23 +13,26 @@
     <a href="/create-producto" class="admin-list-primary">Crear producto</a>
   </header>
 
-  <div class="admin-table-wrap ui-table-wrap">
-  <table class="table ui-table">
+  <div class="admin-table-wrap ui-table-wrap admin-mobile-card-wrap">
+  <table
+    class="table ui-table admin-mobile-card-table admin-products-card-table"
+    aria-label="Productos del catálogo"
+  >
     <thead>
       <tr>
         <th scope="col" hidden>#</th>
         <th scope="col">Nombre</th>
-        <th scope="col">Descripción</th>
+        <th scope="col" class="admin-mobile-secondary">Descripción</th>
         <th scope="col">Foto</th>
-        <th scope="col">Marca</th>
-        <th scope="col">Categoría</th>
-        <th scope="col">Proveedor</th>
-        <th scope="col">Inversión</th>
+        <th scope="col" class="admin-mobile-secondary">Marca</th>
+        <th scope="col" class="admin-mobile-secondary">Categoría</th>
+        <th scope="col" class="admin-mobile-secondary">Proveedor</th>
+        <th scope="col" class="admin-mobile-secondary">Inversión</th>
         <th scope="col">Venta</th>
         <th scope="col">Stock</th>
         <th scope="col">Mínimo</th>
         <th scope="col">Promoción</th>
-        <th scope="col">Fecha Ingreso</th>
+        <th scope="col" class="admin-mobile-secondary">Fecha Ingreso</th>
         <th scope="col">Editar</th>
         <th scope="col">Eliminar</th>
       </tr>
@@ -42,17 +45,17 @@
             <%= product._id %>
           </th>
 
-          <td>
+          <td data-label="Nombre">
             <%= product.nombre %>
           </td>
 
-          <td class="product-description-truncated">
+          <td class="product-description-truncated admin-mobile-secondary" data-label="Descripción">
             <%= product.descripcion
               ? product.descripcion.substring(0, 50) + '...'
               : 'Sin descripción' %>
           </td>
 
-          <td>
+          <td data-label="Foto">
             <% if (product.fotos && product.fotos.length > 0) { %>
               <img
                 src="<%= product.fotos[0] %>"
@@ -64,27 +67,27 @@
             <% } %>
           </td>
 
-          <td>
+          <td class="admin-mobile-secondary" data-label="Marca">
             <%= product.marca ? product.marca.nombre : 'N/A' %>
           </td>
 
-          <td>
+          <td class="admin-mobile-secondary" data-label="Categoría">
             <%= product.categoria ? product.categoria.nombre : 'N/A' %>
           </td>
 
-          <td>
+          <td class="admin-mobile-secondary" data-label="Proveedor">
             <%= product.proveedor ? product.proveedor.nombre : 'N/A' %>
           </td>
 
-          <td>
+          <td class="admin-mobile-secondary" data-label="Inversión">
             $ <%= (product.precioCosto || 0).toLocaleString('es-CO') %>
           </td>
 
-          <td>
+          <td data-label="Precio de venta">
             $ <%= (product.precioVenta || 0).toLocaleString('es-CO') %>
           </td>
 
-          <td>
+          <td data-label="Stock">
             <% if (product.stock <= Number(product.stockMinimo || 0)) { %>
               <span class="stock-warning">
                 <%= product.stock %>
@@ -94,17 +97,17 @@
             <% } %>
           </td>
 
-          <td><%= Number(product.stockMinimo || 0) %></td>
+          <td data-label="Stock mínimo"><%= Number(product.stockMinimo || 0) %></td>
 
-          <td><%= product.enPromocion ? 'Activa' : 'No' %></td>
+          <td data-label="Promoción"><%= product.enPromocion ? 'Activa' : 'No' %></td>
 
-          <td>
+          <td class="admin-mobile-secondary" data-label="Fecha de ingreso">
             <%= product.fechaIngreso
               ? new Date(product.fechaIngreso).toLocaleDateString('es-CO')
               : 'N/A' %>
           </td>
 
-          <td>
+          <td data-label="Editar">
             <a
               href="/update-producto/<%= product._id %>"
               class="btn btn-success"
@@ -113,8 +116,8 @@
             </a>
           </td>
 
-          <td>
-            <form action="/delete-producto/<%= product._id %>" method="POST" class="d-inline">
+          <td data-label="Eliminar">
+            <form action="/delete-producto/<%= product._id %>" method="POST">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <button type="submit" class="btn btn-danger">Eliminar</button>
             </form>

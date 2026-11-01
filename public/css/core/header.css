@@ -149,7 +149,19 @@
     }
 
     .app-search-form input {
-        min-width: 100%;
+        flex: 1 1 0%;
+        width: 0;
+        min-width: 0;
+    }
+
+    .app-search-form {
+        min-width: 0;
+    }
+
+    .app-search-form button {
+        flex: 0 0 44px;
+        min-height: 42px;
+        padding: 0;
     }
 }
 
