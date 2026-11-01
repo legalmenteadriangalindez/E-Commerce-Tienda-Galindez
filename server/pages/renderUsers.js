@@ -12,13 +12,32 @@ async function roleOptions(actor, current) {
         result.items.push(current);
     return { roles: result.items, canManageRoles };
 }
-exports.create_user_form = wrap(async (req, res) =>
-    res.render('admin/users/add_user', await roleOptions(req.usuarioActual))
-);
+function createFormValues(input = {}) {
+    const fields = ['nombre', 'email', 'telefono', 'direccion', 'genero', 'barrio', 'ciudad', 'puntoReferencia', 'rol'];
+    // Nunca reflejar la contraseña ni controles de seguridad al reintentar.
+    return Object.fromEntries(
+        fields.map((field) => [field, typeof input[field] === 'string' ? input[field].slice(0, 254) : ''])
+    );
+}
+async function createForm(req, res, error = '', status = 200) {
+    res.status(status).render('admin/users/add_user', {
+        ...(await roleOptions(req.usuarioActual)),
+        values: createFormValues(req.method === 'POST' ? req.body : {}),
+        error,
+    });
+}
+exports.create_user_form = wrap(async (req, res) => createForm(req, res));
 exports.add_user = wrap(async (req, res) => {
-    const user = await users.create(req.body, req.usuarioActual);
-    const verification = user.verificationEmailSent ? 'sent' : 'failed';
-    res.redirect(303, `/read-user?verification=${verification}`);
+    try {
+        const user = await users.create(req.body, req.usuarioActual);
+        const verification = user.verificationEmailSent ? 'sent' : 'failed';
+        res.redirect(303, `/read-user?verification=${verification}`);
+    } catch (error) {
+        if (error.code === 11000)
+            return createForm(req, res, 'Ya existe una cuenta con ese correo. Revisa la lista de usuarios.', 409);
+        if (error.expose && [400, 403].includes(error.status)) return createForm(req, res, error.message, error.status);
+        throw error;
+    }
 });
 exports.read_users = wrap(async (req, res) => {
     const result = await users.find({ page: req.query.page, limit: 10 }, req.usuarioActual);

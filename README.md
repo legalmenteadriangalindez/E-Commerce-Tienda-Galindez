@@ -21,6 +21,14 @@ Abre http://localhost:3000. El correo se muestra en la terminal local si no conf
 
 Los pagos en línea están desactivados inicialmente. Para probar tarjeta o Nequi con el Checkout Web de Wompi, configura las cuatro claves sandbox y `PAYMENTS_ENABLED=true`. El efectivo contra entrega funciona sin activar Wompi; desde el punto de pago administrativo también puedes registrar efectivo en caja.
 
+## Crear y activar cuentas
+
+Desde **Gestión → Usuarios → Crear usuario** (`/add-user-form`), introduce los datos de contacto y una contraseña inicial de al menos 12 caracteres (máximo 72 bytes). SuperAdmin y las cuentas con `roles:manage` pueden elegir el rol; las cuentas con solo `users:manage` crean clientes. Solo SuperAdmin puede asignar el rol SuperAdmin. La contraseña inicial debe entregarse a la persona; el correo contiene únicamente el código de verificación.
+
+La cuenta queda pendiente de verificación y conserva el rol elegido. La persona entra en `/login` con el correo y la contraseña inicial; antes de darle acceso, la tienda le pide el código de seis dígitos enviado por Brevo, válido durante diez minutos. Si el envío falla, la cuenta se conserva: puede solicitar otro código desde esa pantalla sin registrarse de nuevo. La lista de usuarios muestra si el correo está verificado.
+
+Después de verificar el correo, cualquier cuenta puede abrir **Cambiar contraseña** desde su menú (`/change-password`). Debe escribir la contraseña actual y confirmar la nueva. El cambio cierra las sesiones anteriores y anula enlaces de recuperación pendientes; después se inicia sesión con la nueva contraseña. Esta opción no requiere permisos administrativos.
+
 ## Validación
 
 ```text

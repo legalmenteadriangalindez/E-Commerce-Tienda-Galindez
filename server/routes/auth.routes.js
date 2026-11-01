@@ -9,6 +9,9 @@ const categoriasMiddleware = require('../middleware/categoriasMiddleware');
 const { loginLimiter, registrationLimiter, verificationLimiter, resendLimiter } = require('../middleware/rateLimit');
 const { validate } = require('../middleware/validateRequest');
 const schemas = require('../validation/schemas');
+const { isLogged } = require('../middleware/auth');
+const changePassword = require('../controller/changePasswordController');
+const { passwordChangeLimiter } = require('../middleware/rateLimit');
 
 router.post('/login', loginLimiter, validate(schemas.login), authController.login);
 router.get('/login', servicesLoginLogout.login);
@@ -35,4 +38,6 @@ router.get('/forgot-password', categoriasMiddleware, resetPassword.requestForm);
 router.post('/forgot-password', resendLimiter, validate(schemas.forgotPassword), resetPassword.request);
 router.get('/reset-password', categoriasMiddleware, resetPassword.resetForm);
 router.post('/reset-password', verificationLimiter, validate(schemas.resetPassword), resetPassword.reset);
+router.get('/change-password', isLogged, categoriasMiddleware, changePassword.form);
+router.post('/change-password', isLogged, passwordChangeLimiter, categoriasMiddleware, changePassword.change);
 module.exports = router;

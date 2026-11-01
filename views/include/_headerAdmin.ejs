@@ -97,6 +97,7 @@
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
             <% if (canAccess('profile:manage')) { %><li><a class="dropdown-item" href="/admin/perfil"><i class="bi bi-person"></i> Perfil</a></li><% } %>
+            <li><a class="dropdown-item" href="/change-password"><i class="bi bi-key"></i> Cambiar contraseña</a></li>
             <% if (canAccess('payments:manage')) { %><li><a class="dropdown-item" href="/billing-point"><i class="bi bi-grid"></i> Panel</a></li><% } %>
             <% if (canAccess('store-settings:manage')) { %><li><a class="dropdown-item" href="/admin/settings/shipping"><i class="bi bi-truck"></i> Tarifas de envío</a></li><% } %>
             <li><hr class="dropdown-divider"></li>

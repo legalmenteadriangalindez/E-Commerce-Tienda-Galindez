@@ -32,9 +32,9 @@ const register = passthrough({
     nombre: text(200).min(1),
     telefono: text(40).min(1),
     direccion: text(200).min(1),
-    genero: text(80).min(1),
-    barrio: text(120).min(1),
-    ciudad: text(120).min(1),
+    genero: optionalText(80),
+    barrio: optionalText(120),
+    ciudad: optionalText(120),
     puntoReferencia: optionalText(200),
     email: z.string().trim().email().max(254),
     password: z.string().min(12).max(72),
@@ -52,6 +52,14 @@ const resetPassword = passthrough({
     token: z.string().regex(/^[a-f\d]{64}$/i),
     password: z.string().min(12).max(72),
 });
+const changePassword = z
+    .object({
+        currentPassword: z.string().min(1).max(72),
+        password: z.string().min(12).max(72),
+        confirmPassword: z.string().min(12).max(72),
+        _csrf: optionalText(200),
+    })
+    .strict();
 
 const category = passthrough({ nombre: text(100).min(1) });
 const provider = passthrough({
@@ -92,6 +100,9 @@ const user = passthrough({
     estado: z.enum(['Activo', 'Inactivo']).optional(),
     rol: objectId.optional(),
 });
+// El formulario de alta envía "" para Cliente predeterminado. En una
+// actualización, un rol vacío sigue siendo inválido: nunca borra el rol.
+const userCreate = user.extend({ rol: z.union([objectId, z.literal('')]).optional() });
 const orderUpdate = passthrough({ estado: z.string().trim().min(1).max(40) });
 const review = passthrough({
     producto: objectId.optional(),
@@ -176,12 +187,14 @@ module.exports = {
     verification,
     forgotPassword,
     resetPassword,
+    changePassword,
     category,
     provider,
     brand,
     role,
     product,
     user,
+    userCreate,
     orderUpdate,
     review,
     adminReview,

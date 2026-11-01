@@ -55,7 +55,14 @@ function createRateLimiter(policies, message) {
             for (const policy of policies) {
                 const windowNumber = Math.floor(now / policy.windowMs);
                 const expiresAt = new Date((windowNumber + 1) * policy.windowMs);
-                const identity = policy.by === 'ip' ? ip : email === 'sin-correo' ? `${ip}:sin-correo` : email;
+                const identity =
+                    policy.by === 'user'
+                        ? String(req.usuarioActual?._id || req.session?.user?._id || ip)
+                        : policy.by === 'ip'
+                          ? ip
+                          : email === 'sin-correo'
+                            ? `${ip}:sin-correo`
+                            : email;
                 const id = createBucketId(policy.scope, identity, windowNumber);
 
                 if (policy.scope === 'login-account') {
@@ -122,4 +129,9 @@ exports.resendLimiter = createRateLimiter(
         { scope: 'resend-cooldown', by: 'account', limit: 1, windowMs: MINUTE },
     ],
     'Espera antes de solicitar otro código o inténtalo más tarde.'
+);
+
+exports.passwordChangeLimiter = createRateLimiter(
+    [{ scope: 'password-change-user', by: 'user', limit: 10, windowMs: 15 * MINUTE }],
+    'Demasiados intentos de cambio de contraseña. Espera unos minutos e inténtalo de nuevo.'
 );

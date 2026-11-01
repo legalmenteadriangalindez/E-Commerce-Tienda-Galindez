@@ -27,10 +27,11 @@
             Verifica tu correo
         </h1>
 
-        <p class="description">
-            Hemos enviado un código de verificación a tu correo electrónico.
-            Ingresa el código recibido para continuar.
-        </p>
+        <% if (deliveryFailed) { %>
+            <p class="description" role="alert">Tu cuenta se creó, pero no pudimos enviar el código. Espera un minuto y usa «Reenviar código». No necesitas registrarte otra vez.</p>
+        <% } else { %>
+            <p class="description">Ingresa el código enviado a tu correo electrónico para continuar. Si aún no lo recibes, puedes solicitar otro abajo.</p>
+        <% } %>
 
         <form action="/verify-email" method="POST">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
