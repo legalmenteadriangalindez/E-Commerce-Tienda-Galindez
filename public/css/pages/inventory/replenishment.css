@@ -560,8 +560,8 @@ body {
         display: none;
     }
 
-    .ir-table tbody td[data-label="Proveedor y entrega"],
-    .ir-table tbody td[data-label="Acción"] {
+    .ir-table tbody td[data-label='Proveedor y entrega'],
+    .ir-table tbody td[data-label='Acción'] {
         grid-column: 1 / -1;
     }
 

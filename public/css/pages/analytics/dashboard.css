@@ -76,7 +76,9 @@ body {
     font-size: 0.86rem;
     font-weight: 700;
     text-decoration: none;
-    transition: background-color 160ms ease, color 160ms ease;
+    transition:
+        background-color 160ms ease,
+        color 160ms ease;
 }
 
 .period-switcher a:hover {
@@ -402,7 +404,10 @@ body {
     background: var(--color-surface-warm);
     color: var(--color-brand-dark);
     text-decoration: none;
-    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
 }
 
 .analytics-operation-links a:hover {

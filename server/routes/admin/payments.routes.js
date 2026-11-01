@@ -11,10 +11,18 @@ const router = express.Router();
 // Pagos administrativos y conciliación
 router.get('/admin/payments', requirePermission(P.PAYMENTS_READ), commercePageController.adminPayments);
 router.post('/admin/payments/reconcile', requirePermission(P.PAYMENTS_MANAGE), commercePageController.adminReconcile);
-router.post('/admin/payments/:id/confirm-cash', requirePermission(P.PAYMENTS_MANAGE), commercePageController.confirmCash);
+router.post(
+    '/admin/payments/:id/confirm-cash',
+    requirePermission(P.PAYMENTS_MANAGE),
+    commercePageController.confirmCash
+);
 router.post('/admin/payments/:id/cancel', requirePermission(P.PAYMENTS_MANAGE), commercePageController.cancel);
 router.post('/admin/payments/:id/resolve', requirePermission(P.PAYMENTS_MANAGE), commercePageController.resolveOrder);
-router.post('/admin/payments/events/:id/resolve', requirePermission(P.PAYMENTS_MANAGE), commercePageController.resolveEvent);
+router.post(
+    '/admin/payments/events/:id/resolve',
+    requirePermission(P.PAYMENTS_MANAGE),
+    commercePageController.resolveEvent
+);
 
 // Punto de pago y confirmación de la venta administrativa
 router.get('/billing-point', requirePermission(P.PAYMENTS_MANAGE), paymentPointPage.billing_point);

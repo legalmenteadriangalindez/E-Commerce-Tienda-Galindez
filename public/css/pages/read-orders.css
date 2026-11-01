@@ -49,19 +49,19 @@
     line-height: 1.45;
 }
 
-.admin-orders-page .ui-table tbody td[data-label="Orden"] {
+.admin-orders-page .ui-table tbody td[data-label='Orden'] {
     color: var(--color-brand-dark);
     font-weight: 700;
     white-space: nowrap;
 }
 
-.admin-orders-page .ui-table tbody td[data-label="Total"] {
+.admin-orders-page .ui-table tbody td[data-label='Total'] {
     color: var(--color-brand-dark);
     font-weight: 750;
     white-space: nowrap;
 }
 
-.admin-orders-page .ui-table tbody td[data-label="Medio de pago"] {
+.admin-orders-page .ui-table tbody td[data-label='Medio de pago'] {
     min-width: 145px;
 }
 
@@ -133,7 +133,10 @@
     line-height: 1.2;
     text-align: center;
     text-decoration: none;
-    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease;
 }
 
 .admin-order-action--edit {
@@ -173,12 +176,12 @@
         box-shadow: none;
     }
 
-    .admin-orders-page .ui-table tbody td[data-label="Estado"] .admin-order-status {
+    .admin-orders-page .ui-table tbody td[data-label='Estado'] .admin-order-status {
         justify-self: start;
     }
 
-    .admin-orders-page .ui-table tbody td[data-label="Editar"] .admin-order-action,
-    .admin-orders-page .ui-table tbody td[data-label="Detalle"] .admin-order-action {
+    .admin-orders-page .ui-table tbody td[data-label='Editar'] .admin-order-action,
+    .admin-orders-page .ui-table tbody td[data-label='Detalle'] .admin-order-action {
         width: 100%;
         min-height: 42px;
     }
@@ -189,7 +192,7 @@
         margin-bottom: 1rem;
     }
 
-    .admin-orders-page .ui-table tbody td[data-label="Fecha"] {
+    .admin-orders-page .ui-table tbody td[data-label='Fecha'] {
         white-space: nowrap;
     }
 }

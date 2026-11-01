@@ -9,7 +9,7 @@ body.admin-app {
     --admin-control-height-touch: 2.85rem;
     background-color: var(--color-background);
     color: var(--color-text-strong);
-    font-family: "Segoe UI", Arial, sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 body.admin-app > :not(header):not(footer) {
@@ -75,7 +75,10 @@ body.admin-app > :not(header):not(footer) .admin-list-primary {
     font-weight: 700;
     text-align: center;
     text-decoration: none;
-    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        transform 160ms ease;
 }
 
 body.admin-app > :not(header):not(footer) .admin-list-primary:hover {
@@ -95,17 +98,21 @@ body.admin-app > :not(header):not(footer) .admin-list-empty {
     text-align: center;
 }
 
-body.admin-app > :not(header):not(footer) :is(
-    button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not([data-password-toggle]):not([data-bs-dismiss]),
-    input[type='submit'],
-    a.btn,
-    a.admin-list-primary,
-    a[class*='button'],
-    a[class*='-btn'],
-    .admin-order-action,
-    .ui-button,
-    [role='button']
-) {
+body.admin-app
+    > :not(header):not(footer)
+    :is(
+        button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not(
+                [data-password-toggle]
+            ):not([data-bs-dismiss]),
+        input[type='submit'],
+        a.btn,
+        a.admin-list-primary,
+        a[class*='button'],
+        a[class*='-btn'],
+        .admin-order-action,
+        .ui-button,
+        [role='button']
+    ) {
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
@@ -149,7 +156,9 @@ body.admin-app > :not(header):not(footer) :is(.btn-info, .btn-secondary, .btn-ou
     color: var(--color-brand-dark);
 }
 
-body.admin-app > :not(header):not(footer) :is(.btn-info, .btn-secondary, .btn-outline-primary, .btn-outline-secondary):hover {
+body.admin-app
+    > :not(header):not(footer)
+    :is(.btn-info, .btn-secondary, .btn-outline-primary, .btn-outline-secondary):hover {
     border-color: var(--color-brand-dark);
     background: var(--color-brand-dark);
     color: var(--color-surface);
@@ -167,31 +176,39 @@ body.admin-app > :not(header):not(footer) .btn-dark {
     color: var(--color-surface);
 }
 
-body.admin-app > :not(header):not(footer) :is(
-    button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not([data-password-toggle]):not([data-bs-dismiss]),
-    input[type='submit'],
-    a.btn,
-    a.admin-list-primary,
-    a[class*='button'],
-    a[class*='-btn'],
-    .admin-order-action,
-    .ui-button,
-    [role='button']
-):focus-visible,
-body.admin-app > :not(header):not(footer) :is(
-    input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='submit']),
-    select,
-    textarea
-):focus-visible {
+body.admin-app
+    > :not(header):not(footer)
+    :is(
+        button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not(
+                [data-password-toggle]
+            ):not([data-bs-dismiss]),
+        input[type='submit'],
+        a.btn,
+        a.admin-list-primary,
+        a[class*='button'],
+        a[class*='-btn'],
+        .admin-order-action,
+        .ui-button,
+        [role='button']
+    ):focus-visible,
+body.admin-app
+    > :not(header):not(footer)
+    :is(
+        input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='submit']),
+        select,
+        textarea
+    ):focus-visible {
     outline: 3px solid color-mix(in srgb, var(--color-brand-accent) 35%, transparent);
     outline-offset: 2px;
 }
 
-body.admin-app > :not(header):not(footer) :is(
-    input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='submit']),
-    select,
-    textarea
-) {
+body.admin-app
+    > :not(header):not(footer)
+    :is(
+        input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='submit']),
+        select,
+        textarea
+    ) {
     box-sizing: border-box;
     max-width: 100%;
     min-height: var(--admin-control-height);
@@ -204,67 +221,67 @@ body.admin-app > :not(header):not(footer) textarea {
     min-height: 7rem;
 }
 
-body.admin-app > :not(header):not(footer) :is(
-    .admin-panel,
-    .ui-card,
-    .ui-table-wrap,
-    .admin-table-wrap,
-    .commerce-card,
-    .analytics-card,
-    .ap-panel,
-    .ar-card,
-    .delivery-card,
-    .im-panel,
-    .raffle-panel,
-    .admin-settings-card,
-    .settings-card,
-    .profile-card,
-    .sales-export-panel,
-    .export-panel,
-    .order-card,
-    .summary-card,
-    .table-card
-) {
+body.admin-app
+    > :not(header):not(footer)
+    :is(
+        .admin-panel,
+        .ui-card,
+        .ui-table-wrap,
+        .admin-table-wrap,
+        .commerce-card,
+        .analytics-card,
+        .ap-panel,
+        .ar-card,
+        .delivery-card,
+        .im-panel,
+        .raffle-panel,
+        .admin-settings-card,
+        .settings-card,
+        .profile-card,
+        .sales-export-panel,
+        .export-panel,
+        .order-card,
+        .summary-card,
+        .table-card
+    ) {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-soft);
 }
 
-body.admin-app > :not(header):not(footer) :is(
-    .table-responsive,
-    .admin-table-wrap,
-    .ui-table-wrap,
-    [class*='table-wrap'],
-    [class*='table-scroll']
-):not(.admin-mobile-card-wrap) {
+body.admin-app
+    > :not(header):not(footer)
+    :is(.table-responsive, .admin-table-wrap, .ui-table-wrap, [class*='table-wrap'], [class*='table-scroll']):not(
+        .admin-mobile-card-wrap
+    ) {
     max-width: 100%;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
 }
 
-body.admin-app > :not(header):not(footer) :is(
-    button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not([data-password-toggle]):not([data-bs-dismiss]),
-    input[type='submit'],
-    a.btn,
-    a.admin-list-primary,
-    a[class*='button'],
-    a[class*='-btn'],
-    .admin-order-action,
-    .ui-button,
-    [role='button']
-):disabled {
+body.admin-app
+    > :not(header):not(footer)
+    :is(
+        button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not(
+                [data-password-toggle]
+            ):not([data-bs-dismiss]),
+        input[type='submit'],
+        a.btn,
+        a.admin-list-primary,
+        a[class*='button'],
+        a[class*='-btn'],
+        .admin-order-action,
+        .ui-button,
+        [role='button']
+    ):disabled {
     cursor: not-allowed;
     opacity: 0.62;
     transform: none;
 }
 
-body.admin-app > :not(header):not(footer) :is(
-    a.btn,
-    a.admin-list-primary,
-    a[class*='button'],
-    a[class*='-btn'],
-    [role='button']
-)[aria-disabled='true'] {
+body.admin-app
+    > :not(header):not(footer)
+    :is(a.btn, a.admin-list-primary, a[class*='button'], a[class*='-btn'], [role='button'])[aria-disabled='true'] {
     cursor: not-allowed;
     opacity: 0.62;
     transform: none;
@@ -324,29 +341,31 @@ body.admin-app > :not(header):not(footer) :is(
         flex-direction: column;
     }
 
-    body.admin-app > :not(header):not(footer) :is(
-        .table-responsive,
-        .admin-table-wrap,
-        .ui-table-wrap,
-        [class*='table-wrap'],
-        [class*='table-scroll']
-    ):not(.admin-mobile-card-wrap) {
+    body.admin-app
+        > :not(header):not(footer)
+        :is(.table-responsive, .admin-table-wrap, .ui-table-wrap, [class*='table-wrap'], [class*='table-scroll']):not(
+            .admin-mobile-card-wrap
+        ) {
         overflow-x: auto;
     }
 }
 
 @media (max-width: 540px) {
-    body.admin-app > :not(header):not(footer) :is(
-        button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not([data-password-toggle]):not([data-bs-dismiss]),
-        input[type='submit'],
-        a.btn,
-        a.admin-list-primary,
-        a[class*='button'],
-        a[class*='-btn'],
-        .admin-order-action,
-        .ui-button,
-        [role='button']
-    ) {
+    body.admin-app
+        > :not(header):not(footer)
+        :is(
+            button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not(
+                    [data-password-toggle]
+                ):not([data-bs-dismiss]),
+            input[type='submit'],
+            a.btn,
+            a.admin-list-primary,
+            a[class*='button'],
+            a[class*='-btn'],
+            .admin-order-action,
+            .ui-button,
+            [role='button']
+        ) {
         min-height: var(--admin-control-height-touch);
         max-width: 100%;
     }
@@ -357,17 +376,21 @@ body.admin-app > :not(header):not(footer) :is(
 }
 
 @media (prefers-reduced-motion: reduce) {
-    body.admin-app > :not(header):not(footer) :is(
-        button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not([data-password-toggle]):not([data-bs-dismiss]),
-        input[type='submit'],
-        a.btn,
-        a.admin-list-primary,
-        a[class*='button'],
-        a[class*='-btn'],
-        .admin-order-action,
-        .ui-button,
-        [role='button']
-    ) {
+    body.admin-app
+        > :not(header):not(footer)
+        :is(
+            button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not(
+                    [data-password-toggle]
+                ):not([data-bs-dismiss]),
+            input[type='submit'],
+            a.btn,
+            a.admin-list-primary,
+            a[class*='button'],
+            a[class*='-btn'],
+            .admin-order-action,
+            .ui-button,
+            [role='button']
+        ) {
         transition: none;
     }
 }

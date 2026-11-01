@@ -48,8 +48,18 @@ router.get('/perfil/editar/:id', isLogged, categoriasMiddleware, profilePageCont
 router.post('/perfil/editar/:id', isLogged, profilePageController.update_profile);
 
 router.get('/view_cart', isLogged, categoriasMiddleware, cartPageController.car);
-router.get('/payment-point', isLogged, categoriasMiddleware, require('../controller/pages/renderCommerce').checkout(false));
-router.get('/venta-finalizada/:id', isLogged, categoriasMiddleware, require('../controller/pages/renderCommerce').orderStatus);
+router.get(
+    '/payment-point',
+    isLogged,
+    categoriasMiddleware,
+    require('../controller/pages/renderCommerce').checkout(false)
+);
+router.get(
+    '/venta-finalizada/:id',
+    isLogged,
+    categoriasMiddleware,
+    require('../controller/pages/renderCommerce').orderStatus
+);
 router.get('/mis-pedidos', isLogged, categoriasMiddleware, require('../controller/pages/renderCommerce').myOrders);
 
 module.exports = router;

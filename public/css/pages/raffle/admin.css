@@ -36,7 +36,10 @@ body {
     font-size: 0.88rem;
     font-weight: 700;
     text-decoration: none;
-    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease,
+        color 160ms ease;
 }
 
 .raffle-back-link:hover {
@@ -283,7 +286,11 @@ body {
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        transform 160ms ease;
 }
 
 .raffle-button:hover,
@@ -599,7 +606,10 @@ body {
     background: var(--color-surface);
     color: var(--color-brand-dark);
     text-decoration: none;
-    transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease,
+        box-shadow 160ms ease;
 }
 
 .raffle-round-history__item:hover {
