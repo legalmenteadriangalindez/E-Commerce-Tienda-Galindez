@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const authController = require('../controller/authController');
-const servicesLoginLogout = require('../pages/renderLoginLogout');
+const authPageController = require('../controller/pages/renderLoginLogout');
 const confirmationCodeController = require('../controller/confirmationCodeController');
-const servicesRenderVerificationCode = require('../pages/renderVerificationCode');
+const verificationPageController = require('../controller/pages/renderVerificationCode');
 const categoriasMiddleware = require('../middleware/categoriasMiddleware');
 const { loginLimiter, registrationLimiter, verificationLimiter, resendLimiter } = require('../middleware/rateLimit');
 const { validate } = require('../middleware/validateRequest');
@@ -14,7 +14,7 @@ const changePassword = require('../controller/changePasswordController');
 const { passwordChangeLimiter } = require('../middleware/rateLimit');
 
 router.post('/login', loginLimiter, validate(schemas.login), authController.login);
-router.get('/login', servicesLoginLogout.login);
+router.get('/login', authPageController.login);
 router.post('/logout', authController.logout);
 router.get('/logout', (req, res) => res.status(405).set('Allow', 'POST').send('Usa el formulario para cerrar sesión'));
 
@@ -32,7 +32,7 @@ router.post(
     validate(schemas.verification.pick({ email: true })),
     confirmationCodeController.resendVerificationCode
 );
-router.get('/verify-email', servicesRenderVerificationCode.renderVerificationCode);
+router.get('/verify-email', verificationPageController.renderVerificationCode);
 const resetPassword = require('../controller/passwordResetController');
 router.get('/forgot-password', categoriasMiddleware, resetPassword.requestForm);
 router.post('/forgot-password', resendLimiter, validate(schemas.forgotPassword), resetPassword.request);

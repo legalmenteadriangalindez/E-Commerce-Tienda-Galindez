@@ -3,27 +3,33 @@
 La tienda es un monolito modular Express con vistas EJS. Las páginas y la API
 comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
 
-| Directorio           | Responsabilidad                                                                                                                                            |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `server/routes/`     | Rutas, permisos, middleware y carga de archivos.                                                                                                           |
-| `server/pages/`      | Adaptar solicitudes HTTP a páginas EJS y redirecciones.                                                                                                    |
-| `server/controller/` | Adaptar solicitudes HTTP a respuestas API, descargas y recursos.                                                                                           |
-| `server/business/`   | Operaciones, validaciones de negocio y consultas a MongoDB.                                                                                                |
-| `server/model/`      | Esquemas, relaciones y definiciones de índices.                                                                                                            |
-| `server/validation/` | Esquemas de entradas HTTP compartidos con los servicios de administración.                                                                                 |
-| `server/services/`   | Utilidades compartidas: importes, paginación, CSV y respuestas.                                                                                            |
-| `server/templates/`  | Composición de correos; no envía mensajes ni importa servicios de negocio.                                                                                 |
-| `server/config/`     | Configuración e integraciones, incluido el transporte Brevo.                                                                                               |
-| `views/`             | Presentación EJS, includes y datos estructurados JSON-LD.                                                                                                  |
-| `public/`            | CSS, JavaScript de navegador, imágenes y fuentes; URLs canónicas `/css`, `/js` y `/img`. El alias `/assets` se conserva temporalmente para compatibilidad. |
+| Directorio                 | Responsabilidad                                                                                                                                           |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `server/routes/`           | Rutas, permisos, middleware y carga de archivos.                                                                                                          |
+| `server/controller/pages/` | Controladores HTTP de vistas: preparan datos, renderizan EJS y redirigen.                                                                                  |
+| `server/controller/`       | Controladores HTTP de API, descargas y recursos.                                                                                                          |
+| `server/pages/`            | Modelos y helpers de presentación; no registra rutas ni contiene handlers HTTP.                                                                           |
+| `server/http/`             | Adaptadores HTTP y utilidades de sesión compartidas por controladores.                                                                                     |
+| `server/business/`         | Operaciones, validaciones de negocio y consultas a MongoDB.                                                                                               |
+| `server/model/`            | Esquemas, relaciones y definiciones de índices.                                                                                                           |
+| `server/validation/`       | Esquemas de entradas HTTP compartidos con los servicios de administración.                                                                                |
+| `server/services/`         | Utilidades compartidas: importes, paginación, CSV y respuestas.                                                                                           |
+| `server/templates/`        | Composición de correos; no envía mensajes ni importa servicios de negocio.                                                                                |
+| `server/config/`           | Configuración e integraciones, incluido el transporte Brevo.                                                                                              |
+| `views/`                   | Presentación EJS, includes y datos estructurados JSON-LD.                                                                                                 |
+| `public/`                  | CSS, JavaScript de navegador, imágenes y fuentes; URLs canónicas `/css`, `/js` y `/img`. El alias `/assets` se conserva temporalmente para compatibilidad. |
 
 ## Reglas para nuevos cambios
 
 - Las rutas aplican autenticación, permisos y CSRF antes de ejecutar una operación.
   Los servicios no reciben `req` ni `res`. Los campos de control no se persisten.
-- Las páginas y controladores no importan `server/model` ni construyen consultas
-  MongoDB. Usan servicios de negocio como `cartService`, `orderService`,
-  `reviewService`, `accountService` y `salesService`; así las mismas reglas se
+- El flujo HTTP sigue `routes -> controller -> business -> model`. Los controladores
+  de páginas viven en `server/controller/pages/`; allí preparan la respuesta HTML
+  y delegan los casos de uso en servicios como `cartService`, `orderService`,
+  `reviewService`, `accountService` y `salesService`. Los controladores no importan
+  `server/model` ni construyen consultas MongoDB. `server/pages/` se reserva para
+  modelos de presentación y helpers compartidos, mientras que `server/http/`
+  concentra adaptadores y utilidades HTTP comunes. Así las mismas reglas se
   comparten entre HTML, API y tareas de mantenimiento.
 - Perfil, catálogo, proveedores, usuarios, roles, pedidos y ventas comparten
   servicios entre páginas y API. Pedidos y ventas se escriben mediante
@@ -73,8 +79,8 @@ comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
   El CSS del carrito se divide por layout, artículos, resumen, responsive, catálogo y agregado de productos
   en `public/css/pages/cart/`. Los parciales no cargan CSS ni JavaScript; esos recursos se cargan una sola vez
   en la vista principal.
-- Las páginas de comercio separan checkout, pedidos del cliente y administración de pagos.
-  `renderCommerce.js` conserva una fachada pequeña para las rutas existentes y delega en sus módulos de página.
+- Los controladores de comercio separan checkout, pedidos del cliente y administración de pagos.
+  `server/controller/pages/renderCommerce.js` conserva una fachada pequeña para las rutas existentes y delega en sus módulos especializados.
 - Los encabezados (`_header`, `_headerAdmin` y `_headerDealer`) cargan únicamente los
   recursos base. `server/config/pageResources.js` registra `pageCss` y `pageJs` por
   plantilla; el layout los valida, elimina duplicados y los inserta de forma diferida.
@@ -83,7 +89,7 @@ comparten casos de uso; no realizan solicitudes HTTP al propio servidor.
   migración nueva; las migraciones publicadas conservan su checksum.
 - Los módulos JavaScript nuevos y ya normalizados usan `camelCase`
   (`authController.js`, `productController.js`, `userController.js`,
-  `saleController.js`, `paymentPointPage.js`) y los estilos propios usan
+  `saleController.js`, `server/controller/pages/paymentPointPage.js`) y los estilos propios usan
   `kebab-case` en minúsculas (`add-product-billing-point.css`,
   `create-products.css`, `edit-profile.css`, `read-orders.css`, `stock.css`).
   Los nombres heredados se migran de forma gradual para no romper rutas ni

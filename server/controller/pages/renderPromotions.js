@@ -1,5 +1,5 @@
-const catalog = require('../business/catalogService');
-const catalogPagination = require('../services/catalogPagination');
+const catalog = require('../../business/catalogService');
+const catalogPagination = require('../../services/catalogPagination');
 
 // Promociones
 exports.promotions = async (req, res) => {

@@ -1,6 +1,6 @@
-const profiles = require('../business/profileService');
-const { BusinessError, validId } = require('../business/errors');
-const { wrap } = require('../http/handlers');
+const profiles = require('../../business/profileService');
+const { BusinessError, validId } = require('../../business/errors');
+const { wrap } = require('../../http/handlers');
 function owner(req) {
     const id = req.session?.user?._id?.toString();
     if (!id) throw new BusinessError('Debes iniciar sesión.', 401);

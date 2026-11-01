@@ -14,6 +14,10 @@ exports.delete = wrap(async (req, res) => {
     await products.remove(req.params.id);
     res.json({ message: 'Producto eliminado correctamente.' });
 });
+exports.deleteFromPage = wrap(async (req, res) => {
+    await products.remove(req.params.id);
+    res.redirect(303, '/read-producto');
+});
 exports.find = wrap(async (req, res) =>
     res.json(req.query.id ? await products.get(req.query.id) : await products.list(req.query))
 );

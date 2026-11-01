@@ -1,9 +1,9 @@
-const { publicError } = require('../services/publicError');
-const checkout = require('../business/checkoutService');
-const catalog = require('../business/catalogService');
-const orders = require('../business/orderService');
-const storeSettings = require('../business/storeSettingsService');
-const money = require('../services/money');
+const { publicError } = require('../../services/publicError');
+const checkout = require('../../business/checkoutService');
+const catalog = require('../../business/catalogService');
+const orders = require('../../business/orderService');
+const storeSettings = require('../../business/storeSettingsService');
+const money = require('../../services/money');
 
 // RENDER CART
 exports.car = async (req, res) => {

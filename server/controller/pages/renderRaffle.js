@@ -1,6 +1,6 @@
-const raffle = require('../business/raffleService');
-const banner = require('../middleware/raffleBanner');
-const catalogPagination = require('../services/catalogPagination');
+const raffle = require('../../business/raffleService');
+const banner = require('../../middleware/raffleBanner');
+const catalogPagination = require('../../services/catalogPagination');
 
 function logRaffle(event, req, extra = {}) {
     console.info(

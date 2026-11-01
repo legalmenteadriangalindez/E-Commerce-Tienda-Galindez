@@ -1,9 +1,10 @@
-const payments = require('../business/paymentService');
-const orders = require('../business/orderService');
-const { CommerceError, isValidObjectId, validTransactionId } = require('../business/commerceShared');
-const catalogPagination = require('../services/catalogPagination');
-const { presentAdminPaymentEvent, presentAdminPaymentOrder } = require('./paymentOrderViewModel');
-const { saveSession, wrap } = require('./commercePageShared');
+const payments = require('../../business/paymentService');
+const orders = require('../../business/orderService');
+const { CommerceError, isValidObjectId, validTransactionId } = require('../../business/commerceShared');
+const catalogPagination = require('../../services/catalogPagination');
+const { presentAdminPaymentEvent, presentAdminPaymentOrder } = require('../../pages/paymentOrderViewModel');
+const { wrap } = require('../../http/handlers');
+const { saveSession } = require('../../http/session');
 
 exports.adminPayments = wrap(async (req, res) => {
     const page = Math.max(1, Math.min(Number.parseInt(req.query.page, 10) || 1, 100000));

@@ -3,38 +3,38 @@ const { requirePermission } = require('../../middleware/auth');
 const { PERMISSIONS: P } = require('../../config/permissions');
 const upload = require('../../middleware/upload');
 
-const servicesRenderAdminAnalytics = require('../../pages/renderAdminAnalytics');
-const servicesRenderSales = require('../../pages/renderSales');
-const servicesRenderRaffle = require('../../pages/renderRaffle');
-const servicesRenderShippingSettings = require('../../pages/renderShippingSettings');
+const analyticsPageController = require('../../controller/pages/renderAdminAnalytics');
+const salesPageController = require('../../controller/pages/renderSales');
+const rafflePageController = require('../../controller/pages/renderRaffle');
+const shippingSettingsPageController = require('../../controller/pages/renderShippingSettings');
 
 const router = express.Router();
 
 // Analítica administrativa
-router.get('/admin-analytics', requirePermission(P.ANALYTICS_READ), servicesRenderAdminAnalytics.renderAdminAnalytics);
-router.get('/admin-best_selling_products', requirePermission(P.SALES_READ), servicesRenderSales.best_selling_products);
+router.get('/admin-analytics', requirePermission(P.ANALYTICS_READ), analyticsPageController.renderAdminAnalytics);
+router.get('/admin-best_selling_products', requirePermission(P.SALES_READ), salesPageController.best_selling_products);
 
 // Sorteo de regalos
-router.get('/admin/raffle', requirePermission(P.RAFFLE_MANAGE), servicesRenderRaffle.adminIndex);
+router.get('/admin/raffle', requirePermission(P.RAFFLE_MANAGE), rafflePageController.adminIndex);
 router.post(
     '/admin/raffle',
     requirePermission(P.RAFFLE_MANAGE),
     upload.single('imagenPremio'),
-    servicesRenderRaffle.update
+    rafflePageController.update
 );
-router.post('/admin/raffle/draw', requirePermission(P.RAFFLE_MANAGE), servicesRenderRaffle.draw);
-router.post('/admin/raffle/reset', requirePermission(P.RAFFLE_MANAGE), servicesRenderRaffle.reset);
+router.post('/admin/raffle/draw', requirePermission(P.RAFFLE_MANAGE), rafflePageController.draw);
+router.post('/admin/raffle/reset', requirePermission(P.RAFFLE_MANAGE), rafflePageController.reset);
 
 // Configuración de envíos
 router.get(
     '/admin/settings/shipping',
     requirePermission(P.STORE_SETTINGS_MANAGE),
-    servicesRenderShippingSettings.index
+    shippingSettingsPageController.index
 );
 router.post(
     '/admin/settings/shipping',
     requirePermission(P.STORE_SETTINGS_MANAGE),
-    servicesRenderShippingSettings.update
+    shippingSettingsPageController.update
 );
 
 module.exports = router;

@@ -1,13 +1,13 @@
-const { wrap } = require('../http/handlers');
-const pagination = require('../services/catalogPagination');
-const products = require('../business/productService');
-const brands = require('../business/brandService');
-const categories = require('../business/categoryService');
-const providers = require('../business/providerService');
-const { hasPermission } = require('../config/authorization');
-const { PERMISSIONS: P } = require('../config/permissions');
-const reviewService = require('../business/reviewService');
-const catalog = require('../business/catalogService');
+const { wrap } = require('../../http/handlers');
+const pagination = require('../../services/catalogPagination');
+const products = require('../../business/productService');
+const brands = require('../../business/brandService');
+const categories = require('../../business/categoryService');
+const providers = require('../../business/providerService');
+const { hasPermission } = require('../../config/authorization');
+const { PERMISSIONS: P } = require('../../config/permissions');
+const reviewService = require('../../business/reviewService');
+const catalog = require('../../business/catalogService');
 const siteUrl = (process.env.BASE_URL || 'http://localhost:3000').replace(/\/$/, '');
 exports.product_detail = async (req, res) => {
     const id = req.params.id;
@@ -81,10 +81,6 @@ async function options(actor, product = {}) {
 exports.create_product_form = wrap(async (req, res) =>
     res.render('admin/products/create_producto', await options(req.usuarioActual))
 );
-exports.create_product = wrap(async (req, res) => {
-    await products.create(req.body, req.files, req.usuarioActual);
-    res.redirect(303, '/read-producto');
-});
 exports.update_products = wrap(async (req, res) => {
     const producto = await products.get(req.params.id);
     res.render('admin/products/update_products', { producto, ...(await options(req.usuarioActual, producto)) });
@@ -95,10 +91,6 @@ exports.read_products = wrap(async (req, res) => {
         productos: result.items,
         pagination: pagination.buildPagination(req, result.pagination),
     });
-});
-exports.delete_product = wrap(async (req, res) => {
-    await products.remove(req.params.id);
-    res.redirect(303, '/read-producto');
 });
 exports.read_stock = wrap(async (req, res) => {
     const result = await products.stockAlerts({ page: req.query.page, limit: 10 });

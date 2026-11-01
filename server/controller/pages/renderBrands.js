@@ -1,7 +1,7 @@
-const { wrap } = require('../http/handlers');
-const pagination = require('../services/catalogPagination');
-const brands = require('../business/brandService');
-const catalog = require('../business/catalogService');
+const { wrap } = require('../../http/handlers');
+const pagination = require('../../services/catalogPagination');
+const brands = require('../../business/brandService');
+const catalog = require('../../business/catalogService');
 const catalogPagination = pagination;
 exports.brands = wrap(async (req, res) => res.render('client/brands/brands', { brands: await brands.publicList() }));
 exports.create_brand_form = (req, res) => res.render('admin/brands/create_marca');

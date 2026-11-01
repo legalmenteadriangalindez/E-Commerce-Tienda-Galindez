@@ -1,6 +1,6 @@
-const { wrap } = require('../http/handlers');
-const pagination = require('../services/catalogPagination');
-const providers = require('../business/providerService');
+const { wrap } = require('../../http/handlers');
+const pagination = require('../../services/catalogPagination');
+const providers = require('../../business/providerService');
 exports.create_provider_form = (req, res) => res.render('admin/providers/create_proveedor');
 exports.create_provider = wrap(async (req, res) => {
     await providers.create(req.body);

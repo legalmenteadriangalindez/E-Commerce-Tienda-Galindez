@@ -11,7 +11,7 @@ const canonicalFiles = [
     'server/controller/userController.js',
     'server/controller/saleController.js',
     'server/controller/reviewAdminController.js',
-    'server/pages/paymentPointPage.js',
+    'server/controller/pages/paymentPointPage.js',
     'public/css/add-product-billing-point.css',
     'public/css/pages/create-products.css',
     'public/css/pages/edit-profile.css',

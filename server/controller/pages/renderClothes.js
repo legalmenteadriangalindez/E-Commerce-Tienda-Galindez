@@ -1,5 +1,5 @@
-const catalog = require('../business/catalogService');
-const catalogPagination = require('../services/catalogPagination');
+const catalog = require('../../business/catalogService');
+const catalogPagination = require('../../services/catalogPagination');
 
 exports.renderClothes = async (req, res) => {
     try {

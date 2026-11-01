@@ -1,8 +1,8 @@
-const { wrap } = require('../http/handlers');
-const pagination = require('../services/catalogPagination');
-const sales = require('../business/salesService');
-const analytics = require('../business/analyticsService');
-const analyticsExport = require('../business/analytics/analyticsExport');
+const { wrap } = require('../../http/handlers');
+const pagination = require('../../services/catalogPagination');
+const sales = require('../../business/salesService');
+const analytics = require('../../business/analyticsService');
+const analyticsExport = require('../../business/analytics/analyticsExport');
 exports.sales = wrap(async (req, res) => {
     const filters = Object.fromEntries(
         ['from', 'to', 'estadoPago', 'canal'].map((key) => [

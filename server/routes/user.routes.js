@@ -5,7 +5,7 @@ const { requirePermission } = require('../middleware/auth');
 const { PERMISSIONS: P } = require('../config/permissions');
 
 const userController = require('../controller/userController');
-const servicesRenderUser = require('../pages/renderUsers');
+const usersPageController = require('../controller/pages/renderUsers');
 const { validate } = require('../middleware/validateRequest');
 const schemas = require('../validation/schemas');
 
@@ -31,7 +31,7 @@ router.put('/:id', validate(schemas.idParams, 'params'), validate(schemas.user),
 router.delete('/:id', validate(schemas.idParams, 'params'), userController.delete);
 
 // Rutas auxiliares administrativas
-router.get('/update/:id', servicesRenderUser.update_user);
-router.post('/update/:id', servicesRenderUser.update_user_data);
+router.get('/update/:id', usersPageController.update_user);
+router.post('/update/:id', usersPageController.update_user_data);
 
 module.exports = router;

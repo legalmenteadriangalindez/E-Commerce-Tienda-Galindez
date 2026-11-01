@@ -176,8 +176,8 @@ test('los enlaces y acciones locales de todas las vistas tienen una ruta', () =>
 test('los módulos eliminados no vuelven a introducir exports heredados', () => {
     assert.equal(fs.existsSync(path.join(root, 'server/services/renderCheckout.js')), false);
 
-    const renderCart = fs.readFileSync(path.join(root, 'server/pages/renderCart.js'), 'utf8');
-    const renderSales = fs.readFileSync(path.join(root, 'server/pages/renderSales.js'), 'utf8');
+    const renderCart = fs.readFileSync(path.join(root, 'server/controller/pages/renderCart.js'), 'utf8');
+    const renderSales = fs.readFileSync(path.join(root, 'server/controller/pages/renderSales.js'), 'utf8');
     const saleController = fs.readFileSync(path.join(root, 'server/controller/saleController.js'), 'utf8');
 
     assert.doesNotMatch(

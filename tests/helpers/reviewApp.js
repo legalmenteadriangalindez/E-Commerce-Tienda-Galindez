@@ -83,7 +83,7 @@ async function startReviewApp(uri, configure) {
     app.get(
         '/admin/reviews',
         require('../../server/middleware/auth').isAdmin,
-        require('../../server/pages/renderReviews').adminIndex
+        require('../../server/controller/pages/renderReviews').adminIndex
     );
 
     const server = await new Promise((resolve) => {
@@ -92,7 +92,7 @@ async function startReviewApp(uri, configure) {
     const origin = 'http://127.0.0.1:' + server.address().port;
     process.env.BASE_URL = origin;
     app.get('/api/productos/catalogo/:id', require('../../server/controller/productController').findPublicOne);
-    app.get('/Detalles/:id', require('../../server/pages/renderProducts').product_detail);
+    app.get('/Detalles/:id', require('../../server/controller/pages/renderProducts').product_detail);
     if (configure) await configure(app, users);
     // Usa el mismo contrato de errores que el servidor real. El manejador
     // anterior convertía RequestValidationError (400) en 500 y ocultaba los

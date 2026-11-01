@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const legal = require('../server/pages/renderLegal');
+const legal = require('../server/controller/pages/renderLegal');
 
 test('las páginas legales públicas están registradas y tienen controlador', () => {
     assert.deepEqual(

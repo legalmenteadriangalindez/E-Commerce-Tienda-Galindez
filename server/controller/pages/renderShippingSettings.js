@@ -1,6 +1,6 @@
 'use strict';
 
-const storeSettings = require('../business/storeSettingsService');
+const storeSettings = require('../../business/storeSettingsService');
 
 function saveSession(req) {
     return new Promise((resolve, reject) => {

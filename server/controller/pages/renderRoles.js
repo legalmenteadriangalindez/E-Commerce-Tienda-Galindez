@@ -1,8 +1,8 @@
-const { wrap } = require('../http/handlers');
-const pagination = require('../services/catalogPagination');
-const roles = require('../business/roleService');
-const { validId } = require('../business/errors');
-const { PERMISSION_KEYS, PERMISSION_LABELS } = require('../config/permissions');
+const { wrap } = require('../../http/handlers');
+const pagination = require('../../services/catalogPagination');
+const roles = require('../../business/roleService');
+const { validId } = require('../../business/errors');
+const { PERMISSION_KEYS, PERMISSION_LABELS } = require('../../config/permissions');
 const formOptions = { permissionKeys: PERMISSION_KEYS, permissionLabels: PERMISSION_LABELS };
 exports.create_rol_form = (req, res) =>
     res.render('admin/rols/create_rol', { ...formOptions, selectedPermissions: [] });

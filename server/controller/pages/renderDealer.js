@@ -1,6 +1,6 @@
-const orders = require('../business/orderService');
-const delivery = require('../business/deliveryService');
-const catalogPagination = require('../services/catalogPagination');
+const orders = require('../../business/orderService');
+const delivery = require('../../business/deliveryService');
+const catalogPagination = require('../../services/catalogPagination');
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 exports.read_orders = wrap(async (req, res) => {
     const result = await delivery.listForDealer(req.session.user._id, { page: req.query.page, limit: 10 });

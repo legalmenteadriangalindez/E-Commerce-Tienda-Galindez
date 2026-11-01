@@ -1,7 +1,7 @@
-const { wrap } = require('../http/handlers');
-const pagination = require('../services/catalogPagination');
-const categories = require('../business/categoryService');
-const catalog = require('../business/catalogService');
+const { wrap } = require('../../http/handlers');
+const pagination = require('../../services/catalogPagination');
+const categories = require('../../business/categoryService');
+const catalog = require('../../business/catalogService');
 const catalogPagination = pagination;
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 exports.category = async (req, res) => {

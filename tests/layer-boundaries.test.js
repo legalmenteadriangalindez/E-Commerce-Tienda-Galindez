@@ -9,8 +9,12 @@ const files = (directory) =>
         return entry.isDirectory() ? files(filename) : [filename];
     });
 
-test('las páginas consultan servicios directamente y no contienen clientes HTTP', () => {
-    for (const filename of files(path.join(root, 'server/pages'))) {
+test('los controladores de página consultan servicios y no contienen clientes HTTP', () => {
+    const pageModules = [
+        ...files(path.join(root, 'server/pages')),
+        ...files(path.join(root, 'server/controller/pages')),
+    ];
+    for (const filename of pageModules) {
         const source = fs.readFileSync(filename, 'utf8');
         assert.doesNotMatch(
             source,

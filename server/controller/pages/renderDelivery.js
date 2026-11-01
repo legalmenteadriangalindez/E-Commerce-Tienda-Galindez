@@ -1,5 +1,5 @@
-const delivery = require('../business/deliveryService');
-const catalogPagination = require('../services/catalogPagination');
+const delivery = require('../../business/deliveryService');
+const catalogPagination = require('../../services/catalogPagination');
 
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 

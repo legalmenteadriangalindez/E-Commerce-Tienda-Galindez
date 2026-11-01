@@ -1,4 +1,4 @@
-const storeSettings = require('../business/storeSettingsService');
+const storeSettings = require('../../business/storeSettingsService');
 
 exports.billing_point = async (req, res, next) => {
     try {

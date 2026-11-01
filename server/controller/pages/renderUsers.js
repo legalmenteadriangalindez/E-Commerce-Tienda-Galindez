@@ -1,10 +1,10 @@
-const { wrap } = require('../http/handlers');
-const pagination = require('../services/catalogPagination');
-const users = require('../business/userService');
-const roles = require('../business/roleService');
-const { hasPermission } = require('../config/authorization');
-const { PERMISSIONS: P } = require('../config/permissions');
-const { validId } = require('../business/errors');
+const { wrap } = require('../../http/handlers');
+const pagination = require('../../services/catalogPagination');
+const users = require('../../business/userService');
+const roles = require('../../business/roleService');
+const { hasPermission } = require('../../config/authorization');
+const { PERMISSIONS: P } = require('../../config/permissions');
+const { validId } = require('../../business/errors');
 async function roleOptions(actor, current) {
     const canManageRoles = hasPermission(actor, P.ROLES_MANAGE);
     const result = canManageRoles ? await roles.find({ limit: 50 }, actor) : { items: [] };

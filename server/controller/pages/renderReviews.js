@@ -1,4 +1,4 @@
-const adminReviews = require('../business/reviewAdminService');
+const adminReviews = require('../../business/reviewAdminService');
 
 exports.adminIndex = async (req, res) => {
     res.set('Cache-Control', 'no-store');

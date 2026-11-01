@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-const catalog = require('../business/catalogService');
+const catalog = require('../../business/catalogService');
 
 dotenv.config();
 

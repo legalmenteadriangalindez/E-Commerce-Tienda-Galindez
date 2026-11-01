@@ -39,7 +39,7 @@ test(
                 app.use('/carrito', require('../server/routes/cart.routes'));
                 app.use('/', require('../server/routes/auth.routes'));
                 const auth = require('../server/middleware/auth');
-                const pages = require('../server/pages/renderCommerce');
+                const pages = require('../server/controller/pages/renderCommerce');
                 app.get('/payment-point', auth.isLogged, pages.checkout(false));
                 app.get('/mis-pedidos', auth.isLogged, pages.myOrders);
                 app.get('/venta-finalizada/:id', auth.isLogged, pages.orderStatus);

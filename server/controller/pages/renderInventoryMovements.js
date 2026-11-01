@@ -1,9 +1,9 @@
 'use strict';
 
 const crypto = require('node:crypto');
-const { wrap } = require('../http/handlers');
-const pagination = require('../services/catalogPagination');
-const movements = require('../business/inventoryMovementService');
+const { wrap } = require('../../http/handlers');
+const pagination = require('../../services/catalogPagination');
+const movements = require('../../business/inventoryMovementService');
 
 const labels = {
     SALDO_INICIAL: 'Saldo inicial',

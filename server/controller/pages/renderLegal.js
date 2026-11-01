@@ -19,11 +19,11 @@ const legalPages = [
 ];
 
 const policies = {
-    privacidad: require('./legal/privacidad'),
-    terminos: require('./legal/terminos'),
-    'cambios-devoluciones': require('./legal/cambios-devoluciones'),
-    envios: require('./legal/envios'),
-    reclamaciones: require('./legal/reclamaciones'),
+    privacidad: require('../../pages/legal/privacidad'),
+    terminos: require('../../pages/legal/terminos'),
+    'cambios-devoluciones': require('../../pages/legal/cambios-devoluciones'),
+    envios: require('../../pages/legal/envios'),
+    reclamaciones: require('../../pages/legal/reclamaciones'),
 };
 
 function fill(value) {
