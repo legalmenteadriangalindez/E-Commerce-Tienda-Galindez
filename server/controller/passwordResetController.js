@@ -10,8 +10,24 @@ exports.request = wrap(async (req, res) => {
             const link = `${process.env.BASE_URL || 'http://localhost:3000'}/reset-password?token=${result.token}`;
             try {
                 await sendEmail.sendPasswordReset(result.user.email, link);
-            } catch {
-                console.error('No se pudo enviar el correo de recuperación.');
+            } catch (error) {
+                // El usuario no debe conocer si la cuenta existe ni los detalles del proveedor.
+                // Registrar solo metadatos seguros permite diagnosticar rechazos de Brevo.
+                const status = Number(error?.statusCode || error?.status || error?.response?.status);
+                const rawCode = error?.response?.body?.code || error?.body?.code || error?.code;
+                const code =
+                    typeof rawCode === 'string' && /^[a-zA-Z0-9_.-]{1,60}$/.test(rawCode)
+                        ? rawCode
+                        : undefined;
+                console.error(
+                    JSON.stringify({
+                        event: 'password_reset_email_error',
+                        requestId: req.requestId,
+                        ...(Number.isInteger(status) && status >= 400 && status <= 599 ? { providerStatus: status } : {}),
+                        ...(code ? { providerCode: code } : {}),
+                        type: error?.name || 'Error',
+                    })
+                );
             }
         }
     }
