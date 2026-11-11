@@ -55,9 +55,12 @@ const sendEmail = async (to, code) => {
 
 module.exports = sendEmail;
 module.exports.sendPasswordReset = async (to, link) => {
-    if ((!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) && process.env.NODE_ENV !== 'production') {
-        console.info('[DESARROLLO LOCAL] Recuperación de contraseña:', link);
-        return;
+    if (!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) {
+        if (process.env.NODE_ENV !== 'production') {
+            console.info('[DESARROLLO LOCAL] Recuperación de contraseña:', link);
+            return;
+        }
+        throw new Error('Configura BREVO_API_KEY y EMAIL_USER para recuperar contraseñas.');
     }
     return getBrevoClient().transactionalEmails.sendTransacEmail({
         sender: { name: 'Tienda Galindez', email: process.env.EMAIL_USER },
