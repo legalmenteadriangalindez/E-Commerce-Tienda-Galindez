@@ -25,8 +25,8 @@ exports.request = wrap(async (req, res) => {
                     JSON.stringify({
                         event: 'password_reset_email_error',
                         requestId: req.requestId,
-                        ...(Number.isInteger(status) && status >= 400 && status <= 599 ? { providerStatus: status } : {}),
-                        ...(code ? { providerCode: code } : {}),
+                        providerStatus,
+                        providerCode: code,
                         type: error?.name || 'Error',
                     })
                 );
