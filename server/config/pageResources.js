@@ -86,9 +86,9 @@ const resources = {
     'client/payment/order_status': { pageCss: css('commerce.css', 'delivery-tracking.css') },
     'client/raffle/index': { pageCss: css('commerce.css', 'pages/raffle/public.css') },
     'client/legal/page': { pageCss: css('legal.css') },
-    'client/auth/forgot_password': { pageCss: css('commerce.css') },
+    'client/auth/forgot_password': { pageCss: css('pages/password-recovery.css') },
     'client/auth/reset_password': {
-        pageCss: css('commerce.css', 'components/password-visibility.css'),
+        pageCss: css('pages/password-recovery.css', 'components/password-visibility.css'),
         pageJs: js('password-visibility.js'),
     },
     'client/auth/change_password': {

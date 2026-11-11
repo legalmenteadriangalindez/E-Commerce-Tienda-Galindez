@@ -35,7 +35,13 @@ router.post(
 router.get('/verify-email', verificationPageController.renderVerificationCode);
 const resetPassword = require('../controller/passwordResetController');
 router.get('/forgot-password', categoriasMiddleware, resetPassword.requestForm);
-router.post('/forgot-password', resendLimiter, validate(schemas.forgotPassword), resetPassword.request);
+router.post(
+    '/forgot-password',
+    resendLimiter,
+    validate(schemas.forgotPassword),
+    categoriasMiddleware,
+    resetPassword.request
+);
 router.get('/reset-password', categoriasMiddleware, resetPassword.resetForm);
 router.post('/reset-password', verificationLimiter, validate(schemas.resetPassword), resetPassword.reset);
 router.get('/change-password', isLogged, categoriasMiddleware, changePassword.form);
