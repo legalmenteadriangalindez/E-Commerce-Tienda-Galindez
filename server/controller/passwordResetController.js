@@ -15,11 +15,14 @@ exports.request = wrap(async (req, res) => {
                 // Registrar solo metadatos seguros permite diagnosticar rechazos de Brevo.
                 const status = Number(error?.statusCode || error?.status || error?.response?.status);
                 const rawCode = error?.response?.body?.code || error?.body?.code || error?.code;
-                const code =
-                    typeof rawCode === 'string' && /^[a-zA-Z0-9_.-]{1,60}$/.test(rawCode)
-                        ? rawCode
-                        : undefined;
-                const providerStatus = Number.isInteger(status) && status >= 400 && status <= 599 ? status : undefined;
+                let code;
+                if (typeof rawCode === 'string' && /^[a-zA-Z0-9_.-]{1,60}$/.test(rawCode)) {
+                    code = rawCode;
+                }
+                let providerStatus;
+                if (Number.isInteger(status) && status >= 400 && status <= 599) {
+                    providerStatus = status;
+                }
                 console.error(
                     JSON.stringify({
                         event: 'password_reset_email_error',
