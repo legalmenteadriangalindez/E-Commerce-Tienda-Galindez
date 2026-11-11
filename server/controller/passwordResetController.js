@@ -19,6 +19,8 @@ exports.request = wrap(async (req, res) => {
                     typeof rawCode === 'string' && /^[a-zA-Z0-9_.-]{1,60}$/.test(rawCode)
                         ? rawCode
                         : undefined;
+                const providerStatus =
+                    Number.isInteger(status) && status >= 400 && status <= 599 ? status : undefined;
                 console.error(
                     JSON.stringify({
                         event: 'password_reset_email_error',
