@@ -109,48 +109,29 @@ async function financialSummary(period = 'week', now = new Date()) {
     };
 }
 
-async function cashFlow(period = 'week', now = new Date()) {
-    const range = periodRange(period, now);
-    const matchSales = { estadoPago: 'PAGADO', createdAt: { $gte: range.start, $lt: range.end } };
-    const matchPaid = { $gte: range.start, $lt: range.end };
-    const [saleTotals, expenseTotals, purchaseTotals, recentSales, recentExpenses, recentPurchases] = await Promise.all(
-        [
-            Sale.aggregate([
-                { $match: matchSales },
-                { $group: { _id: null, total: { $sum: moneyCents('$totalCents', '$total') } } },
-            ]),
-            Expense.aggregate([
-                { $match: { pagadoEn: matchPaid } },
-                { $group: { _id: null, total: { $sum: '$montoCents' } } },
-            ]),
-            Purchase.aggregate([
-                { $match: { pagadoEn: matchPaid } },
-                { $group: { _id: null, total: { $sum: '$totalCents' } } },
-            ]),
-            Sale.find(matchSales)
-                .populate('order', 'numeroOrden')
-                .select('total totalCents order createdAt')
-                .sort({ createdAt: -1, _id: -1 })
-                .limit(50)
-                .lean(),
-            Expense.find({ pagadoEn: matchPaid })
-                .select('montoCents categoria descripcion pagadoEn')
-                .sort({ pagadoEn: -1, _id: -1 })
-                .limit(50)
-                .lean(),
-            Purchase.find({ pagadoEn: matchPaid })
-                .populate('proveedor', 'nombre')
-                .select('totalCents referencia proveedor pagadoEn')
-                .sort({ pagadoEn: -1, _id: -1 })
-                .limit(50)
-                .lean(),
-        ]
-    );
-    const incomingCents = cents(saleTotals[0]?.total);
-    const expenseCents = cents(expenseTotals[0]?.total);
-    const supplierCents = cents(purchaseTotals[0]?.total);
-    const movements = [
-        ...recentSales.map((item) => ({
+/**
+ * Entradas de caja: solo ventas marcadas como pagadas.
+ * Se conserva la fecha de creación de la venta como fecha aproximada de cobro.
+ */
+async function cashFromSales(range) {
+    const filter = { estadoPago: 'PAGADO', createdAt: { $gte: range.start, $lt: range.end } };
+
+    const [totals, recent] = await Promise.all([
+        Sale.aggregate([
+            { $match: filter },
+            { $group: { _id: null, total: { $sum: moneyCents('$totalCents', '$total') } } },
+        ]),
+        Sale.find(filter)
+            .populate('order', 'numeroOrden')
+            .select('total totalCents order createdAt')
+            .sort({ createdAt: -1, _id: -1 })
+            .limit(50)
+            .lean(),
+    ]);
+
+    return {
+        totalCents: cents(totals[0]?.total),
+        movements: recent.map((item) => ({
             id: String(item._id),
             date: item.createdAt,
             type: 'Entrada',
@@ -158,7 +139,29 @@ async function cashFlow(period = 'week', now = new Date()) {
             amount: money.fromCents(money.readCents(item.totalCents, item.total)),
             sign: 1,
         })),
-        ...recentExpenses.map((item) => ({
+    };
+}
+
+// Gastos que efectivamente se marcaron como pagados en el período.
+async function cashFromExpenses(range) {
+    const paidDate = { $gte: range.start, $lt: range.end };
+    const filter = { pagadoEn: paidDate };
+
+    const [totals, recent] = await Promise.all([
+        Expense.aggregate([
+            { $match: filter },
+            { $group: { _id: null, total: { $sum: '$montoCents' } } },
+        ]),
+        Expense.find(filter)
+            .select('montoCents categoria descripcion pagadoEn')
+            .sort({ pagadoEn: -1, _id: -1 })
+            .limit(50)
+            .lean(),
+    ]);
+
+    return {
+        totalCents: cents(totals[0]?.total),
+        movements: recent.map((item) => ({
             id: String(item._id),
             date: item.pagadoEn,
             type: 'Gasto',
@@ -166,7 +169,30 @@ async function cashFlow(period = 'week', now = new Date()) {
             amount: money.fromCents(item.montoCents),
             sign: -1,
         })),
-        ...recentPurchases.map((item) => ({
+    };
+}
+
+// Pagos a proveedores: salidas de caja, no gastos adicionales de la utilidad.
+async function cashFromPurchases(range) {
+    const paidDate = { $gte: range.start, $lt: range.end };
+    const filter = { pagadoEn: paidDate };
+
+    const [totals, recent] = await Promise.all([
+        Purchase.aggregate([
+            { $match: filter },
+            { $group: { _id: null, total: { $sum: '$totalCents' } } },
+        ]),
+        Purchase.find(filter)
+            .populate('proveedor', 'nombre')
+            .select('totalCents referencia proveedor pagadoEn')
+            .sort({ pagadoEn: -1, _id: -1 })
+            .limit(50)
+            .lean(),
+    ]);
+
+    return {
+        totalCents: cents(totals[0]?.total),
+        movements: recent.map((item) => ({
             id: String(item._id),
             date: item.pagadoEn,
             type: 'Proveedor',
@@ -174,15 +200,29 @@ async function cashFlow(period = 'week', now = new Date()) {
             amount: money.fromCents(item.totalCents),
             sign: -1,
         })),
-    ]
+    };
+}
+
+async function cashFlow(period = 'week', now = new Date()) {
+    const range = periodRange(period, now);
+
+    // Las tres consultas son independientes y se pueden ejecutar al mismo tiempo.
+    const [sales, expenses, purchases] = await Promise.all([
+        cashFromSales(range),
+        cashFromExpenses(range),
+        cashFromPurchases(range),
+    ]);
+
+    const movements = [...sales.movements, ...expenses.movements, ...purchases.movements]
         .sort((a, b) => b.date - a.date)
         .slice(0, 60);
+
     return {
         period: range,
-        incoming: money.fromCents(incomingCents),
-        paidExpenses: money.fromCents(expenseCents),
-        paidPurchases: money.fromCents(supplierCents),
-        netMovement: money.fromSignedCents(incomingCents - expenseCents - supplierCents),
+        incoming: money.fromCents(sales.totalCents),
+        paidExpenses: money.fromCents(expenses.totalCents),
+        paidPurchases: money.fromCents(purchases.totalCents),
+        netMovement: money.fromSignedCents(sales.totalCents - expenses.totalCents - purchases.totalCents),
         movements,
     };
 }
