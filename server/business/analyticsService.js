@@ -39,6 +39,7 @@ async function summary(value = 'week', now = new Date()) {
         soldIds,
         signals,
         lowStock,
+        inventoryValuation,
     ] = await Promise.all([
         sales.aggregateTotals(range.start, range.end),
         sales.aggregateTotals(range.previousStart, range.previousEnd),
@@ -49,6 +50,7 @@ async function summary(value = 'week', now = new Date()) {
         sales.soldProductIds(range.start, range.end),
         customers.operationalSignals(),
         inventory.lowStock(),
+        inventory.stockValuation(),
     ]);
 
     const current = common.metricsFromTotals(currentTotals);
@@ -89,6 +91,7 @@ async function summary(value = 'week', now = new Date()) {
         pending: signals.pending,
         incidents: signals.incidents,
         lowStock,
+        inventoryValuation,
         topProducts: products,
         topCategories: categories,
         noRotation,

@@ -1,0 +1,123 @@
+/* Valoración del inventario disponible: estilos compartidos en analítica y stock. */
+.inventory-valuation {
+    margin: 0 0 1.4rem;
+    padding: clamp(1rem, 2vw, 1.5rem);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md, 14px);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-soft);
+    color: var(--color-text-strong);
+}
+
+.inventory-valuation__heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.1rem;
+}
+
+.inventory-valuation__eyebrow {
+    margin: 0 0 0.3rem;
+    color: var(--color-brand-accent);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.inventory-valuation__heading h2 {
+    margin: 0;
+    color: var(--color-brand-dark);
+    font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+}
+
+.inventory-valuation__heading p:last-child {
+    margin: 0.4rem 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.87rem;
+}
+
+.inventory-valuation__status {
+    flex-shrink: 0;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    color: var(--color-brand-dark);
+    background: var(--color-surface-warm);
+    font-size: 0.75rem;
+    font-weight: 750;
+}
+
+.inventory-valuation__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+.inventory-valuation__metric {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-surface-warm);
+}
+
+.inventory-valuation__metric > span {
+    font-size: 0.83rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+}
+
+.inventory-valuation__metric strong {
+    margin: 0.65rem 0;
+    color: var(--color-brand-dark);
+    font-size: clamp(1.3rem, 2vw, 1.8rem);
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.inventory-valuation__metric small {
+    margin-top: auto;
+    color: var(--color-text-muted);
+    line-height: 1.45;
+}
+
+.inventory-valuation__footnote {
+    margin: 1rem 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
+    line-height: 1.6;
+}
+
+.inventory-valuation__warning {
+    margin: 0.8rem 0 0;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-brand-dark);
+    background: var(--color-surface-warm);
+    font-size: 0.82rem;
+}
+
+@media (max-width: 780px) {
+    .inventory-valuation__heading {
+        flex-direction: column;
+    }
+
+    .inventory-valuation__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 560px) and (max-width: 780px) {
+    .inventory-valuation__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .inventory-valuation__metric:last-child {
+        grid-column: 1 / -1;
+    }
+}

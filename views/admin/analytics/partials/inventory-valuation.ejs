@@ -1,0 +1,40 @@
+<% const inventoryMoney = (value) => Number(value || 0).toLocaleString('es-CO', { maximumFractionDigits: 2 }); %>
+<section class="inventory-valuation" aria-labelledby="inventory-valuation-title">
+    <div class="inventory-valuation__heading">
+        <div>
+            <p class="inventory-valuation__eyebrow">Capital en mercancía</p>
+            <h2 id="inventory-valuation-title">Valor del inventario disponible</h2>
+            <p>Una fotografía del stock actual, independiente de las ganancias realizadas del periodo.</p>
+        </div>
+        <span class="inventory-valuation__status">Cálculo actualizado</span>
+    </div>
+    <div class="inventory-valuation__grid">
+        <article class="inventory-valuation__metric">
+            <span>Inversión estimada en stock</span>
+            <strong>$ <%= inventoryMoney(inventoryValuation.invested) %></strong>
+            <small>Existencias disponibles × precio de costo registrado.</small>
+        </article>
+        <article class="inventory-valuation__metric">
+            <span>Valor potencial de venta</span>
+            <strong>$ <%= inventoryMoney(inventoryValuation.potentialSales) %></strong>
+            <small>Existencias disponibles × precio de venta actual, sin descuentos.</small>
+        </article>
+        <article class="inventory-valuation__metric">
+            <span>Ganancia bruta potencial</span>
+            <strong>$ <%= inventoryMoney(inventoryValuation.potentialGrossProfit) %></strong>
+            <small>Diferencia entre valor potencial de venta y costo estimado.</small>
+        </article>
+    </div>
+    <p class="inventory-valuation__footnote">
+        <strong><%= inventoryValuation.units.toLocaleString('es-CO') %> unidades disponibles</strong>
+        en <%= inventoryValuation.productTypes.toLocaleString('es-CO') %> referencias.
+        No incluye unidades ya reservadas, ventas futuras garantizadas ni gastos de envío, pasarela o impuestos.
+        Los valores dependen de los costos y precios registrados actualmente.
+    </p>
+    <% if (inventoryValuation.zeroCostProducts > 0) { %>
+        <p class="inventory-valuation__warning" role="note">
+            Revisa <%= inventoryValuation.zeroCostProducts %> referencias con stock y costo unitario de $0:
+            podrían subestimar la inversión y sobreestimar la ganancia potencial.
+        </p>
+    <% } %>
+</section>

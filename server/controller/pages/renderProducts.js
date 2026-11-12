@@ -8,6 +8,7 @@ const { hasPermission } = require('../../config/authorization');
 const { PERMISSIONS: P } = require('../../config/permissions');
 const reviewService = require('../../business/reviewService');
 const catalog = require('../../business/catalogService');
+const inventoryAnalytics = require('../../business/analytics/inventoryAnalytics');
 const siteUrl = (process.env.BASE_URL || 'http://localhost:3000').replace(/\/$/, '');
 exports.product_detail = async (req, res) => {
     const id = req.params.id;
@@ -93,10 +94,14 @@ exports.read_products = wrap(async (req, res) => {
     });
 });
 exports.read_stock = wrap(async (req, res) => {
-    const result = await products.stockAlerts({ page: req.query.page, limit: 10 });
+    const [result, inventoryValuation] = await Promise.all([
+        products.stockAlerts({ page: req.query.page, limit: 10 }),
+        inventoryAnalytics.stockValuation(),
+    ]);
     res.render('admin/analytics/stock', {
         stockAlerts: result.productos,
         totalAlertas: result.totalAlertas,
+        inventoryValuation,
         pagination: pagination.buildPagination(req, result.pagination),
     });
 });
