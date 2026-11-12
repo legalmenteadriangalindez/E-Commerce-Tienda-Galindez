@@ -3,6 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { Writable } = require('node:stream');
+const { unzipSync } = require('fflate');
 const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
 const os = require('node:os');
@@ -24,23 +25,11 @@ function collectingWriter() {
     return { writable, bytes: () => Buffer.concat(chunks) };
 }
 
+// La biblioteca comprueba que el ZIP sea compatible con un lector real.
 function unzipStored(buffer) {
-    const end = buffer.length - 22;
-    assert.equal(buffer.readUInt32LE(end), 0x06054b50);
-    const count = buffer.readUInt16LE(end + 10);
-    let position = buffer.readUInt32LE(end + 16);
-    const result = new Map();
-    for (let i = 0; i < count; i += 1) {
-        assert.equal(buffer.readUInt32LE(position), 0x02014b50);
-        const size = buffer.readUInt32LE(position + 24);
-        const nameLength = buffer.readUInt16LE(position + 28);
-        const localOffset = buffer.readUInt32LE(position + 42);
-        const name = buffer.subarray(position + 46, position + 46 + nameLength).toString('utf8');
-        const start = localOffset + 30 + buffer.readUInt16LE(localOffset + 26);
-        result.set(name, buffer.subarray(start, start + size).toString('utf8'));
-        position += 46 + nameLength;
-    }
-    return result;
+    return new Map(
+        Object.entries(unzipSync(buffer)).map(([name, data]) => [name, Buffer.from(data).toString('utf8')])
+    );
 }
 
 test('el ZIP se puede inspeccionar y escapa fórmulas potenciales en CSV', async () => {
@@ -60,6 +49,25 @@ test('el ZIP se puede inspeccionar y escapa fórmulas potenciales en CSV', async
     }
     assert.ok(businessExport.DEFINITIONS.some((table) => table.file === 'compras_proveedores.csv'));
     assert.ok(businessExport.DEFINITIONS.some((table) => table.file === 'movimientos_inventario.csv'));
+});
+
+test('el ZIP transmite el contenido por partes y rechaza nombres de archivo inseguros', async () => {
+    const output = collectingWriter();
+    const zip = new ZipWriter(output.writable);
+    await assert.rejects(() => zip.add('../otro.csv', ['no permitido']), /inválido/);
+
+    async function* partialContent() {
+        yield 'columna\\r\\n';
+        yield 'valor 1\\r\\n';
+        yield 'valor 2\\r\\n';
+    }
+
+    await zip.add('dividido.csv', partialContent());
+    await zip.finalize();
+    const files = unzipStored(output.bytes());
+    assert.equal(files.get('dividido.csv'), 'columna\\r\\nvalor 1\\r\\nvalor 2\\r\\n');
+    await assert.rejects(() => zip.add('tarde.csv', ['dato']), /inválido/);
+    await assert.rejects(() => zip.finalize(), /finalizado/);
 });
 
 test('la contraseña del respaldo exige 16 caracteres y no se exporta en CSV', () => {
