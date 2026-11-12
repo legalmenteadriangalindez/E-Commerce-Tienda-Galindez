@@ -13,7 +13,7 @@ body {
 }
 
 .stock-summary {
-    background: linear-gradient(135deg, var(--color-brand-accent), var(--color-brand-tan));
+    background: linear-gradient(135deg, var(--color-brand-accent-dark), var(--color-brand-dark-soft));
 
     border-radius: 18px;
     padding: 1.5rem;

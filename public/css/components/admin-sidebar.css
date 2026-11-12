@@ -48,6 +48,13 @@ body.admin-app {
     color: var(--color-brand-accent-dark);
 }
 
+.admin-sidebar__brand-link:focus-visible,
+.admin-sidebar__link:focus-visible,
+.admin-sidebar-toggle:focus-visible {
+    outline: 3px solid var(--color-brand-tan);
+    outline-offset: 2px;
+}
+
 .admin-sidebar__brand-icon {
     display: grid;
     width: 2.25rem;
@@ -55,7 +62,7 @@ body.admin-app {
     flex: 0 0 auto;
     place-items: center;
     border-radius: 0.7rem;
-    background: var(--color-brand-accent);
+    background: var(--color-brand-accent-dark);
     color: var(--color-surface);
     font-size: 1.15rem;
 }
@@ -111,7 +118,7 @@ body.admin-app {
     width: 100%;
     align-items: center;
     gap: 0.72rem;
-    min-height: 2.35rem;
+    min-height: 2.75rem;
     margin: 0.16rem 0;
     padding: 0.54rem 0.7rem;
     border: 1px solid transparent;
@@ -143,9 +150,8 @@ body.admin-app {
 .admin-sidebar__link:focus-visible,
 .admin-sidebar__link.is-active {
     border-color: rgb(255 255 255 / 12%);
-    background: var(--color-brand-accent);
+    background: var(--color-brand-accent-dark);
     color: var(--color-surface);
-    outline: none;
     transform: translateX(2px);
 }
 
@@ -214,8 +220,8 @@ body.admin-app {
 
 .admin-sidebar-toggle {
     display: none;
-    width: 2.55rem;
-    height: 2.55rem;
+    width: 2.75rem;
+    height: 2.75rem;
     margin-left: auto;
     align-items: center;
     justify-content: center;
@@ -230,7 +236,6 @@ body.admin-app {
 .admin-sidebar-toggle:focus-visible {
     border-color: var(--color-brand-tan);
     color: var(--color-brand-tan);
-    outline: none;
 }
 
 .admin-sidebar-backdrop {

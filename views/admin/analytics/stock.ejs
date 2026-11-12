@@ -9,7 +9,7 @@
         <div>
             <p class="admin-page-header__eyebrow admin-list-eyebrow">Inventario</p>
             <h1 class="stock-title">
-                <i class="bi bi-box-seam"></i>
+                <i class="bi bi-box-seam" aria-hidden="true"></i>
                 Control de Stock
             </h1>
 
@@ -47,9 +47,7 @@
 
             <div class="col-md-4 text-md-end mt-3 mt-md-0">
 
-                <i class="bi bi-exclamation-triangle-fill stock-empty-icon"
-                  >
-                </i>
+                <i class="bi bi-exclamation-triangle-fill stock-empty-icon" aria-hidden="true"></i>
 
             </div>
 
@@ -70,12 +68,12 @@
                     <thead>
 
                         <tr>
-                            <th>Producto</th>
-                            <th>Categoría</th>
-                            <th>Stock</th>
-                            <th>Mínimo</th>
-                            <th>Estado</th>
-                            <th>Historial</th>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Categoría</th>
+                            <th scope="col">Stock</th>
+                            <th scope="col">Mínimo</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Historial</th>
                         </tr>
 
                     </thead>
@@ -91,7 +89,7 @@
                                     <div class="d-flex align-items-center gap-3">
 
                                         <div class="stock-icon">
-                                            <i class="bi bi-box"></i>
+                                            <i class="bi bi-box" aria-hidden="true"></i>
                                         </div>
 
                                         <div>
@@ -125,14 +123,14 @@
                                     <% if(producto.estado === 'CRITICO'){ %>
 
                                         <span class="stock-badge badge-critical">
-                                            <i class="bi bi-exclamation-octagon-fill"></i>
+                                            <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
                                             CRÍTICO
                                         </span>
 
                                     <% } else { %>
 
                                         <span class="stock-badge badge-low">
-                                            <i class="bi bi-exclamation-circle-fill"></i>
+                                            <i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i>
                                             BAJO
                                         </span>
 
@@ -140,7 +138,7 @@
 
                                 </td>
 
-                            <td><a href="/inventory/movements?producto=<%= producto.id %>">Ver movimientos</a></td>
+                            <td><a href="/inventory/movements?producto=<%= producto.id %>" aria-label="Ver movimientos de <%= producto.nombre %>">Ver movimientos</a></td>
 
                             </tr>
 
