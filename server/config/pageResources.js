@@ -127,6 +127,7 @@ const resources = {
     'admin/finance/index': { pageCss: css('pages/finance/dashboard.css') },
     'admin/finance/cash-flow': { pageCss: css('pages/finance/dashboard.css') },
     'admin/purchases/index': { pageCss: css('pages/finance/dashboard.css') },
+    'admin/export-center/index': { pageCss: css('pages/export-center.css') },
     'admin/analytics/profit_margins': { pageCss: css('profit_margins.css') },
     'admin/analytics/best_selling_products': { pageCss: css('best_selling_products.css') },
     'admin/orders/read_orders': {

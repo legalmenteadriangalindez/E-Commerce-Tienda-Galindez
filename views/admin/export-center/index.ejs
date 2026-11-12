@@ -1,0 +1,79 @@
+<%- include('../../include/_headerAdmin') %>
+<main class="export-center container-fluid">
+    <div class="export-center__intro">
+        <p class="export-center__eyebrow">Administración de datos · SuperAdmin</p>
+        <h1>Centro de exportación y respaldos</h1>
+        <p>Descarga archivos para análisis o conserva una copia técnica cifrada y recuperable de MongoDB.</p>
+    </div>
+
+    <div class="export-center__grid">
+        <section class="export-card" aria-labelledby="business-export-title">
+            <div class="export-card__icon"><i class="bi bi-file-earmark-spreadsheet"></i></div>
+            <h2 id="business-export-title">Exportar información del negocio</h2>
+            <p>Un ZIP con archivos CSV independientes: productos, stock, categorías, clientes, pedidos, ventas,
+               gastos, compras a proveedores, movimientos de inventario, reseñas, sorteos y configuración comercial.</p>
+            <ul>
+                <li>Incluye todos los registros disponibles de cada tabla; no usa el límite del CSV de ventas.</li>
+                <li>Excluye contraseñas, hashes, sesiones y tokens de recuperación.</li>
+                <li>Los datos personales siguen siendo sensibles: almacena el ZIP en un lugar privado.</li>
+            </ul>
+            <form action="/admin/exportaciones/negocio" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="export-button"><i class="bi bi-file-earmark-zip"></i> Descargar ZIP de datos</button>
+            </form>
+        </section>
+
+        <section class="export-card export-card--backup" aria-labelledby="backup-export-title">
+            <div class="export-card__icon"><i class="bi bi-shield-lock"></i></div>
+            <h2 id="backup-export-title">Respaldo técnico cifrado de MongoDB</h2>
+            <p>Descarga un archivo <code>.tgbackup</code> cifrado con AES-256-GCM. Conserva las colecciones,
+               documentos, índices y archivos GridFS de la base de datos.</p>
+            <p class="export-card__notice"><strong>Información muy sensible.</strong> Incluye datos de autenticación
+               y otros registros internos. Solo SuperAdmin puede solicitarlo, confirmando su contraseña actual.
+               No compartas el archivo ni la clave de cifrado.</p>
+            <form action="/admin/exportaciones/respaldo" method="post" class="export-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <label>Tu contraseña actual
+                    <input name="currentPassword" type="password" autocomplete="current-password" required maxlength="256">
+                </label>
+                <label>Contraseña de cifrado del respaldo (mínimo 16 caracteres)
+                    <input name="passphrase" type="password" autocomplete="new-password" required minlength="16" maxlength="256">
+                </label>
+                <label>Repetir contraseña de cifrado
+                    <input name="confirmPassphrase" type="password" autocomplete="new-password" required minlength="16" maxlength="256">
+                </label>
+                <p class="export-card__notice">Guarda esta contraseña en un gestor seguro, fuera del archivo.
+                    <strong>Si la pierdes, no podrás recuperar este respaldo.</strong>
+                    La descarga puede ser grande y depende de la estabilidad de la conexión.</p>
+                <button type="submit" class="export-button"><i class="bi bi-shield-down"></i> Generar respaldo cifrado</button>
+            </form>
+        </section>
+    </div>
+
+    <section class="export-card export-card--history" aria-labelledby="export-history-title">
+        <h2 id="export-history-title">Historial de solicitudes</h2>
+        <p>Las descargas quedan registradas para auditoría; el servidor no almacena copias descargables ni contraseñas.</p>
+        <div class="export-table-scroll">
+            <table class="export-table">
+                <thead><tr><th>Solicitado el</th><th>Tipo</th><th>Resultado</th></tr></thead>
+                <tbody>
+                    <% if (!history.length) { %><tr><td colspan="3">Todavía no se han solicitado descargas.</td></tr><% } %>
+                    <% history.forEach(item => { %>
+                        <tr>
+                            <td><%= new Date(item.iniciadoEn).toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Bogota' }) %></td>
+                            <td><%= item.tipo === 'DATOS_CSV' ? 'ZIP de datos del negocio' : 'Respaldo técnico cifrado' %></td>
+                            <td><%= item.estado %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <p class="export-center__footnote">
+        La exportación ZIP sirve para Excel y Power BI, pero no sustituye el respaldo. El respaldo técnico
+        debe probarse mediante una restauración en una base desechable. Los respaldos muy grandes o con cambios
+        simultáneos requieren una estrategia de snapshots y copias verificadas en MongoDB Atlas.
+    </p>
+</main>
+<%- include('../../include/_footerAdmin') %>
