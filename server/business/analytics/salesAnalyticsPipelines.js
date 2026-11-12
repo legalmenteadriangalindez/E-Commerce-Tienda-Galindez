@@ -13,11 +13,19 @@ const {
     dateMatch,
 } = require('./common');
 
-function totalsPipeline(start, end) {
+// Pasos comunes a varios reportes: primero ventas pagadas y luego sus productos.
+// "includeMissing" mantiene ventas aunque no tengan detalles o productos asociados.
+function salesWithDetails(start, end, includeMissing = false) {
     return [
         { $match: dateMatch(start, end) },
         { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
-        { $unwind: { path: '$details', preserveNullAndEmptyArrays: true } },
+        { $unwind: includeMissing ? { path: '$details', preserveNullAndEmptyArrays: true } : '$details' },
+    ];
+}
+
+function salesWithProducts(start, end, includeMissing = false) {
+    return [
+        ...salesWithDetails(start, end, includeMissing),
         {
             $lookup: {
                 from: Product.collection.name,
@@ -26,7 +34,14 @@ function totalsPipeline(start, end) {
                 as: 'product',
             },
         },
-        { $unwind: { path: '$product', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$product', preserveNullAndEmptyArrays: includeMissing } },
+    ];
+}
+
+// Se agrupa por venta antes de sumar totales para no duplicar ingresos con varios productos.
+function totalsPipeline(start, end) {
+    return [
+        ...salesWithProducts(start, end, true),
         {
             $group: {
                 _id: '$_id',
@@ -52,22 +67,12 @@ function totalsPipeline(start, end) {
     ];
 }
 
+// Productos vendidos y ganancias: se conservan los costos históricos de cada detalle.
 function productRowsPipeline(start, end, limit = PRODUCT_LIMIT, sortBy = 'units') {
     const sort =
         sortBy === 'profit' ? { profitCents: -1, unidades: -1, _id: 1 } : { unidades: -1, ingresosCents: -1, _id: 1 };
     return [
-        { $match: dateMatch(start, end) },
-        { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
-        { $unwind: '$details' },
-        {
-            $lookup: {
-                from: Product.collection.name,
-                localField: 'details.producto',
-                foreignField: '_id',
-                as: 'product',
-            },
-        },
-        { $unwind: { path: '$product', preserveNullAndEmptyArrays: false } },
+        ...salesWithProducts(start, end),
         {
             $group: {
                 _id: '$details.producto',
@@ -96,20 +101,10 @@ function productRowsPipeline(start, end, limit = PRODUCT_LIMIT, sortBy = 'units'
     ];
 }
 
+// Agrupa las ventas según la categoría actual de cada producto.
 function categoryRowsPipeline(start, end, limit = CATEGORY_LIMIT) {
     return [
-        { $match: dateMatch(start, end) },
-        { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
-        { $unwind: '$details' },
-        {
-            $lookup: {
-                from: Product.collection.name,
-                localField: 'details.producto',
-                foreignField: '_id',
-                as: 'product',
-            },
-        },
-        { $unwind: { path: '$product', preserveNullAndEmptyArrays: false } },
+        ...salesWithProducts(start, end),
         {
             $group: {
                 _id: { $ifNull: ['$product.categoria', 'SIN_CATEGORIA'] },
@@ -124,6 +119,7 @@ function categoryRowsPipeline(start, end, limit = CATEGORY_LIMIT) {
     ];
 }
 
+// Vincula cada venta con su pedido para conocer el canal de venta.
 function channelsPipeline(start, end) {
     return [
         { $match: dateMatch(start, end) },
@@ -142,20 +138,10 @@ function channelsPipeline(start, end) {
     ];
 }
 
+// Calcula los indicadores diarios usando la zona horaria de Colombia.
 function trendPipeline(start, end) {
     return [
-        { $match: dateMatch(start, end) },
-        { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
-        { $unwind: { path: '$details', preserveNullAndEmptyArrays: true } },
-        {
-            $lookup: {
-                from: Product.collection.name,
-                localField: 'details.producto',
-                foreignField: '_id',
-                as: 'product',
-            },
-        },
-        { $unwind: { path: '$product', preserveNullAndEmptyArrays: true } },
+        ...salesWithProducts(start, end, true),
         {
             $group: {
                 _id: '$_id',
@@ -183,11 +169,10 @@ function trendPipeline(start, end) {
     ];
 }
 
+// Solo identificadores de productos vendidos; útil para detectar productos sin rotación.
 function soldProductIdsPipeline(start, end) {
     return [
-        { $match: dateMatch(start, end) },
-        { $lookup: { from: Detail.collection.name, localField: '_id', foreignField: 'venta', as: 'details' } },
-        { $unwind: '$details' },
+        ...salesWithDetails(start, end),
         { $group: { _id: '$details.producto' } },
         { $project: { _id: 0, productId: '$_id' } },
     ];

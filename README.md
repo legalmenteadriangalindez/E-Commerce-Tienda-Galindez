@@ -29,6 +29,15 @@ La cuenta queda pendiente de verificación y conserva el rol elegido. La persona
 
 Después de verificar el correo, cualquier cuenta puede abrir **Cambiar contraseña** desde su menú (`/change-password`). Debe escribir la contraseña actual y confirmar la nueva. El cambio cierra las sesiones anteriores y anula enlaces de recuperación pendientes; después se inicia sesión con la nueva contraseña. Esta opción no requiere permisos administrativos.
 
+## Guía de código: exportación y analítica de ventas
+
+- `server/services/zipWriter.js` recibe los CSV por partes y delega el formato ZIP a la biblioteca `fflate`. No construye encabezados ni códigos CRC manualmente.
+- `server/business/businessDataExport.js` define **qué tablas y columnas** se exportan. No se exportan contraseñas ni tokens.
+- `server/business/analytics/salesAnalyticsPipelines.js` contiene las consultas de ventas. `salesWithDetails()` une ventas y detalles; `salesWithProducts()` también busca el producto asociado. Cada informe agrupa y calcula sus indicadores después.
+- `server/business/analytics/common.js` reúne las fórmulas monetarias usadas en las consultas, incluidos los costos históricos de cada producto vendido.
+
+Los cálculos se dejan dentro de MongoDB para no traer todas las ventas a la memoria del servidor. Las pruebas de integración y las pruebas de etapas de consulta comprueban que el refactor no altere resultados ni formatos.
+
 ## Validación
 
 ```text
