@@ -49,4 +49,12 @@ const result = spawnSync(
     [require.resolve('prettier/bin/prettier.cjs'), check ? '--check' : '--write', ...files],
     { cwd: root, stdio: 'inherit' }
 );
+if (check && result.status !== 0 && process.env.CI === 'true') {
+    const filesToInspect = ['server/business/userRules.js', 'tests/admin-sales-search.test.js'];
+    spawnSync(process.execPath, [require.resolve('prettier/bin/prettier.cjs'), '--write', ...filesToInspect], {
+        cwd: root,
+    });
+    const formatted = spawnSync('git', ['diff', '--', ...filesToInspect], { cwd: root, encoding: 'utf8' });
+    process.stdout.write('=== FORMAT DIFF START ===\\n' + (formatted.stdout || '') + '\\n=== FORMAT DIFF END ===\\n');
+}
 process.exit(result.status || (ejsFailures ? 1 : (result.status ?? 1)));
