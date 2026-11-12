@@ -1,0 +1,108 @@
+<%- include('../../include/_headerAdmin') %>
+<% const cop = value => Number(value || 0).toLocaleString('es-CO', { maximumFractionDigits: 2 }); %>
+<main class="finance-page container-fluid">
+    <div class="finance-heading">
+        <div>
+            <p class="finance-eyebrow">Abastecimiento y trazabilidad</p>
+            <h1>Compras a proveedores</h1>
+            <p>Registra compras, confirma la recepción y lleva control de los pagos a proveedores.</p>
+        </div>
+        <div class="finance-links">
+            <a href="/inventory/replenishment">Reposición guiada</a>
+            <a href="/inventory/movements">Movimientos de stock</a>
+            <a href="/admin/flujo-caja">Flujo de caja</a>
+        </div>
+    </div>
+    <% if (notice) { %><p class="finance-notice" role="status"><%= notice %></p><% } %>
+    <p class="finance-explanation">Registrar una compra <strong>no incrementa el inventario</strong>. Solo la acción «Recibir mercancía» añade existencias, registra un movimiento de inventario y actualiza el costo unitario promedio de las unidades disponibles. Registrar el pago refleja una salida en el flujo de caja, sin duplicar costos en las ganancias.</p>
+    <div class="finance-columns">
+        <% if (canManage) { %>
+            <section class="finance-panel">
+                <h2>Nueva compra</h2>
+                <form class="finance-form" method="post" action="/admin/compras-proveedores">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" name="claveIdempotencia" value="<%= idempotencyKey %>">
+                    <label>Proveedor
+                        <select name="proveedor" required>
+                            <option value="">Selecciona proveedor</option>
+                            <% providers.forEach(provider => { %>
+                                <option value="<%= provider._id %>"><%= provider.nombre %></option>
+                            <% }) %>
+                        </select>
+                    </label>
+                    <label>Producto
+                        <select name="producto" required>
+                            <option value="">Selecciona producto</option>
+                            <% products.forEach(product => { %>
+                                <option value="<%= product._id %>"><%= product.nombre %> · <%= product.stock %> en stock</option>
+                            <% }) %>
+                        </select>
+                    </label>
+                    <label>Unidades compradas
+                        <input name="cantidad" type="number" min="1" max="1000000" step="1" required>
+                    </label>
+                    <label>Costo unitario pagado o pactado (COP)
+                        <input name="costoUnitario" type="number" min="0.01" max="999999999999.99" step="0.01" required placeholder="Ej. 25000">
+                    </label>
+                    <label>Referencia o factura del proveedor
+                        <input name="referencia" maxlength="100" placeholder="Ej. COMPRA-001">
+                    </label>
+                    <label>Observación
+                        <textarea name="observacion" maxlength="250" rows="2" placeholder="Detalles de la entrega"></textarea>
+                    </label>
+                    <label>¿La compra ya fue pagada?
+                        <select name="pagado" required>
+                            <option value="NO">No, pendiente de pago</option>
+                            <option value="SI">Sí, ya se pagó</option>
+                        </select>
+                    </label>
+                    <button type="submit" <%= !providers.length || !products.length ? 'disabled' : '' %>>Registrar compra</button>
+                    <% if (!providers.length || !products.length) { %>
+                        <small>Debes crear al menos un proveedor y un producto para registrar compras.</small>
+                    <% } %>
+                </form>
+            </section>
+        <% } %>
+        <section class="finance-panel finance-panel-wide">
+            <h2>Compras recientes</h2>
+            <p>Las recepciones y pagos son acciones independientes e irreversibles desde este panel.</p>
+            <div class="finance-table-wrap">
+                <table class="finance-table">
+                    <thead><tr><th>Fecha</th><th>Proveedor</th><th>Producto</th><th>Cantidad</th><th>Importe</th><th>Estado / acciones</th></tr></thead>
+                    <tbody>
+                        <% if (!items.length) { %><tr><td colspan="6">Aún no hay compras registradas.</td></tr><% } %>
+                        <% items.forEach(item => { %>
+                            <tr>
+                                <td><%= new Date(item.createdAt).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' }) %><small class="finance-cell-note"><%= item.referencia || 'Sin referencia' %></small></td>
+                                <td><%= item.proveedor?.nombre || 'Proveedor histórico' %></td>
+                                <td><%= item.producto?.nombre || 'Producto histórico' %></td>
+                                <td><%= item.cantidad %></td>
+                                <td>$ <%= cop(item.totalCents / 100) %><small class="finance-cell-note">$ <%= cop(item.costoUnitarioCents / 100) %> / unidad</small></td>
+                                <td>
+                                    <div class="finance-actions">
+                                        <span class="finance-status <%= item.estado === 'RECIBIDA' ? 'finance-status-paid' : '' %>"><%= item.estado === 'RECIBIDA' ? 'Recibida' : 'Pendiente recepción' %></span>
+                                        <span class="finance-status <%= item.pagadoEn ? 'finance-status-paid' : '' %>"><%= item.pagadoEn ? 'Pagada' : 'Pago pendiente' %></span>
+                                        <% if (canManage && item.estado === 'PENDIENTE') { %>
+                                            <form method="post" action="/admin/compras-proveedores/<%= item._id %>/recibir">
+                                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                <button type="submit">Recibir mercancía</button>
+                                            </form>
+                                        <% } %>
+                                        <% if (canManage && !item.pagadoEn) { %>
+                                            <form method="post" action="/admin/compras-proveedores/<%= item._id %>/pagar">
+                                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                <button type="submit">Registrar pago</button>
+                                            </form>
+                                        <% } %>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <p class="finance-footnote">Se muestran las últimas 40 compras; las compras y pagos quedan registrados para trazabilidad.</p>
+        </section>
+    </div>
+</main>
+<%- include('../../include/_footerAdmin') %>
