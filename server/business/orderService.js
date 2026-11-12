@@ -3,6 +3,7 @@ const Userdb = require('../model/user');
 const PaymentEvent = require('../model/paymentEvent');
 const mongoose = require('mongoose');
 const queryPage = require('./queryPage');
+const search = require('./adminSalesSearch');
 const { validId, BusinessError } = require('./errors');
 const commerce = require('./commerceShared');
 const inventory = require('./inventoryService');
@@ -221,7 +222,12 @@ module.exports = {
     findConfirmation,
     listAdminPayments,
     findRetryablePaymentOrder,
-    list: (query) => queryPage(Order, query, { populate, sort: { createdAt: -1, _id: -1 } }),
+    list: async (query = {}) =>
+        queryPage(Order, query, {
+            filter: await search.orderSearchFilter(query.search),
+            populate,
+            sort: { createdAt: -1, _id: -1 },
+        }),
     changeState,
     confirmCash,
 };

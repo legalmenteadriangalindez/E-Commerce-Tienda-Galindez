@@ -4,8 +4,10 @@ const orders = require('../../business/orderService');
 const { validId } = require('../../business/errors');
 exports.create_order_form = (req, res) => res.redirect('/read-order');
 exports.read_orders = wrap(async (req, res) => {
-    const result = await orders.list({ page: req.query.page, limit: 10 });
+    const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+    const result = await orders.list({ page: req.query.page, limit: 10, search });
     res.render('admin/orders/read_orders', {
+        search,
         orders: result.items,
         pagination: pagination.buildPagination(req, result.pagination),
     });

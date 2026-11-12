@@ -5,7 +5,7 @@ const analytics = require('../../business/analyticsService');
 const analyticsExport = require('../../business/analytics/analyticsExport');
 exports.sales = wrap(async (req, res) => {
     const filters = Object.fromEntries(
-        ['from', 'to', 'estadoPago', 'canal'].map((key) => [
+        ['search', 'from', 'to', 'estadoPago', 'canal'].map((key) => [
             key,
             typeof req.query[key] === 'string' ? req.query[key].trim() : '',
         ])
