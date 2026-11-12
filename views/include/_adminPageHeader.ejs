@@ -5,8 +5,24 @@
     const pageActionHref = typeof actionHref === 'string' ? actionHref : '';
     const pageActionLabel = typeof actionLabel === 'string' ? actionLabel : '';
     const pageActionIcon = typeof actionIcon === 'string' ? actionIcon : '';
+    const requestedActionVariant = typeof actionVariant === 'string' ? actionVariant : 'primary';
+    const pageActionVariant = ['primary', 'secondary', 'danger', 'dark'].includes(requestedActionVariant)
+        ? requestedActionVariant
+        : 'primary';
+    const pageActionClass = typeof actionClass === 'string' ? actionClass : '';
+    const pageHeaderClass = typeof additionalClass === 'string' ? additionalClass : '';
+    const pageActionVisible = typeof showAction === 'undefined' || showAction !== false;
+    const pageActionClasses = [
+        'admin-button',
+        `admin-button--${pageActionVariant}`,
+        'admin-page-header__action',
+        pageActionVariant === 'primary' ? 'admin-list-primary' : '',
+        pageActionClass,
+    ]
+        .filter(Boolean)
+        .join(' ');
 %>
-<header class="admin-page-header admin-list-heading">
+<header class="admin-page-header admin-list-heading <%= pageHeaderClass %>">
     <div class="admin-page-header__content">
         <% if (pageEyebrow) { %>
             <p class="admin-page-header__eyebrow admin-list-eyebrow"><%= pageEyebrow %></p>
@@ -17,10 +33,10 @@
         <% } %>
     </div>
 
-    <% if (pageActionHref && pageActionLabel) { %>
+    <% if (pageActionVisible && pageActionHref && pageActionLabel) { %>
         <a
             href="<%= pageActionHref %>"
-            class="admin-button admin-button--primary admin-page-header__action admin-list-primary"
+            class="<%= pageActionClasses %>"
         >
             <% if (pageActionIcon) { %><i class="<%= pageActionIcon %>" aria-hidden="true"></i><% } %>
             <span><%= pageActionLabel %></span>

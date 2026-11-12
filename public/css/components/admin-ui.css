@@ -458,7 +458,7 @@ body.admin-app
 
     body.admin-app
         > :not(header):not(footer)
-        :is(.admin-list-primary, .admin-page-header__action, .admin-button--primary) {
+        :is(.admin-list-primary, .admin-page-header__action, .admin-button--primary, .admin-button--secondary) {
         width: 100%;
     }
 

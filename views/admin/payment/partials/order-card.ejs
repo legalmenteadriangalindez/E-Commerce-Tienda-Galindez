@@ -1,4 +1,4 @@
-<article class="ap-order-card">
+      <article class="ap-order-card admin-card">
         <header class="ap-order-card__heading">
           <div>
             <span class="ap-overline">Pedido</span>
@@ -40,14 +40,14 @@
                   <input type="checkbox" name="confirmar" value="si" required>
                   <span>Confirmé el efectivo correspondiente a este pedido.</span>
                 </label>
-                <button class="ap-button ap-button--primary" type="submit"><%= order.confirmCashLabel %></button>
+                <button class="ap-button ap-button--primary admin-button admin-button--primary" type="submit"><%= order.confirmCashLabel %></button>
               </form>
             <% } %>
 
             <% if (order.canCancelOrder) { %>
               <form action="/admin/payments/<%= order._id %>/cancel" method="post" class="ap-action-form ap-action-form--compact">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button class="ap-button ap-button--danger" type="submit"><%= order.cancelOrderLabel %></button>
+                <button class="ap-button ap-button--danger admin-button admin-button--danger" type="submit"><%= order.cancelOrderLabel %></button>
               </form>
             <% } %>
 
@@ -81,7 +81,7 @@
                     <input type="checkbox" name="confirmar" value="si" required>
                     <span>Comprobé el pago, la acción y el inventario.</span>
                   </label>
-                  <button class="ap-button ap-button--primary" type="submit">Registrar revisión</button>
+                  <button class="ap-button ap-button--primary admin-button admin-button--primary" type="submit">Registrar revisión</button>
                 </form>
               </details>
             <% } %>

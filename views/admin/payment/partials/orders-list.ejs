@@ -17,10 +17,10 @@
       <% }) %>
     </div>
   <% } else { %>
-    <div class="admin-list-empty ap-empty">
-      <span class="ap-empty__icon" aria-hidden="true"><i class="bi bi-receipt"></i></span>
-      <h3>No hay pedidos para mostrar</h3>
-      <p>Cuando se registren pedidos, aquí podrás revisar su estado de pago y conciliación.</p>
+    <div class="admin-list-empty admin-empty-state ap-empty">
+      <span class="admin-empty-state__icon ap-empty__icon" aria-hidden="true"><i class="bi bi-receipt"></i></span>
+      <h3 class="admin-empty-state__message">No hay pedidos para mostrar</h3>
+      <p class="admin-empty-state__description">Cuando se registren pedidos, aquí podrás revisar su estado de pago y conciliación.</p>
     </div>
   <% } %>
 

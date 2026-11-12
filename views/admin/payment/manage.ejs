@@ -24,22 +24,21 @@
 %>
 
 <main class="admin-shell admin-list-page admin-payments">
-  <header class="admin-list-heading ap-heading">
-    <div>
-      <p class="admin-list-eyebrow">Operación financiera</p>
-      <h1>Pagos y conciliación</h1>
-      <p class="admin-list-description">Confirma los pagos recibidos en caja y revisa las respuestas de Wompi.</p>
-    </div>
-    <% if (can('payments:manage')) { %>
-      <a class="ap-button ap-button--secondary" href="/billing-point">
-        <i class="bi bi-cash-coin" aria-hidden="true"></i>
-        Abrir punto de pago
-      </a>
-    <% } %>
-  </header>
+  <%- include('../../include/_adminPageHeader', {
+    eyebrow: 'Operación financiera',
+    title: 'Pagos y conciliación',
+    description: 'Confirma los pagos recibidos en caja y revisa las respuestas de Wompi.',
+    additionalClass: 'ap-heading',
+    showAction: can('payments:manage'),
+    actionHref: '/billing-point',
+    actionLabel: 'Abrir punto de pago',
+    actionIcon: 'bi bi-cash-coin',
+    actionVariant: 'secondary',
+    actionClass: 'ap-button ap-button--secondary'
+  }) %>
 
   <% if (notice) { %>
-    <p class="ap-notice" role="status"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><%= notice %></p>
+    <p class="admin-alert admin-alert--success ap-notice" role="status"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span class="admin-alert__message"><%= notice %></span></p>
   <% } %>
 
   <%- include('./partials/reconcile-panel', { csrfToken }) %>

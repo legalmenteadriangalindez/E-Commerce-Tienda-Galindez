@@ -1,7 +1,7 @@
 <%- include('../../include/_headerAdmin') %>
 
 <main class="admin-shell admin-list-page ir-page">
-    <header class="admin-list-heading ir-heading">
+    <header class="admin-list-heading admin-page-header ir-heading">
         <div>
             <p class="admin-list-eyebrow">Inventario y compras</p>
             <h1><span class="ir-heading__icon" aria-hidden="true"><i class="bi bi-basket2"></i></span>Reposición guiada</h1>
@@ -13,12 +13,12 @@
 
         <nav class="ir-actions" aria-label="Acciones de inventario">
             <% if (can('inventory:read')) { %>
-                <a class="ir-action ir-action--secondary" href="/read-Stock">
+                <a class="ir-action ir-action--secondary admin-button admin-button--secondary" href="/read-Stock">
                     <i class="bi bi-box-seam" aria-hidden="true"></i>
                     Control de stock
                 </a>
             <% } %>
-            <a class="ir-action ir-action--primary" href="/inventory/movements">
+            <a class="ir-action ir-action--primary admin-button admin-button--primary" href="/inventory/movements">
                 <i class="bi bi-clock-history" aria-hidden="true"></i>
                 Historial de movimientos
             </a>
@@ -78,7 +78,7 @@
 
         <% if (items.length) { %>
             <div class="ir-table-scroll" role="region" aria-label="Tabla de recomendaciones de reposición" tabindex="0">
-                <table class="table ir-table">
+                <table class="table ir-table admin-table">
                     <thead>
                         <tr>
                             <th scope="col">Producto</th>
@@ -166,10 +166,10 @@
                 </table>
             </div>
         <% } else { %>
-            <div class="admin-list-empty ir-empty">
-                <span class="ir-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></span>
-                <h3>No hay productos para evaluar</h3>
-                <p>Cuando registres productos, aquí verás su stock, ventas recientes y la cantidad recomendada para reponer.</p>
+            <div class="admin-list-empty admin-empty-state ir-empty">
+                <span class="admin-empty-state__icon ir-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></span>
+                <h3 class="admin-empty-state__message">No hay productos para evaluar</h3>
+                <p class="admin-empty-state__description">Cuando registres productos, aquí verás su stock, ventas recientes y la cantidad recomendada para reponer.</p>
             </div>
         <% } %>
     </section>

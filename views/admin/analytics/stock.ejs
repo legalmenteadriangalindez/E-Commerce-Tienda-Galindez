@@ -2,27 +2,28 @@
 
 
 
-<div class="container-fluid stock-container">
+<main class="admin-shell admin-list-page stock-container">
 
-    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+    <header class="admin-page-header admin-list-heading stock-heading">
 
         <div>
+            <p class="admin-page-header__eyebrow admin-list-eyebrow">Inventario</p>
             <h1 class="stock-title">
                 <i class="bi bi-box-seam"></i>
                 Control de Stock
             </h1>
 
-            <p class="text-muted">
+            <p class="admin-page-header__description admin-list-description">
                 Productos agotados o por debajo del mínimo configurado
             </p>
         </div>
 
-        <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-outline-primary" href="/inventory/replenishment">Reposición guiada</a>
-            <a class="btn btn-outline-secondary" href="/inventory/movements">Historial y ajustes</a>
+        <div class="stock-actions d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-primary admin-button admin-button--secondary" href="/inventory/replenishment">Reposición guiada</a>
+            <a class="btn btn-outline-secondary admin-button admin-button--secondary" href="/inventory/movements">Historial y ajustes</a>
         </div>
 
-    </div>
+    </header>
 
     <% if (inventoryValuation) { %>
         <%- include('./partials/inventory-valuation', { inventoryValuation }) %>
@@ -64,7 +65,7 @@
 
             <div class="table-responsive">
 
-                <table class="table table-hover table-custom">
+                <table class="table table-hover table-custom admin-table">
 
                     <thead>
 
@@ -153,15 +154,15 @@
 
         <% } else { %>
 
-            <div class="empty-state">
+            <div class="empty-state admin-empty-state">
 
-                <i class="bi bi-check-circle-fill"></i>
+                <i class="bi bi-check-circle-fill admin-empty-state__icon"></i>
 
-                <h4>
+                <h4 class="admin-empty-state__message">
                     Todo el stock está correcto
                 </h4>
 
-                <p class="text-muted">
+                <p class="text-muted admin-empty-state__description">
                     No existen productos con alertas actualmente.
                 </p>
 
@@ -173,6 +174,6 @@
 
     <%- include('../../include/_adminPagination', { pagination, label: 'alertas de stock' }) %>
 
-</div>
+</main>
 
 <%- include('../../include/_footerAdmin') %>
