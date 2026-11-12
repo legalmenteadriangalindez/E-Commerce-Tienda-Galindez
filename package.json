@@ -12,6 +12,7 @@
         "format:check": "node scripts/format-files.js --check",
         "test": "npm run check && node --test tests/*.test.js",
         "test:integration": "node scripts/run-integration-tests.js",
+        "test:coverage": "node scripts/run-integration-tests.js --coverage",
         "check:production": "node scripts/check-production.js",
         "migrate": "node scripts/run-migrations.js",
         "migrate:status": "node scripts/run-migrations.js --status",

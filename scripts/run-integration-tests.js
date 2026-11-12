@@ -15,6 +15,7 @@ async function freePort() {
 }
 async function main() {
     const root = path.resolve(__dirname, '..');
+    const coverage = process.argv.includes('--coverage');
     const directory = await mkdtemp(path.join(os.tmpdir(), 'galindez-tests-'));
     const port = await freePort();
     const uri = `mongodb://127.0.0.1:${port}`;
@@ -80,7 +81,9 @@ async function main() {
         const files = (await readdir(path.join(root, 'tests')))
             .filter((file) => file.endsWith('.test.js'))
             .map((file) => 'tests/' + file);
-        const tests = spawn(process.execPath, ['--test', ...files], {
+        const testArgs = coverage ? ['--experimental-test-coverage', '--test-coverage-include=server/**/*.js'] : [];
+        testArgs.push('--test', ...files);
+        const tests = spawn(process.execPath, testArgs, {
             cwd: root,
             stdio: 'inherit',
             env: { ...process.env, NODE_ENV: 'test', REVIEW_TEST_MONGO_URI: uri, COMMERCE_TEST_MONGO_URI: uri },
