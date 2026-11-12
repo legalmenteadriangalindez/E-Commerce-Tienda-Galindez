@@ -38,7 +38,7 @@ test('acepta una configuración de producción con origen HTTPS público', () =>
     assert.deepEqual(validateEnvironment(validProductionEnvironment), []);
 });
 
-test('rechaza orígenes de producción que no sean públicos y no tengan rutas adicionales', (t) => {
+test('rechaza orígenes de producción que no sean públicos y no tengan rutas adicionales', () => {
     const invalidOrigins = [
         'http://tienda.example.test',
         'https://tienda.example.test/catalogo',
@@ -51,92 +51,63 @@ test('rechaza orígenes de producción que no sean públicos y no tengan rutas a
     ];
 
     for (const origin of invalidOrigins) {
-        t.test(origin, () => {
-            assert.deepEqual(validateEnvironment({ ...validProductionEnvironment, BASE_URL: origin }), [
-                'BASE_URL debe ser el origen HTTPS público, sin rutas ni parámetros.',
-            ]);
-        });
+        assert.deepEqual(validateEnvironment({ ...validProductionEnvironment, BASE_URL: origin }), [
+            'BASE_URL debe ser el origen HTTPS público, sin rutas ni parámetros.',
+        ]);
     }
 });
 
-test('requiere secretos de sesión largos y evita valores de ejemplo en producción', (t) => {
-    t.test('el secreto de sesión debe tener al menos 32 caracteres', () => {
-        assert.deepEqual(validateEnvironment({ ...validProductionEnvironment, SESSION_SECRET: 'corto' }), [
-            'SESSION_SECRET debe tener al menos 32 caracteres.',
-        ]);
-    });
+test('requiere secretos de sesión largos y evita valores de ejemplo en producción', () => {
+    assert.deepEqual(validateEnvironment({ ...validProductionEnvironment, SESSION_SECRET: 'corto' }), [
+        'SESSION_SECRET debe tener al menos 32 caracteres.',
+    ]);
 
     for (const example of ['local-only', 'change-this', 'cambiar', 'example', '123456789']) {
-        t.test(`rechaza el marcador ${example}`, () => {
-            const secret = 'x'.repeat(32) + example;
-            assert.deepEqual(validateEnvironment({ ...validProductionEnvironment, SESSION_SECRET: secret }), [
-                'Reemplaza el secreto de ejemplo por uno aleatorio.',
-            ]);
-        });
+        const secret = 'x'.repeat(32) + example;
+        assert.deepEqual(validateEnvironment({ ...validProductionEnvironment, SESSION_SECRET: secret }), [
+            'Reemplaza el secreto de ejemplo por uno aleatorio.',
+        ]);
     }
 });
 
-test('valida claves Wompi de acuerdo con el ambiente configurado', (t) => {
-    t.test('no exige claves cuando los pagos están deshabilitados', () => {
-        assert.deepEqual(validateEnvironment({ ...validBaseEnvironment, PAYMENTS_ENABLED: 'false' }), []);
-    });
-
-    t.test('acepta las claves de sandbox', () => {
-        assert.deepEqual(validateEnvironment(validSandboxPayments), []);
-    });
-
-    t.test('acepta las claves de producción', () => {
-        assert.deepEqual(
-            validateEnvironment({
-                ...validSandboxPayments,
-                WOMPI_ENV: 'production',
-                WOMPI_PUBLIC_KEY: 'pub_prod_123',
-                WOMPI_PRIVATE_KEY: 'prv_prod_123',
-            }),
-            []
-        );
-    });
-
-    t.test('rechaza un ambiente no admitido', () => {
-        assert.deepEqual(validateEnvironment({ ...validSandboxPayments, WOMPI_ENV: 'development' }), [
-            'Configura WOMPI_ENV=sandbox o production.',
-        ]);
-    });
-
-    t.test('rechaza una clave pública de otro ambiente', () => {
-        assert.deepEqual(validateEnvironment({ ...validSandboxPayments, WOMPI_PUBLIC_KEY: 'pub_prod_123' }), [
-            'WOMPI_PUBLIC_KEY no coincide con WOMPI_ENV.',
-        ]);
-    });
-
-    t.test('rechaza una clave privada de otro ambiente', () => {
-        assert.deepEqual(validateEnvironment({ ...validSandboxPayments, WOMPI_PRIVATE_KEY: 'prv_prod_123' }), [
-            'WOMPI_PRIVATE_KEY no coincide con WOMPI_ENV.',
-        ]);
-    });
+test('valida claves Wompi de acuerdo con el ambiente configurado', () => {
+    assert.deepEqual(validateEnvironment({ ...validBaseEnvironment, PAYMENTS_ENABLED: 'false' }), []);
+    assert.deepEqual(validateEnvironment(validSandboxPayments), []);
+    assert.deepEqual(
+        validateEnvironment({
+            ...validSandboxPayments,
+            WOMPI_ENV: 'production',
+            WOMPI_PUBLIC_KEY: 'pub_prod_123',
+            WOMPI_PRIVATE_KEY: 'prv_prod_123',
+        }),
+        []
+    );
+    assert.deepEqual(validateEnvironment({ ...validSandboxPayments, WOMPI_ENV: 'development' }), [
+        'Configura WOMPI_ENV=sandbox o production.',
+    ]);
+    assert.deepEqual(validateEnvironment({ ...validSandboxPayments, WOMPI_PUBLIC_KEY: 'pub_prod_123' }), [
+        'WOMPI_PUBLIC_KEY no coincide con WOMPI_ENV.',
+    ]);
+    assert.deepEqual(validateEnvironment({ ...validSandboxPayments, WOMPI_PRIVATE_KEY: 'prv_prod_123' }), [
+        'WOMPI_PRIVATE_KEY no coincide con WOMPI_ENV.',
+    ]);
 
     for (const name of ['WOMPI_INTEGRITY_KEY', 'WOMPI_EVENTS_KEY']) {
-        t.test(`requiere ${name}`, () => {
-            assert.deepEqual(validateEnvironment({ ...validSandboxPayments, [name]: '' }), [`Falta ${name}.`]);
-        });
+        assert.deepEqual(validateEnvironment({ ...validSandboxPayments, [name]: '' }), [`Falta ${name}.`]);
     }
 });
 
-test('acepta importes de envío hasta el máximo y rechaza formatos inválidos', (t) => {
-    t.test('acepta importes con máximo dos decimales', () => {
-        assert.deepEqual(
-            validateEnvironment({ ...validBaseEnvironment, SHIPPING_PRICE: '12.34', FREE_SHIPPING_FROM: '100000000' }),
-            []
-        );
-    });
+test('acepta importes de envío hasta el máximo y rechaza formatos inválidos', () => {
+    assert.deepEqual(
+        validateEnvironment({ ...validBaseEnvironment, SHIPPING_PRICE: '12.34', FREE_SHIPPING_FROM: '100000000' }),
+        []
+    );
 
     for (const name of ['SHIPPING_PRICE', 'FREE_SHIPPING_FROM']) {
         for (const value of ['-1', '12.345', 'texto', '100000000.01']) {
-            t.test(`rechaza ${name}=${value}`, () => {
-                assert.deepEqual(validateEnvironment({ ...validBaseEnvironment, [name]: value }), [
-                    `${name} debe ser un importe válido en COP.`,
-                ]);
-            });
+            assert.deepEqual(validateEnvironment({ ...validBaseEnvironment, [name]: value }), [
+                `${name} debe ser un importe válido en COP.`,
+            ]);
         }
     }
 });
