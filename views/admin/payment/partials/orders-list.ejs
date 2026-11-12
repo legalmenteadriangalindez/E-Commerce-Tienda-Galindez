@@ -1,0 +1,28 @@
+<section class="ap-orders" aria-labelledby="ap-orders-title">
+  <header class="ap-section-heading ap-orders__heading">
+    <div>
+      <p class="admin-list-eyebrow">Seguimiento de pedidos</p>
+      <h2 id="ap-orders-title">Pedidos recientes</h2>
+      <p>Consulta el pago, el estado de entrega y las acciones disponibles para cada pedido.</p>
+    </div>
+    <% if (pagination.totalItems > 0) { %>
+      <span class="ap-count"><strong><%= pagination.totalItems %></strong> <%= pagination.totalItems === 1 ? 'pedido' : 'pedidos' %></span>
+    <% } %>
+  </header>
+
+  <% if (orders.length) { %>
+    <div class="ap-order-list">
+      <% orders.forEach(order => { %>
+          <%- include('./order-card', { order, csrfToken, paymentStateClass, orderStateClass, inventoryStateClass }) %>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="admin-list-empty ap-empty">
+      <span class="ap-empty__icon" aria-hidden="true"><i class="bi bi-receipt"></i></span>
+      <h3>No hay pedidos para mostrar</h3>
+      <p>Cuando se registren pedidos, aquí podrás revisar su estado de pago y conciliación.</p>
+    </div>
+  <% } %>
+
+  <%- include('../../../include/_adminPagination', { pagination, label: 'pedidos' }) %>
+</section>

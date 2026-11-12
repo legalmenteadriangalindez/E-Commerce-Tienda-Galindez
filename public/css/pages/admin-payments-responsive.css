@@ -1,0 +1,127 @@
+@media (max-width: 760px) {
+    .admin-payments .ap-heading {
+        align-items: stretch;
+    }
+
+    .admin-payments .ap-heading > .ap-button {
+        width: 100%;
+    }
+
+    .ap-action-form {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ap-action-form .ap-button {
+        justify-self: start;
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-payments {
+        padding-bottom: 2.25rem;
+    }
+
+    .ap-reconcile {
+        padding: 1rem;
+    }
+
+    .ap-reconcile__form {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ap-reconcile__form .ap-button {
+        width: 100%;
+    }
+
+    .ap-section-heading {
+        align-items: flex-start;
+        padding: 1rem;
+    }
+
+    .ap-incidents .ap-count {
+        font-size: 0.72rem;
+    }
+
+    .ap-incident-list {
+        padding: 0.75rem;
+    }
+
+    .ap-incident {
+        padding: 0.85rem;
+    }
+
+    .ap-form--stack {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ap-order-card__heading {
+        align-items: flex-start;
+        padding: 0.9rem;
+    }
+
+    .ap-order-facts {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+        padding: 0.9rem;
+    }
+
+    .ap-order-states {
+        padding: 0 0.9rem 0.9rem;
+    }
+
+    .ap-order-alert {
+        margin-right: 0.9rem;
+        margin-left: 0.9rem;
+    }
+
+    .ap-order-actions {
+        margin-right: 0.9rem;
+        margin-left: 0.9rem;
+    }
+
+    .ap-order-links,
+    .ap-review-history {
+        padding-right: 0.9rem;
+        padding-left: 0.9rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .ap-section-heading {
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .ap-incident__heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .ap-order-facts {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ap-order-card__heading {
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .ap-total {
+        justify-items: start;
+    }
+
+    .ap-form .ap-button,
+    .ap-action-form .ap-button {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ap-button {
+        transition: none;
+    }
+
+    .ap-button:hover {
+        transform: none;
+    }
+}

@@ -1,0 +1,175 @@
+.raffle-panel form {
+    margin: 0;
+}
+
+.raffle-field {
+    display: grid;
+    align-content: start;
+    gap: 0.4rem;
+    min-width: 0;
+    margin: 0 0 1rem;
+    color: var(--color-brand-dark);
+    font-size: 0.82rem;
+    font-weight: 750;
+}
+
+.raffle-field > span {
+    line-height: 1.4;
+}
+
+.raffle-field input[type='text'],
+.raffle-field input[type='number'],
+.raffle-field input[type='file'],
+.raffle-field textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 2.65rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.55rem;
+    background: var(--color-surface);
+    color: var(--color-text-strong);
+    font: inherit;
+    font-size: 0.87rem;
+    font-weight: 500;
+}
+
+.raffle-field input[type='file'] {
+    padding: 0.4rem;
+    background: var(--color-surface-warm);
+}
+
+.raffle-field textarea {
+    min-height: 8rem;
+    resize: vertical;
+}
+
+.raffle-field input:focus,
+.raffle-field textarea:focus {
+    border-color: var(--color-brand-accent);
+    box-shadow: 0 0 0 0.2rem rgb(216 92 50 / 14%);
+    outline: 0;
+}
+
+.raffle-field small {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.raffle-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--color-border-light);
+    border-radius: 0.6rem;
+    background: var(--color-surface-warm);
+    cursor: pointer;
+}
+
+.raffle-toggle input,
+.raffle-confirm input,
+.raffle-image-preview input {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex: 0 0 auto;
+    accent-color: var(--color-brand-accent);
+}
+
+.raffle-toggle span {
+    margin: 0;
+}
+
+.raffle-button,
+.raffle-admin-page button {
+    display: inline-flex;
+    min-height: 2.65rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.65rem 0.95rem;
+    border: 1px solid transparent;
+    border-radius: 0.6rem;
+    background: var(--color-brand-accent);
+    color: var(--color-surface);
+    font: inherit;
+    font-size: 0.86rem;
+    font-weight: 750;
+    line-height: 1.25;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        transform 160ms ease;
+}
+
+.raffle-button:hover,
+.raffle-admin-page button:hover {
+    transform: translateY(-1px);
+    background: var(--color-brand-accent-dark);
+    color: var(--color-surface);
+}
+
+.raffle-button--secondary,
+.raffle-admin-page button.raffle-button--secondary {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-brand-dark);
+}
+
+.raffle-button--secondary:hover,
+.raffle-admin-page button.raffle-button--secondary:hover {
+    border-color: var(--color-brand-tan);
+    background: var(--color-surface-warm);
+    color: var(--color-brand-dark);
+}
+
+.raffle-button--danger,
+.raffle-admin-page button.raffle-button--danger {
+    border-color: #e6c4be;
+    background: #fff6f4;
+    color: #9a3527;
+}
+
+.raffle-button--danger:hover,
+.raffle-admin-page button.raffle-button--danger:hover {
+    border-color: #c95b48;
+    background: #fce9e5;
+    color: #7f281d;
+}
+
+.raffle-image-preview {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 0 0 1rem;
+    padding: 0.8rem;
+    border: 1px solid var(--color-border-light);
+    border-radius: 0.7rem;
+    background: var(--color-surface-warm);
+}
+
+.raffle-image-preview img {
+    width: 7rem;
+    max-width: 100%;
+    height: 8.75rem;
+    border-radius: 0.55rem;
+    object-fit: cover;
+}
+
+.raffle-image-preview label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
+    font-weight: 650;
+}

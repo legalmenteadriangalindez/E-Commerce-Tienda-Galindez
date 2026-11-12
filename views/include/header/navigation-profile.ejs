@@ -1,0 +1,59 @@
+<!-- PERFIL -->
+
+<% const headerUser = (typeof authUser !== 'undefined' && authUser)
+    || (typeof sessionUser !== 'undefined' && sessionUser)
+    || null; %>
+
+<div class="dropdown">
+
+    <a
+        class="app-profile-btn"
+        data-bs-toggle="dropdown"
+    >
+        <i class="bi bi-person-circle"></i>
+    </a>
+
+
+    <ul class="dropdown-menu dropdown-menu-end">
+
+        <% if (headerUser && headerUser._id) { %>
+            <li>
+                <a class="dropdown-item" href="/perfil">
+                    <i class="bi bi-person"></i>
+                    Mi cuenta
+                </a>
+            </li>
+
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+
+            <li>
+                <a class="dropdown-item" href="/mis-pedidos">Mis pedidos</a>
+                <a class="dropdown-item" href="/change-password">Cambiar contraseña</a>
+                <form action="/logout" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="dropdown-item text-danger">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Cerrar sesión
+                    </button>
+                </form>
+            </li>
+        <% } else { %>
+            <li>
+                <a class="dropdown-item" href="/login">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Iniciar sesión
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="/register">
+                    <i class="bi bi-person-plus"></i>
+                    Crear cuenta
+                </a>
+            </li>
+        <% } %>
+
+    </ul>
+
+</div>

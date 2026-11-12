@@ -5,12 +5,12 @@ const Category = require('../model/categories');
 const Brand = require('../model/brands');
 const Provider = require('../model/provider');
 const Order = require('../model/order');
-const media = require('./mediaService');
 const queryPage = require('./queryPage');
 const pagination = require('../services/adminPagination');
 const money = require('../services/money');
 const { BusinessError, validId, parse } = require('./errors');
 const { product: schema } = require('../validation/schemas');
+const { uploadedFiles, discardUploads, updatedPhotos } = require('./productMedia');
 const inventory = require('./inventoryService');
 
 function priceCents(value) {
@@ -20,18 +20,6 @@ function priceCents(value) {
     } catch (error) {
         if (error instanceof money.MoneyError) throw new BusinessError(error.message);
         throw error;
-    }
-}
-
-function uploadedFiles(files) {
-    return Array.isArray(files) ? files : Object.values(files || {}).flat();
-}
-
-async function discardUploads(files) {
-    const results = await Promise.allSettled(uploadedFiles(files).map((file) => media.removeUnused(file.url)));
-    for (const result of results) {
-        if (result.status === 'rejected')
-            console.error('No se pudo limpiar una imagen sin uso:', result.reason.message);
     }
 }
 
@@ -80,29 +68,6 @@ async function productFields(input, current = {}) {
         marca,
         proveedor: proveedor || null,
     };
-}
-
-// Operación pura: permite probar reemplazos sin cargar imágenes ni MongoDB.
-function updatedPhotos(original, input, files = {}) {
-    const remove = input.eliminarFotos ? [].concat(input.eliminarFotos) : [];
-    if (remove.some((photo) => !original.includes(photo)))
-        throw new BusinessError('Fotografía no pertenece al producto.');
-    for (const field of Object.keys(files)) {
-        if (!field.startsWith('foto_')) continue;
-        const index = Number(field.slice(5));
-        if (!Number.isInteger(index) || index < 0 || index >= original.length)
-            throw new BusinessError('Índice de fotografía inválido.');
-    }
-    const result = [];
-    original.forEach((photo, index) => {
-        const replacement = files[`foto_${index}`]?.[0];
-        if (remove.includes(photo) && replacement)
-            throw new BusinessError('No puedes eliminar y reemplazar la misma foto a la vez.');
-        if (!remove.includes(photo)) result.push(replacement?.url || photo);
-    });
-    result.push(...(files.nuevasFotos || []).map((file) => file.url));
-    if (result.length > 4) throw new BusinessError('Máximo 4 fotografías por producto.');
-    return result;
 }
 
 async function create(body, files = [], actor) {

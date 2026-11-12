@@ -107,7 +107,15 @@ const resources = {
     },
     'admin/payment/payment_point': { pageCss: checkoutStyles() },
     'admin/payment/checkout_confirmation': { pageCss: checkoutStyles() },
-    'admin/payment/manage': { pageCss: css('admin-pagination.css', 'pages/admin-payments.css') },
+    'admin/payment/manage': {
+        pageCss: css(
+            'admin-pagination.css',
+            'pages/admin-payments.css',
+            'pages/admin-payments-workflow.css',
+            'pages/admin-payments-orders.css',
+            'pages/admin-payments-responsive.css'
+        ),
+    },
     'admin/analytics/index': {
         pageCss: css(
             'pages/analytics/dashboard.css',
@@ -119,7 +127,12 @@ const resources = {
         pageCss: css('pages/stock.css', 'pages/inventory-valuation.css', 'admin-pagination.css'),
     },
     'admin/inventory/replenishment': {
-        pageCss: css('admin-pagination.css', 'pages/inventory/replenishment.css'),
+        pageCss: css(
+            'admin-pagination.css',
+            'pages/inventory/replenishment.css',
+            'pages/inventory/replenishment-results.css',
+            'pages/inventory/replenishment-responsive.css'
+        ),
     },
     'admin/inventory/movements': {
         pageCss: css('admin-pagination.css', 'pages/inventory/movements.css'),
@@ -141,7 +154,15 @@ const resources = {
     'admin/orders/detail_orders': { pageCss: css('detail_order.css', 'delivery-tracking.css') },
     'admin/orders/update_order': { pageCss: css('update_order.css') },
     'admin/delivery/index': { pageCss: css('admin-delivery.css', 'admin-pagination.css') },
-    'admin/raffle/manage': { pageCss: css('pages/raffle/admin.css', 'admin-pagination.css') },
+    'admin/raffle/manage': {
+        pageCss: css(
+            'pages/raffle/admin.css',
+            'pages/raffle/admin-form.css',
+            'pages/raffle/admin-data.css',
+            'pages/raffle/admin-responsive.css',
+            'admin-pagination.css'
+        ),
+    },
     'admin/reviews/read_reviews': {
         pageCss: css(
             'pages/admin-reviews/layout.css',

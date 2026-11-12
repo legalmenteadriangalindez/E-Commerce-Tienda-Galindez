@@ -1,0 +1,132 @@
+<ul class="navbar-nav me-auto">
+
+    <li class="nav-item dropdown">
+
+        <a
+            class="nav-link app-nav-link dropdown-toggle"
+            data-bs-toggle="dropdown"
+        >
+            <i class="bi bi-grid"></i>
+            Categorías
+        </a>
+
+        <ul class="dropdown-menu">
+
+            <% if (categorias && categorias.length > 0) { %>
+
+                <% categorias.forEach(cat => { %>
+
+                    <li>
+
+                        <a
+                            class="dropdown-item"
+                            href="/categoria/<%= encodeURIComponent(cat.nombre) %>"
+                        >
+                            <i class="bi bi-tag"></i>
+                            <%= cat.nombre %>
+                        </a>
+
+                    </li>
+
+                <% }) %>
+
+            <% } else { %>
+
+                <li>
+                    <span class="dropdown-item text-danger">
+                        No hay categorías
+                    </span>
+                </li>
+
+            <% } %>
+
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+
+            <li>
+
+                <a
+                    class="dropdown-item"
+                    href="/"
+                >
+                    <i class="bi bi-box"></i>
+                    Ver todo el catálogo
+                </a>
+
+            </li>
+
+        </ul>
+
+    </li>
+
+
+    <li class="nav-item">
+
+        <a
+            class="nav-link app-nav-link"
+            href="/promociones"
+        >
+            <i class="bi bi-tag"></i>
+            Promociones
+        </a>
+
+    </li>
+
+
+    <li class="nav-item">
+
+        <a
+            class="nav-link app-nav-link"
+            href="/clothes"
+        >
+            <i class="bi bi-tag"></i>
+            Ropa
+        </a>
+
+    </li>
+
+
+    <li class="nav-item">
+
+        <a
+            class="nav-link app-nav-link"
+            href="/marcas"
+        >
+            <i class="bi bi-bookmark"></i>
+            Marcas
+        </a>
+
+    </li>
+
+
+    <li class="nav-item">
+
+        <a
+            class="nav-link app-nav-link position-relative"
+            href="/view_cart"
+        >
+
+            <i class="bi bi-cart"></i>
+            Carrito
+
+            <span
+                id="cart-count"
+                class="app-cart-badge"
+            >
+
+                <%= Array.isArray(cart)
+                    ? cart.reduce(
+                        (acc, i) => acc + i.cantidad,
+                        0
+                    )
+                    : 0
+                %>
+
+            </span>
+
+        </a>
+
+    </li>
+
+</ul>
