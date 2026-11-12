@@ -2,6 +2,8 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const commerce = require('../server/business/commerceService');
+const orders = require('../server/business/orderService');
+const payments = require('../server/business/paymentService');
 const paymentController = require('../server/controller/paymentController');
 
 const ENVIRONMENT_KEYS = [
@@ -89,6 +91,17 @@ function deliverWebhook(event) {
             },
         };
         paymentController.wompiWebhook({ body: event }, response, reject);
+    });
+}
+
+function retryPayment(request) {
+    return new Promise((resolve, reject) => {
+        const response = {
+            redirect(status, url) {
+                resolve({ status, url });
+            },
+        };
+        paymentController.retryPayment(request, response, reject);
     });
 }
 
@@ -212,5 +225,40 @@ test('el webhook verifica la firma, el ambiente y el estado del evento', async (
             body: { message: 'Evento guardado; pendiente de conciliación.' },
         });
         assert.equal(queuedId, 'tx-coverage-test');
+    });
+});
+
+test('el reintento de pago valida el pedido y no duplica una conciliación pendiente', async (t) => {
+    const id = '507f1f77bcf86cd799439011';
+    const request = { params: { id }, session: { user: { _id: '507f1f77bcf86cd799439012' } } };
+
+    await t.test('rechaza un identificador inválido', async () => {
+        await assert.rejects(
+            retryPayment({ ...request, params: { id: 'incorrecto' } }),
+            (error) => error.status === 400
+        );
+    });
+
+    await t.test('responde como no encontrado si el pedido no admite reintento', async (t) => {
+        t.mock.method(orders, 'findRetryablePaymentOrder', async () => null);
+        await assert.rejects(retryPayment(request), (error) => error.status === 404);
+    });
+
+    await t.test('espera si Wompi aún tiene un evento de pago pendiente', async (t) => {
+        const order = { _id: id };
+        t.mock.method(orders, 'findRetryablePaymentOrder', async () => order);
+        t.mock.method(payments, 'hasPendingEvent', async () => true);
+        await assert.rejects(retryPayment(request), (error) => error.status === 409);
+    });
+
+    await t.test('redirige a Wompi cuando el pedido puede reintentarse', async (t) => {
+        const order = { _id: id };
+        t.mock.method(orders, 'findRetryablePaymentOrder', async () => order);
+        t.mock.method(payments, 'hasPendingEvent', async () => false);
+        t.mock.method(commerce, 'checkoutUrl', () => 'https://checkout.wompi.co/p/?reference=ORD-1');
+        assert.deepEqual(await retryPayment(request), {
+            status: 303,
+            url: 'https://checkout.wompi.co/p/?reference=ORD-1',
+        });
     });
 });

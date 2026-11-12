@@ -384,6 +384,27 @@ test(
             await commerce.resolveEvent(secondEvent.id, reason, 'TICKET-4', adminId);
             assert.equal((await Order.findById(paidOrder._id)).incidenciaPago, '');
         });
+        await t.test('una devolución sin reintegro conserva el stock que ya se había descontado', async () => {
+            await reset(10);
+            const order = await make(app.users.owner, 2);
+            await commerce.applyTransaction(tx(order));
+
+            await commerce.resolveOrder(
+                order.id,
+                'DEVOLUCION',
+                'Reembolso aprobado sin retorno de productos',
+                'TICKET-SIN-REINTEGRO',
+                app.users.admin.id
+            );
+
+            const completed = await Order.findById(order._id);
+            assert.equal(completed.estadoPago, 'REEMBOLSADO');
+            assert.equal(completed.inventario, 'CONFIRMADO');
+            assert.equal((await app.Product.findById(app.product._id)).stock, 8);
+            const movement = await InventoryMovement.findOne({ pedido: order._id, tipo: 'DEVOLUCION' });
+            assert.equal(movement.deltaStock, 0);
+            assert.match(movement.motivo, /sin reintegro/i);
+        });
         await t.test('pago tardío se registra como cobrado con revisión; no se pierde el cobro', async () => {
             await reset(10);
             const order = await make(app.users.owner, 2);
