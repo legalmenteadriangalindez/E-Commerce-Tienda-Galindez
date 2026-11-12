@@ -1,7 +1,5 @@
 'use strict';
 
-const mongoose = require('mongoose');
-const crypto = require('node:crypto');
 const Expense = require('../model/businessExpense');
 const Purchase = require('../model/supplierPurchase');
 const Sale = require('../model/sales');
@@ -28,7 +26,8 @@ function accountingDate(input) {
     if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== input) {
         throw new BusinessError('La fecha del gasto no es válida.', 400);
     }
-    if (date > new Date()) throw new BusinessError('No puedes registrar gastos futuros.', 400);
+    const todayBogota = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    if (input > todayBogota) throw new BusinessError('No puedes registrar gastos futuros.', 400);
     return date;
 }
 

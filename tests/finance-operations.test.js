@@ -120,7 +120,7 @@ test(
             assert.equal(response.status, 200, route);
         }
         const html = await (await fixture.request(admin, '/admin/finanzas')).text();
-        assert.match(html, /1\\.832,83/);
+        assert.ok(html.includes('1.832,83'));
 
         const customer = await fixture.actor('owner');
         for (const route of ['/admin/finanzas', '/admin/flujo-caja', '/admin/compras-proveedores']) {
