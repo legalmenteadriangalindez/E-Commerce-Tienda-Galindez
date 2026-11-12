@@ -38,6 +38,14 @@ Después de verificar el correo, cualquier cuenta puede abrir **Cambiar contrase
 
 Los cálculos se dejan dentro de MongoDB para no traer todas las ventas a la memoria del servidor. Las pruebas de integración y las pruebas de etapas de consulta comprueban que el refactor no altere resultados ni formatos.
 
+## Guía de código: inventario y finanzas
+
+- `server/business/inventoryService.js`: `changeStock()` hace un cambio atómico y registra un movimiento. `changeItemStocks()` recorre los productos de una operación (reservar, liberar o devolver). `recordOrderMovement()` registra ventas y devoluciones que no cambian las existencias. Cada movimiento conserva su clave para evitar duplicados.
+- `server/business/financeService.js`: `cashFromSales()`, `cashFromExpenses()` y `cashFromPurchases()` consultan, respectivamente, entradas por ventas, pagos de gastos y pagos a proveedores. `cashFlow()` suma esos resultados y construye el reporte.
+- Los cambios de inventario siguen dentro de transacciones de MongoDB. Los pagos a proveedores son salidas de caja, pero no gastos adicionales al calcular la ganancia de mercancía vendida.
+
+Estas funciones pequeñas evitan repetir bloques extensos. No cambian las reglas, nombres públicos de funciones, rutas, cálculos ni formato de datos. Las pruebas ejecutan escenarios de doble solicitud, pagos, devoluciones y consulta semanal/mensual.
+
 ## Validación
 
 ```text
