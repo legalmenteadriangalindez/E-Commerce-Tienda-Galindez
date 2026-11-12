@@ -156,6 +156,14 @@ test(
         const finalCash = await finance.cashFlow('week');
         assert.equal(finalCash.paidExpenses, 1500.5);
         assert.equal(finalCash.netMovement, -39500.5);
+        assert.deepEqual(finalCash.movements.map((item) => item.type).sort(), ['Entrada', 'Gasto', 'Proveedor']);
+        assert.deepEqual(finalCash.movements.map((item) => item.sign).sort(), [-1, -1, 1]);
+        assert.ok(finalCash.movements.some((item) => item.description === 'Venta TEST-FINANCE-001'));
+        assert.ok(finalCash.movements.some((item) => item.description === 'Empaques: Cajas para pedidos'));
+        assert.ok(finalCash.movements.some((item) => item.description === 'Compra FAC-TEST-01'));
+        const monthlyCash = await finance.cashFlow('month');
+        assert.equal(monthlyCash.netMovement, finalCash.netMovement);
+        assert.equal(monthlyCash.movements.length, finalCash.movements.length);
         assert.equal((await finance.financialSummary('week')).estimatedNetProfit, 1832.83);
 
         const admin = await fixture.actor('admin');

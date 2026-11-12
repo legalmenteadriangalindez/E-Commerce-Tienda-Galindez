@@ -134,40 +134,51 @@ async function changeStock({
  * Reserva o descuenta unidades y registra el cambio en la misma transacción.
  * El movimiento de VENTA se registra después, cuando el pago queda confirmado.
  */
-async function debit(items, session, metadata = {}) {
-    const reference = metadata.reference || metadata.order?._id || crypto.randomUUID();
+/**
+ * Cambia existencias de una lista de productos y registra cada movimiento.
+ * La operación se realiza por producto para conservar su propia clave
+ * idempotente: si llega dos veces la misma solicitud, no se descuenta dos veces.
+ */
+async function changeItemStocks(items, session, operation) {
+    const { action, type, sign, reference, reason, actorId, actorName, order } = operation;
+
     for (const [index, item] of items.entries()) {
         await changeStock(
             {
                 productId: item.producto,
-                delta: -item.cantidad,
+                delta: sign * item.cantidad,
                 quantity: item.cantidad,
-                type: 'RESERVA',
-                reason: metadata.reason || 'Unidades reservadas para un pedido',
-                actorId: metadata.actorId || metadata.order?.usuario,
-                actorName: metadata.actorName,
-                order: metadata.order,
+                type,
+                reason,
+                actorId,
+                actorName,
+                order,
                 session,
-                idempotencyKey: movementKey('reserva', reference, index, item),
+                idempotencyKey: movementKey(action, reference, index, item),
             },
             session
         );
     }
 }
 
-async function recordSale(order, session, metadata = {}) {
+/**
+ * Registra ventas o devoluciones que no cambian el stock disponible.
+ * Las unidades de la venta ya se descontaron durante la reserva.
+ */
+async function recordOrderMovement(order, session, metadata, operation) {
     for (const [index, item] of order.productos.entries()) {
-        const key = movementKey('venta', order._id, index, item);
+        const key = movementKey(operation.action, order._id, index, item);
         if (await alreadyRecorded(key, session)) continue;
+
         const currentStock = await stockBefore(item.producto, session);
         await writeMovement(
             {
                 productId: item.producto,
-                type: 'VENTA',
+                type: operation.type,
                 quantity: item.cantidad,
                 delta: 0,
                 before: currentStock,
-                reason: orderReason(metadata.reason || 'Venta confirmada; unidades ya descontadas al reservar', order),
+                reason: orderReason(operation.reason, order),
                 actorId: metadata.actorId,
                 actorLabel: await actorName(metadata.actorId, metadata.actorName, session),
                 orderId: order._id,
@@ -176,6 +187,27 @@ async function recordSale(order, session, metadata = {}) {
             session
         );
     }
+}
+
+async function debit(items, session, metadata = {}) {
+    await changeItemStocks(items, session, {
+        action: 'reserva',
+        type: 'RESERVA',
+        sign: -1,
+        reference: metadata.reference || metadata.order?._id || crypto.randomUUID(),
+        reason: metadata.reason || 'Unidades reservadas para un pedido',
+        actorId: metadata.actorId || metadata.order?.usuario,
+        actorName: metadata.actorName,
+        order: metadata.order,
+    });
+}
+
+async function recordSale(order, session, metadata = {}) {
+    await recordOrderMovement(order, session, metadata, {
+        action: 'venta',
+        type: 'VENTA',
+        reason: metadata.reason || 'Venta confirmada; unidades ya descontadas al reservar',
+    });
 }
 
 async function recordInitialEntry(product, metadata = {}, session) {
@@ -199,98 +231,66 @@ async function recordInitialEntry(product, metadata = {}, session) {
 
 async function release(order, session, metadata = {}) {
     if (order.inventario !== 'RESERVADO') return;
-    for (const [index, item] of order.productos.entries()) {
-        await changeStock(
-            {
-                productId: item.producto,
-                delta: item.cantidad,
-                quantity: item.cantidad,
-                type: 'LIBERACION',
-                reason: metadata.reason || 'Reserva liberada',
-                actorId: metadata.actorId,
-                actorName: metadata.actorName,
-                order,
-                session,
-                idempotencyKey: movementKey('liberacion', order._id, index, item),
-            },
-            session
-        );
-    }
+
+    await changeItemStocks(order.productos, session, {
+        action: 'liberacion',
+        type: 'LIBERACION',
+        sign: 1,
+        reference: order._id,
+        reason: metadata.reason || 'Reserva liberada',
+        actorId: metadata.actorId,
+        actorName: metadata.actorName,
+        order,
+    });
     order.inventario = 'LIBERADO';
 }
 
 async function releaseConfirmed(order, session, metadata = {}) {
     if (order.inventario !== 'CONFIRMADO') return;
-    for (const [index, item] of order.productos.entries()) {
-        await changeStock(
-            {
-                productId: item.producto,
-                delta: item.cantidad,
-                quantity: item.cantidad,
-                type: 'LIBERACION',
-                reason: metadata.reason || 'Pedido contra entrega cancelado; unidades devueltas a disponible',
-                actorId: metadata.actorId,
-                actorName: metadata.actorName,
-                order,
-                session,
-                idempotencyKey: movementKey('liberacion-confirmado', order._id, index, item),
-            },
-            session
-        );
-    }
+
+    await changeItemStocks(order.productos, session, {
+        action: 'liberacion-confirmado',
+        type: 'LIBERACION',
+        sign: 1,
+        reference: order._id,
+        reason: metadata.reason || 'Pedido contra entrega cancelado; unidades devueltas a disponible',
+        actorId: metadata.actorId,
+        actorName: metadata.actorName,
+        order,
+    });
     order.inventario = 'LIBERADO';
 }
 
 async function restock(items, session, metadata = {}) {
-    const reference = metadata.order?._id || metadata.reference || crypto.randomUUID();
-    for (const [index, item] of items.entries()) {
-        await changeStock(
-            {
-                productId: item.producto,
-                delta: item.cantidad,
-                quantity: item.cantidad,
-                type: 'DEVOLUCION',
-                reason: metadata.reason || 'Productos reintegrados al inventario por devolución',
-                actorId: metadata.actorId,
-                actorName: metadata.actorName,
-                order: metadata.order,
-                session,
-                idempotencyKey: movementKey('devolucion', reference, index, item),
-            },
-            session
-        );
-    }
+    await changeItemStocks(items, session, {
+        action: 'devolucion',
+        type: 'DEVOLUCION',
+        sign: 1,
+        reference: metadata.order?._id || metadata.reference || crypto.randomUUID(),
+        reason: metadata.reason || 'Productos reintegrados al inventario por devolución',
+        actorId: metadata.actorId,
+        actorName: metadata.actorName,
+        order: metadata.order,
+    });
 }
 
 async function recordReturnWithoutRestock(order, session, metadata = {}) {
-    for (const [index, item] of order.productos.entries()) {
-        const key = movementKey('devolucion-sin-reintegro', order._id, index, item);
-        if (await alreadyRecorded(key, session)) continue;
-        const currentStock = await stockBefore(item.producto, session);
-        await writeMovement(
-            {
-                productId: item.producto,
-                type: 'DEVOLUCION',
-                quantity: item.cantidad,
-                delta: 0,
-                before: currentStock,
-                reason: orderReason(
-                    `Reembolso sin reintegro de existencias: ${String(metadata.reason || 'no se devolvieron unidades').slice(0, 300)}`,
-                    order
-                ),
-                actorId: metadata.actorId,
-                actorLabel: await actorName(metadata.actorId, metadata.actorName, session),
-                orderId: order._id,
-                idempotencyKey: key,
-            },
-            session
-        );
-    }
+    await recordOrderMovement(order, session, metadata, {
+        action: 'devolucion-sin-reintegro',
+        type: 'DEVOLUCION',
+        reason: `Reembolso sin reintegro de existencias: ${String(metadata.reason || 'no se devolvieron unidades').slice(0, 300)}`,
+    });
+}
+
+// Es más fácil leer los casos separados que un ternario anidado.
+function adjustmentDelta(type, quantity, direction) {
+    if (type === 'ENTRADA') return quantity;
+    if (type === 'DANO') return -quantity;
+    return direction === 'SUMAR' ? quantity : -quantity;
 }
 
 async function adjust({ productId, type, quantity, direction, reason, idempotencyKey }, actor) {
-    const delta =
-        type === 'ENTRADA' ? quantity : type === 'DANO' ? -quantity : direction === 'SUMAR' ? quantity : -quantity;
+    const delta = adjustmentDelta(type, quantity, direction);
     return mongoose.connection.transaction(async (session) => {
         const before = await stockBefore(productId, session);
         const changed = await changeStock(
