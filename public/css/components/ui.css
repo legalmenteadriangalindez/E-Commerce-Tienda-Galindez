@@ -145,7 +145,8 @@
     overflow-x: auto;
 }
 
-.ui-table {
+.ui-table,
+.admin-table {
     border-collapse: collapse;
     margin: 0;
     min-width: 100%;
@@ -153,14 +154,17 @@
 }
 
 .ui-table th,
-.ui-table td {
+.ui-table td,
+.admin-table th,
+.admin-table td {
     border-bottom: 1px solid var(--color-border-light);
     padding: 0.75rem 1rem;
     text-align: left;
     vertical-align: middle;
 }
 
-.ui-table thead th {
+.ui-table thead th,
+.admin-table thead th {
     background: var(--color-surface-warm);
     color: var(--color-brand-dark);
     font-size: 0.8rem;
@@ -168,11 +172,13 @@
     text-transform: uppercase;
 }
 
-.ui-table tbody tr:last-child td {
+.ui-table tbody tr:last-child td,
+.admin-table tbody tr:last-child td {
     border-bottom: 0;
 }
 
-.ui-table tbody tr:hover {
+.ui-table tbody tr:hover,
+.admin-table tbody tr:hover {
     background: var(--color-surface-warm);
 }
 

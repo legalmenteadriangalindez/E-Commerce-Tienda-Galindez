@@ -4,27 +4,29 @@
 
 
 <main class="admin-shell admin-list-page">
-  <header class="admin-list-heading">
-    <div>
-      <p class="admin-list-eyebrow">Cuentas</p>
-      <h1>Gestionar usuarios</h1>
-      <p class="admin-list-description">Administra cuentas, roles y estados de acceso de la tienda.</p>
-    </div>
-    <a href="/add-user-form" class="admin-list-primary">Crear usuario</a>
-  </header>
+  <%- include('../../include/_adminPageHeader', {
+    eyebrow: 'Cuentas',
+    title: 'Gestionar usuarios',
+    description: 'Administra cuentas, roles y estados de acceso de la tienda.',
+    actionHref: '/add-user-form',
+    actionLabel: 'Crear usuario'
+  }) %>
   <% if (verificationNotice === 'sent') { %>
-    <p class="admin-list-description" role="status">
-      Usuario creado. Enviamos un código de verificación al correo; deberá verificarlo antes de iniciar sesión.
-    </p>
+    <%- include('../../include/_adminAlert', {
+      type: 'success',
+      icon: 'bi bi-check-circle-fill',
+      message: 'Usuario creado. Enviamos un código de verificación al correo; deberá verificarlo antes de iniciar sesión.'
+    }) %>
   <% } else if (verificationNotice === 'failed') { %>
-    <p class="admin-list-description" role="status">
-      Usuario creado, pero no se pudo enviar el correo de verificación. La cuenta no podrá iniciar sesión hasta verificar el correo.
-      La persona puede iniciar sesión con su contraseña inicial para solicitar otro código. También puedes abrir «Verificar correo» en la fila de su cuenta.
-    </p>
+    <%- include('../../include/_adminAlert', {
+      type: 'warning',
+      icon: 'bi bi-exclamation-triangle-fill',
+      message: 'Usuario creado, pero no se pudo enviar el correo de verificación. La cuenta no podrá iniciar sesión hasta verificar el correo. La persona puede iniciar sesión con su contraseña inicial para solicitar otro código. También puedes abrir «Verificar correo» en la fila de su cuenta.'
+    }) %>
   <% } %>
-  <div class="admin-table-wrap ui-table-wrap admin-mobile-card-wrap">
+  <div class="admin-card admin-table-wrap ui-table-wrap admin-mobile-card-wrap">
   <table
-    class="table ui-table admin-mobile-card-table admin-users-card-table"
+    class="table ui-table admin-table admin-mobile-card-table admin-users-card-table"
     aria-label="Usuarios de la tienda"
   >
   <thead>
@@ -71,11 +73,11 @@
         <% } %>
       </td>
       <td data-label="Registro" class="admin-mobile-secondary"><%= user.fechaRegistro %></td>
-      <td data-label="Editar"><a href="/update-user/<%= user._id %>" class="btn btn-warning">Editar</a></td>
+      <td data-label="Editar"><a href="/update-user/<%= user._id %>" class="btn btn-warning admin-button admin-button--primary">Editar</a></td>
       <td data-label="Eliminar">
         <form action="/delete-user/<%= user._id %>" method="POST">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <button type="submit" class="btn btn-danger">Eliminar</button>
+          <button type="submit" class="btn btn-danger admin-button admin-button--danger">Eliminar</button>
         </form>
       </td>
     </tr>
@@ -83,9 +85,10 @@
   </tbody>
 </table>
   </div>
-  <% if (!users.length) { %>
-    <p class="admin-list-empty">No hay usuarios activos registrados.</p>
-  <% } %>
+  <%- include('../../include/_adminEmptyState', {
+    show: !users.length,
+    message: 'No hay usuarios activos registrados.'
+  }) %>
   <%- include('../../include/_adminPagination', { pagination, label: 'usuarios' }) %>
 
 </main>

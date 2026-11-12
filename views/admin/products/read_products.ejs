@@ -4,18 +4,17 @@
 
 
 <main class="admin-shell admin-list-page">
-  <header class="admin-list-heading">
-    <div>
-      <p class="admin-list-eyebrow">Catálogo</p>
-      <h1>Gestionar productos</h1>
-      <p class="admin-list-description">Administra precios, inventario y relaciones del catálogo.</p>
-    </div>
-    <a href="/create-producto" class="admin-list-primary">Crear producto</a>
-  </header>
+  <%- include('../../include/_adminPageHeader', {
+    eyebrow: 'Catálogo',
+    title: 'Gestionar productos',
+    description: 'Administra precios, inventario y relaciones del catálogo.',
+    actionHref: '/create-producto',
+    actionLabel: 'Crear producto'
+  }) %>
 
-  <div class="admin-table-wrap ui-table-wrap admin-mobile-card-wrap">
+  <div class="admin-card admin-table-wrap ui-table-wrap admin-mobile-card-wrap">
   <table
-    class="table ui-table admin-mobile-card-table admin-products-card-table"
+    class="table ui-table admin-table admin-mobile-card-table admin-products-card-table"
     aria-label="Productos del catálogo"
   >
     <thead>
@@ -110,7 +109,7 @@
           <td data-label="Editar">
             <a
               href="/update-producto/<%= product._id %>"
-              class="btn btn-success"
+              class="btn btn-success admin-button admin-button--primary"
             >
               Editar
             </a>
@@ -119,7 +118,7 @@
           <td data-label="Eliminar">
             <form action="/delete-producto/<%= product._id %>" method="POST">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-              <button type="submit" class="btn btn-danger">Eliminar</button>
+              <button type="submit" class="btn btn-danger admin-button admin-button--danger">Eliminar</button>
             </form>
           </td>
         </tr>
@@ -128,9 +127,10 @@
     </tbody>
   </table>
   </div>
-  <% if (!productos.length) { %>
-    <p class="admin-list-empty">No hay productos registrados.</p>
-  <% } %>
+  <%- include('../../include/_adminEmptyState', {
+    show: !productos.length,
+    message: 'No hay productos registrados.'
+  }) %>
   <%- include('../../include/_adminPagination', { pagination, label: 'productos' }) %>
 </main>
 

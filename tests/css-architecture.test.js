@@ -51,6 +51,21 @@ test('los componentes visuales tienen una hoja canónica y el área administrati
         assert.match(uiSource, new RegExp(`${selector.replace('.', '\\.')}(?:\\W|$)`));
     }
 
+    const adminUiSource = fs.readFileSync(path.join(cssRoot, 'components', 'admin-ui.css'), 'utf8');
+    for (const selector of [
+        '.admin-page-header',
+        '.admin-card',
+        '.admin-button',
+        '.admin-filter-bar',
+        '.admin-alert',
+    ]) {
+        assert.match(adminUiSource, new RegExp(`${selector.replace('.', '\\.')}(?:\\W|$)`));
+    }
+
+    for (const partial of ['_adminPageHeader.ejs', '_adminEmptyState.ejs', '_adminAlert.ejs']) {
+        assert.ok(fs.existsSync(path.join(viewsRoot, 'include', partial)), partial);
+    }
+
     const adminHeader = fs.readFileSync(path.join(viewsRoot, 'include', '_headerAdmin.ejs'), 'utf8');
     assert.match(adminHeader, /\/css\/components\/admin\.css/);
     assert.ok(fs.existsSync(path.join(cssRoot, 'components', 'admin.css')));

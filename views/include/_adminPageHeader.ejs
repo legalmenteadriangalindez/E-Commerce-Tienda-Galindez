@@ -1,0 +1,29 @@
+<%
+    const pageEyebrow = typeof eyebrow === 'string' ? eyebrow : '';
+    const pageTitle = typeof title === 'string' ? title : '';
+    const pageDescription = typeof description === 'string' ? description : '';
+    const pageActionHref = typeof actionHref === 'string' ? actionHref : '';
+    const pageActionLabel = typeof actionLabel === 'string' ? actionLabel : '';
+    const pageActionIcon = typeof actionIcon === 'string' ? actionIcon : '';
+%>
+<header class="admin-page-header admin-list-heading">
+    <div class="admin-page-header__content">
+        <% if (pageEyebrow) { %>
+            <p class="admin-page-header__eyebrow admin-list-eyebrow"><%= pageEyebrow %></p>
+        <% } %>
+        <h1><%= pageTitle %></h1>
+        <% if (pageDescription) { %>
+            <p class="admin-page-header__description admin-list-description"><%= pageDescription %></p>
+        <% } %>
+    </div>
+
+    <% if (pageActionHref && pageActionLabel) { %>
+        <a
+            href="<%= pageActionHref %>"
+            class="admin-button admin-button--primary admin-page-header__action admin-list-primary"
+        >
+            <% if (pageActionIcon) { %><i class="<%= pageActionIcon %>" aria-hidden="true"></i><% } %>
+            <span><%= pageActionLabel %></span>
+        </a>
+    <% } %>
+</header>

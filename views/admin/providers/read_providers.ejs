@@ -5,16 +5,15 @@
 
 
 <main class="admin-shell admin-list-page">
-  <header class="admin-list-heading">
-    <div>
-      <p class="admin-list-eyebrow">Operación</p>
-      <h1>Gestionar proveedores</h1>
-      <p class="admin-list-description">Consulta y actualiza los datos de contacto de tus proveedores.</p>
-    </div>
-    <a href="/create-proveedor" class="admin-list-primary">Crear proveedor</a>
-  </header>
-  <div class="admin-table-wrap ui-table-wrap">
-  <table class="table ui-table">
+  <%- include('../../include/_adminPageHeader', {
+    eyebrow: 'Operación',
+    title: 'Gestionar proveedores',
+    description: 'Consulta y actualiza los datos de contacto de tus proveedores.',
+    actionHref: '/create-proveedor',
+    actionLabel: 'Crear proveedor'
+  }) %>
+  <div class="admin-card admin-table-wrap ui-table-wrap">
+  <table class="table ui-table admin-table">
     <thead>
       <tr>
         <th scope="col" hidden>#</th>
@@ -37,13 +36,13 @@
         <td><%= provider.direccion %></td>
         <td><%= provider.descripcion %></td>
         <td>
-          <a href="/update-proveedor?id=<%= provider._id %>" class="btn btn-success">Editar</a>
+          <a href="/update-proveedor?id=<%= provider._id %>" class="btn btn-success admin-button admin-button--primary">Editar</a>
         </td>
 
         <td>
           <form action="/delete-proveedor/<%= provider._id %>" method="POST" class="d-inline">
               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <button type="submit" class="btn btn-danger">Eliminar</button>
+            <button type="submit" class="btn btn-danger admin-button admin-button--danger">Eliminar</button>
           </form>
         </td>
       </tr>
@@ -51,9 +50,10 @@
     </tbody>
   </table>
   </div>
-  <% if (!providers.length) { %>
-    <p class="admin-list-empty">No hay proveedores registrados.</p>
-  <% } %>
+  <%- include('../../include/_adminEmptyState', {
+    show: !providers.length,
+    message: 'No hay proveedores registrados.'
+  }) %>
   <%- include('../../include/_adminPagination', { pagination, label: 'proveedores' }) %>
 
 </main>

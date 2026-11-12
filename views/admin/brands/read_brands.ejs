@@ -4,17 +4,16 @@
 
 
 <main class="admin-shell admin-list-page">
-  <header class="admin-list-heading">
-    <div>
-      <p class="admin-list-eyebrow">Catálogo</p>
-      <h1>Gestionar marcas</h1>
-      <p class="admin-list-description">Mantén consistentes las marcas que aparecen en tus productos.</p>
-    </div>
-    <a href="/create-marca" class="admin-list-primary">Crear marca</a>
-  </header>
+  <%- include('../../include/_adminPageHeader', {
+    eyebrow: 'Catálogo',
+    title: 'Gestionar marcas',
+    description: 'Mantén consistentes las marcas que aparecen en tus productos.',
+    actionHref: '/create-marca',
+    actionLabel: 'Crear marca'
+  }) %>
 
-  <div class="admin-table-wrap ui-table-wrap">
-  <table class="table ui-table">
+  <div class="admin-card admin-table-wrap ui-table-wrap">
+  <table class="table ui-table admin-table">
     <thead>
       <tr>
         <th scope="col" hidden>#</th>
@@ -37,13 +36,13 @@
              <% } %>
         </td>
         <td>
-          <a href="/update-marca?id=<%= brand._id %>" class="btn btn-success">Editar</a>
+          <a href="/update-marca?id=<%= brand._id %>" class="btn btn-success admin-button admin-button--primary">Editar</a>
         </td>
 
         <td>
           <form action="/delete-marca/<%= brand._id %>" method="POST" class="d-inline">
               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <button type="submit" class="btn btn-danger">Eliminar</button>
+            <button type="submit" class="btn btn-danger admin-button admin-button--danger">Eliminar</button>
           </form>
         </td>
       </tr>
@@ -51,9 +50,10 @@
     </tbody>
   </table>
   </div>
-  <% if (!brands.length) { %>
-    <p class="admin-list-empty">No hay marcas registradas.</p>
-  <% } %>
+  <%- include('../../include/_adminEmptyState', {
+    show: !brands.length,
+    message: 'No hay marcas registradas.'
+  }) %>
   <%- include('../../include/_adminPagination', { pagination, label: 'marcas' }) %>
 
 </main>

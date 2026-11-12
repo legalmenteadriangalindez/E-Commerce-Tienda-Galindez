@@ -41,6 +41,17 @@
     gap: 13px;
 }
 
+/* Conserva la cuadrícula propia de pedidos al compartir el componente de filtros. */
+.sales-filters.admin-filter-bar {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
 .sales-filters__search {
     grid-column: 1 / -1;
 }

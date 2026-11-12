@@ -1,0 +1,15 @@
+<%
+    const alertMessage = typeof message === 'string' ? message : '';
+    const requestedAlertType = typeof type === 'string' ? type : 'info';
+    const alertType = ['success', 'error', 'warning', 'info'].includes(requestedAlertType)
+        ? requestedAlertType
+        : 'info';
+    const alertIcon = typeof icon === 'string' ? icon : '';
+    const alertRole = typeof role === 'string' && role === 'alert' ? 'alert' : 'status';
+%>
+<% if (alertMessage) { %>
+    <div class="admin-alert admin-alert--<%= alertType %>" role="<%= alertRole %>">
+        <% if (alertIcon) { %><i class="<%= alertIcon %>" aria-hidden="true"></i><% } %>
+        <span class="admin-alert__message"><%= alertMessage %></span>
+    </div>
+<% } %>

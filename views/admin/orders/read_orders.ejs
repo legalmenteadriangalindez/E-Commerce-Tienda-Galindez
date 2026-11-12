@@ -3,15 +3,13 @@
 <!-- /include header -->
 
 <main class="admin-shell admin-list-page admin-orders-page">
-  <header class="admin-list-heading">
-    <div>
-      <p class="admin-list-eyebrow">Operación</p>
-      <h1>Gestionar órdenes</h1>
-      <p class="admin-list-description">Supervisa el estado de los pedidos y continúa su proceso de entrega.</p>
-    </div>
-  </header>
+  <%- include('../../include/_adminPageHeader', {
+    eyebrow: 'Operación',
+    title: 'Gestionar órdenes',
+    description: 'Supervisa el estado de los pedidos y continúa su proceso de entrega.'
+  }) %>
 
-  <section class="sales-export-panel" aria-labelledby="orders-search-title">
+  <section class="sales-export-panel admin-card" aria-labelledby="orders-search-title">
     <div class="sales-export-panel__heading">
       <div>
         <p class="admin-list-eyebrow">Consulta de pedidos</p>
@@ -19,21 +17,21 @@
       </div>
       <span class="sales-export-panel__hint">Busca por código, cédula, correo, nombre o teléfono.</span>
     </div>
-    <form class="sales-filters" method="get" action="/read-order">
-      <label class="sales-filters__search">
+    <form class="sales-filters admin-filter-bar" method="get" action="/read-order">
+      <label class="sales-filters__search admin-filter-bar__field">
         Pedido o cliente
         <input type="search" name="search" value="<%= search %>" maxlength="100" autocomplete="off" placeholder="Ej.: ORD-123 o cliente@correo.com">
       </label>
-      <div class="sales-filters__actions">
-        <button class="sales-filter-button" type="submit">Buscar pedidos</button>
-        <a class="sales-filter-reset" href="/read-order">Limpiar</a>
+      <div class="sales-filters__actions admin-filter-bar__actions">
+        <button class="sales-filter-button admin-button admin-button--primary" type="submit">Buscar pedidos</button>
+        <a class="sales-filter-reset admin-button admin-button--secondary" href="/read-order">Limpiar</a>
       </div>
     </form>
   </section>
 
-  <div class="admin-table-wrap ui-table-wrap admin-mobile-card-wrap">
+  <div class="admin-card admin-table-wrap ui-table-wrap admin-mobile-card-wrap">
     <table
-      class="ui-table admin-mobile-card-table admin-orders-card-table"
+      class="ui-table admin-table admin-mobile-card-table admin-orders-card-table"
       aria-label="Órdenes de la tienda"
     >
       <thead>
@@ -93,9 +91,10 @@
     </table>
   </div>
 
-  <% if (!orders.length) { %>
-    <p class="admin-list-empty">No hay órdenes registradas.</p>
-  <% } %>
+  <%- include('../../include/_adminEmptyState', {
+    show: !orders.length,
+    message: 'No hay órdenes registradas.'
+  }) %>
   <%- include('../../include/_adminPagination', { pagination, label: 'órdenes' }) %>
 </main>
 

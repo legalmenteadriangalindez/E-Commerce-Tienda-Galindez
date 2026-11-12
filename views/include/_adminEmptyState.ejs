@@ -1,0 +1,22 @@
+<%
+    const emptyMessage = typeof message === 'string' ? message : 'No hay información para mostrar.';
+    const emptyDescription = typeof description === 'string' ? description : '';
+    const emptyHref = typeof href === 'string' ? href : '';
+    const emptyLinkLabel = typeof linkLabel === 'string' ? linkLabel : '';
+    const emptyIcon = typeof icon === 'string' ? icon : '';
+    const showEmptyState = typeof show === 'undefined' || show !== false;
+%>
+<% if (showEmptyState) { %>
+    <div class="admin-empty-state admin-list-empty" role="status">
+        <% if (emptyIcon) { %>
+            <span class="admin-empty-state__icon" aria-hidden="true"><i class="<%= emptyIcon %>"></i></span>
+        <% } %>
+        <p class="admin-empty-state__message"><%= emptyMessage %></p>
+        <% if (emptyDescription) { %>
+            <p class="admin-empty-state__description"><%= emptyDescription %></p>
+        <% } %>
+        <% if (emptyHref && emptyLinkLabel) { %>
+            <a class="admin-empty-state__link" href="<%= emptyHref %>"><%= emptyLinkLabel %></a>
+        <% } %>
+    </div>
+<% } %>
