@@ -1,70 +1,98 @@
 <%- include('../../include/_headerDealer') %>
 
-
-<main class="container-fluid py-3 dealer-orders-page">
+<main class="container-fluid py-4 dealer-orders-page">
     <header class="dealer-orders-heading">
-        <div>
-            <p class="dealer-eyebrow">Distribución</p>
-            <h1 class="title-orders">Mis entregas</h1>
-            <p class="dealer-description">Solo aparecen los pedidos que la tienda te asignó.</p>
+        <div class="dealer-orders-heading__identity">
+            <span class="dealer-orders-heading__icon" aria-hidden="true"><i class="bi bi-bicycle"></i></span>
+            <div>
+                <p class="dealer-eyebrow">Operación de entregas</p>
+                <h1 id="dealer-orders-title" class="title-orders">Mis entregas</h1>
+                <p class="dealer-description">Pedidos asignados para entregar y actualizar.</p>
+            </div>
         </div>
-        <span class="dealer-orders-count"><%= pagination.totalItems %> pedido(s)</span>
+        <div class="dealer-orders-count" aria-label="Total de pedidos asignados">
+            <strong><%= pagination.totalItems %></strong>
+            <span>pedido(s) asignado(s)</span>
+        </div>
     </header>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-hover align-middle orders-table">
-            <thead class="table-dark">
-                <tr>
-                    <th>Orden</th>
-                    <th>Cliente</th>
-                    <th>Destino</th>
-                    <th>Total</th>
-                    <th>Pago</th>
-                    <th>Estado</th>
-                    <th>Fecha</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% orders.forEach(order => { %>
-                    <tr>
-                        <td data-label="Orden"><strong><%= order.numeroOrden %></strong></td>
-                        <td data-label="Cliente">
-                            <%= order.cliente?.nombre || order.usuario?.nombre || 'Sin usuario' %><br>
-                            <small><%= order.cliente?.telefono || order.usuario?.telefono || '' %></small>
-                        </td>
-                        <td data-label="Destino">
-                            <%= order.direccionEnvio?.direccion || 'Sin dirección' %><br>
-                            <small><%= order.direccionEnvio?.ciudad || '' %></small>
-                        </td>
-                        <td data-label="Total">$ <%= Number(order.total || 0).toLocaleString('es-CO') %></td>
-                        <td data-label="Pago">
-                            <%= order.metodoPago === 'CASH_ON_DELIVERY'
-                                ? 'Contra entrega'
-                                : order.metodoPago === 'WOMPI_NEQUI'
-                                    ? 'Nequi · Wompi'
-                                    : 'Tarjeta · Wompi' %>
-                        </td>
-                        <td data-label="Estado">
-                            <span class="dealer-status dealer-status--<%= order.estado.toLowerCase() %>">
-                                <%= statusLabels[order.estado] || order.estado %>
-                            </span>
-                        </td>
-                        <td data-label="Fecha"><%= new Date(order.createdAt).toLocaleDateString('es-CO') %></td>
-                        <td data-label="Acciones" class="dealer-actions">
-                            <a href="/dealer/orders/update/<%= order._id %>" class="btn btn-success btn-sm">Actualizar</a>
-                            <a href="/dealer/orders/detail/<%= order._id %>" class="btn btn-info btn-sm">Seguimiento</a>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    </div>
+    <section class="dealer-orders-panel" aria-labelledby="dealer-orders-panel-title">
+        <div class="dealer-orders-panel__header">
+            <div>
+                <p class="dealer-eyebrow">Tu jornada</p>
+                <h2 id="dealer-orders-panel-title">Pedidos asignados</h2>
+            </div>
+            <span class="dealer-orders-panel__hint"><i class="bi bi-info-circle" aria-hidden="true"></i> Mantén el estado actualizado</span>
+        </div>
 
-    <% if (!orders.length) { %>
-        <p class="admin-list-empty">Todavía no tienes pedidos asignados.</p>
-    <% } %>
+        <div class="table-responsive dealer-orders-table-wrapper">
+            <table class="table table-hover align-middle orders-table dealer-orders-table">
+                <caption class="visually-hidden">Pedidos asignados al repartidor</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Orden</th>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Destino</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Pago</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (!orders.length) { %>
+                        <tr>
+                            <td colspan="8">
+                                <div class="dealer-empty-state" role="status">
+                                    <span class="dealer-empty-state__icon" aria-hidden="true"><i class="bi bi-inbox"></i></span>
+                                    <strong>Todavía no tienes pedidos asignados</strong>
+                                    <span>Cuando la tienda te asigne una entrega, aparecerá aquí.</span>
+                                </div>
+                            </td>
+                        </tr>
+                    <% } else { %>
+                        <% orders.forEach(order => { %>
+                            <tr>
+                                <td data-label="Orden"><strong class="dealer-order-number"><%= order.numeroOrden %></strong></td>
+                                <td data-label="Cliente">
+                                    <span class="dealer-cell-primary"><%= order.cliente?.nombre || order.usuario?.nombre || 'Sin usuario' %></span>
+                                    <small><%= order.cliente?.telefono || order.usuario?.telefono || '' %></small>
+                                </td>
+                                <td data-label="Destino">
+                                    <span class="dealer-cell-primary"><%= order.direccionEnvio?.direccion || 'Sin dirección' %></span>
+                                    <small><%= order.direccionEnvio?.ciudad || '' %></small>
+                                </td>
+                                <td data-label="Total"><strong>$ <%= Number(order.total || 0).toLocaleString('es-CO') %></strong></td>
+                                <td data-label="Pago">
+                                    <span class="dealer-payment-method">
+                                        <i class="bi bi-wallet2" aria-hidden="true"></i>
+                                        <%= order.metodoPago === 'CASH_ON_DELIVERY'
+                                            ? 'Contra entrega'
+                                            : order.metodoPago === 'WOMPI_NEQUI'
+                                                ? 'Nequi · Wompi'
+                                                : 'Tarjeta · Wompi' %>
+                                    </span>
+                                </td>
+                                <td data-label="Estado">
+                                    <span class="dealer-status dealer-status--<%= order.estado.toLowerCase() %>">
+                                        <%= statusLabels[order.estado] || order.estado %>
+                                    </span>
+                                </td>
+                                <td data-label="Fecha"><%= new Date(order.createdAt).toLocaleDateString('es-CO') %></td>
+                                <td data-label="Acciones" class="dealer-actions">
+                                    <a href="/dealer/orders/update/<%= order._id %>" class="btn btn-success btn-sm dealer-action-btn dealer-action-btn--primary" aria-label="Actualizar estado del pedido <%= order.numeroOrden %>"><i class="bi bi-pencil-square" aria-hidden="true"></i> Actualizar</a>
+                                    <a href="/dealer/orders/detail/<%= order._id %>" class="btn btn-outline-secondary btn-sm dealer-action-btn" aria-label="Ver seguimiento del pedido <%= order.numeroOrden %>"><i class="bi bi-geo-alt" aria-hidden="true"></i> Seguimiento</a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
     <%- include('../../include/_adminPagination', { pagination, label: 'entregas' }) %>
 </main>
 
-<%- include('../../include/_footerAdmin') %>
+<%- include('../../include/_footerDealer') %>

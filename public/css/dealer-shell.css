@@ -1,0 +1,142 @@
+/* Identidad visual exclusiva del área de reparto. */
+
+body.dealer-app {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    background: var(--color-background);
+    color: var(--color-text-strong);
+}
+
+body.dealer-app #header {
+    flex-shrink: 0;
+}
+
+.dealer-navbar {
+    background: var(--color-brand-dark-deep);
+    border-bottom-color: var(--color-brand-accent);
+    padding: 0.75rem 1.25rem;
+}
+
+.dealer-navbar__inner {
+    gap: 1rem;
+}
+
+.dealer-navbar .navbar-brand {
+    min-height: 44px;
+    gap: 0.65rem;
+}
+
+.dealer-brand-icon {
+    display: inline-grid;
+    width: 2.35rem;
+    height: 2.35rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid rgb(255 255 255 / 22%);
+    border-radius: 0.7rem;
+    background: rgb(216 92 50 / 18%);
+    color: var(--color-brand-tan);
+    font-size: 1.2rem;
+}
+
+.dealer-navbar .app-brand-text {
+    font-size: 1.15rem;
+}
+
+.dealer-navbar .app-nav-right {
+    width: auto;
+    margin-top: 0;
+    flex-direction: row;
+}
+
+.dealer-profile-btn {
+    min-width: 44px;
+    min-height: 44px;
+    gap: 0.5rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid rgb(255 255 255 / 20%);
+    border-radius: 0.75rem;
+    background: rgb(255 255 255 / 8%);
+    font-size: 1.35rem;
+}
+
+.dealer-profile-btn:hover,
+.dealer-profile-btn:focus-visible {
+    background: rgb(255 255 255 / 15%);
+    transform: none;
+}
+
+.dealer-profile-label {
+    color: var(--color-text-on-dark);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.dealer-navbar .dropdown-menu {
+    min-width: 13rem;
+}
+
+.dealer-footer {
+    margin-top: auto;
+    background: var(--color-brand-dark-deep);
+}
+
+.dealer-footer .app-footer-container {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.dealer-footer__eyebrow {
+    margin: 0 0 0.45rem;
+    color: var(--color-brand-tan) !important;
+    font-size: 0.72rem !important;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.dealer-footer__links {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.dealer-footer__links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 36px;
+}
+
+.dealer-footer__links a:focus-visible,
+.dealer-navbar a:focus-visible,
+.dealer-navbar button:focus-visible {
+    outline: 3px solid var(--color-brand-tan);
+    outline-offset: 3px;
+}
+
+.dealer-footer__meta {
+    color: var(--color-text-on-dark) !important;
+}
+
+@media (max-width: 576px) {
+    .dealer-navbar {
+        padding: 0.65rem 0.75rem;
+    }
+
+    .dealer-navbar .app-brand-text {
+        font-size: 1rem;
+    }
+
+    .dealer-brand-icon {
+        width: 2.1rem;
+        height: 2.1rem;
+    }
+
+    .dealer-profile-label {
+        display: none;
+    }
+
+    .dealer-footer .app-footer-container {
+        grid-template-columns: 1fr;
+    }
+}

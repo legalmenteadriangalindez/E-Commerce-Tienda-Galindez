@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <link rel="stylesheet" href="/css/core/theme.css">
     <link rel="stylesheet" href="/css/core/reset.css">
@@ -35,31 +35,25 @@
 
 
 </head>
-<body>
+<body class="dealer-app">
 
-<header id="header">
-<nav class="navbar navbar-expand-lg navbar-dark app-navbar">
-  <div class="container-fluid">
+<header id="header" class="dealer-header">
+<nav class="navbar navbar-dark app-navbar dealer-navbar" aria-label="Navegación del repartidor">
+  <div class="container-fluid dealer-navbar__inner">
     <!-- BRAND -->
-    <a class="navbar-brand d-flex align-items-center" href="/dealer/orders/read">
-        <i class="bi bi-shield-lock me-2"></i>
+    <a class="navbar-brand d-flex align-items-center" href="/dealer/orders/read" aria-label="Ir a Mis entregas">
+        <span class="dealer-brand-icon" aria-hidden="true"><i class="bi bi-truck"></i></span>
         <span class="app-brand-text">Dealer Tienda Galindez</span>
     </a>
-    <!-- TOGGLER -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-        data-bs-target="#navbarAdmin">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <!-- NAV -->
 
-      <!-- RIGHT -->
+      <!-- CUENTA -->
       <div class="app-nav-right">
-        <!-- PERFIL ADMIN -->
         <div class="dropdown">
-          <a class="app-profile-btn d-flex align-items-center" data-bs-toggle="dropdown">
-            <i class="bi bi-person-circle"></i>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
+          <button class="app-profile-btn dealer-profile-btn d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Abrir menú de cuenta">
+            <i class="bi bi-person-circle" aria-hidden="true"></i>
+            <span class="dealer-profile-label">Mi cuenta</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-label="Opciones de cuenta">
             <li><a class="dropdown-item" href="/dealer/perfil/editar"><i class="bi bi-person"></i> Perfil</a></li>
             <li><a class="dropdown-item" href="/change-password"><i class="bi bi-key"></i> Cambiar contraseña</a></li>
             <li><a class="dropdown-item" href="/dealer/orders/read"><i class="bi bi-bicycle"></i> Mis entregas</a></li>

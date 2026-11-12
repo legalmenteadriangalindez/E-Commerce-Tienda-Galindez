@@ -207,15 +207,15 @@ const resources = {
     'admin/rols/update_roles': { pageCss: css('update_roles.css') },
     'admin/profile/profile': { pageCss: css('profile.css') },
     'admin/profile/Edit_profile': { pageCss: css('pages/edit-profile.css') },
-    'dealer/orders/read_orders': { pageCss: css('dealer_read_orders.css', 'admin-pagination.css') },
+    'dealer/orders/read_orders': { pageCss: css('dealer-shell.css', 'dealer_read_orders.css', 'admin-pagination.css') },
     'dealer/orders/detail_orders': {
-        pageCss: css('dealer_detail_order.css', 'detail_order.css', 'delivery-tracking.css'),
+        pageCss: css('dealer-shell.css', 'dealer_detail_order.css', 'detail_order.css', 'delivery-tracking.css'),
     },
     'dealer/orders/update_order': {
-        pageCss: css('dealer_update_orders.css', 'delivery-tracking.css'),
+        pageCss: css('dealer-shell.css', 'dealer_update_orders.css', 'delivery-tracking.css'),
     },
-    'dealer/profile/profile': { pageCss: css('profile.css') },
-    'dealer/profile/Edit_profile': { pageCss: css('pages/edit-profile.css') },
+    'dealer/profile/profile': { pageCss: css('dealer-shell.css', 'profile.css') },
+    'dealer/profile/Edit_profile': { pageCss: css('dealer-shell.css', 'pages/edit-profile.css') },
 };
 
 function pageResourcesFor(view) {
