@@ -9,8 +9,20 @@ const { PERMISSIONS: P, SYSTEM_ROLES } = require('../config/permissions');
 const { BusinessError, validId } = require('./errors');
 
 async function create(input, actor) {
-    const { body, nombre, email, password, telefono, cedula, direccion, genero, barrio, ciudad, puntoReferencia, ubicacion } =
-        rules.parseCreateInput(input);
+    const {
+        body,
+        nombre,
+        email,
+        password,
+        telefono,
+        cedula,
+        direccion,
+        genero,
+        barrio,
+        ciudad,
+        puntoReferencia,
+        ubicacion,
+    } = rules.parseCreateInput(input);
 
     // Una cuenta nueva es Cliente por defecto. La creación administrativa puede
     // elegir otro rol solamente con el permiso específico de roles.

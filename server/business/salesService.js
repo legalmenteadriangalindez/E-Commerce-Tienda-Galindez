@@ -53,7 +53,10 @@ async function list(query = {}) {
     return page;
 }
 async function get(id) {
-    const sale = await Sale.findById(validId(id, 'Venta')).populate('cliente', 'nombre email telefono').populate('order', 'numeroOrden').lean();
+    const sale = await Sale.findById(validId(id, 'Venta'))
+        .populate('cliente', 'nombre email telefono')
+        .populate('order', 'numeroOrden')
+        .lean();
     if (!sale) throw new BusinessError('Venta no encontrada.', 404);
     sale.detalles = await SaleDetail.find({ venta: id })
         .populate('producto', 'nombre precioVenta fotos')

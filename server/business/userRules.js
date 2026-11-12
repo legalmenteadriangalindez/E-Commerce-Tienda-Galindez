@@ -25,7 +25,19 @@ function roleChangeError({ actor, targetId, currentRoleName, nextRoleName }) {
 
 function parseCreateInput(input) {
     const body = parse(schemas.userCreate, input);
-    let { nombre, email, password, telefono, cedula, direccion, genero, barrio, ciudad, puntoReferencia, ubicacion } = body;
+    let {
+        nombre,
+        email,
+        password,
+        telefono,
+        cedula,
+        direccion,
+        genero,
+        barrio,
+        ciudad,
+        puntoReferencia,
+        ubicacion,
+    } = body;
 
     if (!nombre || !email || !telefono || !direccion || !password) {
         throw new BusinessError('Nombre, email, teléfono, dirección y contraseña son obligatorios.', 400);
@@ -45,7 +57,20 @@ function parseCreateInput(input) {
         throw new BusinessError('Ubicación incompleta. Debe incluir lat y lng.', 400);
     }
 
-    return { body, nombre, email, password, telefono, cedula, direccion, genero, barrio, ciudad, puntoReferencia, ubicacion };
+    return {
+        body,
+        nombre,
+        email,
+        password,
+        telefono,
+        cedula,
+        direccion,
+        genero,
+        barrio,
+        ciudad,
+        puntoReferencia,
+        ubicacion,
+    };
 }
 
 function parseUpdateInput(input) {

@@ -119,7 +119,12 @@ const resources = {
     'admin/analytics/profit_margins': { pageCss: css('profit_margins.css') },
     'admin/analytics/best_selling_products': { pageCss: css('best_selling_products.css') },
     'admin/orders/read_orders': {
-        pageCss: css('pages/read-orders.css', 'pages/sales/export.css', 'admin-pagination.css', 'components/admin-mobile-table-cards.css'),
+        pageCss: css(
+            'pages/read-orders.css',
+            'pages/sales/export.css',
+            'admin-pagination.css',
+            'components/admin-mobile-table-cards.css'
+        ),
     },
     'admin/orders/detail_orders': { pageCss: css('detail_order.css', 'delivery-tracking.css') },
     'admin/orders/update_order': { pageCss: css('update_order.css') },
