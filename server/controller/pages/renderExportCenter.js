@@ -3,11 +3,11 @@
 const crypto = require('node:crypto');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const User = require('../model/user');
-const { isSuperAdmin } = require('../config/authorization');
-const { exportBusinessZip } = require('../business/businessDataExport');
-const { writeEncryptedBackup, validatePassphrase } = require('../services/encryptedMongoBackup');
-const { wrap } = require('../http/handlers');
+const User = require('../../model/user');
+const { isSuperAdmin } = require('../../config/authorization');
+const { exportBusinessZip } = require('../../business/businessDataExport');
+const { writeEncryptedBackup, validatePassphrase } = require('../../services/encryptedMongoBackup');
+const { wrap } = require('../../http/handlers');
 
 let exportBusy = false;
 
