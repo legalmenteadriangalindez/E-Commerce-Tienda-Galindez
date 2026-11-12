@@ -35,7 +35,7 @@ async function main() {
         }
         const existing = await User.findOne(accounts.emailFilter(email)).populate('rol', 'nombre');
         if (existing) {
-            if (![SYSTEM_ROLES.ADMIN, SYSTEM_ROLES.SUPER_ADMIN].includes(existing.rol?.nombre))
+            if (existing.rol?.nombre !== SYSTEM_ROLES.ADMIN)
                 throw new Error('El correo ya pertenece a otra cuenta. No se modificó su rol.');
             console.log('El administrador ya existe; no se cambió su contraseña ni su estado.');
             return;

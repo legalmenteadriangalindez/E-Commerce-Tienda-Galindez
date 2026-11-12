@@ -216,7 +216,7 @@ Si no tienes una cuenta administradora en esa base, configura temporalmente `INI
 npm run seed:admin
 ```
 
-El comando prepara los roles `Admin`, `Cliente` y `dealer`; si el correo no existe, crea una cuenta verificada con el rol `Admin`. El rol `Admin` recibe todos los permisos del panel, incluida la gestión de roles. No crea una cuenta `SuperAdmin` ni cambia una cuenta existente o su contraseña. Retira `INITIAL_ADMIN_PASSWORD` después de usarlo. Si tu plan no tiene Shell, puedes ejecutarlo desde tu equipo apuntando temporalmente a esa base, y después volver a la URI de desarrollo.
+El comando prepara los roles `Admin`, `Cliente` y `dealer`; si el correo no existe, crea una cuenta verificada con el rol `Admin`. El rol `Admin` recibe todos los permisos del panel, incluida la gestión de roles. Las cuentas antiguas del rol administrativo retirado se migran automáticamente a `Admin` y el nombre retirado no puede volver a crearse. El comando no cambia una cuenta existente ni su contraseña. Retira `INITIAL_ADMIN_PASSWORD` después de usarlo. Si tu plan no tiene Shell, puedes ejecutarlo desde tu equipo apuntando temporalmente a esa base, y después volver a la URI de desarrollo.
 
 El despliegue aplica una migración versionada que completa los permisos del rol `Admin` existente. Las cuentas `Admin` deben cerrar sesión e iniciar nuevamente después de la actualización para refrescar sus permisos.
 

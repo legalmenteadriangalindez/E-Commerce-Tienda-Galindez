@@ -6,7 +6,7 @@ const { wrap } = require('../../http/handlers');
 
 exports.onlyAdministrator = (req, res, next) => {
     const roleName = req.usuarioActual?.rol?.nombre;
-    if (![SYSTEM_ROLES.ADMIN, SYSTEM_ROLES.SUPER_ADMIN].includes(roleName)) {
+    if (roleName !== SYSTEM_ROLES.ADMIN) {
         return res.status(403).send('Solo una cuenta administradora puede exportar datos.');
     }
     return next();

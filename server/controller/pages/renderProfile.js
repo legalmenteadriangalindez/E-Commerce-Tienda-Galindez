@@ -11,7 +11,7 @@ function owner(req) {
 }
 function view(user, edit, admin) {
     const role = user.rol?.nombre;
-    const area = admin || ['Admin', 'SuperAdmin'].includes(role) ? 'admin' : role === 'dealer' ? 'dealer' : 'client';
+    const area = admin || role === 'Admin' ? 'admin' : role === 'dealer' ? 'dealer' : 'client';
     return area + '/profile/' + (edit ? 'Edit_profile' : 'profile');
 }
 const show = (edit = false, admin = false) =>

@@ -27,7 +27,6 @@ test(
         const fixture = await require('./helpers/reviewApp').startReviewApp(
             process.env.COMMERCE_TEST_MONGO_URI,
             async (app, users) => {
-                const superRole = await Role.create({ nombre: 'SuperAdmin' });
                 const managerRole = await Role.create({ nombre: 'Gestor', permisos: [P.ADMIN_ACCESS, P.USERS_MANAGE] });
                 const delegateRole = await Role.create({
                     nombre: 'Gestor de roles',
@@ -36,7 +35,6 @@ test(
                 await Role.create({ nombre: 'dealer' });
                 await Role.create({ nombre: 'Catálogo', permisos: [P.ADMIN_ACCESS, P.CATALOG_READ] });
                 for (const [name, role] of [
-                    ['super', superRole],
                     ['manager', managerRole],
                     ['delegate', delegateRole],
                 ]) {
@@ -56,7 +54,7 @@ test(
             }
         );
         t.after(() => fixture.close());
-        const superActor = await fixture.actor('super');
+        const adminActor = await fixture.actor('admin');
         const manager = await fixture.actor('manager');
         const admin = await fixture.actor('admin');
         const roleIds = Object.fromEntries((await Role.find()).map((role) => [role.nombre, role.id]));
@@ -84,11 +82,11 @@ test(
         const mailFor = (email) => sent.findLast((mail) => mail.email === email);
 
         await t.test('formulario administrativo acepta Cliente predeterminado y campos opcionales vacíos', async () => {
-            const page = await fixture.request(superActor, '/add-user-form');
+            const page = await fixture.request(adminActor, '/add-user-form');
             assert.equal(page.status, 200);
             const html = await page.text();
             for (const roleId of Object.values(roleIds)) assert.ok(html.includes(roleId));
-            const response = await formPost(superActor, '/add-user', { ...data('predeterminado'), rol: '' });
+            const response = await formPost(adminActor, '/add-user', { ...data('predeterminado'), rol: '' });
             assert.equal(response.status, 303);
             assert.equal(response.headers.get('location'), '/read-user?verification=sent');
             const user = await savedUser('predeterminado@example.test');
@@ -100,15 +98,15 @@ test(
             assert.match(mail.code, /^\d{6}$/);
             assert.equal(user.verificationCodeHash, accounts.codeHash(user.email, mail.code));
             assert.ok(user.verificationExpire > new Date());
-            const list = await fixture.request(superActor, '/read-user');
+            const list = await fixture.request(adminActor, '/read-user');
             assert.equal(list.status, 200);
             assert.match(await list.text(), /Pendiente de verificación/);
         });
 
         await t.test('cada rol seleccionado se conserva y nunca inicia sesión sin verificar', async () => {
-            for (const name of ['dealer', 'Admin', 'Catálogo', 'SuperAdmin']) {
+            for (const name of ['dealer', 'Admin', 'Catálogo']) {
                 const body = { ...data('rol-' + roleIds[name]), rol: roleIds[name] };
-                const response = await fixture.request(superActor, '/api/users', 'POST', body);
+                const response = await fixture.request(adminActor, '/api/users', 'POST', body);
                 assert.equal(response.status, 201);
                 const payload = await response.json();
                 assert.equal(payload.rol, roleIds[name]);
@@ -141,7 +139,7 @@ test(
         await t.test('roles restringidos no pueden asignarse manipulando el formulario ni la API', async () => {
             const managerForm = await fixture.request(manager, '/add-user-form');
             const managerHtml = await managerForm.text();
-            assert.doesNotMatch(managerHtml, new RegExp(roleIds.SuperAdmin));
+            assert.doesNotMatch(managerHtml, /SuperAdmin/);
             assert.match(managerHtml, /gestionar roles/);
             assert.equal(
                 (
@@ -165,7 +163,7 @@ test(
             assert.match(adminFormHtml, new RegExp(`<option value="${roleIds.dealer}"`));
             assert.match(adminFormHtml, new RegExp(`<option value="${roleIds.Admin}"`));
             assert.match(adminFormHtml, new RegExp(`<option value="${roleIds['Catálogo']}"`));
-            assert.doesNotMatch(adminFormHtml, new RegExp(`<option value="${roleIds.SuperAdmin}"`));
+            assert.doesNotMatch(adminFormHtml, /SuperAdmin/);
 
             const rolesPage = await fixture.request(admin, '/read-rol');
             assert.equal(rolesPage.status, 200);
@@ -179,15 +177,6 @@ test(
             const dealerUser = await savedUser('dealer-admin@example.test');
             assert.equal(String(dealerUser.rol), roleIds.dealer);
 
-            assert.equal(
-                (
-                    await fixture.request(admin, '/api/users', 'POST', {
-                        ...data('admin-no-superadmin'),
-                        rol: roleIds.SuperAdmin,
-                    })
-                ).status,
-                403
-            );
             const adminCustomRole = await fixture.request(admin, '/api/users', 'POST', {
                 ...data('admin-custom-role'),
                 rol: roleIds['Catálogo'],
@@ -196,15 +185,6 @@ test(
 
             const delegate = await fixture.actor('delegate');
             assert.equal(
-                (
-                    await fixture.request(delegate, '/api/users', 'POST', {
-                        ...data('super-prohibido'),
-                        rol: roleIds.SuperAdmin,
-                    })
-                ).status,
-                403
-            );
-            assert.equal(
                 (await fixture.request(delegate, '/api/users', 'POST', { ...data('delegado'), rol: roleIds.dealer }))
                     .status,
                 201
@@ -212,12 +192,12 @@ test(
             const client = await fixture.actor('owner');
             assert.equal((await fixture.request(client, '/api/users', 'POST', data('cliente-no-admin'))).status, 403);
             assert.equal(
-                (await fixture.request(superActor, '/api/users', 'POST', data('sin-csrf'), false)).status,
+                (await fixture.request(adminActor, '/api/users', 'POST', data('sin-csrf'), false)).status,
                 403
             );
             assert.equal(
                 await User.countDocuments({
-                    email: { $in: ['prohibido@example.test', 'super-prohibido@example.test', 'sin-csrf@example.test'] },
+                    email: { $in: ['prohibido@example.test', 'sin-csrf@example.test'] },
                 }),
                 0
             );
@@ -230,7 +210,7 @@ test(
                 [{ email: 'predeterminado@example.test' }, 409],
             ]) {
                 const before = sent.length;
-                const response = await formPost(superActor, '/add-user', {
+                const response = await formPost(adminActor, '/add-user', {
                     ...data('invalido'),
                     nombre: '<Persona de prueba>',
                     ...changes,
@@ -249,7 +229,7 @@ test(
 
         await t.test('fallo de correo deja cuenta pendiente y permite reenviar sin recrearla', async () => {
             failDelivery = true;
-            const response = await fixture.request(superActor, '/api/users', 'POST', { ...data('reintento'), rol: '' });
+            const response = await fixture.request(adminActor, '/api/users', 'POST', { ...data('reintento'), rol: '' });
             failDelivery = false;
             assert.equal(response.status, 201);
             assert.equal((await response.json()).verificationEmailSent, false);
@@ -290,7 +270,7 @@ test(
                     for (const key of ['genero', 'barrio', 'ciudad', 'puntoReferencia']) delete body[key];
                 const response = await fixture.request(anonymous, '/register', 'POST', {
                     ...body,
-                    rol: roleIds.SuperAdmin,
+                    rol: roleIds.Admin,
                     verified: true,
                 });
                 assert.equal(response.status, 303);
@@ -310,7 +290,7 @@ test(
         });
 
         await t.test('cada tipo de cuenta puede cambiar su contraseña y revocar sesiones anteriores', async () => {
-            for (const roleName of ['Cliente', 'dealer', 'Admin', 'Catálogo', 'SuperAdmin']) {
+            for (const roleName of ['Cliente', 'dealer', 'Admin', 'Catálogo']) {
                 const email =
                     roleName === 'Cliente'
                         ? 'predeterminado@example.test'
@@ -451,7 +431,7 @@ test(
             );
             fixture.users.editTarget = user;
             const oldSession = await fixture.actor('editTarget');
-            const response = await fixture.request(superActor, '/api/users/' + user.id, 'PUT', {
+            const response = await fixture.request(adminActor, '/api/users/' + user.id, 'PUT', {
                 email: 'correo.actualizado@example.test',
             });
 

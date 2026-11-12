@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Userdb = require('../model/user');
 const { PERMISSIONS } = require('../config/permissions');
-const { permissionsForRole, hasPermission, isSuperAdmin } = require('../config/authorization');
+const { permissionsForRole, hasPermission } = require('../config/authorization');
 
 // Respuesta cuando no existe una sesión válida
 function noAutenticado(res, api) {
@@ -127,8 +127,7 @@ function verificarAcceso(rolRequerido = null, api = false, permisoRequerido = nu
 exports.isLogged = verificarAcceso();
 exports.isLoggedApi = verificarAcceso(null, true);
 
-// Administrador en páginas EJS/API: se basa en el permiso de acceso al panel
-// para incluir a SuperAdmin y a futuros roles administrativos personalizados.
+// Administrador en páginas EJS/API: se basa en el permiso de acceso al panel.
 exports.isAdmin = verificarAcceso(null, false, PERMISSIONS.ADMIN_ACCESS);
 
 exports.isAdminApi = verificarAcceso(null, true, PERMISSIONS.ADMIN_ACCESS);
@@ -138,6 +137,5 @@ exports.isDealer = verificarAcceso('dealer');
 
 exports.permissionsForRole = permissionsForRole;
 exports.hasPermission = hasPermission;
-exports.isSuperAdmin = isSuperAdmin;
 exports.requirePermission = (permission, api = false) => verificarAcceso(null, api, permission);
 exports.requireAnyPermission = (permissions, api = false) => verificarAcceso(null, api, permissions);

@@ -24,16 +24,17 @@ const PERMISSIONS = Object.freeze({
 });
 
 // Roles reservados de la aplicación. No deben poder crearse, renombrarse ni
-// eliminarse desde el panel. Admin gestiona los roles de trabajo; SuperAdmin
-// se conserva como rol reservado para compatibilidad con cuentas existentes.
+// eliminarse desde el panel. Admin es el único rol administrativo del sistema.
 const SYSTEM_ROLES = Object.freeze({
-    SUPER_ADMIN: 'SuperAdmin',
     ADMIN: 'Admin',
     CLIENT: 'Cliente',
     DEALER: 'dealer',
 });
 
 const SYSTEM_ROLE_NAMES = Object.freeze(Object.values(SYSTEM_ROLES));
+// Este nombre quedó retirado y no puede volver a crearse como rol personalizado.
+const RETIRED_ROLE_NAMES = Object.freeze(['SuperAdmin']);
+const RESERVED_ROLE_NAMES = Object.freeze([...SYSTEM_ROLE_NAMES, ...RETIRED_ROLE_NAMES]);
 
 const PERMISSION_KEYS = Object.freeze(Object.values(PERMISSIONS));
 
@@ -63,8 +64,8 @@ const PERMISSION_LABELS = Object.freeze({
 });
 
 const ALL_PERMISSIONS = Object.freeze([...PERMISSION_KEYS]);
-// Admin es el rol administrativo completo de la tienda, incluida la gestión
-// de roles. Los controles de autorización siguen impidiendo asignar SuperAdmin.
+// Admin es el único rol administrativo completo de la tienda, incluida la
+// gestión de roles.
 const ADMIN_PERMISSIONS = ALL_PERMISSIONS;
 
 const PERMISSION_IMPLICATIONS = Object.freeze({
@@ -94,6 +95,8 @@ module.exports = {
     PERMISSIONS,
     SYSTEM_ROLES,
     SYSTEM_ROLE_NAMES,
+    RETIRED_ROLE_NAMES,
+    RESERVED_ROLE_NAMES,
     PERMISSION_KEYS,
     PERMISSION_LABELS,
     ALL_PERMISSIONS,

@@ -94,7 +94,7 @@ async function changeState(id, state, actorId, dealer = false, note = '', cashCo
             // pedidos asignados. El permiso Admin se conserva aquí para
             // conciliaciones y pruebas internas que simulan ese actor.
             const actor = await Userdb.findById(actorId).populate('rol', 'nombre').session(session);
-            if (!['Admin', 'SuperAdmin'].includes(actor?.rol?.nombre)) {
+            if (actor?.rol?.nombre !== 'Admin') {
                 throw new commerce.CommerceError('El pedido no está asignado a este repartidor.', 403);
             }
         }

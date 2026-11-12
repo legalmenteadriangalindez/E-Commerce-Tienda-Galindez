@@ -45,10 +45,7 @@ test('los servicios administrativos acotan consultas y corrigen páginas fuera d
             t.mock.method(Model, 'countDocuments', async () => 205);
             t.mock.method(Model, 'find', () => queryStub([], calls));
             t.mock.method(require('../server/model/saleDetails'), 'find', () => queryStub([]));
-            const result = await service[method](
-                { page: '99999999', limit: '9999999' },
-                { rol: { nombre: 'SuperAdmin' } }
-            );
+            const result = await service[method]({ page: '99999999', limit: '9999999' }, { rol: { nombre: 'Admin' } });
             assert.deepEqual(result.pagination, { page: 5, limit: 50, totalItems: 205, totalPages: 5 });
             assert.deepEqual(calls.skip, [[200]]);
             assert.deepEqual(calls.limit, [[50]]);

@@ -73,7 +73,7 @@
             <% if (canAccess('roles:manage')) { %><li><a class="dropdown-item" href="/read-rol"><i class="bi bi-person-badge"></i> Gestionar roles</a></li><% } %>
             <% if (canAccess('reviews:moderate')) { %><li><a class="dropdown-item" href="/admin/reviews"><i class="bi bi-chat-left-text"></i> Reseñas</a></li><% } %>
             <% if (canAccess('users:manage')) { %><li><a class="dropdown-item" href="/read-user"><i class="bi bi-person-plus"></i> Usuarios</a></li><% } %>
-            <% if (['Admin', 'SuperAdmin'].includes(authUser?.rol?.nombre)) { %><li><a class="dropdown-item" href="/admin/exportaciones"><i class="bi bi-cloud-arrow-down"></i> Exportaciones y respaldos</a></li><% } %>
+            <% if (authUser?.rol?.nombre === 'Admin') { %><li><a class="dropdown-item" href="/admin/exportaciones"><i class="bi bi-cloud-arrow-down"></i> Exportaciones y respaldos</a></li><% } %>
 
           </ul>
         </li><% } %>
