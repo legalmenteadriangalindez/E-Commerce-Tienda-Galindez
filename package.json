@@ -19,6 +19,7 @@
         "maintenance": "node scripts/run-maintenance.js",
         "brevo:smoke": "node scripts/brevo-smoke-test.js",
         "backup:restore-drill": "node scripts/mongodb-restore-drill.js",
+        "backup:restore-encrypted": "node scripts/restore-encrypted-backup.js",
         "verify:gridfs": "node scripts/verify-gridfs-restore.js",
         "payments:reconcile": "node scripts/reconcile-payments.js",
         "audit:data": "node scripts/audit-data.js",

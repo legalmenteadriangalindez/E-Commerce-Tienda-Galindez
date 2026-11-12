@@ -348,3 +348,53 @@ El servidor cierra conexiones al recibir la señal de parada. Supervisa `/health
 Las páginas públicas de privacidad, términos de compra, envíos, cambios y devoluciones y reclamaciones están disponibles en `/privacidad`, `/terminos`, `/envios`, `/cambios-devoluciones` y `/reclamaciones`. Antes de abrir ventas, completa los datos configurables (`LEGAL_*`) con la identificación y contacto reales del negocio y valida los textos con asesoría legal/contable cuando corresponda.
 
 Referencia técnica: [Render](https://render.com/docs/node-version), [persistencia en Render](https://render.com/docs/disks), [checkout Wompi](https://docs.wompi.co/en/docs/colombia/widget-checkout-web/), [eventos Wompi](https://docs.wompi.co/en/docs/colombia/eventos/), [seguimiento de transacciones](https://docs.wompi.co/en/docs/colombia/seguimiento-de-transacciones/).
+
+
+### Centro de exportación y respaldo cifrado (SuperAdmin)
+
+La pantalla privada `/admin/exportaciones` ofrece dos descargas que NO son equivalentes:
+
+- **ZIP de CSV para análisis**: exporta tablas comerciales completas (productos, clientes, pedidos,
+  ventas, compras, gastos, movimientos de inventario y otras entidades comerciales). No exporta hashes de
+  contraseñas, tokens, sesiones o cargas brutas del proveedor de pagos. El ZIP contiene información
+  personal y debe conservarse de forma privada. Su formato ZIP sin compresión está limitado a 4 GiB.
+- **`.tgbackup` cifrado**: copia técnica de colecciones, documentos, índices y GridFS almacenados en
+  MongoDB, serializados como Extended JSON BSON, comprimidos mediante gzip y cifrados con
+  AES-256-GCM y una clave derivada con scrypt. Incluye datos de autenticación, por lo que la descarga
+  solo está disponible para SuperAdmin autenticado, al introducir su contraseña actual y una segunda
+  contraseña exclusiva para cifrar el archivo. Se transmite directamente al navegador sin escribir
+  temporalmente el contenido en el disco efímero de Render. El máximo predeterminado es de 2 GiB
+  de contenido sin comprimir. La descarga puede fallar si la conexión o el tiempo máximo del proxy
+  se agota; un archivo incompleto no debe considerarse un respaldo.
+
+**Importante:** el archivo `.tgbackup` requiere la contraseña de cifrado para restaurarlo. Se
+recomienda un gestor seguro de contraseñas y una copia protegida fuera de Render. El archivo no es
+compatible directamente con `mongorestore`; utiliza el script específico indicado a continuación.
+La copia se lee a través de una sesión snapshot de MongoDB. Para recuperación de desastres de
+alto volumen mantén también los snapshots gestionados por MongoDB Atlas, y verifica la política
+de copias y su retención periódicamente.
+
+El comando de restauración **nunca** escribe sobre producción: solo restaura una base NUEVA
+y VACÍA cuyo nombre contenga `restore`, `drill`, `test`, `staging` o `backup`, y debe ser
+diferente de la base del archivo.
+
+```powershell
+# Configurar estos valores en tu propia terminal; no enviarlos a un chat ni subirlos a Git.
+$env:BACKUP_RESTORE_URI = '<URI de MongoDB destinada a pruebas>'
+$env:BACKUP_RESTORE_DB = 'galindez_restore_test'
+$env:BACKUP_RESTORE_CONFIRM = 'RESTORE_TO_DRILL_ONLY'
+$env:BACKUP_RESTORE_PASSPHRASE = '<contraseña de cifrado del archivo descargado>'
+npm run backup:restore-encrypted -- "C:\ruta\tienda-respaldo-AAAAMMDD.tgbackup"
+Remove-Item Env:BACKUP_RESTORE_PASSPHRASE
+```
+
+El restaurador comprueba primero la autenticidad AES-GCM, valida el archivo comprimido, la
+estructura y los conteos; solo después crea colecciones, inserta documentos y recrea índices.
+Una base destino con colecciones existentes es rechazada. Este procedimiento preserva los
+documentos de GridFS (incluidas imágenes), pero no representa ni restaura credenciales y
+configuraciones externas de Render, Wompi o Brevo, ni los archivos estáticos del repositorio.
+
+Las solicitudes quedan en `data_export_audit` con el tipo, actor, inicio y estado, sin guardar
+contraseñas ni el contenido descargado. La auditoría marca `ENTREGADO` cuando el servidor
+termina de emitir el archivo, no cuando el usuario confirma haberlo guardado. Para certificar un
+respaldo, siempre ejecuta una restauración aislada y comprueba sus contenidos.

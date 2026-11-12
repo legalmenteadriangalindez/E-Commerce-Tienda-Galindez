@@ -1,0 +1,146 @@
+.export-center {
+    max-width: 1330px;
+    padding: clamp(1rem, 3vw, 2.5rem);
+    margin: 0 auto;
+    color: var(--color-text-strong);
+}
+
+.export-center__eyebrow {
+    color: var(--color-brand-accent);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.export-center__intro h1,
+.export-card h2 {
+    color: var(--color-brand-dark);
+    font-weight: 800;
+}
+
+.export-center__intro {
+    margin-bottom: 1.5rem;
+}
+
+.export-center__intro p:last-child,
+.export-center__footnote,
+.export-card p,
+.export-card li {
+    color: var(--color-text-muted);
+    line-height: 1.6;
+}
+
+.export-center__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+.export-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-soft);
+    min-width: 0;
+}
+
+.export-card__icon {
+    display: inline-flex;
+    border-radius: 12px;
+    padding: 0.8rem;
+    font-size: 1.5rem;
+    background: var(--color-surface-warm);
+    color: var(--color-brand-dark);
+    margin-bottom: 0.8rem;
+}
+
+.export-card h2 {
+    font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+}
+
+.export-card ul {
+    margin: 1rem 0;
+    padding-left: 1.25rem;
+}
+
+.export-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.2rem;
+    background: var(--color-brand-accent);
+    border: 1px solid var(--color-brand-accent);
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 800;
+}
+
+.export-button:hover {
+    filter: brightness(0.92);
+}
+
+.export-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.export-form label {
+    display: grid;
+    gap: 0.35rem;
+    font-weight: 700;
+}
+
+.export-form input {
+    border: 1px solid var(--color-border);
+    border-radius: 9px;
+    padding: 0.75rem 0.9rem;
+    background: var(--color-surface);
+    color: var(--color-text-strong);
+    min-width: 0;
+}
+
+.export-card__notice {
+    padding: 0.85rem;
+    border-radius: 10px;
+    background: var(--color-surface-warm);
+    border: 1px solid var(--color-border);
+}
+
+.export-card--history {
+    margin-top: 1rem;
+}
+
+.export-table-scroll {
+    overflow-x: auto;
+}
+
+.export-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.export-table th,
+.export-table td {
+    border-bottom: 1px solid var(--color-border);
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.export-center__footnote {
+    margin: 1.25rem 0;
+    font-size: 0.83rem;
+}
+
+@media (max-width: 850px) {
+    .export-center__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .export-button {
+        width: 100%;
+    }
+}

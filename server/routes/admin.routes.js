@@ -13,5 +13,6 @@ router.use('/', require('./admin/users.routes'));
 router.use('/', require('./admin/settings.routes'));
 router.use('/', require('./admin/finance.routes'));
 router.use('/', require('./admin/purchases.routes'));
+router.use('/', require('./admin/data-export.routes'));
 
 module.exports = router;
