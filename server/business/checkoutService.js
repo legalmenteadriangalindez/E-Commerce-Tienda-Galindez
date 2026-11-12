@@ -61,10 +61,17 @@ function totals(subtotalCents, policy = shippingPolicy()) {
 
 async function quote(cart, session) {
     const policy = await storeSettings.getShippingPolicy();
+    const items = normalizedCart(cart);
+    const productIds = items.map((item) => item.productoId);
+    const products = await Product.find({ _id: { $in: productIds } })
+        .select('nombre stock precioVentaCents precioVenta precioCostoCents precioCosto')
+        .session(session || null)
+        .lean();
+    const productsById = new Map(products.map((product) => [String(product._id), product]));
     const productos = [];
     let subtotal = 0;
-    for (const item of normalizedCart(cart)) {
-        const product = await Product.findById(item.productoId).session(session || null);
+    for (const item of items) {
+        const product = productsById.get(item.productoId);
         if (!product) throw new CommerceError('Un producto ya no está disponible.', 409);
         if (product.stock < item.cantidad) throw new CommerceError(`Stock insuficiente para ${product.nombre}.`, 409);
         const price = money.readCents(product.precioVentaCents, product.precioVenta);
