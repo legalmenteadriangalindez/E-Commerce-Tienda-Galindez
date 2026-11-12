@@ -31,7 +31,11 @@ const login = passthrough({
 const register = passthrough({
     nombre: text(200).min(1),
     telefono: text(40).min(1),
-    cedula: z.string().trim().regex(/^(?:|[0-9]{5,15})$/).optional(),
+    cedula: z
+        .string()
+        .trim()
+        .regex(/^(?:|[0-9]{5,15})$/)
+        .optional(),
     direccion: text(200).min(1),
     genero: optionalText(80),
     barrio: optionalText(120),
@@ -130,7 +134,11 @@ const inventoryAdjustment = passthrough({
 });
 const user = passthrough({
     nombre: optionalText(200),
-    cedula: z.string().trim().regex(/^(?:|[0-9]{5,15})$/).optional(),
+    cedula: z
+        .string()
+        .trim()
+        .regex(/^(?:|[0-9]{5,15})$/)
+        .optional(),
     email: z.string().trim().email().max(254).optional(),
     password: z.string().max(72).optional(),
     telefono: optionalText(40),

@@ -33,14 +33,17 @@ test('la búsqueda de ventas se aplica antes de la paginación y de limitar el C
 });
 
 test('la cédula es opcional, numérica y editable solo en el perfil propio', () => {
-    assert.equal(schemas.register.safeParse({ 
-        nombre: 'Persona de prueba',
-        telefono: '3000000000',
-        direccion: 'Calle de prueba',
-        email: 'persona@example.test',
-        password: 'contraseña-segura-2026',
-        cedula: '',
-    }).success, true);
+    assert.equal(
+        schemas.register.safeParse({
+            nombre: 'Persona de prueba',
+            telefono: '3000000000',
+            direccion: 'Calle de prueba',
+            email: 'persona@example.test',
+            password: 'contraseña-segura-2026',
+            cedula: '',
+        }).success,
+        true
+    );
     const invalid = schemas.user.safeParse({ cedula: '123abc' });
     assert.equal(invalid.success, false);
     assert.deepEqual(profileService.profileData({ _csrf: 'token', cedula: ' 1234567890 ' }), {
@@ -122,7 +125,6 @@ test(
             'LUCIA@EXAMPLE.TEST',
             '311222',
             '1234567890',
-            firstSale._id.toString(),
             'Persona owner',
         ]) {
             const result = await sales.list({ search: term, page: 1, limit: 10 });
@@ -131,6 +133,10 @@ test(
             const found = await orders.list({ search: term, page: 1, limit: 10 });
             assert.deepEqual(found.items.map((item) => String(item._id)), [String(first._id)], term);
         }
+        const bySaleId = await sales.list({ search: firstSale._id.toString() });
+        assert.equal(String(bySaleId.items[0]?._id), String(firstSale._id));
+        const byOrderId = await orders.list({ search: first._id.toString() });
+        assert.equal(String(byOrderId.items[0]?._id), String(first._id));
         const missing = await sales.list({ search: 'sin coincidencias' });
         assert.equal(missing.pagination.totalItems, 0);
         assert.equal(missing.items.length, 0);
