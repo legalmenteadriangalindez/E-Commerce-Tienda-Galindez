@@ -1,5 +1,6 @@
 const Provider = require('../model/provider');
 const Product = require('../model/product');
+const SupplierPurchase = require('../model/supplierPurchase');
 const queryPage = require('./queryPage');
 const { BusinessError, validId, parse } = require('./errors');
 const { provider: schema } = require('../validation/schemas');
@@ -37,6 +38,8 @@ async function remove(id) {
     validId(id, 'Proveedor');
     if (await Product.exists({ proveedor: id }))
         throw new BusinessError('No puedes eliminar este proveedor porque tiene productos asociados.', 409);
+    if (await SupplierPurchase.exists({ proveedor: id }))
+        throw new BusinessError('Este proveedor tiene historial de compras y no puede eliminarse.', 409);
     if (!(await Provider.findByIdAndDelete(id))) throw new BusinessError('Proveedor no encontrado.', 404);
 }
 module.exports = { get, create, update, remove, list: (query) => queryPage(Provider, query) };
