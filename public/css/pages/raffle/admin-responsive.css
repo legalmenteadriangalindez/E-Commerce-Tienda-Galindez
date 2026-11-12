@@ -1,0 +1,81 @@
+@media (max-width: 760px) {
+    .raffle-admin-page {
+        width: min(100% - 1.25rem, 1440px);
+        margin: 24px auto 40px;
+    }
+
+    .raffle-admin-page .raffle-admin-heading {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 0.9rem;
+    }
+
+    .raffle-back-link {
+        width: 100%;
+    }
+
+    .raffle-admin-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1rem;
+    }
+
+    .raffle-entries-heading {
+        flex-direction: column;
+    }
+
+    .raffle-section-title {
+        width: 100%;
+    }
+
+    .raffle-page-size {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        justify-content: stretch;
+    }
+
+    .raffle-page-size label {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 480px) {
+    .raffle-panel {
+        padding: 1rem;
+    }
+
+    .raffle-page-size {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .raffle-page-size select,
+    .raffle-page-size button {
+        width: 100%;
+    }
+
+    .raffle-table {
+        min-width: 620px;
+    }
+
+    .raffle-round-history {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .raffle-summary > div {
+        gap: 0.65rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .raffle-back-link,
+    .raffle-button,
+    .raffle-admin-page button,
+    .raffle-round-history__item {
+        transition: none;
+    }
+
+    .raffle-button:hover,
+    .raffle-admin-page button:hover,
+    .raffle-round-history__item:hover {
+        transform: none;
+    }
+}

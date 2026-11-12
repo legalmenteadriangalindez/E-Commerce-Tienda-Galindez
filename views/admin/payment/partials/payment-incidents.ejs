@@ -1,0 +1,47 @@
+<% if (events.length) { %>
+  <section class="ap-panel ap-incidents" aria-labelledby="ap-incidents-title">
+    <header class="ap-section-heading">
+      <div>
+        <p class="admin-list-eyebrow">Revisión requerida</p>
+        <h2 id="ap-incidents-title">Pagos pendientes e incidencias</h2>
+      </div>
+      <span class="ap-count"><strong><%= events.length %></strong> <%= events.length === 1 ? 'incidencia' : 'incidencias' %></span>
+    </header>
+
+    <div class="ap-incident-list">
+      <% events.forEach(event => { %>
+        <article class="ap-incident">
+          <header class="ap-incident__heading">
+            <div>
+              <span class="ap-overline">Transacción</span>
+              <strong class="ap-transaction-id"><%= event.transactionId %></strong>
+            </div>
+            <span class="ap-state ap-state--warning"><%= event.status || 'POR CONSULTAR' %></span>
+          </header>
+          <p><%= event.detalle || 'Pendiente de verificación' %></p>
+          <% if (event.canResolve) { %>
+            <details class="ap-details">
+              <summary>Registrar resolución externa</summary>
+              <form action="/admin/payments/events/<%= event._id %>/resolve" method="post" class="ap-form ap-form--stack">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <label class="ap-field" for="event-resolution-<%= event._id %>">
+                  <span>Resolución</span>
+                  <input id="event-resolution-<%= event._id %>" name="motivo" required minlength="10" maxlength="500">
+                </label>
+                <label class="ap-field" for="event-proof-<%= event._id %>">
+                  <span>Referencia del comprobante</span>
+                  <input id="event-proof-<%= event._id %>" name="comprobante" required maxlength="150">
+                </label>
+                <label class="ap-check">
+                  <input type="checkbox" name="confirmar" value="si" required>
+                  <span>Verifiqué y resolví la incidencia con el proveedor.</span>
+                </label>
+                <button class="ap-button ap-button--primary" type="submit">Guardar resolución</button>
+              </form>
+            </details>
+          <% } %>
+        </article>
+      <% }) %>
+    </div>
+  </section>
+<% } %>
