@@ -27,9 +27,7 @@ function collectingWriter() {
 
 // La biblioteca comprueba que el ZIP sea compatible con un lector real.
 function unzipStored(buffer) {
-    return new Map(
-        Object.entries(unzipSync(buffer)).map(([name, data]) => [name, Buffer.from(data).toString('utf8')])
-    );
+    return new Map(Object.entries(unzipSync(buffer)).map(([name, data]) => [name, Buffer.from(data).toString('utf8')]));
 }
 
 test('el ZIP se puede inspeccionar y escapa fórmulas potenciales en CSV', async () => {

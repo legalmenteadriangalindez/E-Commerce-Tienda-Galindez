@@ -73,4 +73,3 @@ test('cada reporte conserva sus agrupaciones, orden, límites y columnas esperad
     assert.equal(byDay[5].$group.day.$first.$dateToString.format, '%Y-%m-%d');
     assert.deepEqual(byDay[7].$sort, { _id: 1 });
 });
-
