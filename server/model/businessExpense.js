@@ -3,16 +3,7 @@
 const mongoose = require('mongoose');
 const { integerCentsPath } = require('../services/money');
 
-const CATEGORIES = [
-    'PUBLICIDAD',
-    'TRANSPORTE',
-    'EMPAQUES',
-    'COMISIONES',
-    'SERVICIOS',
-    'ARRIENDO',
-    'NOMINA',
-    'OTROS',
-];
+const CATEGORIES = ['PUBLICIDAD', 'TRANSPORTE', 'EMPAQUES', 'COMISIONES', 'SERVICIOS', 'ARRIENDO', 'NOMINA', 'OTROS'];
 
 const schema = new mongoose.Schema(
     {

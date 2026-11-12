@@ -49,19 +49,4 @@ const result = spawnSync(
     [require.resolve('prettier/bin/prettier.cjs'), check ? '--check' : '--write', ...files],
     { cwd: root, stdio: 'inherit' }
 );
-if (check && result.status !== 0 && process.env.CI === 'true') {
-    const marked = [
-        'server/business/financeService.js',
-        'server/business/supplierPurchaseService.js',
-        'server/controller/pages/renderFinance.js',
-        'server/model/businessExpense.js',
-        'tests/finance-operations.test.js',
-        'public/css/pages/finance/dashboard.css',
-    ];
-    spawnSync(process.execPath, [require.resolve('prettier/bin/prettier.cjs'), '--write', ...marked], {
-        cwd: root,
-    });
-    const formatted = spawnSync('git', ['diff', '--', ...marked], { cwd: root, encoding: 'utf8' });
-    process.stdout.write('=== FINANCE FORMAT PATCH START ===\n' + (formatted.stdout || '') + '\n=== FINANCE FORMAT PATCH END ===\n');
-}
 process.exit(result.status || (ejsFailures ? 1 : (result.status ?? 1)));

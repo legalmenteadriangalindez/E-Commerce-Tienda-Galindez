@@ -73,20 +73,23 @@ async function receive(id, actor) {
             { session, runValidators: true }
         );
         if (updated.modifiedCount !== 1) throw new BusinessError('El stock cambió durante la operación.', 409);
-        await InventoryMovement.create([
-            {
-                producto: product._id,
-                tipo: 'ENTRADA',
-                cantidad: qty,
-                deltaStock: qty,
-                stockAntes: oldStock,
-                stockDespues: stockAfter,
-                motivo: ('Recepción de compra ' + (purchase.referencia || purchase._id)).slice(0, 500),
-                actor: actor._id,
-                actorNombre: actor.nombre || 'Administrador',
-                claveIdempotencia: 'compra-proveedor:' + purchase._id,
-            },
-        ], { session });
+        await InventoryMovement.create(
+            [
+                {
+                    producto: product._id,
+                    tipo: 'ENTRADA',
+                    cantidad: qty,
+                    deltaStock: qty,
+                    stockAntes: oldStock,
+                    stockDespues: stockAfter,
+                    motivo: ('Recepción de compra ' + (purchase.referencia || purchase._id)).slice(0, 500),
+                    actor: actor._id,
+                    actorNombre: actor.nombre || 'Administrador',
+                    claveIdempotencia: 'compra-proveedor:' + purchase._id,
+                },
+            ],
+            { session }
+        );
         return purchase;
     });
 }
@@ -105,8 +108,12 @@ async function pay(id, actor) {
 
 async function list(limit = 40) {
     const [items, providers, products] = await Promise.all([
-        Purchase.find({}).populate('proveedor', 'nombre').populate('producto', 'nombre')
-            .sort({ createdAt: -1, _id: -1 }).limit(limit).lean(),
+        Purchase.find({})
+            .populate('proveedor', 'nombre')
+            .populate('producto', 'nombre')
+            .sort({ createdAt: -1, _id: -1 })
+            .limit(limit)
+            .lean(),
         Provider.find({}).select('nombre').sort({ nombre: 1 }).limit(500).lean(),
         Product.find({}).select('nombre stock precioCosto').sort({ nombre: 1 }).limit(500).lean(),
     ]);

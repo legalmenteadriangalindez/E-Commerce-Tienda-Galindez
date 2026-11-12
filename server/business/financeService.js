@@ -102,7 +102,7 @@ async function financialSummary(period = 'week', now = new Date()) {
         expenses: money.fromCents(expenses.totalCents),
         estimatedNetProfit: money.fromSignedCents(netCents),
         grossMargin: cents(sales.productRevenueCents)
-            ? Number((100 * grossCents / cents(sales.productRevenueCents)).toFixed(1))
+            ? Number(((100 * grossCents) / cents(sales.productRevenueCents)).toFixed(1))
             : 0,
         records: expenses.count,
         expenseRows,
@@ -113,48 +113,70 @@ async function cashFlow(period = 'week', now = new Date()) {
     const range = periodRange(period, now);
     const matchSales = { estadoPago: 'PAGADO', createdAt: { $gte: range.start, $lt: range.end } };
     const matchPaid = { $gte: range.start, $lt: range.end };
-    const [saleTotals, expenseTotals, purchaseTotals, recentSales, recentExpenses, recentPurchases] = await Promise.all([
-        Sale.aggregate([
-            { $match: matchSales },
-            { $group: { _id: null, total: { $sum: moneyCents('$totalCents', '$total') } } },
-        ]),
-        Expense.aggregate([
-            { $match: { pagadoEn: matchPaid } },
-            { $group: { _id: null, total: { $sum: '$montoCents' } } },
-        ]),
-        Purchase.aggregate([
-            { $match: { pagadoEn: matchPaid } },
-            { $group: { _id: null, total: { $sum: '$totalCents' } } },
-        ]),
-        Sale.find(matchSales).populate('order', 'numeroOrden').select('total totalCents order createdAt')
-            .sort({ createdAt: -1, _id: -1 }).limit(50).lean(),
-        Expense.find({ pagadoEn: matchPaid }).select('montoCents categoria descripcion pagadoEn')
-            .sort({ pagadoEn: -1, _id: -1 }).limit(50).lean(),
-        Purchase.find({ pagadoEn: matchPaid }).populate('proveedor', 'nombre')
-            .select('totalCents referencia proveedor pagadoEn').sort({ pagadoEn: -1, _id: -1 })
-            .limit(50).lean(),
-    ]);
+    const [saleTotals, expenseTotals, purchaseTotals, recentSales, recentExpenses, recentPurchases] = await Promise.all(
+        [
+            Sale.aggregate([
+                { $match: matchSales },
+                { $group: { _id: null, total: { $sum: moneyCents('$totalCents', '$total') } } },
+            ]),
+            Expense.aggregate([
+                { $match: { pagadoEn: matchPaid } },
+                { $group: { _id: null, total: { $sum: '$montoCents' } } },
+            ]),
+            Purchase.aggregate([
+                { $match: { pagadoEn: matchPaid } },
+                { $group: { _id: null, total: { $sum: '$totalCents' } } },
+            ]),
+            Sale.find(matchSales)
+                .populate('order', 'numeroOrden')
+                .select('total totalCents order createdAt')
+                .sort({ createdAt: -1, _id: -1 })
+                .limit(50)
+                .lean(),
+            Expense.find({ pagadoEn: matchPaid })
+                .select('montoCents categoria descripcion pagadoEn')
+                .sort({ pagadoEn: -1, _id: -1 })
+                .limit(50)
+                .lean(),
+            Purchase.find({ pagadoEn: matchPaid })
+                .populate('proveedor', 'nombre')
+                .select('totalCents referencia proveedor pagadoEn')
+                .sort({ pagadoEn: -1, _id: -1 })
+                .limit(50)
+                .lean(),
+        ]
+    );
     const incomingCents = cents(saleTotals[0]?.total);
     const expenseCents = cents(expenseTotals[0]?.total);
     const supplierCents = cents(purchaseTotals[0]?.total);
     const movements = [
         ...recentSales.map((item) => ({
-            id: String(item._id), date: item.createdAt, type: 'Entrada',
+            id: String(item._id),
+            date: item.createdAt,
+            type: 'Entrada',
             description: 'Venta ' + (item.order?.numeroOrden || String(item._id)),
             amount: money.fromCents(money.readCents(item.totalCents, item.total)),
             sign: 1,
         })),
         ...recentExpenses.map((item) => ({
-            id: String(item._id), date: item.pagadoEn, type: 'Gasto',
+            id: String(item._id),
+            date: item.pagadoEn,
+            type: 'Gasto',
             description: CATEGORY_LABELS[item.categoria] + ': ' + item.descripcion,
-            amount: money.fromCents(item.montoCents), sign: -1,
+            amount: money.fromCents(item.montoCents),
+            sign: -1,
         })),
         ...recentPurchases.map((item) => ({
-            id: String(item._id), date: item.pagadoEn, type: 'Proveedor',
+            id: String(item._id),
+            date: item.pagadoEn,
+            type: 'Proveedor',
             description: 'Compra ' + (item.referencia || item.proveedor?.nombre || String(item._id)),
-            amount: money.fromCents(item.totalCents), sign: -1,
+            amount: money.fromCents(item.totalCents),
+            sign: -1,
         })),
-    ].sort((a, b) => b.date - a.date).slice(0, 60);
+    ]
+        .sort((a, b) => b.date - a.date)
+        .slice(0, 60);
     return {
         period: range,
         incoming: money.fromCents(incomingCents),
@@ -170,6 +192,12 @@ async function recentExpenses(limit = 30) {
 }
 
 module.exports = {
-    CATEGORY_LABELS, accountingDate, recordExpense, payExpense, sumExpenses,
-    financialSummary, cashFlow, recentExpenses,
+    CATEGORY_LABELS,
+    accountingDate,
+    recordExpense,
+    payExpense,
+    sumExpenses,
+    financialSummary,
+    cashFlow,
+    recentExpenses,
 };

@@ -11,10 +11,7 @@ function period(req) {
 }
 
 exports.index = wrap(async (req, res) => {
-    const [summary, recent] = await Promise.all([
-        finance.financialSummary(period(req)),
-        finance.recentExpenses(),
-    ]);
+    const [summary, recent] = await Promise.all([finance.financialSummary(period(req)), finance.recentExpenses()]);
     const notice = req.session.financeNotice || '';
     delete req.session.financeNotice;
     return res.render('admin/finance/index', {
