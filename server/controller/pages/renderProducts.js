@@ -94,9 +94,10 @@ exports.read_products = wrap(async (req, res) => {
     });
 });
 exports.read_stock = wrap(async (req, res) => {
+    const canSeeFinancials = hasPermission(req.usuarioActual, P.ANALYTICS_READ);
     const [result, inventoryValuation] = await Promise.all([
         products.stockAlerts({ page: req.query.page, limit: 10 }),
-        inventoryAnalytics.stockValuation(),
+        canSeeFinancials ? inventoryAnalytics.stockValuation() : null,
     ]);
     res.render('admin/analytics/stock', {
         stockAlerts: result.productos,

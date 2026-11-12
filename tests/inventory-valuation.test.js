@@ -99,6 +99,27 @@ test(
         assert.ok(analyticsHtml.includes('16.330'));
         assert.match(analyticsHtml, /Ganancia bruta estimada/);
 
+        // Un empleado de inventario ve las alertas, pero no los valores financieros.
+        const Role = require('../server/model/rol');
+        const inventoryRole = await Role.create({
+            nombre: 'Solo inventario',
+            permisos: [P.ADMIN_ACCESS, P.INVENTORY_READ],
+        });
+        fixture.users.inventoryStaff = await fixture.User.create({
+            nombre: 'Empleado de inventario',
+            email: 'inventory-staff@example.test',
+            password: 'hash-no-utilizable',
+            telefono: '3000000000',
+            direccion: 'Dirección de prueba',
+            rol: inventoryRole._id,
+            verified: true,
+        });
+        const staff = await fixture.actor('inventoryStaff');
+        const staffStock = await fixture.request(staff, '/read-stock');
+        assert.equal(staffStock.status, 200);
+        assert.doesNotMatch(await staffStock.text(), /Inversión estimada en stock/);
+        assert.equal((await fixture.request(staff, '/admin-analytics')).status, 403);
+
         const customer = await fixture.actor('owner');
         assert.equal((await fixture.request(customer, '/read-stock')).status, 403);
         assert.equal((await fixture.request(customer, '/admin-analytics')).status, 403);
