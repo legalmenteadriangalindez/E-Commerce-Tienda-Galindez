@@ -82,6 +82,13 @@
           <small>Entre 7 y 15 dígitos, sin espacios ni símbolos.</small>
         </div>
 
+        <!-- Cédula opcional -->
+        <div class="form-group">
+          <label for="new-user-cedula">Cédula (opcional)</label>
+          <input id="new-user-cedula" type="text" name="cedula" value="<%= values.cedula %>" inputmode="numeric" pattern="[0-9]{5,15}" maxlength="15" autocomplete="off">
+          <small>Solo números; se utiliza para localizar ventas y pedidos.</small>
+        </div>
+
         <!-- Género -->
         <div class="form-group">
           <label for="new-user-gender">Género (opcional)</label>
