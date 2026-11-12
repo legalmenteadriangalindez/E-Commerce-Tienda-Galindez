@@ -1,0 +1,67 @@
+<aside class="admin-sidebar" id="adminSidebar" aria-label="Navegación del administrador">
+  <div class="admin-sidebar__brand">
+    <a href="<%= adminHome %>" class="admin-sidebar__brand-link" aria-label="Ir al panel de administración">
+      <span class="admin-sidebar__brand-icon" aria-hidden="true"><i class="bi bi-shop"></i></span>
+      <span>
+        <strong>Admin</strong>
+        <span>Galindez</span>
+      </span>
+    </a>
+  </div>
+
+  <nav class="admin-sidebar__nav" aria-label="Módulos administrativos">
+    <% if (canAccess('payments:manage')) { %>
+      <a class="admin-sidebar__link" href="/billing-point" data-admin-route="/billing-point"><i class="bi bi-grid-1x2-fill" aria-hidden="true"></i><span>Panel</span></a>
+    <% } %>
+
+    <% if (showManagement) { %>
+      <p class="admin-sidebar__section-title">Operación</p>
+      <% if (canAccess('payments:read')) { %><a class="admin-sidebar__link" href="/admin/payments" data-admin-route="/admin/payments"><i class="bi bi-credit-card" aria-hidden="true"></i><span>Pagos y conciliación</span></a><% } %>
+      <% if (canAccess('delivery:manage')) { %><a class="admin-sidebar__link" href="/admin/delivery" data-admin-route="/admin/delivery"><i class="bi bi-truck" aria-hidden="true"></i><span>Reparto y seguimiento</span></a><% } %>
+      <% if (canAccess('orders:read')) { %><a class="admin-sidebar__link" href="/read-order" data-admin-route="/read-order"><i class="bi bi-receipt" aria-hidden="true"></i><span>Pedidos</span></a><% } %>
+
+      <p class="admin-sidebar__section-title">Catálogo</p>
+      <% if (canAccess('catalog:read')) { %><a class="admin-sidebar__link" href="/read-producto" data-admin-route="/read-producto"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Productos</span></a><% } %>
+      <% if (canAccess('catalog:read')) { %><a class="admin-sidebar__link" href="/read-categoria" data-admin-route="/read-categoria"><i class="bi bi-tags" aria-hidden="true"></i><span>Categorías</span></a><% } %>
+      <% if (canAccess('catalog:read')) { %><a class="admin-sidebar__link" href="/admin/brands/read-brands" data-admin-route="/admin/brands"><i class="bi bi-bookmark-star" aria-hidden="true"></i><span>Marcas</span></a><% } %>
+      <% if (canAccess('providers:manage')) { %><a class="admin-sidebar__link" href="/read-proveedor" data-admin-route="/read-proveedor"><i class="bi bi-truck-flatbed" aria-hidden="true"></i><span>Proveedores</span></a><% } %>
+      <% if (canAccess('purchases:read')) { %><a class="admin-sidebar__link" href="/admin/compras-proveedores" data-admin-route="/admin/compras-proveedores"><i class="bi bi-basket2" aria-hidden="true"></i><span>Compras a proveedores</span></a><% } %>
+    <% } %>
+
+    <% if (canAccess('inventory:read') || canAccess('catalog:write')) { %>
+      <p class="admin-sidebar__section-title">Inventario</p>
+      <a class="admin-sidebar__link" href="/inventory/replenishment" data-admin-route="/inventory/replenishment"><i class="bi bi-basket" aria-hidden="true"></i><span>Reposición guiada</span></a>
+      <% if (canAccess('inventory:read')) { %><a class="admin-sidebar__link" href="/read-Stock" data-admin-route="/read-Stock"><i class="bi bi-boxes" aria-hidden="true"></i><span>Stock</span></a><% } %>
+      <a class="admin-sidebar__link" href="/inventory/movements" data-admin-route="/inventory/movements"><i class="bi bi-clock-history" aria-hidden="true"></i><span>Historial de movimientos</span></a>
+    <% } %>
+
+    <% if (canAccess('roles:manage') || canAccess('reviews:moderate') || canAccess('users:manage')) { %>
+      <p class="admin-sidebar__section-title">Gestión</p>
+      <% if (canAccess('users:manage')) { %><a class="admin-sidebar__link" href="/read-user" data-admin-route="/read-user"><i class="bi bi-people" aria-hidden="true"></i><span>Usuarios</span></a><% } %>
+      <% if (canAccess('roles:manage')) { %><a class="admin-sidebar__link" href="/read-rol" data-admin-route="/read-rol"><i class="bi bi-person-badge" aria-hidden="true"></i><span>Gestionar roles</span></a><% } %>
+      <% if (canAccess('reviews:moderate')) { %><a class="admin-sidebar__link" href="/admin/reviews" data-admin-route="/admin/reviews"><i class="bi bi-chat-left-text" aria-hidden="true"></i><span>Reseñas</span></a><% } %>
+    <% } %>
+
+    <% if (showAnalytics || (typeof authUser !== 'undefined' && authUser?.rol?.nombre === 'Admin')) { %>
+      <p class="admin-sidebar__section-title">Reportes</p>
+      <% if (canAccess('analytics:read')) { %><a class="admin-sidebar__link" href="/admin-analytics" data-admin-route="/admin-analytics"><i class="bi bi-bar-chart-line" aria-hidden="true"></i><span>Informe de ventas</span></a><% } %>
+      <% if (canAccess('finance:read')) { %><a class="admin-sidebar__link" href="/admin/finanzas" data-admin-route="/admin/finanzas"><i class="bi bi-cash-coin" aria-hidden="true"></i><span>Gastos y resultado neto</span></a><a class="admin-sidebar__link" href="/admin/flujo-caja" data-admin-route="/admin/flujo-caja"><i class="bi bi-arrow-left-right" aria-hidden="true"></i><span>Flujo de caja</span></a><% } %>
+      <% if (canAccess('sales:read')) { %><a class="admin-sidebar__link" href="/read-sales" data-admin-route="/read-sales"><i class="bi bi-cart-check" aria-hidden="true"></i><span>Ventas</span></a><a class="admin-sidebar__link" href="/admin-best_selling_products" data-admin-route="/admin-best_selling_products"><i class="bi bi-trophy" aria-hidden="true"></i><span>Productos más vendidos</span></a><% } %>
+      <% if (canAccess('orders:read')) { %><a class="admin-sidebar__link" href="/read-order" data-admin-route="/read-order"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i><span>Órdenes</span></a><% } %>
+      <% if (canAccess('raffle:manage')) { %><a class="admin-sidebar__link" href="/admin/raffle" data-admin-route="/admin/raffle"><i class="bi bi-gift" aria-hidden="true"></i><span>Sorteo de regalos</span></a><% } %>
+      <% if (typeof authUser !== 'undefined' && authUser?.rol?.nombre === 'Admin') { %><a class="admin-sidebar__link" href="/admin/exportaciones" data-admin-route="/admin/exportaciones"><i class="bi bi-cloud-arrow-down" aria-hidden="true"></i><span>Exportaciones y respaldos</span></a><% } %>
+    <% } %>
+  </nav>
+
+  <div class="admin-sidebar__footer">
+    <p class="admin-sidebar__user"><i class="bi bi-person-circle" aria-hidden="true"></i><span><strong><%= adminDisplayName %></strong><small>Administrador</small></span></p>
+    <% if (canAccess('profile:manage')) { %><a class="admin-sidebar__link" href="/admin/perfil" data-admin-route="/admin/perfil"><i class="bi bi-person" aria-hidden="true"></i><span>Perfil</span></a><% } %>
+    <a class="admin-sidebar__link" href="/change-password" data-admin-route="/change-password"><i class="bi bi-key" aria-hidden="true"></i><span>Cambiar contraseña</span></a>
+    <% if (canAccess('store-settings:manage')) { %><a class="admin-sidebar__link" href="/admin/settings/shipping" data-admin-route="/admin/settings/shipping"><i class="bi bi-truck" aria-hidden="true"></i><span>Tarifas de envío</span></a><% } %>
+    <form action="/logout" method="POST" class="admin-sidebar__logout-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button type="submit" class="admin-sidebar__link admin-sidebar__logout"><i class="bi bi-box-arrow-right" aria-hidden="true"></i><span>Cerrar sesión</span></button>
+    </form>
+  </div>
+</aside>
+<div class="admin-sidebar-backdrop" data-admin-sidebar-close></div>

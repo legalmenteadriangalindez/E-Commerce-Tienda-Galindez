@@ -31,6 +31,8 @@
     %>
     <% headerPageCss.forEach(href => { %><link rel="stylesheet" href="<%= href %>"><% }) %>
     <link rel="stylesheet" href="/css/components/admin-ui.css">
+    <link rel="stylesheet" href="/css/components/admin-sidebar.css">
+    <script defer src="/js/admin-sidebar.js"></script>
     <% headerPageJs.forEach(src => { %><script nonce="<%= cspNonce %>" defer src="<%= src %>"></script><% }) %>
 </head>
 <body class="admin-app">
@@ -39,6 +41,9 @@
 <% const adminHome = canAccess('payments:manage') ? '/billing-point' : canAccess('analytics:read') ? '/admin-analytics' : canAccess('catalog:read') ? '/read-producto' : canAccess('orders:read') ? '/read-order' : canAccess('payments:read') ? '/admin/payments' : canAccess('sales:read') ? '/read-sales' : canAccess('delivery:manage') ? '/admin/delivery' : canAccess('finance:read') ? '/admin/finanzas' : canAccess('purchases:read') ? '/admin/compras-proveedores' : canAccess('roles:manage') ? '/read-rol' : canAccess('users:manage') ? '/read-user' : '/'; %>
 <% const showManagement = ['payments:read', 'delivery:manage', 'catalog:read', 'catalog:write', 'inventory:read', 'providers:manage', 'purchases:read', 'roles:manage', 'reviews:moderate', 'users:manage'].some(canAccess); %>
 <% const showAnalytics = ['analytics:read', 'finance:read', 'orders:read', 'inventory:read', 'sales:read', 'raffle:manage'].some(canAccess); %>
+<% const adminDisplayName = (typeof authUser !== 'undefined' && authUser?.nombre) || sessionUser?.nombre || 'Administrador'; %>
+
+<%- include('./admin-sidebar', { adminHome, canAccess, showManagement, showAnalytics, adminDisplayName, csrfToken }) %>
 
 <header id="header">
 <nav class="navbar navbar-expand-lg navbar-dark app-navbar">
@@ -48,6 +53,9 @@
         <i class="bi bi-shield-lock me-2"></i>
         <span class="app-brand-text">Admin Galindez</span>
     </a>
+    <button class="admin-sidebar-toggle" type="button" data-admin-sidebar-toggle aria-controls="adminSidebar" aria-expanded="false" aria-label="Abrir navegación administrativa">
+        <i class="bi bi-list" aria-hidden="true"></i>
+    </button>
     <!-- TOGGLER -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
         data-bs-target="#navbarAdmin">
