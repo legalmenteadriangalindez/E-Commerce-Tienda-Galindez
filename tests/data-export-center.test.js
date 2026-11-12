@@ -142,7 +142,14 @@ test(
             passphrase: password,
             confirmPassphrase: password,
         });
-        assert.equal(response.status, 200, await response.clone().text().then((x) => x.slice(0, 350)));
+        assert.equal(
+            response.status,
+            200,
+            await response
+                .clone()
+                .text()
+                .then((x) => x.slice(0, 350))
+        );
         assert.match(response.headers.get('content-disposition'), /\.tgbackup/);
         const archive = Buffer.from(await response.arrayBuffer());
         assert.ok(archive.subarray(0, encrypted.MAGIC.length).equals(encrypted.MAGIC));

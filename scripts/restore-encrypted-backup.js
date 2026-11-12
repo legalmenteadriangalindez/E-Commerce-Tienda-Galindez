@@ -142,7 +142,8 @@ async function restoreIntoEmptyDatabase(db, file, meta) {
             if (batch.length >= 100) await flush();
         } else if (event.type === 'endCollection') {
             await flush();
-            const indexes = indexDefs.get(active)
+            const indexes = indexDefs
+                .get(active)
                 .filter((index) => index.name !== '_id_')
                 .map(({ v, ns, ...options }) => options);
             if (indexes.length) await db.collection(active).createIndexes(indexes);
@@ -158,7 +159,10 @@ async function restoreIntoEmptyDatabase(db, file, meta) {
         const actual = await db.collection(name).countDocuments();
         if (actual !== expected) throw new Error('No coincide el conteo restaurado de ' + name);
     }
-    return { restoredCollections: meta.collections.length, restoredDocuments: Object.values(meta.counts).reduce((a, b) => a + b, 0) };
+    return {
+        restoredCollections: meta.collections.length,
+        restoredDocuments: Object.values(meta.counts).reduce((a, b) => a + b, 0),
+    };
 }
 
 async function restoreEncryptedBackup({ file, passphrase, targetUri, targetDatabase, confirmed }) {

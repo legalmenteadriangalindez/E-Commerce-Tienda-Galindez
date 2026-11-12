@@ -349,7 +349,6 @@ Las páginas públicas de privacidad, términos de compra, envíos, cambios y de
 
 Referencia técnica: [Render](https://render.com/docs/node-version), [persistencia en Render](https://render.com/docs/disks), [checkout Wompi](https://docs.wompi.co/en/docs/colombia/widget-checkout-web/), [eventos Wompi](https://docs.wompi.co/en/docs/colombia/eventos/), [seguimiento de transacciones](https://docs.wompi.co/en/docs/colombia/seguimiento-de-transacciones/).
 
-
 ### Centro de exportación y respaldo cifrado (SuperAdmin)
 
 La pantalla privada `/admin/exportaciones` ofrece dos descargas que NO son equivalentes:
