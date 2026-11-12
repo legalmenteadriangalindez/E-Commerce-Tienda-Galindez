@@ -7,10 +7,6 @@ function findRoleByName(name) {
     return Roldb.findOne({ nombre: name });
 }
 
-function findRoleIdByName(name) {
-    return Roldb.findOne({ nombre: name }).select('_id').lean();
-}
-
 function findRoleById(id) {
     return Roldb.findById(id).select('nombre');
 }
@@ -57,7 +53,6 @@ function search(filter) {
 
 module.exports = {
     findRoleByName,
-    findRoleIdByName,
     findRoleById,
     findById,
     findByIdForAdmin,

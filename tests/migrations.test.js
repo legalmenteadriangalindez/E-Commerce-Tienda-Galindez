@@ -137,6 +137,77 @@ test('la migración concede la matriz completa al rol Admin', async () => {
     });
 });
 
+test('la migración unifica las cuentas antiguas y elimina el rol retirado', async () => {
+    const migration = require('../migrations/202611120005-admin-only-role');
+    const adminId = 'admin-role-id';
+    const retiredId = 'retired-role-id';
+    const roles = [
+        { _id: adminId, nombre: 'Admin', permisos: [] },
+        { _id: retiredId, nombre: 'SuperAdmin', permisos: ['admin:access'] },
+    ];
+    const users = [
+        { _id: 'old-user', rol: retiredId, authVersion: 2 },
+        { _id: 'admin-user', rol: adminId, authVersion: 4 },
+    ];
+    const matches = (document, filter) =>
+        Object.entries(filter).every(([key, value]) => {
+            if (value && Array.isArray(value.$in)) return value.$in.includes(document[key]);
+            return document[key] === value;
+        });
+    const db = {
+        collection(name) {
+            if (name === 'roldbs') {
+                return {
+                    async updateOne(filter, update, options = {}) {
+                        let role = roles.find((item) => matches(item, filter));
+                        if (!role && options.upsert) {
+                            role = { _id: 'created-admin', ...filter, ...update.$setOnInsert };
+                            roles.push(role);
+                        }
+                        if (role) Object.assign(role, update.$set || {});
+                    },
+                    async findOne(filter) {
+                        return roles.find((item) => matches(item, filter)) || null;
+                    },
+                    find(filter) {
+                        return { toArray: async () => roles.filter((item) => matches(item, filter)) };
+                    },
+                    async deleteMany(filter) {
+                        const before = roles.length;
+                        for (let index = roles.length - 1; index >= 0; index--) {
+                            if (matches(roles[index], filter)) roles.splice(index, 1);
+                        }
+                        return { deletedCount: before - roles.length };
+                    },
+                };
+            }
+            if (name === 'userdbs') {
+                return {
+                    async updateMany(filter, update) {
+                        const selected = users.filter((item) => matches(item, filter));
+                        for (const user of selected) {
+                            Object.assign(user, update.$set || {});
+                            for (const [key, amount] of Object.entries(update.$inc || {})) {
+                                user[key] = (user[key] || 0) + amount;
+                            }
+                        }
+                        return { modifiedCount: selected.length };
+                    },
+                };
+            }
+            throw new Error(`Colección inesperada: ${name}`);
+        },
+    };
+
+    await migration.up({ db, logger: { log() {} } });
+
+    assert.deepEqual(users, [
+        { _id: 'old-user', rol: adminId, authVersion: 3 },
+        { _id: 'admin-user', rol: adminId, authVersion: 4 },
+    ]);
+    assert.deepEqual(roles, [{ _id: adminId, nombre: 'Admin', permisos: ADMIN_PERMISSIONS }]);
+});
+
 test('cada índice declarado por un modelo tiene una migración explícita', () => {
     const declared = new Set(
         loadMigrations()

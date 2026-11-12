@@ -1,24 +1,18 @@
 const accounts = require('./accountService');
 const { BusinessError, parse } = require('./errors');
-const { hasPermission, isSuperAdmin } = require('../config/authorization');
-const { PERMISSIONS: P, SYSTEM_ROLES } = require('../config/permissions');
+const { hasPermission } = require('../config/authorization');
+const { PERMISSIONS: P } = require('../config/permissions');
 const schemas = require('../validation/schemas');
 
 const CAMPOS_USUARIO_ADMIN =
     'nombre email telefono cedula genero direccion barrio ciudad puntoReferencia ubicacion rol estado verified fechaRegistro';
 
-function roleChangeError({ actor, targetId, currentRoleName, nextRoleName }) {
+function roleChangeError({ actor, targetId }) {
     if (!hasPermission(actor, P.ROLES_MANAGE)) {
         return 'Se requiere el permiso roles:manage para cambiar roles.';
     }
     if (String(actor?._id || '') === String(targetId)) {
         return 'No puedes cambiar el rol de tu propia cuenta.';
-    }
-    if (currentRoleName === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(actor)) {
-        return 'Solo un superadministrador puede modificar esta cuenta.';
-    }
-    if (nextRoleName === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(actor)) {
-        return 'El rol SuperAdmin está reservado y no se puede asignar desde el panel.';
     }
     return null;
 }

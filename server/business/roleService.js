@@ -1,19 +1,16 @@
 const Roldb = require('../model/rol');
 const Userdb = require('../model/user');
 const adminPagination = require('../services/adminPagination');
-const { isSuperAdmin } = require('../config/authorization');
 const {
-    ALL_PERMISSIONS,
     ADMIN_PERMISSIONS,
     PERMISSIONS,
     SYSTEM_ROLES,
-    SYSTEM_ROLE_NAMES,
+    RESERVED_ROLE_NAMES,
     expandPermissions,
 } = require('../config/permissions');
 const { BusinessError, validId, parse } = require('./errors');
 const schemas = require('../validation/schemas');
 function permissionsFromRequest(value, nombre) {
-    if (nombre === SYSTEM_ROLES.SUPER_ADMIN) return [...ALL_PERMISSIONS];
     if (nombre === SYSTEM_ROLES.ADMIN) return [...ADMIN_PERMISSIONS];
     if ([SYSTEM_ROLES.CLIENT, SYSTEM_ROLES.DEALER].includes(nombre)) return [];
 
@@ -27,8 +24,7 @@ function roleForResponse(role) {
     if (!role) return role;
     const data = typeof role.toObject === 'function' ? role.toObject() : { ...role };
     const permissions = expandPermissions(data.permisos);
-    if (data.nombre === SYSTEM_ROLES.SUPER_ADMIN) data.permisos = [...ALL_PERMISSIONS];
-    else if (data.nombre === SYSTEM_ROLES.ADMIN) data.permisos = [...ADMIN_PERMISSIONS];
+    if (data.nombre === SYSTEM_ROLES.ADMIN) data.permisos = [...ADMIN_PERMISSIONS];
     else data.permisos = permissions;
     return data;
 }
@@ -44,7 +40,7 @@ async function create(input, actor) {
 
     const nombreNormalizado = nombre.trim();
 
-    if (SYSTEM_ROLE_NAMES.includes(nombreNormalizado)) {
+    if (RESERVED_ROLE_NAMES.includes(nombreNormalizado)) {
         throw new BusinessError('Ese nombre está reservado para un rol del sistema.', 409);
     }
 
@@ -66,18 +62,16 @@ async function create(input, actor) {
 }
 
 async function find(query = {}, actor, id) {
-    const canSeeSuperAdmin = isSuperAdmin(actor);
-
     const roleId = id || query.id;
     if (roleId) {
         const rol = await Roldb.findById(validId(roleId, 'Rol'));
-        if (!rol || (rol.nombre === 'SuperAdmin' && !canSeeSuperAdmin)) {
+        if (!rol) {
             throw new BusinessError('Rol no encontrado', 404);
         }
         return roleForResponse(rol);
     }
 
-    const filter = canSeeSuperAdmin ? {} : { nombre: { $ne: 'SuperAdmin' } };
+    const filter = {};
     const { page, limit } = adminPagination.requested(query, 10);
     const totalItems = await Roldb.countDocuments(filter);
     const pagination = adminPagination.metadata(page, limit, totalItems);
@@ -95,9 +89,9 @@ async function update(id, input, actor) {
 
     const previous = await Roldb.findById(id);
     if (!previous) throw new BusinessError('Rol no encontrado', 404);
-    if (SYSTEM_ROLE_NAMES.includes(previous.nombre))
+    if (RESERVED_ROLE_NAMES.includes(previous.nombre))
         throw new BusinessError('No se pueden modificar los roles del sistema.', 409);
-    if (!isSuperAdmin(actor) && String(actor?.rol?._id || '') === String(previous._id)) {
+    if (String(actor?.rol?._id || '') === String(previous._id)) {
         throw new BusinessError('No puedes modificar el rol que utiliza tu propia cuenta.', 403);
     }
     if (
@@ -108,7 +102,7 @@ async function update(id, input, actor) {
     )
         throw new BusinessError('Datos del rol inválidos', 400);
     const nombre = body.nombre.trim();
-    if (previous.nombre !== nombre && SYSTEM_ROLE_NAMES.includes(nombre)) {
+    if (previous.nombre !== nombre && RESERVED_ROLE_NAMES.includes(nombre)) {
         throw new BusinessError('Ese nombre está reservado para un rol del sistema.', 409);
     }
     const rol = await Roldb.findByIdAndUpdate(
@@ -137,7 +131,7 @@ async function remove(id, actor) {
     validId(id);
 
     const original = await Roldb.findById(id);
-    if (original && SYSTEM_ROLE_NAMES.includes(original.nombre))
+    if (original && RESERVED_ROLE_NAMES.includes(original.nombre))
         throw new BusinessError('No se pueden eliminar los roles del sistema.', 409);
 
     if (await Userdb.exists({ rol: id })) {

@@ -34,7 +34,7 @@
         <textarea name="descripcion" rows="3" maxlength="500"><%= rol.descripcion || '' %></textarea>
       </div>
 
-      <% const systemRole = ['SuperAdmin', 'Admin', 'Cliente', 'dealer'].includes(rol.nombre); %>
+      <% const systemRole = ['Admin', 'Cliente', 'dealer'].includes(rol.nombre); %>
       <div class="form-group">
         <label>Permisos</label>
         <% if (systemRole) { %>

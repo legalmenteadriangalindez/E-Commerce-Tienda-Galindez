@@ -1,15 +1,9 @@
-const { ALL_PERMISSIONS, ADMIN_PERMISSIONS, PERMISSIONS, SYSTEM_ROLES, expandPermissions } = require('./permissions');
+const { ADMIN_PERMISSIONS, PERMISSIONS, SYSTEM_ROLES, expandPermissions } = require('./permissions');
 function permissionsForRole(role) {
     const explicit = expandPermissions(role?.permisos);
 
-    // El rol separado de superadministrador no depende de que la colección
-    // tenga todavía la matriz materializada: siempre conserva acceso total.
-    if (role?.nombre === SYSTEM_ROLES.SUPER_ADMIN) {
-        return [...ALL_PERMISSIONS];
-    }
-
-    // Admin es un rol reservado con permisos completos del panel. La lista
-    // canónica evita que una matriz antigua o incompleta oculte funcionalidades.
+    // Admin es el único rol administrativo y siempre usa la matriz completa.
+    // Así una lista antigua o incompleta no oculta funcionalidades del panel.
     if (role?.nombre === SYSTEM_ROLES.ADMIN) {
         return [...ADMIN_PERMISSIONS];
     }
@@ -25,9 +19,4 @@ function hasPermission(usuario, permission) {
     );
 }
 
-function isSuperAdmin(usuario) {
-    const roleName = typeof usuario?.rol === 'string' ? usuario.rol : usuario?.rol?.nombre;
-    return roleName === SYSTEM_ROLES.SUPER_ADMIN;
-}
-
-module.exports = { permissionsForRole, hasPermission, isSuperAdmin };
+module.exports = { permissionsForRole, hasPermission };

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const accounts = require('./accountService');
 const repository = require('./userRepository');
 const rules = require('./userRules');
-const { hasPermission, isSuperAdmin } = require('../config/authorization');
+const { hasPermission } = require('../config/authorization');
 const { PERMISSIONS: P, SYSTEM_ROLES } = require('../config/permissions');
 const { BusinessError, validId } = require('./errors');
 
@@ -41,9 +41,6 @@ async function create(input, actor) {
         }
         const requestedRole = await repository.findRoleById(body.rol);
         if (!requestedRole) throw new BusinessError('El rol seleccionado no existe.', 400);
-        if (requestedRole.nombre === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(actor)) {
-            throw new BusinessError('El rol SuperAdmin está reservado y no se puede asignar desde el panel.', 403);
-        }
         rolAsignado = requestedRole;
     }
 
@@ -98,17 +95,10 @@ async function find(query = {}, actor, id) {
         if (!mongoose.isValidObjectId(id)) throw new BusinessError('ID de usuario inválido', 400);
         const user = await repository.findByIdForAdmin(id);
         if (!user) throw new BusinessError('Usuario no encontrado', 404);
-        if (user.rol?.nombre === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(actor)) {
-            throw new BusinessError('Usuario no encontrado', 404);
-        }
         return user;
     }
 
     const filter = { estado: 'Activo' };
-    if (!isSuperAdmin(actor)) {
-        const superRole = await repository.findRoleIdByName(SYSTEM_ROLES.SUPER_ADMIN);
-        if (superRole) filter.rol = { $ne: superRole._id };
-    }
     return repository.listActive(filter, query);
 }
 
@@ -119,11 +109,6 @@ async function update(id, input, actor) {
 
     const current = await repository.findById(id);
     if (!current) throw new BusinessError('Usuario no encontrado.', 404);
-    const actorIsSuperAdmin = isSuperAdmin(actor);
-    if (current.rol?.nombre === SYSTEM_ROLES.SUPER_ADMIN && !actorIsSuperAdmin) {
-        throw new BusinessError('Solo un superadministrador puede modificar esta cuenta.', 403);
-    }
-
     const roleFieldProvided = Object.prototype.hasOwnProperty.call(body, 'rol');
     let roleChanged = false;
     const updateData = rules.editableFields(body);
@@ -137,8 +122,6 @@ async function update(id, input, actor) {
         const roleError = rules.roleChangeError({
             actor,
             targetId: id,
-            currentRoleName: current.rol?.nombre,
-            nextRoleName: nextRole.nombre,
         });
         if (roleError) throw new BusinessError(roleError, 403);
         roleChanged = String(current.rol?._id || '') !== String(nextRole._id);
@@ -173,9 +156,6 @@ async function remove(id, actor) {
     if (!mongoose.isValidObjectId(id)) throw new BusinessError('ID de usuario inválido.', 400);
     const target = await repository.findById(id);
     if (!target) throw new BusinessError('Usuario no encontrado.', 404);
-    if (target.rol?.nombre === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(actor)) {
-        throw new BusinessError('Solo un superadministrador puede desactivar esta cuenta.', 403);
-    }
     const data = await repository.deactivate(id);
     if (!data) throw new BusinessError('Usuario no encontrado.', 404);
     return { message: 'Usuario marcado como inactivo.' };
@@ -200,10 +180,6 @@ async function search(query = {}, actor) {
             { cedula: { $regex: search, $options: 'i' } },
         ],
     };
-    if (!isSuperAdmin(actor)) {
-        const superRole = await repository.findRoleIdByName(SYSTEM_ROLES.SUPER_ADMIN);
-        if (superRole) filter.rol = { $ne: superRole._id };
-    }
     return repository.search(filter);
 }
 
