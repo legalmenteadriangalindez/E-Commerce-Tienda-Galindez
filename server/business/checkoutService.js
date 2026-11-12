@@ -162,13 +162,16 @@ function paymentsEnabled() {
     return process.env.PAYMENTS_ENABLED === 'true';
 }
 
-function checkoutUrl(order, redirectUrl) {
+function validateWompiConfiguration() {
     if (!paymentsEnabled()) throw new CommerceError('Los pagos en línea todavía no están habilitados.', 503);
     for (const name of ['WOMPI_PUBLIC_KEY', 'WOMPI_PRIVATE_KEY', 'WOMPI_INTEGRITY_KEY', 'WOMPI_EVENTS_KEY']) {
         if (!process.env[name]) throw new CommerceError('El servicio de pagos no está configurado.', 503);
     }
     if (!['sandbox', 'production'].includes(process.env.WOMPI_ENV))
         throw new CommerceError('Entorno de pago inválido.', 503);
+}
+
+function validateWompiOrder(order) {
     if (!WOMPI_METHODS.has(order.metodoPago || PAYMENT_METHODS.WOMPI_CARD)) {
         throw new CommerceError('Este pedido no usa un medio de pago Wompi.', 409);
     }
@@ -180,6 +183,9 @@ function checkoutUrl(order, redirectUrl) {
     ) {
         throw new CommerceError('Este intento de pago terminó. Revisa el estado en Mis pedidos.', 409);
     }
+}
+
+function buildWompiCheckoutUrl(order, redirectUrl) {
     const expiration = order.reservaHasta.toISOString();
     const amount = money.readCents(order.totalCents, order.total);
     const signature = crypto
@@ -207,6 +213,12 @@ function checkoutUrl(order, redirectUrl) {
         'shipping-address:phone-number': order.direccionEnvio?.telefono || order.cliente?.telefono || '',
     }).forEach(([key, value]) => url.searchParams.set(key, value));
     return url.toString();
+}
+
+function checkoutUrl(order, redirectUrl) {
+    validateWompiConfiguration();
+    validateWompiOrder(order);
+    return buildWompiCheckoutUrl(order, redirectUrl);
 }
 
 module.exports = {

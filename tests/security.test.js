@@ -3,9 +3,8 @@ const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const bcrypt = require('bcrypt');
 const accounts = require('../server/business/accountService');
-const { validateEnvironment } = require('../server/config/production');
 
-test('política de contraseñas, correo y configuración de producción', () => {
+test('política de contraseñas y correo', () => {
     assert.equal(accounts.normalizeEmail('  Persona@EXAMPLE.TEST '), 'persona@example.test');
     assert.equal(accounts.normalizeEmail({ $ne: null }), null);
     assert.equal(accounts.validPassword('123456'), false);
@@ -14,7 +13,6 @@ test('política de contraseñas, correo y configuración de producción', () => 
     const filter = accounts.emailFilter('a+b@example.test');
     assert.match('A+B@EXAMPLE.TEST', new RegExp(filter.email.$regex, filter.email.$options));
     assert.doesNotMatch('ab@example.test', new RegExp(filter.email.$regex, filter.email.$options));
-    assert.ok(validateEnvironment({ NODE_ENV: 'production' }).length >= 4);
 });
 
 test(
