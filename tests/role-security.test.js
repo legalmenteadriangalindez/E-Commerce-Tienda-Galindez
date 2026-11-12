@@ -100,3 +100,70 @@ test('el servicio de roles bloquea editar el rol propio antes de escribir', asyn
     );
     assert.equal(write.mock.callCount(), 0);
 });
+
+test('el middleware de autenticación informa cuando MongoDB no puede validar la sesión', async (t) => {
+    t.mock.method(User, 'findById', () => {
+        throw new Error('MongoDB no disponible en esta prueba');
+    });
+    t.mock.method(console, 'error', () => {});
+    const session = { user: { _id: '507f1f77bcf86cd799439011' } };
+    const apiResponse = {
+        status(code) {
+            this.statusCode = code;
+            return this;
+        },
+        json(body) {
+            this.body = body;
+            return this;
+        },
+    };
+    const pageResponse = {
+        status(code) {
+            this.statusCode = code;
+            return this;
+        },
+        send(body) {
+            this.body = body;
+            return this;
+        },
+    };
+
+    await auth.isLoggedApi({ session }, apiResponse, () => assert.fail('No debe continuar sin validar la sesión'));
+    await auth.isLogged({ session }, pageResponse, () => assert.fail('No debe continuar sin validar la sesión'));
+
+    assert.equal(apiResponse.statusCode, 503);
+    assert.deepEqual(apiResponse.body, { success: false, message: 'No se pudo verificar el acceso' });
+    assert.equal(pageResponse.statusCode, 503);
+    assert.equal(pageResponse.body, 'Servicio de autenticación no disponible');
+});
+
+test('el middleware controla un fallo al destruir una sesión inválida', async (t) => {
+    t.mock.method(User, 'findById', () => query(null));
+    const response = {
+        status(code) {
+            this.statusCode = code;
+            return this;
+        },
+        json(body) {
+            this.body = body;
+            return this;
+        },
+        send(body) {
+            this.body = body;
+            return this;
+        },
+    };
+    const request = {
+        session: {
+            user: { _id: '507f1f77bcf86cd799439011' },
+            destroy(callback) {
+                callback(new Error('No se pudo borrar la sesión'));
+            },
+        },
+    };
+
+    await auth.isLoggedApi(request, response, () => assert.fail('Una sesión inválida no debe continuar'));
+
+    assert.equal(response.statusCode, 503);
+    assert.equal(response.body, 'No se pudo cerrar la sesión');
+});

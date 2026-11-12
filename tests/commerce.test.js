@@ -148,6 +148,33 @@ test(
             assert.equal(result.movimientos[0].actorNombre, 'Persona admin');
             assert.equal(result.movimientos[0].motivo, 'Dos unidades averiadas');
         });
+        await t.test('los movimientos no descuentan más unidades que el stock disponible', async () => {
+            await reset(10);
+            await assert.rejects(
+                inventoryMovements.adjust(
+                    {
+                        producto: app.product.id,
+                        tipo: 'DANO',
+                        cantidad: 11,
+                        motivo: 'Daño mayor al stock disponible',
+                        claveIdempotencia: randomUUID(),
+                    },
+                    app.users.admin
+                ),
+                (error) => error.status === 409
+            );
+            assert.equal((await app.Product.findById(app.product._id)).stock, 10);
+
+            await assert.rejects(
+                require('../server/business/inventoryService').debit(
+                    [{ producto: new mongoose.Types.ObjectId(), cantidad: 1 }],
+                    null,
+                    { actorId: app.users.admin._id }
+                ),
+                (error) => error.status === 404
+            );
+            assert.equal(await InventoryMovement.countDocuments(), 0);
+        });
         await t.test('el historial exige permisos y CSRF y muestra los movimientos guardados', async () => {
             await reset(10);
             const client = await app.actor('owner');
