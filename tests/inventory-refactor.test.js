@@ -52,8 +52,14 @@ test(
         assert.equal(await stock(), 10);
 
         await withinTransaction(async (session) => {
-            await inventory.recordReturnWithoutRestock(order, session, { actorId: user._id, reason: 'Sin devolución física' });
-            await inventory.recordReturnWithoutRestock(order, session, { actorId: user._id, reason: 'Sin devolución física' });
+            await inventory.recordReturnWithoutRestock(order, session, {
+                actorId: user._id,
+                reason: 'Sin devolución física',
+            });
+            await inventory.recordReturnWithoutRestock(order, session, {
+                actorId: user._id,
+                reason: 'Sin devolución física',
+            });
         });
         assert.equal(await stock(), 10);
         const noRestock = await Movement.findOne({
@@ -62,10 +68,7 @@ test(
             deltaStock: 0,
         }).lean();
         assert.match(noRestock.motivo, /Reembolso sin reintegro/);
-        assert.equal(
-            await Movement.countDocuments({ pedido: order._id, tipo: 'DEVOLUCION', deltaStock: 0 }),
-            1
-        );
+        assert.equal(await Movement.countDocuments({ pedido: order._id, tipo: 'DEVOLUCION', deltaStock: 0 }), 1);
 
         const returnOptions = { reference: 'DEV-TEST-LECTURA', actorId: user._id };
         await withinTransaction((session) => inventory.restock(items, session, returnOptions));

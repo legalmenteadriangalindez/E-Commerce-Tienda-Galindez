@@ -148,10 +148,7 @@ async function cashFromExpenses(range) {
     const filter = { pagadoEn: paidDate };
 
     const [totals, recent] = await Promise.all([
-        Expense.aggregate([
-            { $match: filter },
-            { $group: { _id: null, total: { $sum: '$montoCents' } } },
-        ]),
+        Expense.aggregate([{ $match: filter }, { $group: { _id: null, total: { $sum: '$montoCents' } } }]),
         Expense.find(filter)
             .select('montoCents categoria descripcion pagadoEn')
             .sort({ pagadoEn: -1, _id: -1 })
@@ -178,10 +175,7 @@ async function cashFromPurchases(range) {
     const filter = { pagadoEn: paidDate };
 
     const [totals, recent] = await Promise.all([
-        Purchase.aggregate([
-            { $match: filter },
-            { $group: { _id: null, total: { $sum: '$totalCents' } } },
-        ]),
+        Purchase.aggregate([{ $match: filter }, { $group: { _id: null, total: { $sum: '$totalCents' } } }]),
         Purchase.find(filter)
             .populate('proveedor', 'nombre')
             .select('totalCents referencia proveedor pagadoEn')

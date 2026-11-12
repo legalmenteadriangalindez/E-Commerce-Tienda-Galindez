@@ -49,16 +49,4 @@ const result = spawnSync(
     [require.resolve('prettier/bin/prettier.cjs'), check ? '--check' : '--write', ...files],
     { cwd: root, stdio: 'inherit' }
 );
-if (check && result.status !== 0 && process.env.CI === 'true') {
-    const filesToFormat = [
-        'server/business/financeService.js',
-        'tests/finance-operations.test.js',
-        'tests/inventory-refactor.test.js',
-    ];
-    spawnSync(process.execPath, [require.resolve('prettier/bin/prettier.cjs'), '--write', ...filesToFormat], {
-        cwd: root,
-    });
-    const formatted = spawnSync('git', ['diff', '--', ...filesToFormat], { cwd: root, encoding: 'utf8' });
-    process.stdout.write('=== INVENTORY FORMAT START ===\\n' + (formatted.stdout || '') + '\\n=== INVENTORY FORMAT END ===\\n');
-}
 process.exit(result.status || (ejsFailures ? 1 : (result.status ?? 1)));
