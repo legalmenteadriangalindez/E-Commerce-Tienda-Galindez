@@ -7,6 +7,10 @@
       <span class="sales-export-panel__hint">Cada fila del archivo representa un producto dentro de una venta.</span>
     </div>
     <form class="sales-filters" method="get" action="/read-sales">
+      <label class="sales-filters__search">
+        Buscar venta o cliente
+        <input type="search" name="search" maxlength="100" autocomplete="off" value="<%= filters.search %>" placeholder="Código, cédula, correo, nombre o teléfono">
+      </label>
       <label>
         Desde
         <input type="date" name="from" value="<%= filters.from %>">

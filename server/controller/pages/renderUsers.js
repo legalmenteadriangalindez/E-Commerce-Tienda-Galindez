@@ -13,7 +13,18 @@ async function roleOptions(actor, current) {
     return { roles: result.items, canManageRoles };
 }
 function createFormValues(input = {}) {
-    const fields = ['nombre', 'email', 'telefono', 'direccion', 'genero', 'barrio', 'ciudad', 'puntoReferencia', 'rol'];
+    const fields = [
+        'nombre',
+        'email',
+        'telefono',
+        'cedula',
+        'direccion',
+        'genero',
+        'barrio',
+        'ciudad',
+        'puntoReferencia',
+        'rol',
+    ];
     // Nunca reflejar la contraseña ni controles de seguridad al reintentar.
     return Object.fromEntries(
         fields.map((field) => [field, typeof input[field] === 'string' ? input[field].slice(0, 254) : ''])

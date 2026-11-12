@@ -8,7 +8,7 @@
   <div>
     <p class="admin-list-eyebrow">Ventas</p>
     <h1>Detalles de la venta</h1>
-    <p class="admin-list-description">Las ventas confirmadas se conservan como comprobante. Consulta los pedidos para gestionar su estado.</p>
+    <p class="admin-list-description">Pedido <%= venta.order?.numeroOrden || 'sin código' %> · Venta <%= venta._id %>. Las ventas confirmadas se conservan como comprobante.</p>
   </div>
   <a href="/read-sales" class="btn btn-secondary">Volver a ventas</a>
 </header>

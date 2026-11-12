@@ -32,6 +32,14 @@ var schema = new mongoose.Schema({
         required: true,
     },
 
+    // Identificación voluntaria para localizar compras; no se exige al registrarse.
+    cedula: {
+        type: String,
+        trim: true,
+        maxlength: 15,
+        match: /^(?:|[0-9]{5,15})$/,
+    },
+
     genero: {
         type: String,
     },
@@ -91,6 +99,7 @@ var schema = new mongoose.Schema({
 
 schema.index({ estado: 1, fechaRegistro: -1, _id: -1 });
 schema.index({ rol: 1, estado: 1 });
+schema.index({ cedula: 1 });
 
 const Userdb = mongoose.model('userdb', schema);
 

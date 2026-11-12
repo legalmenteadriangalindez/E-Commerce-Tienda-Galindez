@@ -9,8 +9,20 @@ const { PERMISSIONS: P, SYSTEM_ROLES } = require('../config/permissions');
 const { BusinessError, validId } = require('./errors');
 
 async function create(input, actor) {
-    const { body, nombre, email, password, telefono, direccion, genero, barrio, ciudad, puntoReferencia, ubicacion } =
-        rules.parseCreateInput(input);
+    const {
+        body,
+        nombre,
+        email,
+        password,
+        telefono,
+        cedula,
+        direccion,
+        genero,
+        barrio,
+        ciudad,
+        puntoReferencia,
+        ubicacion,
+    } = rules.parseCreateInput(input);
 
     // Una cuenta nueva es Cliente por defecto. La creación administrativa puede
     // elegir otro rol solamente con el permiso específico de roles.
@@ -39,6 +51,7 @@ async function create(input, actor) {
         email,
         password: await bcrypt.hash(password, 10),
         telefono,
+        cedula,
         genero,
         direccion,
         barrio,
@@ -182,6 +195,7 @@ async function search(query = {}, actor) {
             { nombre: { $regex: search, $options: 'i' } },
             { email: { $regex: search, $options: 'i' } },
             { telefono: { $regex: search, $options: 'i' } },
+            { cedula: { $regex: search, $options: 'i' } },
         ],
     };
     if (!isSuperAdmin(actor)) {

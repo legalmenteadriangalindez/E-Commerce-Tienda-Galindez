@@ -41,6 +41,10 @@
     gap: 13px;
 }
 
+.sales-filters__search {
+    grid-column: 1 / -1;
+}
+
 .sales-filters label {
     display: grid;
     gap: 6px;

@@ -92,21 +92,8 @@
    PRODUCTOS
    ========================================================= */
 
-.admin-sales-page .table tbody td:nth-child(3) div {
-    margin-bottom: 4px;
-}
-
-.admin-sales-page .table tbody td:nth-child(3) div:last-child {
-    margin-bottom: 0;
-}
-
-/* =========================================================
-   CANTIDADES
-   ========================================================= */
-
 .admin-sales-page .table tbody td:nth-child(4) div {
     margin-bottom: 4px;
-    font-weight: 600;
 }
 
 .admin-sales-page .table tbody td:nth-child(4) div:last-child {
@@ -114,10 +101,23 @@
 }
 
 /* =========================================================
+   CANTIDADES
+   ========================================================= */
+
+.admin-sales-page .table tbody td:nth-child(5) div {
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.admin-sales-page .table tbody td:nth-child(5) div:last-child {
+    margin-bottom: 0;
+}
+
+/* =========================================================
    CLIENTE
    ========================================================= */
 
-.admin-sales-page .table tbody td:nth-child(5) {
+.admin-sales-page .table tbody td:nth-child(6) {
     font-weight: 600;
     color: var(--color-brand-dark);
 }
@@ -126,7 +126,7 @@
    TOTAL
    ========================================================= */
 
-.admin-sales-page .table tbody td:nth-child(6) {
+.admin-sales-page .table tbody td:nth-child(9) {
     font-weight: 700;
     color: var(--color-success);
     white-space: nowrap;

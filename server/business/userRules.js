@@ -5,7 +5,7 @@ const { PERMISSIONS: P, SYSTEM_ROLES } = require('../config/permissions');
 const schemas = require('../validation/schemas');
 
 const CAMPOS_USUARIO_ADMIN =
-    'nombre email telefono genero direccion barrio ciudad puntoReferencia ubicacion rol estado verified fechaRegistro';
+    'nombre email telefono cedula genero direccion barrio ciudad puntoReferencia ubicacion rol estado verified fechaRegistro';
 
 function roleChangeError({ actor, targetId, currentRoleName, nextRoleName }) {
     if (!hasPermission(actor, P.ROLES_MANAGE)) {
@@ -25,7 +25,8 @@ function roleChangeError({ actor, targetId, currentRoleName, nextRoleName }) {
 
 function parseCreateInput(input) {
     const body = parse(schemas.userCreate, input);
-    let { nombre, email, password, telefono, direccion, genero, barrio, ciudad, puntoReferencia, ubicacion } = body;
+    let { nombre, email, password, telefono, cedula, direccion, genero, barrio, ciudad, puntoReferencia, ubicacion } =
+        body;
 
     if (!nombre || !email || !telefono || !direccion || !password) {
         throw new BusinessError('Nombre, email, teléfono, dirección y contraseña son obligatorios.', 400);
@@ -45,7 +46,20 @@ function parseCreateInput(input) {
         throw new BusinessError('Ubicación incompleta. Debe incluir lat y lng.', 400);
     }
 
-    return { body, nombre, email, password, telefono, direccion, genero, barrio, ciudad, puntoReferencia, ubicacion };
+    return {
+        body,
+        nombre,
+        email,
+        password,
+        telefono,
+        cedula,
+        direccion,
+        genero,
+        barrio,
+        ciudad,
+        puntoReferencia,
+        ubicacion,
+    };
 }
 
 function parseUpdateInput(input) {
@@ -60,6 +74,7 @@ function editableFields(body) {
     const fields = [
         'nombre',
         'telefono',
+        'cedula',
         'direccion',
         'genero',
         'barrio',

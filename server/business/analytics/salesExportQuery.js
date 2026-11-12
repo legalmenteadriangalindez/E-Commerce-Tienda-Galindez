@@ -4,6 +4,7 @@ const Order = require('../../model/order');
 const Product = require('../../model/product');
 const Category = require('../../model/categories');
 const User = require('../../model/user');
+const adminSearch = require('../adminSalesSearch');
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_MAX_ROWS = 100000;
@@ -51,6 +52,7 @@ function parseFilters(query = {}) {
     const toInput = queryValue(query, 'to');
     const status = queryValue(query, 'estadoPago').toUpperCase();
     const channel = queryValue(query, 'canal').toUpperCase();
+    const search = adminSearch.normalizeSearch(queryValue(query, 'search'));
     const from = parseLocalDate(fromInput);
     const to = parseLocalDate(toInput, true);
 
@@ -61,7 +63,7 @@ function parseFilters(query = {}) {
     if (from && to && from >= to)
         throw new SaleExportFilterError('La fecha inicial debe ser anterior o igual a la fecha final.');
 
-    return { fromInput, toInput, status, channel, from, to };
+    return { fromInput, toInput, status, channel, search, from, to };
 }
 
 async function saleFindFilter(filters) {
@@ -85,28 +87,7 @@ function maxRows() {
 }
 
 function aggregatePipeline(filters) {
-    const match = {};
-    if (filters.status) match.estadoPago = filters.status;
-    if (filters.from || filters.to) {
-        match.createdAt = {};
-        if (filters.from) match.createdAt.$gte = filters.from;
-        if (filters.to) match.createdAt.$lt = filters.to;
-    }
-
-    const pipeline = [
-        { $match: match },
-        { $sort: { createdAt: -1, _id: -1 } },
-        {
-            $lookup: {
-                from: Order.collection.name,
-                localField: 'order',
-                foreignField: '_id',
-                as: 'order',
-            },
-        },
-        { $unwind: { path: '$order', preserveNullAndEmptyArrays: true } },
-    ];
-    if (filters.channel) pipeline.push({ $match: { 'order.canal': filters.channel } });
+    const pipeline = adminSearch.salesPipeline(filters);
 
     pipeline.push(
         {

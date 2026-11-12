@@ -68,6 +68,21 @@
 
             </div>
 
+            <!-- IDENTIFICACIÓN OPCIONAL -->
+            <div class="form-group">
+                <label for="profile-cedula">Cédula (opcional)</label>
+                <input
+                    id="profile-cedula"
+                    type="text"
+                    name="cedula"
+                    inputmode="numeric"
+                    pattern="[0-9]{5,15}"
+                    maxlength="15"
+                    autocomplete="off"
+                    value="<%= user.cedula || '' %>"
+                >
+            </div>
+
             <!-- DIRECCIÓN -->
             <div class="form-group">
 

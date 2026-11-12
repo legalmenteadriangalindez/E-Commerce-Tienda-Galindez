@@ -48,6 +48,12 @@
           >
         </div>
 
+        <!-- Cédula opcional -->
+        <div class="form-group">
+          <label for="edit-user-cedula">Cédula (opcional)</label>
+          <input id="edit-user-cedula" type="text" name="cedula" value="<%= user.cedula || '' %>" inputmode="numeric" pattern="[0-9]{5,15}" maxlength="15" autocomplete="off">
+        </div>
+
         <!-- Género -->
         <div class="form-group">
           <label>Género</label>

@@ -4,6 +4,7 @@
         <tr>
             <th hidden>#</th>
             <th>Fecha</th>
+            <th>Pedido</th>
             <th>Producto</th>
             <th>Cantidad</th>
             <th>Cliente</th>
@@ -32,6 +33,9 @@
                         : 'Sin fecha'
                 %>
             </td>
+
+            <!-- PEDIDO -->
+            <td><strong><%= sale.order?.numeroOrden || '—' %></strong></td>
 
             <!-- PRODUCTO -->
             <td>
