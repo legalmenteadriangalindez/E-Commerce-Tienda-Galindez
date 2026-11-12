@@ -110,7 +110,7 @@ test('el checkout valida la configuración y el estado del pedido', async (t) =>
         configurePaymentEnvironment(t, { PAYMENTS_ENABLED: 'false' });
         assert.throws(
             () => commerce.checkoutUrl(pendingOrder()),
-            (error) => error.status === 503
+            (error) => error.status === 503 && error.message === 'Los pagos en línea todavía no están habilitados.'
         );
     });
 
@@ -118,7 +118,7 @@ test('el checkout valida la configuración y el estado del pedido', async (t) =>
         configurePaymentEnvironment(t, { WOMPI_EVENTS_KEY: '' });
         assert.throws(
             () => commerce.checkoutUrl(pendingOrder()),
-            (error) => error.status === 503
+            (error) => error.status === 503 && error.message === 'El servicio de pagos no está configurado.'
         );
     });
 
@@ -126,7 +126,7 @@ test('el checkout valida la configuración y el estado del pedido', async (t) =>
         configurePaymentEnvironment(t, { WOMPI_ENV: 'development' });
         assert.throws(
             () => commerce.checkoutUrl(pendingOrder()),
-            (error) => error.status === 503
+            (error) => error.status === 503 && error.message === 'Entorno de pago inválido.'
         );
     });
 
@@ -134,7 +134,7 @@ test('el checkout valida la configuración y el estado del pedido', async (t) =>
         configurePaymentEnvironment(t);
         assert.throws(
             () => commerce.checkoutUrl(pendingOrder({ metodoPago: commerce.PAYMENT_METHODS.CASH_ON_DELIVERY })),
-            (error) => error.status === 409
+            (error) => error.status === 409 && error.message === 'Este pedido no usa un medio de pago Wompi.'
         );
     });
 
@@ -148,7 +148,9 @@ test('el checkout valida la configuración y el estado del pedido', async (t) =>
         ]) {
             assert.throws(
                 () => commerce.checkoutUrl(pendingOrder(changes)),
-                (error) => error.status === 409
+                (error) =>
+                    error.status === 409 &&
+                    error.message === 'Este intento de pago terminó. Revisa el estado en Mis pedidos.'
             );
         }
     });
