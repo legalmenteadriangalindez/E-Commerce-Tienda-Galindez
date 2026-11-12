@@ -5,6 +5,7 @@ const Category = require('../model/categories');
 const Brand = require('../model/brands');
 const Provider = require('../model/provider');
 const Order = require('../model/order');
+const media = require('./mediaService');
 const queryPage = require('./queryPage');
 const pagination = require('../services/adminPagination');
 const money = require('../services/money');
