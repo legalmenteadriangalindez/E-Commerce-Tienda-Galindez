@@ -88,7 +88,7 @@ test(
         assert.equal(stockPage.status, 200);
         const stockHtml = await stockPage.text();
         assert.match(stockHtml, /Inversión estimada en stock/);
-        assert.match(stockHtml, /9\\.537,5/);
+        assert.ok(stockHtml.includes('9.537,5'));
         assert.match(stockHtml, /6 unidades disponibles/);
         assert.match(stockHtml, /costo unitario de \$0/);
 
@@ -96,7 +96,7 @@ test(
         assert.equal(analyticsPage.status, 200);
         const analyticsHtml = await analyticsPage.text();
         assert.match(analyticsHtml, /Valor potencial de venta/);
-        assert.match(analyticsHtml, /16\\.330/);
+        assert.ok(analyticsHtml.includes('16.330'));
         assert.match(analyticsHtml, /Ganancia bruta estimada/);
 
         const customer = await fixture.actor('owner');

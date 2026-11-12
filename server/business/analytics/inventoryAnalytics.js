@@ -26,10 +26,7 @@ async function noRotation(soldIds, limit = NO_ROTATION_LIMIT) {
 // Se utilizan los centavos persistidos y se admite el precio legado en COP.
 function valuationPipeline() {
     const unitCents = (centsField, legacyField) => ({
-        $ifNull: [
-            centsField,
-            { $round: [{ $multiply: [{ $ifNull: [legacyField, 0] }, 100] }, 0] },
-        ],
+        $ifNull: [centsField, { $round: [{ $multiply: [{ $ifNull: [legacyField, 0] }, 100] }, 0] }],
     });
 
     return [

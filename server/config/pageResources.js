@@ -109,7 +109,11 @@ const resources = {
     'admin/payment/checkout_confirmation': { pageCss: checkoutStyles() },
     'admin/payment/manage': { pageCss: css('admin-pagination.css', 'pages/admin-payments.css') },
     'admin/analytics/index': {
-        pageCss: css('pages/analytics/dashboard.css', 'pages/inventory-valuation.css', 'pages/analytics/responsive.css'),
+        pageCss: css(
+            'pages/analytics/dashboard.css',
+            'pages/inventory-valuation.css',
+            'pages/analytics/responsive.css'
+        ),
     },
     'admin/analytics/stock': {
         pageCss: css('pages/stock.css', 'pages/inventory-valuation.css', 'admin-pagination.css'),
