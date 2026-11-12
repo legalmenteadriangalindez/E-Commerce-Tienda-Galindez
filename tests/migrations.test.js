@@ -27,6 +27,8 @@ const models = [
     require('../server/model/orderEmailEvent'),
     require('../server/model/storeSetting'),
     require('../server/model/inventoryMovement'),
+    require('../server/model/businessExpense'),
+    require('../server/model/supplierPurchase'),
 ];
 
 function fakeDb() {
