@@ -9,6 +9,7 @@
 <main class="analytics-dashboard">
     <%- include('./partials/filters', { period }) %>
     <%- include('./partials/summary', { kpis, money, decimal, changeText, changeClass }) %>
+    <%- include('./partials/inventory-valuation', { inventoryValuation }) %>
     <%- include('./partials/decisions', { decisionNotes, period }) %>
     <%- include('./partials/trends', { trend, channels, money, maxRevenue }) %>
     <%- include('./partials/inventory', { topProducts, topCategories, lowStock, noRotation, money, decimal }) %>
