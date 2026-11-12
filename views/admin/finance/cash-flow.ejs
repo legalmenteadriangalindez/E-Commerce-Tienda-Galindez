@@ -1,0 +1,47 @@
+<%- include('../../include/_headerAdmin') %>
+<% const cop = value => Number(value || 0).toLocaleString('es-CO', { maximumFractionDigits: 2 }); %>
+<main class="finance-page container-fluid">
+    <div class="finance-heading">
+        <div>
+            <p class="finance-eyebrow">Dinero que entra y sale</p>
+            <h1>Flujo de caja operativo estimado</h1>
+            <p>Movimientos de los últimos <%= cash.period.days %> días. No equivale al saldo bancario disponible.</p>
+        </div>
+        <div class="finance-links">
+            <a href="/admin/flujo-caja?period=week" class="<%= period === 'week' ? 'active' : '' %>">7 días</a>
+            <a href="/admin/flujo-caja?period=month" class="<%= period === 'month' ? 'active' : '' %>">30 días</a>
+            <a href="/admin/finanzas?period=<%= period %>">Resultado neto</a>
+            <a href="/admin/compras-proveedores">Compras</a>
+        </div>
+    </div>
+    <section class="finance-metrics" aria-label="Resumen de caja">
+        <article><span>Entradas por ventas pagadas</span><strong>$ <%= cop(cash.incoming) %></strong><small>Ventas registradas como pagadas en el período</small></article>
+        <article><span>Salidas por gastos pagados</span><strong>$ <%= cop(cash.paidExpenses) %></strong><small>Gastos cuyo pago fue confirmado</small></article>
+        <article><span>Salidas por compras pagadas</span><strong>$ <%= cop(cash.paidPurchases) %></strong><small>Pagos registrados a proveedores</small></article>
+        <article class="finance-metric-accent"><span>Movimiento neto estimado</span><strong>$ <%= cop(cash.netMovement) %></strong><small>Entradas menos salidas registradas</small></article>
+    </section>
+    <p class="finance-explanation">Esta vista usa la fecha de registro de ventas pagadas como aproximación al cobro, y la fecha en que marcaste gastos y compras como pagados. No comprueba liquidaciones bancarias ni incluye cobros anteriores, reembolsos bancarios, capital inicial o pagos que no se hayan registrado. No debe usarse como saldo contable conciliado.</p>
+    <section class="finance-panel">
+        <h2>Movimientos recientes del período</h2>
+        <div class="finance-table-wrap">
+            <table class="finance-table">
+                <thead><tr><th>Fecha</th><th>Tipo</th><th>Concepto</th><th>Importe</th></tr></thead>
+                <tbody>
+                    <% if (!cash.movements.length) { %>
+                        <tr><td colspan="4">No hay movimientos registrados para este período.</td></tr>
+                    <% } %>
+                    <% cash.movements.forEach(item => { %>
+                        <tr>
+                            <td><%= new Date(item.date).toLocaleString('es-CO', { timeZone: 'America/Bogota', dateStyle: 'short', timeStyle: 'short' }) %></td>
+                            <td><%= item.type %></td>
+                            <td><%= item.description %></td>
+                            <td class="<%= item.sign > 0 ? 'finance-positive' : 'finance-negative' %>"><%= item.sign > 0 ? '+' : '−' %> $ <%= cop(item.amount) %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+        <p class="finance-footnote">El resumen incluye todos los registros del período; el listado muestra los 60 movimientos más recientes recuperados de cada origen.</p>
+    </section>
+</main>
+<%- include('../../include/_footerAdmin') %>

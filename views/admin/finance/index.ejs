@@ -1,0 +1,100 @@
+<%- include('../../include/_headerAdmin') %>
+<% const cop = value => Number(value || 0).toLocaleString('es-CO', { maximumFractionDigits: 2 }); %>
+<main class="finance-page container-fluid">
+    <div class="finance-heading">
+        <div>
+            <p class="finance-eyebrow">Control del negocio</p>
+            <h1>Gastos y resultado operativo</h1>
+            <p>La ganancia estimada se calcula con ventas pagadas, costo de los productos vendidos y gastos registrados.</p>
+        </div>
+        <div class="finance-links">
+            <a href="/admin/finanzas?period=week" class="<%= period === 'week' ? 'active' : '' %>">7 días</a>
+            <a href="/admin/finanzas?period=month" class="<%= period === 'month' ? 'active' : '' %>">30 días</a>
+            <a href="/admin/flujo-caja?period=<%= period %>">Flujo de caja</a>
+            <a href="/admin/compras-proveedores">Compras</a>
+        </div>
+    </div>
+
+    <% if (notice) { %><p class="finance-notice" role="status"><%= notice %></p><% } %>
+    <section class="finance-metrics" aria-label="Resultado financiero">
+        <article><span>Ventas pagadas</span><strong>$ <%= cop(summary.revenue) %></strong><small>Valor total de las ventas del período</small></article>
+        <article><span>Ganancia bruta</span><strong>$ <%= cop(summary.grossProfit) %></strong><small>Productos vendidos menos su costo de adquisición</small></article>
+        <article><span>Gastos operativos</span><strong>$ <%= cop(summary.expenses) %></strong><small><%= summary.records %> registros del período</small></article>
+        <article class="finance-metric-accent"><span>Resultado operativo estimado</span><strong>$ <%= cop(summary.estimatedNetProfit) %></strong><small>Ganancia bruta menos gastos del período</small></article>
+    </section>
+    <p class="finance-explanation">Los gastos se reconocen por su fecha de registro, aunque estén pendientes de pago. Las compras a proveedores <strong>no se descuentan de nuevo</strong> del resultado: se reconocen como costo cuando se vende la mercancía. No representa una utilidad neta fiscal ni incluye impuestos y costos no registrados.</p>
+
+    <div class="finance-columns">
+        <% if (canManage) { %>
+            <section class="finance-panel">
+                <h2>Registrar gasto</h2>
+                <p>Publicidad, transporte, servicios y otros desembolsos del negocio.</p>
+                <form method="post" action="/admin/finanzas/gastos" class="finance-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" name="claveIdempotencia" value="<%= idempotencyKey %>">
+                    <label>Categoría
+                        <select name="categoria" required>
+                            <% Object.entries(categories).forEach(([key, label]) => { %>
+                                <option value="<%= key %>"><%= label %></option>
+                            <% }) %>
+                        </select>
+                    </label>
+                    <label>Descripción
+                        <input name="descripcion" maxlength="250" minlength="3" required placeholder="Ej. Empaques para entregas">
+                    </label>
+                    <label>Importe (COP)
+                        <input name="monto" type="number" min="0.01" max="999999999999.99" step="0.01" required placeholder="35000">
+                    </label>
+                    <label>Fecha del gasto
+                        <input type="date" name="fechaGasto" aria-describedby="finance-date-hint">
+                    </label>
+                    <small id="finance-date-hint">Si no eliges fecha, se utiliza la de hoy.</small>
+                    <label>¿Ya se pagó?
+                        <select name="pagado" required>
+                            <option value="SI">Sí, ya está pagado</option>
+                            <option value="NO">No, está pendiente</option>
+                        </select>
+                    </label>
+                    <button type="submit">Guardar gasto</button>
+                </form>
+            </section>
+        <% } %>
+        <section class="finance-panel finance-panel-wide">
+            <h2>Historial reciente de gastos</h2>
+            <p>Los registros se conservan para auditoría. Si un gasto sigue pendiente, puedes confirmar su pago.</p>
+            <div class="finance-table-wrap">
+                <table class="finance-table">
+                    <thead><tr><th>Fecha</th><th>Categoría</th><th>Descripción</th><th>Importe</th><th>Pago</th></tr></thead>
+                    <tbody>
+                        <% if (!recent.length) { %>
+                            <tr><td colspan="5">Aún no hay gastos registrados.</td></tr>
+                        <% } %>
+                        <% recent.forEach(item => { %>
+                            <tr>
+                                <td><%= new Date(item.fechaGasto).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' }) %></td>
+                                <td><%= categories[item.categoria] || item.categoria %></td>
+                                <td><%= item.descripcion %></td>
+                                <td>$ <%= cop(item.montoCents / 100) %></td>
+                                <td>
+                                    <% if (item.pagadoEn) { %>
+                                        <span class="finance-status finance-status-paid">Pagado</span>
+                                    <% } else { %>
+                                        <span class="finance-status">Pendiente</span>
+                                        <% if (canManage) { %>
+                                            <form method="post" action="/admin/finanzas/gastos/<%= item._id %>/pagar" class="finance-inline-form">
+                                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                <button type="submit">Registrar pago</button>
+                                            </form>
+                                        <% } %>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <p class="finance-footnote">Se muestran los últimos 30 gastos registrados.</p>
+        </section>
+    </div>
+</main>
+<%- include('../../include/_footerAdmin') %>

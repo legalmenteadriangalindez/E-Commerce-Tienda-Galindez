@@ -17,6 +17,10 @@ const PERMISSIONS = Object.freeze({
     USERS_MANAGE: 'users:manage',
     ROLES_MANAGE: 'roles:manage',
     PROFILE_MANAGE: 'profile:manage',
+    FINANCE_READ: 'finance:read',
+    FINANCE_MANAGE: 'finance:manage',
+    PURCHASES_READ: 'purchases:read',
+    PURCHASES_MANAGE: 'purchases:manage',
 });
 
 // Roles reservados de la aplicación. No deben poder crearse, renombrarse ni
@@ -52,6 +56,10 @@ const PERMISSION_LABELS = Object.freeze({
     [PERMISSIONS.USERS_MANAGE]: 'Gestionar usuarios',
     [PERMISSIONS.ROLES_MANAGE]: 'Gestionar roles y permisos',
     [PERMISSIONS.PROFILE_MANAGE]: 'Gestionar el perfil administrativo',
+    [PERMISSIONS.FINANCE_READ]: 'Consultar gastos, utilidad operativa y flujo de caja',
+    [PERMISSIONS.FINANCE_MANAGE]: 'Registrar gastos y confirmar sus pagos',
+    [PERMISSIONS.PURCHASES_READ]: 'Consultar compras a proveedores',
+    [PERMISSIONS.PURCHASES_MANAGE]: 'Crear compras, recibir mercancía y registrar pagos',
 });
 
 const ALL_PERMISSIONS = Object.freeze([...PERMISSION_KEYS]);
@@ -66,6 +74,8 @@ const PERMISSION_IMPLICATIONS = Object.freeze({
     [PERMISSIONS.CATALOG_WRITE]: [PERMISSIONS.CATALOG_READ],
     [PERMISSIONS.ORDERS_MANAGE]: [PERMISSIONS.ORDERS_READ],
     [PERMISSIONS.PAYMENTS_MANAGE]: [PERMISSIONS.PAYMENTS_READ],
+    [PERMISSIONS.FINANCE_MANAGE]: [PERMISSIONS.FINANCE_READ],
+    [PERMISSIONS.PURCHASES_MANAGE]: [PERMISSIONS.PURCHASES_READ],
 });
 
 function normalizePermissions(value) {
