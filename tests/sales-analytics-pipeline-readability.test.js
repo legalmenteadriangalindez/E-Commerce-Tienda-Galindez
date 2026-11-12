@@ -67,7 +67,7 @@ test('cada reporte conserva sus agrupaciones, orden, límites y columnas esperad
     assert.deepEqual(byChannel[1], {
         $lookup: { from: Order.collection.name, localField: 'order', foreignField: '_id', as: 'order' },
     });
-    assert.equal(byChannel[4].$limit > 0, true);
+    assert.equal(byChannel[5].$limit > 0, true);
 
     const byDay = pipelines.trendPipeline(start, end);
     assert.equal(byDay[5].$group.day.$first.$dateToString.format, '%Y-%m-%d');

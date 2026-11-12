@@ -49,4 +49,12 @@ const result = spawnSync(
     [require.resolve('prettier/bin/prettier.cjs'), check ? '--check' : '--write', ...files],
     { cwd: root, stdio: 'inherit' }
 );
+if (check && result.status !== 0 && process.env.CI === 'true') {
+    const filesToFormat = ['tests/data-export-center.test.js', 'tests/sales-analytics-pipeline-readability.test.js'];
+    spawnSync(process.execPath, [require.resolve('prettier/bin/prettier.cjs'), '--write', ...filesToFormat], {
+        cwd: root,
+    });
+    const formatted = spawnSync('git', ['diff', '--', ...filesToFormat], { cwd: root, encoding: 'utf8' });
+    process.stdout.write('=== REFACTOR FORMAT START ===\\n' + (formatted.stdout || '') + '\\n=== REFACTOR FORMAT END ===\\n');
+}
 process.exit(result.status || (ejsFailures ? 1 : (result.status ?? 1)));

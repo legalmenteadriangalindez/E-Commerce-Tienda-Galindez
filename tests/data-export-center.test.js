@@ -57,15 +57,15 @@ test('el ZIP transmite el contenido por partes y rechaza nombres de archivo inse
     await assert.rejects(() => zip.add('../otro.csv', ['no permitido']), /inválido/);
 
     async function* partialContent() {
-        yield 'columna\\r\\n';
-        yield 'valor 1\\r\\n';
-        yield 'valor 2\\r\\n';
+        yield 'columna\r\n';
+        yield 'valor 1\r\n';
+        yield 'valor 2\r\n';
     }
 
     await zip.add('dividido.csv', partialContent());
     await zip.finalize();
     const files = unzipStored(output.bytes());
-    assert.equal(files.get('dividido.csv'), 'columna\\r\\nvalor 1\\r\\nvalor 2\\r\\n');
+    assert.equal(files.get('dividido.csv'), 'columna\r\nvalor 1\r\nvalor 2\r\n');
     await assert.rejects(() => zip.add('tarde.csv', ['dato']), /inválido/);
     await assert.rejects(() => zip.finalize(), /finalizado/);
 });
