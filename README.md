@@ -23,7 +23,7 @@ Los pagos en línea están desactivados inicialmente. Para probar tarjeta o Nequ
 
 ## Crear y activar cuentas
 
-Desde **Gestión → Usuarios → Crear usuario** (`/add-user-form`), introduce los datos de contacto y una contraseña inicial de al menos 12 caracteres (máximo 72 bytes). SuperAdmin y las cuentas con `roles:manage` pueden elegir el rol; las cuentas con solo `users:manage` crean clientes. Solo SuperAdmin puede asignar el rol SuperAdmin. La contraseña inicial debe entregarse a la persona; el correo contiene únicamente el código de verificación.
+Desde **Gestión → Usuarios → Crear usuario** (`/add-user-form`), introduce los datos de contacto y una contraseña inicial de al menos 12 caracteres (máximo 72 bytes). `Admin` y las cuentas con `roles:manage` pueden elegir el rol; las cuentas con solo `users:manage` crean clientes. Admin no puede asignar el rol reservado `SuperAdmin`. La contraseña inicial debe entregarse a la persona; el correo contiene únicamente el código de verificación.
 
 La cuenta queda pendiente de verificación y conserva el rol elegido. La persona entra en `/login` con el correo y la contraseña inicial; antes de darle acceso, la tienda le pide el código de seis dígitos enviado por Brevo, válido durante diez minutos. Si el envío falla, la cuenta se conserva: puede solicitar otro código desde esa pantalla sin registrarse de nuevo. La lista de usuarios muestra si el correo está verificado.
 
@@ -118,13 +118,13 @@ Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicació
 - Informe de ventas: `/admin-analytics?period=week` o `?period=month`.
 - Exportación de ventas: `/read-sales`, con filtros por fecha, estado de pago y canal, y descarga CSV para Excel, Power BI, Python o R.
 - Gestión de reseñas: `/admin/reviews`.
-- Seguridad de roles: `npm run seed:admin` crea el rol reservado `SuperAdmin`; para promover una cuenta `Admin` existente usa temporalmente `SUPERADMIN_EMAIL` y `npm run promote:superadmin`.
+- Seguridad de roles: `Admin` tiene los permisos completos del panel, incluida la gestión de roles. `npm run seed:admin` prepara `Admin`, `Cliente` y `dealer`; las cuentas nuevas se crean con el rol `Admin`.
 - Pedidos del cliente: `/mis-pedidos`.
 - Correos de pedidos: confirmación, cambios de estado, aviso de envío y entrega se guardan en una bandeja durable y se envían mediante Brevo con reintentos automáticos.
 - Sorteo de regalos: cada pedido pagado elegible recibe un número dentro de una ronda inmutable; al reiniciar se conserva el historial y se crea una ronda nueva. El ganador recibe un aviso por Brevo y el resultado público muestra el número, la fecha y el total de participaciones sin exponer datos personales.
 - Participaciones administrativas: la tabla usa paginación en MongoDB y permite consultar 10, 25 o 50 filas por página sin el límite anterior de 500 registros.
 - Reparto y seguimiento: el administrador asigna pedidos pagados o contra entrega a usuarios con rol `dealer`; cada repartidor ve únicamente sus entregas, confirma el efectivo al entregar y el cliente consulta una línea de tiempo desde `/mis-pedidos`.
-- Permisos por rol: `SuperAdmin` es el rol reservado con todos los permisos y puede delegar o retirar ese nivel. `Admin` es el administrador operativo: conserva los módulos de la tienda, pero no `roles:manage`; las cuentas nuevas de los scripts de preparación se crean como `SuperAdmin`. Desde `/create-rol` y `/read-rol` puedes crear roles personalizados y seleccionar módulos como catálogo, pedidos, pagos, analítica, reseñas, rifa, reparto, usuarios o proveedores. Los permisos se guardan en `roledb.permisos`, se comprueban en páginas y API, y el menú oculta las opciones no autorizadas. `users:manage` no permite cambiar roles: para ello se requiere `roles:manage`, nunca se puede cambiar el rol propio y solo `SuperAdmin` puede asignar o modificar una cuenta `SuperAdmin`.
+- Permisos por rol: `Admin` cuenta con todos los permisos del panel y puede gestionar roles desde `/read-rol`. El nombre `SuperAdmin` se conserva reservado para compatibilidad; Admin no puede asignarlo ni crear una cuenta con ese rol desde el panel. Los roles personalizados permiten seleccionar módulos como catálogo, pedidos, pagos, analítica, reseñas, rifa, reparto, usuarios o proveedores. Los permisos se guardan en la colección `roldbs`, se comprueban en páginas y API, y el menú oculta las opciones no autorizadas. Un usuario no puede cambiar su propio rol.
 
 Nunca subas `.env`, `config.env`, contraseñas, claves ni `node_modules`. Las pruebas automatizadas usan datos temporales y transacciones simuladas del proveedor: completa las pruebas externas descritas en la guía antes de activar cobros reales.
 

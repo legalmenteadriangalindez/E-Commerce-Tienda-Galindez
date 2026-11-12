@@ -12,14 +12,14 @@ const userController = require('../server/controller/userController');
 
 const P = permissions.PERMISSIONS;
 
-test('SuperAdmin es un rol reservado con todos los permisos', () => {
+test('Admin tiene todos los permisos de gestión sin poder asignar el rol reservado SuperAdmin', () => {
     assert.equal(permissions.SYSTEM_ROLES.SUPER_ADMIN, 'SuperAdmin');
     assert.ok(permissions.SYSTEM_ROLE_NAMES.includes('SuperAdmin'));
     assert.deepEqual(auth.permissionsForRole({ nombre: 'SuperAdmin', permisos: [] }), permissions.ALL_PERMISSIONS);
     assert.equal(auth.hasPermission({ rol: { nombre: 'SuperAdmin', permisos: [] } }, P.ROLES_MANAGE), true);
     assert.equal(auth.isSuperAdmin({ rol: { nombre: 'SuperAdmin' } }), true);
     assert.equal(auth.isSuperAdmin({ rol: { nombre: 'Admin' } }), false);
-    assert.equal(auth.hasPermission({ rol: { nombre: 'Admin', permisos: [] } }, P.ROLES_MANAGE), false);
+    assert.equal(auth.hasPermission({ rol: { nombre: 'Admin', permisos: [] } }, P.ROLES_MANAGE), true);
 });
 
 test('cambiar roles exige roles:manage y nunca permite autoelevación', () => {
@@ -57,7 +57,21 @@ test('cambiar roles exige roles:manage y nunca permite autoelevación', () => {
             currentRoleName: 'Cliente',
             nextRoleName: 'SuperAdmin',
         }),
-        'Solo un superadministrador puede asignar el rol SuperAdmin.'
+        'El rol SuperAdmin está reservado y no se puede asignar desde el panel.'
+    );
+
+    const admin = {
+        _id: '507f1f77bcf86cd799439013',
+        rol: { nombre: 'Admin', permisos: permissions.ADMIN_PERMISSIONS },
+    };
+    assert.equal(
+        userController.roleChangeError({
+            actor: admin,
+            targetId: '507f1f77bcf86cd799439014',
+            currentRoleName: 'Cliente',
+            nextRoleName: 'SuperAdmin',
+        }),
+        'El rol SuperAdmin está reservado y no se puede asignar desde el panel.'
     );
 });
 

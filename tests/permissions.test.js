@@ -14,12 +14,12 @@ test('normaliza permisos, elimina duplicados y descarta valores desconocidos', (
     assert.deepEqual(normalizePermissions([P.CATALOG_READ, P.CATALOG_READ, 'inventado']), [P.CATALOG_READ]);
 });
 
-test('un Admin antiguo conserva acceso operativo, pero no puede delegar roles', () => {
-    const permissions = auth.permissionsForRole({ nombre: 'Admin', permisos: [] });
+test('Admin recibe todos los permisos administrativos aunque su matriz guardada esté incompleta', () => {
+    const permissions = auth.permissionsForRole({ nombre: 'Admin', permisos: [P.FINANCE_READ] });
     assert.deepEqual(permissions, ADMIN_PERMISSIONS);
     assert.equal(auth.hasPermission({ rol: { nombre: 'Admin', permisos: [] } }, P.USERS_MANAGE), true);
-    assert.equal(auth.hasPermission({ rol: { nombre: 'Admin', permisos: [] } }, P.ROLES_MANAGE), false);
-    assert.equal(auth.hasPermission({ rol: { nombre: 'Admin', permisos: ALL_PERMISSIONS } }, P.ROLES_MANAGE), false);
+    assert.equal(auth.hasPermission({ rol: { nombre: 'Admin', permisos: [] } }, P.ROLES_MANAGE), true);
+    assert.deepEqual(ADMIN_PERMISSIONS, ALL_PERMISSIONS);
 });
 
 test('un rol personalizado solo puede usar los módulos seleccionados', () => {

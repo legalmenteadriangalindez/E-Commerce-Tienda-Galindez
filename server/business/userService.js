@@ -32,9 +32,8 @@ async function create(input, actor) {
     let rolAsignado = rolCliente;
     if (Object.prototype.hasOwnProperty.call(body, 'rol') && body.rol) {
         const canManageRoles = hasPermission(actor, P.ROLES_MANAGE);
-        const canAssignDealer = actor?.rol?.nombre === SYSTEM_ROLES.ADMIN && hasPermission(actor, P.USERS_MANAGE);
 
-        if (!canManageRoles && !canAssignDealer) {
+        if (!canManageRoles) {
             throw new BusinessError('Se requiere el permiso roles:manage para asignar un rol.', 403);
         }
         if (typeof body.rol !== 'string' || !mongoose.isValidObjectId(body.rol)) {
@@ -42,11 +41,8 @@ async function create(input, actor) {
         }
         const requestedRole = await repository.findRoleById(body.rol);
         if (!requestedRole) throw new BusinessError('El rol seleccionado no existe.', 400);
-        if (!canManageRoles && requestedRole.nombre !== SYSTEM_ROLES.DEALER) {
-            throw new BusinessError('Admin solo puede asignar el rol dealer.', 403);
-        }
         if (requestedRole.nombre === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(actor)) {
-            throw new BusinessError('Solo un superadministrador puede asignar el rol SuperAdmin.', 403);
+            throw new BusinessError('El rol SuperAdmin está reservado y no se puede asignar desde el panel.', 403);
         }
         rolAsignado = requestedRole;
     }

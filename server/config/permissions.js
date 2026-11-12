@@ -24,8 +24,8 @@ const PERMISSIONS = Object.freeze({
 });
 
 // Roles reservados de la aplicación. No deben poder crearse, renombrarse ni
-// eliminarse desde el panel. `SuperAdmin` es la cuenta de emergencia y la
-// única que puede delegar o retirar ese nivel de acceso.
+// eliminarse desde el panel. Admin gestiona los roles de trabajo; SuperAdmin
+// se conserva como rol reservado para compatibilidad con cuentas existentes.
 const SYSTEM_ROLES = Object.freeze({
     SUPER_ADMIN: 'SuperAdmin',
     ADMIN: 'Admin',
@@ -63,12 +63,9 @@ const PERMISSION_LABELS = Object.freeze({
 });
 
 const ALL_PERMISSIONS = Object.freeze([...PERMISSION_KEYS]);
-// El administrador operativo puede gestionar la tienda, pero no delegar
-// permisos. Esa frontera queda reservada a SuperAdmin o a un rol al que el
-// propio SuperAdmin haya concedido explícitamente roles:manage.
-const ADMIN_PERMISSIONS = Object.freeze(
-    ALL_PERMISSIONS.filter((permission) => permission !== PERMISSIONS.ROLES_MANAGE)
-);
+// Admin es el rol administrativo completo de la tienda, incluida la gestión
+// de roles. Los controles de autorización siguen impidiendo asignar SuperAdmin.
+const ADMIN_PERMISSIONS = ALL_PERMISSIONS;
 
 const PERMISSION_IMPLICATIONS = Object.freeze({
     [PERMISSIONS.CATALOG_WRITE]: [PERMISSIONS.CATALOG_READ],

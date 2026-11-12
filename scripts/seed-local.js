@@ -7,24 +7,20 @@ const connectDB = require('../server/database/connection');
 const { runMigrations } = require('../server/database/migrationRunner');
 const Userdb = require('../server/model/user');
 const Roldb = require('../server/model/rol');
-const { ALL_PERMISSIONS, ADMIN_PERMISSIONS, SYSTEM_ROLES } = require('../server/config/permissions');
+const { ADMIN_PERMISSIONS, SYSTEM_ROLES } = require('../server/config/permissions');
 
 async function crearRolesLocales() {
     const roles = [
         { nombre: SYSTEM_ROLES.CLIENT, descripcion: 'Cliente de la tienda' },
-        { nombre: SYSTEM_ROLES.SUPER_ADMIN, descripcion: 'Superadministrador local', permisos: ALL_PERMISSIONS },
-        { nombre: SYSTEM_ROLES.ADMIN, descripcion: 'Administrador operativo', permisos: ADMIN_PERMISSIONS },
+        { nombre: SYSTEM_ROLES.ADMIN, descripcion: 'Administrador de la tienda', permisos: ADMIN_PERMISSIONS },
         { nombre: SYSTEM_ROLES.DEALER, descripcion: 'Distribuidor local' },
     ];
 
     for (const datos of roles) {
         await Roldb.updateOne({ nombre: datos.nombre }, { $setOnInsert: datos }, { upsert: true });
 
-        if (datos.nombre === SYSTEM_ROLES.SUPER_ADMIN || datos.nombre === SYSTEM_ROLES.ADMIN) {
-            await Roldb.updateOne(
-                { nombre: datos.nombre },
-                { $set: { permisos: datos.nombre === SYSTEM_ROLES.SUPER_ADMIN ? ALL_PERMISSIONS : ADMIN_PERMISSIONS } }
-            );
+        if (datos.nombre === SYSTEM_ROLES.ADMIN) {
+            await Roldb.updateOne({ nombre: datos.nombre }, { $set: { permisos: ADMIN_PERMISSIONS } });
         }
     }
 }
@@ -54,7 +50,7 @@ async function crearAdministradorLocal() {
         return;
     }
 
-    const rolAdmin = await Roldb.findOne({ nombre: SYSTEM_ROLES.SUPER_ADMIN });
+    const rolAdmin = await Roldb.findOne({ nombre: SYSTEM_ROLES.ADMIN });
     const hash = await bcrypt.hash(password, 12);
 
     await Userdb.create({

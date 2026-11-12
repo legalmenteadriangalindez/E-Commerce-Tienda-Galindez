@@ -1,7 +1,7 @@
 <%- include('../../include/_headerAdmin') %>
 <main class="export-center container-fluid">
     <div class="export-center__intro">
-        <p class="export-center__eyebrow">Administración de datos · SuperAdmin</p>
+        <p class="export-center__eyebrow">Administración de datos</p>
         <h1>Centro de exportación y respaldos</h1>
         <p>Descarga archivos para análisis o conserva una copia técnica cifrada y recuperable de MongoDB.</p>
     </div>
@@ -29,7 +29,7 @@
             <p>Descarga un archivo <code>.tgbackup</code> cifrado con AES-256-GCM. Conserva las colecciones,
                documentos, índices y archivos GridFS de la base de datos.</p>
             <p class="export-card__notice"><strong>Información muy sensible.</strong> Incluye datos de autenticación
-               y otros registros internos. Solo SuperAdmin puede solicitarlo, confirmando su contraseña actual.
+               y otros registros internos. Solo una cuenta administradora puede solicitarlo, confirmando su contraseña actual.
                No compartas el archivo ni la clave de cifrado.</p>
             <form action="/admin/exportaciones/respaldo" method="post" class="export-form">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">

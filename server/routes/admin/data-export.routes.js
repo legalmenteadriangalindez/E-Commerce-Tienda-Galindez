@@ -8,7 +8,7 @@ const controller = require('../../controller/pages/renderExportCenter');
 
 const router = express.Router();
 
-router.use('/admin/exportaciones', isAdmin, controller.onlySuperAdmin);
+router.use('/admin/exportaciones', isAdmin, controller.onlyAdministrator);
 router.get('/admin/exportaciones', controller.index);
 router.post('/admin/exportaciones/negocio', csrf.validateToken, controller.businessZip);
 router.post(

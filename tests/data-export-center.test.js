@@ -75,7 +75,7 @@ test('la contraseña del respaldo exige 16 caracteres y no se exporta en CSV', (
 });
 
 test(
-    'SuperAdmin descarga CSV y respaldo auténtico, restaura una base desechable y protege ambas rutas',
+    'Admin descarga CSV y respaldo auténtico, restaura una base desechable y protege ambas rutas',
     { skip: process.env.COMMERCE_TEST_MONGO_URI ? false : 'Usa npm run test:integration.' },
     async (t) => {
         const mongoose = require('mongoose');
@@ -87,47 +87,35 @@ test(
             if (originalSessionSecret === undefined) delete process.env.SESSION_SECRET;
             else process.env.SESSION_SECRET = originalSessionSecret;
         });
-        const Role = require('../server/model/rol');
         const fixture = await startReviewApp(process.env.COMMERCE_TEST_MONGO_URI, (app) => {
             app.use(require('../server/routes/admin/data-export.routes'));
         });
         t.after(() => fixture.close());
-        const superRole = await Role.create({ nombre: 'SuperAdmin' });
         const currentPassword = 'ContrasenaAdminDePrueba!2026';
         const secureHash = await bcrypt.hash(currentPassword, 8);
-        fixture.users.superAdmin = await fixture.User.create({
-            nombre: 'Super administradora',
-            email: 'super-admin@example.test',
-            password: secureHash,
-            telefono: '3100000000',
-            direccion: 'Solo pruebas',
-            rol: superRole._id,
-            verified: true,
-        });
+        await fixture.User.updateOne({ _id: fixture.users.admin._id }, { $set: { password: secureHash } });
         const admin = await fixture.actor('admin');
         const owner = await fixture.actor('owner');
-        const superActor = await fixture.actor('superAdmin');
 
         assert.equal((await fixture.request(owner, '/admin/exportaciones')).status, 403);
-        assert.equal((await fixture.request(admin, '/admin/exportaciones')).status, 403);
-        assert.equal((await fixture.request(admin, '/admin/exportaciones/negocio', 'POST', {})).status, 403);
+        assert.equal((await fixture.request(admin, '/admin/exportaciones')).status, 200);
         assert.equal((await fixture.request(owner, '/admin/exportaciones/respaldo', 'POST', {})).status, 403);
 
-        const index = await fixture.request(superActor, '/admin/exportaciones');
+        const index = await fixture.request(admin, '/admin/exportaciones');
         assert.equal(index.status, 200);
         assert.match(await index.text(), /Centro de exportación y respaldos/);
-        const zipDownload = await fixture.request(superActor, '/admin/exportaciones/negocio', 'POST', {});
+        const zipDownload = await fixture.request(admin, '/admin/exportaciones/negocio', 'POST', {});
         assert.equal(zipDownload.status, 200);
         assert.match(zipDownload.headers.get('content-type'), /application\/zip/);
         assert.match(zipDownload.headers.get('cache-control'), /no-store/);
         const csvs = unzipStored(Buffer.from(await zipDownload.arrayBuffer()));
         assert.match(csvs.get('productos.csv'), /Caf(?:é|\u00e9) de prueba/);
-        assert.match(csvs.get('clientes_usuarios.csv'), /super-admin@example.test/);
+        assert.match(csvs.get('clientes_usuarios.csv'), /admin@example.test/);
         assert.ok(!csvs.get('clientes_usuarios.csv').includes(secureHash));
         assert.ok(csvs.has('compras_proveedores.csv'));
         assert.ok(csvs.has('gastos.csv'));
 
-        const passwordInvalid = await fixture.request(superActor, '/admin/exportaciones/respaldo', 'POST', {
+        const passwordInvalid = await fixture.request(admin, '/admin/exportaciones/respaldo', 'POST', {
             currentPassword: 'NoEsLaClave',
             passphrase: 'EstaClaveSirveParaLaCopia!2026',
             confirmPassphrase: 'EstaClaveSirveParaLaCopia!2026',
@@ -143,7 +131,7 @@ test(
         });
 
         const password = 'EstaClaveSirveParaLaCopia!2026';
-        const response = await fixture.request(superActor, '/admin/exportaciones/respaldo', 'POST', {
+        const response = await fixture.request(admin, '/admin/exportaciones/respaldo', 'POST', {
             currentPassword,
             passphrase: password,
             confirmPassphrase: password,
@@ -190,7 +178,7 @@ test(
             const db = client.db(targetDatabase);
             assert.equal(await db.collection('media.files').countDocuments(), 1);
             assert.equal(await db.collection(fixture.Product.collection.name).countDocuments(), 1);
-            assert.equal(await db.collection(fixture.User.collection.name).countDocuments(), 6);
+            assert.equal(await db.collection(fixture.User.collection.name).countDocuments(), 5);
             assert.ok(await db.collection('media.chunks').findOne({}));
             await db.dropDatabase();
         } finally {
