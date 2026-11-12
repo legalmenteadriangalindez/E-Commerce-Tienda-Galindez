@@ -75,13 +75,15 @@ test(
                 numeroOrden,
                 usuario: owner._id,
                 cliente: contacto,
-                productos: [{
-                    producto: fixture.product._id,
-                    nombre: fixture.product.nombre,
-                    cantidad: 1,
-                    precioUnitario: 12000,
-                    subtotal: 12000,
-                }],
+                productos: [
+                    {
+                        producto: fixture.product._id,
+                        nombre: fixture.product.nombre,
+                        cantidad: 1,
+                        precioUnitario: 12000,
+                        subtotal: 12000,
+                    },
+                ],
                 subtotal: 12000,
                 total: 12000,
                 canal: 'CAJA',
@@ -119,19 +121,20 @@ test(
         }
         const sales = require('../server/business/salesService');
         const orders = require('../server/business/orderService');
-        for (const term of [
-            'ORD-SEARCH-101',
-            'Lucía',
-            'LUCIA@EXAMPLE.TEST',
-            '311222',
-            '1234567890',
-            'Persona owner',
-        ]) {
+        for (const term of ['ORD-SEARCH-101', 'Lucía', 'LUCIA@EXAMPLE.TEST', '311222', '1234567890', 'Persona owner']) {
             const result = await sales.list({ search: term, page: 1, limit: 10 });
-            assert.deepEqual(result.items.map((item) => String(item._id)), [String(firstSale._id)], term);
+            assert.deepEqual(
+                result.items.map((item) => String(item._id)),
+                [String(firstSale._id)],
+                term
+            );
             assert.equal(result.pagination.totalItems, 1);
             const found = await orders.list({ search: term, page: 1, limit: 10 });
-            assert.deepEqual(found.items.map((item) => String(item._id)), [String(first._id)], term);
+            assert.deepEqual(
+                found.items.map((item) => String(item._id)),
+                [String(first._id)],
+                term
+            );
         }
         const bySaleId = await sales.list({ search: firstSale._id.toString() });
         assert.equal(String(bySaleId.items[0]?._id), String(firstSale._id));

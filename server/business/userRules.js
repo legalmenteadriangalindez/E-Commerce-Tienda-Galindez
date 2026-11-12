@@ -25,19 +25,8 @@ function roleChangeError({ actor, targetId, currentRoleName, nextRoleName }) {
 
 function parseCreateInput(input) {
     const body = parse(schemas.userCreate, input);
-    let {
-        nombre,
-        email,
-        password,
-        telefono,
-        cedula,
-        direccion,
-        genero,
-        barrio,
-        ciudad,
-        puntoReferencia,
-        ubicacion,
-    } = body;
+    let { nombre, email, password, telefono, cedula, direccion, genero, barrio, ciudad, puntoReferencia, ubicacion } =
+        body;
 
     if (!nombre || !email || !telefono || !direccion || !password) {
         throw new BusinessError('Nombre, email, teléfono, dirección y contraseña son obligatorios.', 400);
