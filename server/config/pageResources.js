@@ -9,7 +9,10 @@ const checkoutStyles = () =>
         'pages/checkout/summary.css',
         'pages/checkout/responsive.css'
     );
-const pointOfSaleStyles = () => [...checkoutStyles(), ...css('add-product-billing-point.css')];
+const pointOfSaleStyles = () => [
+    ...checkoutStyles(),
+    ...css('add-product-billing-point.css', 'pages/admin-billing-point.css'),
+];
 
 // Recursos propios de cada vista. Los estilos base de navegación, tema y pie
 // se cargan en los encabezados; todo lo demás se declara aquí para no enviar

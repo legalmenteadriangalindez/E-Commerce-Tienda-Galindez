@@ -1,240 +1,169 @@
-<!-- include header -->
 <%- include('../../include/_headerAdmin') %>
 
-
-<form id="billingForm" action="/payment_point" method="POST">
+<form id="billingForm" class="billing-page" action="/payment_point" method="POST">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-<div class="checkout-wrapper">
+    <div class="checkout-wrapper billing-page__shell">
+        <div class="checkout-header billing-page__header">
+            <div>
+                <p class="billing-page__eyebrow">Operación · Venta directa</p>
+                <h1>
+                    <span class="billing-page__title-icon" aria-hidden="true"><i class="fas fa-cash-register"></i></span>
+                    <span>Punto de facturación</span>
+                </h1>
+                <p class="billing-page__description">
+                    Registra productos, revisa el total y continúa con el pedido desde un solo lugar.
+                </p>
+            </div>
 
-    <div class="checkout-header">
-
-        <h1>
-            <i class="fas fa-cash-register"></i>
-            Punto de Facturación
-
-        </h1>
-
-        <div class="badge-secure">
-            <i class="fas fa-store"></i>
-            Modo cajero · Venta directa
+            <div class="badge-secure">
+                <i class="fas fa-store" aria-hidden="true"></i>
+                <span>Modo cajero</span>
+            </div>
         </div>
 
-    </div>
+        <div class="billing-page__notice" role="status">
+            <i class="fas fa-info-circle" aria-hidden="true"></i>
+            <span>Busca un producto por nombre y agrega la cantidad necesaria a la venta.</span>
+        </div>
 
-    <div class="checkout-grid">
+        <div class="checkout-grid billing-page__grid">
+            <div class="form-card ui-card ui-card--form billing-panel billing-panel--products">
+                <div class="billing-panel__heading">
+                    <div>
+                        <p class="billing-panel__eyebrow">Paso 1</p>
+                        <div class="section-title billing-panel__title">
+                            <i class="fas fa-barcode" aria-hidden="true"></i>
+                            <span>Agregar productos</span>
+                        </div>
+                    </div>
+                    <span class="billing-panel__count"><i class="fas fa-shopping-cart" aria-hidden="true"></i> Venta actual</span>
+                </div>
 
-        <!-- COLUMNA IZQUIERDA -->
-        <div class="form-card ui-card ui-card--form">
-
-            <div class="section-title">
-                <i class="fas fa-barcode"></i>
-                <span>Registrar producto</span>
-            </div>
-
-            <!-- BUSCADOR -->
-            <div class="input-group field-relative">
-
-                <label>Buscar producto</label>
-
-                <input
-                    type="text"
-                    id="buscarProducto"
-                    placeholder="Escribir nombre"
-                >
-
-                <!-- RESULTADOS -->
-                <div
-                    id="resultadosBusqueda"
-                    class="search-results"
-                ></div>
-
-            </div>
-
-            <!-- DATOS PRODUCTO -->
-            <div class="input-row">
-
-                <div class="input-group">
-
-                    <label>Producto</label>
-
+                <div class="input-group field-relative billing-search-field">
+                    <label for="buscarProducto">Buscar producto</label>
+                    <i class="fas fa-search billing-search-icon" aria-hidden="true"></i>
                     <input
                         type="text"
-                        id="productoNombre"
-                        placeholder="Nombre producto"
-                        readonly
+                        id="buscarProducto"
+                        placeholder="Escribir nombre del producto"
+                        autocomplete="off"
                     >
-
-                    <input
-                        type="hidden"
-                        id="productoId"
-                    >
-
+                    <div id="resultadosBusqueda" class="search-results" aria-live="polite"></div>
                 </div>
 
-                <div class="input-group">
+                <div class="input-row billing-product-fields">
+                    <div class="input-group">
+                        <label for="productoNombre">Producto seleccionado</label>
+                        <input
+                            type="text"
+                            id="productoNombre"
+                            placeholder="Selecciona un producto"
+                            readonly
+                        >
+                        <input type="hidden" id="productoId">
+                    </div>
 
-                    <label>Cantidad</label>
-
-                    <input
-                        id="cantidad"
-                        type="number"
-                        value="1"
-                        min="1"
-                    >
-
+                    <div class="input-group">
+                        <label for="cantidad">Cantidad</label>
+                        <input id="cantidad" type="number" value="1" min="1" inputmode="numeric">
+                    </div>
                 </div>
 
-            </div>
-
-            <div class="input-row">
-
-                <div class="input-group">
-
-                    <label>Precio</label>
-
-                    <input
-                        id="precio"
-                        type="number"
-                        readonly
-                    >
-
+                <div class="input-row billing-price-row">
+                    <div class="input-group">
+                        <label for="precio">Precio</label>
+                        <div class="billing-price-control">
+                            <span aria-hidden="true">$</span>
+                            <input id="precio" type="number" placeholder="0" readonly>
+                        </div>
+                    </div>
                 </div>
 
+                <button type="button" class="pay-btn action-spaced billing-add-btn" data-commerce-action="add">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                    <span>Agregar a la venta</span>
+                </button>
+
+                <div class="divider billing-divider"></div>
+
+                <div class="billing-panel__heading billing-panel__heading--items">
+                    <div>
+                        <p class="billing-panel__eyebrow">Paso 2</p>
+                        <div class="section-title billing-panel__title">
+                            <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                            <span>Productos en la venta</span>
+                        </div>
+                    </div>
+                    <span class="billing-panel__helper">Revisa antes de continuar</span>
+                </div>
+
+                <div id="listaProductos" class="order-items-list"></div>
+                <div id="productosHidden"></div>
             </div>
 
-            <!-- BOTON AGREGAR -->
-            <button
-                type="button"
-                class="pay-btn action-spaced"
-
-                data-commerce-action="add"
-            >
-
-                <i class="fas fa-plus"></i>
-                Agregar a la venta
-
-            </button>
-
-            <div class="divider"></div>
-
-            <!-- PRODUCTOS -->
-            <div class="section-title">
-
-                <i class="fas fa-cart-shopping"></i>
-                <span>Productos en la venta</span>
-
-            </div>
-
-            <!-- LISTA VISUAL -->
             <div
-                class="order-items-list"
-                id="listaProductos"
-            ></div>
-
-            <!-- INPUTS HIDDEN -->
-            <div id="productosHidden"></div>
-
-        </div>
-
-        <!-- COLUMNA DERECHA -->
-        <div
-            class="summary-card"
-            id="billingSummary"
-            data-shipping-price-cents="<%= shippingPriceCents %>"
-            data-free-shipping-from-cents="<%= freeShippingFromCents %>"
-        >
-
-            <div class="section-title">
-
-                <i class="fas fa-file-invoice-dollar"></i>
-                <span>Resumen de factura</span>
-
-            </div>
-
-            <div class="summary-line">
-
-                <span>Subtotal</span>
-
-                <span id="subtotal">
-                    $0
-                </span>
-
-            </div>
-
-            <div class="summary-line">
-
-                <span>Impuestos</span>
-
-                <span id="iva">
-                    $0
-                </span>
-
-            </div>
-
-            <div class="summary-line">
-
-                <span>Envío</span>
-
-                <span id="shipping">
-                    Gratis
-                </span>
-
-            </div>
-
-            <div class="summary-line total">
-
-                <span>Total</span>
-
-                <span id="total">
-                    $0
-                </span>
-
-            </div>
-
-            <small class="shipping-hint" id="shippingHint">
-                Envío gratis desde $<%= Number(freeShippingFromCents / 100).toLocaleString('es-CO') %>.
-            </small>
-
-            <div class="divider"></div>
-
-            <!-- FINALIZAR -->
-            <button
-                type="submit"
-                form="billingForm"
-                class="pay-btn"
+                class="summary-card billing-summary-card"
+                id="billingSummary"
+                aria-labelledby="summaryPanelTitle"
+                data-shipping-price-cents="<%= shippingPriceCents %>"
+                data-free-shipping-from-cents="<%= freeShippingFromCents %>"
             >
+                <div class="billing-panel__heading">
+                    <div>
+                        <p class="billing-panel__eyebrow">Paso 3</p>
+                        <div class="section-title billing-panel__title" id="summaryPanelTitle">
+                            <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i>
+                            <span>Resumen de venta</span>
+                        </div>
+                    </div>
+                    <span class="billing-summary-card__status"><i class="fas fa-lock" aria-hidden="true"></i> Seguro</span>
+                </div>
 
-                <i class="fas fa-check"></i>
-                Revisar pedido
+                <div class="billing-summary-card__lines">
+                    <div class="summary-line">
+                        <span>Subtotal</span>
+                        <strong id="subtotal">$0</strong>
+                    </div>
+                    <div class="summary-line">
+                        <span>Impuestos</span>
+                        <strong id="iva">$0</strong>
+                    </div>
+                    <div class="summary-line">
+                        <span>Envío</span>
+                        <strong id="shipping">Gratis</strong>
+                    </div>
+                </div>
 
-            </button>
+                <div class="summary-line total billing-summary-card__total">
+                    <span>Total</span>
+                    <strong id="total">$0</strong>
+                </div>
 
-            <!-- CANCELAR -->
-            <button
-                type="button"
-                class="btn-outline action-wide"
+                <small class="shipping-hint" id="shippingHint">
+                    Envío gratis desde $<%= Number(freeShippingFromCents / 100).toLocaleString('es-CO') %>.
+                </small>
 
-                data-commerce-action="cancel"
-            >
+                <div class="divider billing-divider"></div>
 
-                <i class="fas fa-trash"></i>
-                Cancelar venta
+                <div class="billing-summary-card__actions">
+                    <button type="submit" form="billingForm" class="pay-btn billing-review-btn">
+                        <i class="fas fa-check" aria-hidden="true"></i>
+                        <span>Revisar pedido</span>
+                    </button>
+                    <button type="button" class="btn-outline action-wide billing-cancel-btn" data-commerce-action="cancel">
+                        <i class="fas fa-trash" aria-hidden="true"></i>
+                        <span>Cancelar venta</span>
+                    </button>
+                </div>
 
-            </button>
-
+                <p class="billing-summary-card__footnote">
+                    <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                    Los precios y el inventario se validan antes de confirmar.
+                </p>
+            </div>
         </div>
-
     </div>
-
-</div>
-
 </form>
 
-<!-- SCRIPT -->
-
-<br>
-<br>
-
-<!-- include footer -->
 <%- include('../../include/_footerAdmin') %>
