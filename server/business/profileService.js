@@ -1,7 +1,7 @@
 const User = require('../model/user');
 const { validId, BusinessError } = require('./errors');
-const FIELDS = 'nombre email telefono genero direccion barrio ciudad puntoReferencia ubicacion rol estado';
-const EDITABLE = ['nombre', 'telefono', 'direccion', 'genero', 'barrio', 'ciudad', 'puntoReferencia'];
+const FIELDS = 'nombre email telefono cedula genero direccion barrio ciudad puntoReferencia ubicacion rol estado';
+const EDITABLE = ['nombre', 'telefono', 'cedula', 'direccion', 'genero', 'barrio', 'ciudad', 'puntoReferencia'];
 
 function profileData(input = {}) {
     // CSRF ya fue validado por el middleware. Nunca se persiste como dato del usuario.
@@ -14,6 +14,8 @@ function profileData(input = {}) {
             throw new BusinessError('Los campos deben contener texto válido de hasta 200 caracteres.');
         result[key] = value.trim();
     }
+    if (result.cedula && !/^[0-9]{5,15}$/.test(result.cedula))
+        throw new BusinessError('La cédula debe contener entre 5 y 15 dígitos.', 400);
     if (!Object.keys(result).length) throw new BusinessError('No hay información para actualizar.');
     for (const key of ['nombre', 'telefono', 'direccion']) {
         if (result[key] === '') throw new BusinessError(`El campo ${key} no puede estar vacío.`);

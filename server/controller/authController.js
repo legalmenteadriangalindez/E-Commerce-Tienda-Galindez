@@ -128,7 +128,7 @@ exports.register = async (req, res, next) => {
     try {
         const body = parse(schemas.register, req.body);
         const data = {};
-        for (const field of ['nombre', 'telefono', 'direccion', 'genero', 'barrio', 'ciudad', 'puntoReferencia']) {
+        for (const field of ['nombre', 'telefono', 'cedula', 'direccion', 'genero', 'barrio', 'ciudad', 'puntoReferencia']) {
             if (body[field] !== undefined) data[field] = body[field];
         }
         if (!data.ciudad) delete data.ciudad;
