@@ -8,6 +8,7 @@ const test = require('node:test');
 
 const { loadMigrations, runMigrations } = require('../server/database/migrationRunner');
 const { shouldAutoIndex } = require('../server/database/connection');
+const { ADMIN_PERMISSIONS } = require('../server/config/permissions');
 
 const models = [
     require('../server/model/order'),
@@ -113,6 +114,27 @@ test('las migraciones están ordenadas, versionadas y tienen checksum', () => {
         assert.match(migration.checksum, /^[a-f0-9]{64}$/);
         assert.equal(typeof migration.up, 'function');
     }
+});
+
+test('la migración concede la matriz completa al rol Admin', async () => {
+    const migration = require('../migrations/202611120004-admin-role-management');
+    let query;
+    await migration.up({
+        db: {
+            collection(name) {
+                assert.equal(name, 'roldbs');
+                return {
+                    async updateMany(filter, update) {
+                        query = { filter, update };
+                    },
+                };
+            },
+        },
+    });
+    assert.deepEqual(query, {
+        filter: { nombre: 'Admin' },
+        update: { $set: { permisos: ADMIN_PERMISSIONS } },
+    });
 });
 
 test('cada índice declarado por un modelo tiene una migración explícita', () => {

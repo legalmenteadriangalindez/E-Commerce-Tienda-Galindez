@@ -1,11 +1,14 @@
 'use strict';
 
-const { isSuperAdmin } = require('../../config/authorization');
+const { SYSTEM_ROLES } = require('../../config/permissions');
 const service = require('../../business/adminExportService');
 const { wrap } = require('../../http/handlers');
 
-exports.onlySuperAdmin = (req, res, next) => {
-    if (!isSuperAdmin(req.usuarioActual)) return res.status(403).send('Solo SuperAdmin puede exportar datos.');
+exports.onlyAdministrator = (req, res, next) => {
+    const roleName = req.usuarioActual?.rol?.nombre;
+    if (![SYSTEM_ROLES.ADMIN, SYSTEM_ROLES.SUPER_ADMIN].includes(roleName)) {
+        return res.status(403).send('Solo una cuenta administradora puede exportar datos.');
+    }
     return next();
 };
 

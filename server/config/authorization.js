@@ -8,12 +8,10 @@ function permissionsForRole(role) {
         return [...ALL_PERMISSIONS];
     }
 
-    // Compatibilidad con administradores antiguos, pero sin volver a conceder
-    // la capacidad de delegar roles. El permiso roles:manage es la frontera
-    // que diferencia al administrador operativo del SuperAdmin.
+    // Admin es un rol reservado con permisos completos del panel. La lista
+    // canónica evita que una matriz antigua o incompleta oculte funcionalidades.
     if (role?.nombre === SYSTEM_ROLES.ADMIN) {
-        const operational = explicit.filter((permission) => permission !== PERMISSIONS.ROLES_MANAGE);
-        return operational.length ? operational : [...ADMIN_PERMISSIONS];
+        return [...ADMIN_PERMISSIONS];
     }
 
     return explicit;

@@ -70,10 +70,10 @@
             <% if (canAccess('catalog:read')) { %><li><a class="dropdown-item" href="/admin/brands/read-brands"><i class="bi bi-bookmark-star"></i> Marcas</a></li><% } %>
             <% if (canAccess('providers:manage')) { %><li><a class="dropdown-item" href="/read-proveedor"><i class="bi bi-truck"></i> Proveedores</a></li><% } %>
             <% if (canAccess('purchases:read')) { %><li><a class="dropdown-item" href="/admin/compras-proveedores"><i class="bi bi-basket2"></i> Compras a proveedores</a></li><% } %>
-            <% if (canAccess('roles:manage')) { %><li><a class="dropdown-item" href="/read-rol"><i class="bi bi-person-badge"></i> Roles</a></li><% } %>
+            <% if (canAccess('roles:manage')) { %><li><a class="dropdown-item" href="/read-rol"><i class="bi bi-person-badge"></i> Gestionar roles</a></li><% } %>
             <% if (canAccess('reviews:moderate')) { %><li><a class="dropdown-item" href="/admin/reviews"><i class="bi bi-chat-left-text"></i> Reseñas</a></li><% } %>
             <% if (canAccess('users:manage')) { %><li><a class="dropdown-item" href="/read-user"><i class="bi bi-person-plus"></i> Usuarios</a></li><% } %>
-            <% if (authUser?.rol?.nombre === 'SuperAdmin') { %><li><a class="dropdown-item" href="/admin/exportaciones"><i class="bi bi-cloud-arrow-down"></i> Exportaciones y respaldos</a></li><% } %>
+            <% if (['Admin', 'SuperAdmin'].includes(authUser?.rol?.nombre)) { %><li><a class="dropdown-item" href="/admin/exportaciones"><i class="bi bi-cloud-arrow-down"></i> Exportaciones y respaldos</a></li><% } %>
 
           </ul>
         </li><% } %>

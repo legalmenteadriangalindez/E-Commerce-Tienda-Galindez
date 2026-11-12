@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const Role = require('../server/model/rol');
 const User = require('../server/model/user');
 const accounts = require('../server/business/accountService');
-const { ALL_PERMISSIONS, ADMIN_PERMISSIONS, SYSTEM_ROLES } = require('../server/config/permissions');
+const { ADMIN_PERMISSIONS, SYSTEM_ROLES } = require('../server/config/permissions');
 const { runMigrations } = require('../server/database/migrationRunner');
 async function main() {
     const email = accounts.normalizeEmail(process.env.INITIAL_ADMIN_EMAIL);
@@ -17,26 +17,19 @@ async function main() {
     await require('../server/database/connection')();
     try {
         await runMigrations({ db: mongoose.connection.db });
-        for (const nombre of [SYSTEM_ROLES.SUPER_ADMIN, SYSTEM_ROLES.ADMIN, SYSTEM_ROLES.CLIENT, SYSTEM_ROLES.DEALER]) {
+        for (const nombre of [SYSTEM_ROLES.ADMIN, SYSTEM_ROLES.CLIENT, SYSTEM_ROLES.DEALER]) {
             await Role.updateOne(
                 { nombre },
                 {
                     $setOnInsert: {
                         nombre,
-                        permisos:
-                            nombre === SYSTEM_ROLES.SUPER_ADMIN
-                                ? ALL_PERMISSIONS
-                                : nombre === SYSTEM_ROLES.ADMIN
-                                  ? ADMIN_PERMISSIONS
-                                  : [],
+                        permisos: nombre === SYSTEM_ROLES.ADMIN ? ADMIN_PERMISSIONS : [],
                     },
                 },
                 { upsert: true }
             );
-            if (nombre === SYSTEM_ROLES.SUPER_ADMIN) {
-                await Role.updateOne({ nombre }, { $set: { permisos: ALL_PERMISSIONS } });
-            } else if (nombre === SYSTEM_ROLES.ADMIN) {
-                // Normaliza cuentas antiguas: Admin ya no delega roles.
+            if (nombre === SYSTEM_ROLES.ADMIN) {
+                // Normaliza cuentas antiguas a la matriz completa de Admin.
                 await Role.updateOne({ nombre }, { $set: { permisos: ADMIN_PERMISSIONS } });
             }
         }
@@ -47,7 +40,7 @@ async function main() {
             console.log('El administrador ya existe; no se cambió su contraseña ni su estado.');
             return;
         }
-        const role = await Role.findOne({ nombre: SYSTEM_ROLES.SUPER_ADMIN });
+        const role = await Role.findOne({ nombre: SYSTEM_ROLES.ADMIN });
         await User.create({
             nombre: 'Administrador',
             email,
@@ -58,7 +51,7 @@ async function main() {
             estado: 'Activo',
             rol: role._id,
         });
-        console.log('Administrador creado. Elimina INITIAL_ADMIN_PASSWORD de la configuración y completa su perfil.');
+        console.log('Cuenta Admin creada. Elimina INITIAL_ADMIN_PASSWORD de la configuración y completa su perfil.');
     } finally {
         await mongoose.disconnect();
     }

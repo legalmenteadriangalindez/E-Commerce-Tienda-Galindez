@@ -18,7 +18,7 @@ function roleChangeError({ actor, targetId, currentRoleName, nextRoleName }) {
         return 'Solo un superadministrador puede modificar esta cuenta.';
     }
     if (nextRoleName === SYSTEM_ROLES.SUPER_ADMIN && !isSuperAdmin(actor)) {
-        return 'Solo un superadministrador puede asignar el rol SuperAdmin.';
+        return 'El rol SuperAdmin está reservado y no se puede asignar desde el panel.';
     }
     return null;
 }

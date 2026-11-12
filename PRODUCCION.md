@@ -210,17 +210,15 @@ esquema o almacenamiento de imágenes.
 
 Las páginas públicas de catálogo, búsqueda, categorías, marcas, promociones, detalle y sitemap reutilizan `server/business/catalogService.js` directamente. Esto evita llamadas Axios al dominio público desde el propio servidor, reduce latencia y evita duplicar autenticación de sesión. La API `/api/productos` sigue disponible para el navegador y consumidores externos; ambas capas comparten el mismo servicio y contrato de datos.
 
-Si no tienes un administrador en esa base, configura temporalmente `INITIAL_ADMIN_EMAIL` y `INITIAL_ADMIN_PASSWORD` y ejecuta desde un entorno autorizado:
+Si no tienes una cuenta administradora en esa base, configura temporalmente `INITIAL_ADMIN_EMAIL` y `INITIAL_ADMIN_PASSWORD` y ejecuta desde un entorno autorizado:
 
 ```text
 npm run seed:admin
 ```
 
-El comando crea los cuatro roles (`SuperAdmin`, `Admin`, `Cliente` y `dealer`) y, si el correo no existe, crea un administrador verificado con el rol reservado `SuperAdmin`; también normaliza `Admin` para que no tenga `roles:manage`. No cambia una cuenta existente ni restablece contraseñas. Retira `INITIAL_ADMIN_PASSWORD` después de usarlo. Si tu plan no tiene Shell, puedes ejecutarlo desde tu equipo apuntando temporalmente a esa base, y después volver a la URI de desarrollo.
+El comando prepara los roles `Admin`, `Cliente` y `dealer`; si el correo no existe, crea una cuenta verificada con el rol `Admin`. El rol `Admin` recibe todos los permisos del panel, incluida la gestión de roles. No crea una cuenta `SuperAdmin` ni cambia una cuenta existente o su contraseña. Retira `INITIAL_ADMIN_PASSWORD` después de usarlo. Si tu plan no tiene Shell, puedes ejecutarlo desde tu equipo apuntando temporalmente a esa base, y después volver a la URI de desarrollo.
 
-Si ya tienes una cuenta operativa y necesitas convertirla en la cuenta de emergencia, crea primero el rol `SuperAdmin` con este comando usando un correo nuevo y, después de verificar el acceso, cambia únicamente el `rol` de la cuenta elegida desde MongoDB Atlas o una tarea autorizada. Si lo haces manualmente en Atlas, incrementa también `authVersion` para revocar las sesiones anteriores. No envíes contraseñas ni URI de MongoDB al repositorio o al chat.
-
-La opción recomendada para una cuenta existente es configurar temporalmente `SUPERADMIN_EMAIL` y ejecutar `npm run promote:superadmin`. Solo acepta cuentas que ya sean `Admin` o `SuperAdmin`, no cambia la contraseña y revoca las sesiones incrementando `authVersion`. Elimina la variable después de usarla.
+El despliegue aplica una migración versionada que completa los permisos del rol `Admin` existente. Las cuentas `Admin` deben cerrar sesión e iniciar nuevamente después de la actualización para refrescar sus permisos.
 
 ## 4. Probar Wompi antes de cobrar
 
@@ -349,7 +347,7 @@ Las páginas públicas de privacidad, términos de compra, envíos, cambios y de
 
 Referencia técnica: [Render](https://render.com/docs/node-version), [persistencia en Render](https://render.com/docs/disks), [checkout Wompi](https://docs.wompi.co/en/docs/colombia/widget-checkout-web/), [eventos Wompi](https://docs.wompi.co/en/docs/colombia/eventos/), [seguimiento de transacciones](https://docs.wompi.co/en/docs/colombia/seguimiento-de-transacciones/).
 
-### Centro de exportación y respaldo cifrado (SuperAdmin)
+### Centro de exportación y respaldo cifrado (Admin)
 
 La pantalla privada `/admin/exportaciones` ofrece dos descargas que NO son equivalentes:
 
@@ -360,7 +358,7 @@ La pantalla privada `/admin/exportaciones` ofrece dos descargas que NO son equiv
 - **`.tgbackup` cifrado**: copia técnica de colecciones, documentos, índices y GridFS almacenados en
   MongoDB, serializados como Extended JSON BSON, comprimidos mediante gzip y cifrados con
   AES-256-GCM y una clave derivada con scrypt. Incluye datos de autenticación, por lo que la descarga
-  solo está disponible para SuperAdmin autenticado, al introducir su contraseña actual y una segunda
+  solo está disponible para Admin autenticado, al introducir su contraseña actual y una segunda
   contraseña exclusiva para cifrar el archivo. Se transmite directamente al navegador sin escribir
   temporalmente el contenido en el disco efímero de Render. El máximo predeterminado es de 2 GiB
   de contenido sin comprimir. La descarga puede fallar si la conexión o el tiempo máximo del proxy

@@ -28,10 +28,8 @@ function roleForResponse(role) {
     const data = typeof role.toObject === 'function' ? role.toObject() : { ...role };
     const permissions = expandPermissions(data.permisos);
     if (data.nombre === SYSTEM_ROLES.SUPER_ADMIN) data.permisos = [...ALL_PERMISSIONS];
-    else if (data.nombre === SYSTEM_ROLES.ADMIN) {
-        const operational = permissions.filter((permission) => permission !== PERMISSIONS.ROLES_MANAGE);
-        data.permisos = operational.length ? operational : [...ADMIN_PERMISSIONS];
-    } else data.permisos = permissions;
+    else if (data.nombre === SYSTEM_ROLES.ADMIN) data.permisos = [...ADMIN_PERMISSIONS];
+    else data.permisos = permissions;
     return data;
 }
 
@@ -89,10 +87,6 @@ async function find(query = {}, actor, id) {
         .limit(limit)
         .lean();
     return { items: items.map(roleForResponse), pagination };
-}
-
-function findDealerRole() {
-    return Roldb.findOne({ nombre: SYSTEM_ROLES.DEALER }).select('_id nombre').lean();
 }
 
 async function update(id, input, actor) {
@@ -159,4 +153,4 @@ async function remove(id, actor) {
     return rol;
 }
 
-module.exports = { create, find, findDealerRole, update, remove, roleForResponse };
+module.exports = { create, find, update, remove, roleForResponse };
