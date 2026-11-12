@@ -148,6 +148,33 @@ test(
             assert.equal(result.movimientos[0].actorNombre, 'Persona admin');
             assert.equal(result.movimientos[0].motivo, 'Dos unidades averiadas');
         });
+        await t.test('los movimientos no descuentan más unidades que el stock disponible', async () => {
+            await reset(10);
+            await assert.rejects(
+                inventoryMovements.adjust(
+                    {
+                        producto: app.product.id,
+                        tipo: 'DANO',
+                        cantidad: 11,
+                        motivo: 'Daño mayor al stock disponible',
+                        claveIdempotencia: randomUUID(),
+                    },
+                    app.users.admin
+                ),
+                (error) => error.status === 409
+            );
+            assert.equal((await app.Product.findById(app.product._id)).stock, 10);
+
+            await assert.rejects(
+                require('../server/business/inventoryService').debit(
+                    [{ producto: new mongoose.Types.ObjectId(), cantidad: 1 }],
+                    null,
+                    { actorId: app.users.admin._id }
+                ),
+                (error) => error.status === 404
+            );
+            assert.equal(await InventoryMovement.countDocuments(), 0);
+        });
         await t.test('el historial exige permisos y CSRF y muestra los movimientos guardados', async () => {
             await reset(10);
             const client = await app.actor('owner');
@@ -190,6 +217,24 @@ test(
             const attempts = await Promise.allSettled([make(app.users.owner), make(app.users.second)]);
             assert.equal(attempts.filter((item) => item.status === 'fulfilled').length, 1);
             assert.equal((await app.Product.findById(app.product._id)).stock, 0);
+        });
+        await t.test('el checkout rechaza otra reserva abierta y un total cotizado alterado', async () => {
+            await reset(10);
+            await make(app.users.owner);
+            await assert.rejects(
+                make(app.users.owner, 1, randomUUID()),
+                (error) => error.status === 409 && /pago pendiente/i.test(error.message)
+            );
+            assert.equal(await Order.countDocuments(), 1);
+            assert.equal((await app.Product.findById(app.product._id)).stock, 9);
+
+            await reset(10);
+            await assert.rejects(
+                make(app.users.owner, 1, randomUUID(), { body: { ...body, totalCotizado: 1 } }),
+                (error) => error.status === 409 && /precio cambió/i.test(error.message)
+            );
+            assert.equal(await Order.countDocuments(), 0);
+            assert.equal((await app.Product.findById(app.product._id)).stock, 10);
         });
         await t.test('pago aprobado repetido no duplica venta ni descuento de inventario', async () => {
             await reset(10);
@@ -287,6 +332,78 @@ test(
             assert.equal((await Order.findById(order._id)).estadoPago, 'PENDIENTE');
             assert.equal(await Event.countDocuments({ estado: 'REVISION' }), 2);
             assert.equal(await Sale.countDocuments(), 0);
+        });
+        await t.test('resuelve eventos de pago y conserva la incidencia mientras quede otra revisión', async () => {
+            const reason = 'Transacción revisada por el administrador';
+            const adminId = app.users.admin._id;
+
+            await reset(10);
+            const processed = await Event.create({ transactionId: randomUUID(), estado: 'PROCESADO' });
+            await assert.rejects(
+                commerce.resolveEvent(processed.id, reason, 'TICKET-0', adminId),
+                (error) => error.status === 409
+            );
+            const orphan = await Event.create({ transactionId: randomUUID(), estado: 'REVISION' });
+            await commerce.resolveEvent(orphan.id, reason, 'TICKET-1', adminId);
+            const resolvedOrphan = await Event.findById(orphan._id);
+            assert.equal(resolvedOrphan.estado, 'RESUELTO');
+            assert.equal(resolvedOrphan.resolucion.motivo, reason);
+
+            await reset(10);
+            const guardedOrder = await make(app.users.owner);
+            guardedOrder.estado = 'REQUIERE_REVISION';
+            guardedOrder.wompiTransactionId = 'tx-order-needs-review';
+            await guardedOrder.save();
+            const guardedEvent = await Event.create({
+                transactionId: guardedOrder.wompiTransactionId,
+                order: guardedOrder._id,
+                estado: 'REVISION',
+            });
+            await assert.rejects(
+                commerce.resolveEvent(guardedEvent.id, reason, 'TICKET-2', adminId),
+                (error) => error.status === 409 && /resuelve el pedido/i.test(error.message)
+            );
+
+            await reset(10);
+            const paidOrder = await make(app.users.owner);
+            paidOrder.estado = 'PAGADA';
+            paidOrder.incidenciaPago = 'Cobro duplicado pendiente de revisar';
+            await paidOrder.save();
+            const firstEvent = await Event.create({
+                transactionId: randomUUID(),
+                order: paidOrder._id,
+                estado: 'REVISION',
+            });
+            const secondEvent = await Event.create({
+                transactionId: randomUUID(),
+                order: paidOrder._id,
+                estado: 'REVISION',
+            });
+            await commerce.resolveEvent(firstEvent.id, reason, 'TICKET-3', adminId);
+            assert.equal((await Order.findById(paidOrder._id)).incidenciaPago, 'Cobro duplicado pendiente de revisar');
+            await commerce.resolveEvent(secondEvent.id, reason, 'TICKET-4', adminId);
+            assert.equal((await Order.findById(paidOrder._id)).incidenciaPago, '');
+        });
+        await t.test('una devolución sin reintegro conserva el stock que ya se había descontado', async () => {
+            await reset(10);
+            const order = await make(app.users.owner, 2);
+            await commerce.applyTransaction(tx(order));
+
+            await commerce.resolveOrder(
+                order.id,
+                'DEVOLUCION',
+                'Reembolso aprobado sin retorno de productos',
+                'TICKET-SIN-REINTEGRO',
+                app.users.admin.id
+            );
+
+            const completed = await Order.findById(order._id);
+            assert.equal(completed.estadoPago, 'REEMBOLSADO');
+            assert.equal(completed.inventario, 'CONFIRMADO');
+            assert.equal((await app.Product.findById(app.product._id)).stock, 8);
+            const movement = await InventoryMovement.findOne({ pedido: order._id, tipo: 'DEVOLUCION' });
+            assert.equal(movement.deltaStock, 0);
+            assert.match(movement.motivo, /sin reintegro/i);
         });
         await t.test('pago tardío se registra como cobrado con revisión; no se pierde el cobro', async () => {
             await reset(10);

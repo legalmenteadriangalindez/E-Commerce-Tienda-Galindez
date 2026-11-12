@@ -392,5 +392,37 @@ test(
                 outcomes[0].status === 'fulfilled' ? 'Primera contraseña diferente' : 'Segunda contraseña diferente';
             assert.ok(await bcrypt.compare(winner, saved.password));
         });
+
+        await t.test('cambiar el correo en administración vuelve a verificar la cuenta y revoca sesiones', async () => {
+            const user = await savedUser('predeterminado@example.test');
+            const previousAuthVersion = user.authVersion || 0;
+            await User.updateOne(
+                { _id: user._id },
+                {
+                    verified: true,
+                    verificationCode: '123456',
+                    verificationCodeHash: 'hash-de-prueba',
+                    verificationExpire: new Date(Date.now() + 60000),
+                }
+            );
+            fixture.users.editTarget = user;
+            const oldSession = await fixture.actor('editTarget');
+            const response = await fixture.request(superActor, '/api/users/' + user.id, 'PUT', {
+                email: 'correo.actualizado@example.test',
+            });
+
+            assert.equal(response.status, 200);
+            const updated = await User.findById(user._id).select('+verificationCodeHash');
+            assert.equal(updated.email, 'correo.actualizado@example.test');
+            assert.equal(updated.verified, false);
+            assert.equal(updated.authVersion, previousAuthVersion + 1);
+            assert.equal(updated.verificationCode, null);
+            assert.equal(updated.verificationCodeHash, null);
+            assert.equal(updated.verificationExpire, null);
+
+            const protectedPage = await fixture.request(oldSession, '/change-password');
+            assert.equal(protectedPage.status, 302);
+            assert.equal(protectedPage.headers.get('location'), '/login');
+        });
     }
 );

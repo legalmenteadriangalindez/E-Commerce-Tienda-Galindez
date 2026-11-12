@@ -53,6 +53,7 @@ jobs:
                   curl --fail --location --retry 3 https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-8.0.17.tgz -o "$RUNNER_TEMP/mongo.tgz"
                   mkdir "$RUNNER_TEMP/mongo"
                   tar -xzf "$RUNNER_TEMP/mongo.tgz" --strip-components=1 -C "$RUNNER_TEMP/mongo"
-            - run: npm run test:integration
+            - name: Integración MongoDB y cobertura
+              run: npm run test:coverage
               env:
                   MONGOD_BINARY: ${{ runner.temp }}/mongo/bin/mongod
