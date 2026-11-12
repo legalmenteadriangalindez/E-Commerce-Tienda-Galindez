@@ -11,6 +11,26 @@
     </div>
   </header>
 
+  <section class="sales-export-panel" aria-labelledby="orders-search-title">
+    <div class="sales-export-panel__heading">
+      <div>
+        <p class="admin-list-eyebrow">Consulta de pedidos</p>
+        <h2 id="orders-search-title">Encontrar un pedido</h2>
+      </div>
+      <span class="sales-export-panel__hint">Busca por código, cédula, correo, nombre o teléfono.</span>
+    </div>
+    <form class="sales-filters" method="get" action="/read-order">
+      <label class="sales-filters__search">
+        Pedido o cliente
+        <input type="search" name="search" value="<%= search %>" maxlength="100" autocomplete="off" placeholder="Ej.: ORD-123 o cliente@correo.com">
+      </label>
+      <div class="sales-filters__actions">
+        <button class="sales-filter-button" type="submit">Buscar pedidos</button>
+        <a class="sales-filter-reset" href="/read-order">Limpiar</a>
+      </div>
+    </form>
+  </section>
+
   <div class="admin-table-wrap ui-table-wrap admin-mobile-card-wrap">
     <table
       class="ui-table admin-mobile-card-table admin-orders-card-table"
