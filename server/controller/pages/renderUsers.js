@@ -3,14 +3,28 @@ const pagination = require('../../services/catalogPagination');
 const users = require('../../business/userService');
 const roles = require('../../business/roleService');
 const { hasPermission } = require('../../config/authorization');
-const { PERMISSIONS: P } = require('../../config/permissions');
+const { PERMISSIONS: P, SYSTEM_ROLES } = require('../../config/permissions');
 const { validId } = require('../../business/errors');
 async function roleOptions(actor, current) {
     const canManageRoles = hasPermission(actor, P.ROLES_MANAGE);
-    const result = canManageRoles ? await roles.find({ limit: 50 }, actor) : { items: [] };
-    if (canManageRoles && current?._id && !result.items.some((role) => String(role._id) === String(current._id)))
-        result.items.push(current);
-    return { roles: result.items, canManageRoles };
+    let availableRoles = [];
+    let canAssignDealer = false;
+
+    if (canManageRoles) {
+        availableRoles = (await roles.find({ limit: 50 }, actor)).items;
+    } else if (!current && actor?.rol?.nombre === SYSTEM_ROLES.ADMIN && hasPermission(actor, P.USERS_MANAGE)) {
+        const dealerRole = await roles.findDealerRole();
+        if (dealerRole) {
+            availableRoles = [dealerRole];
+            canAssignDealer = true;
+        }
+    }
+
+    if (canManageRoles && current?._id && !availableRoles.some((role) => String(role._id) === String(current._id))) {
+        availableRoles.push(current);
+    }
+
+    return { roles: availableRoles, canManageRoles, canAssignDealer };
 }
 function createFormValues(input = {}) {
     const fields = [

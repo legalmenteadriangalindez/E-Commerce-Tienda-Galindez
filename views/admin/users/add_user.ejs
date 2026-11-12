@@ -53,7 +53,7 @@
           </small>
         </div>
         <!-- Rol -->
-        <% if (canManageRoles) { %>
+        <% if (canManageRoles || canAssignDealer) { %>
           <div class="form-group">
             <label for="new-user-role">Rol</label>
 
@@ -66,7 +66,11 @@
                 </option>
               <% }) %>
             </select>
-            <small>La cuenta conservará este rol después de verificar el correo. Solo SuperAdmin puede crear otro SuperAdmin.</small>
+            <% if (canManageRoles) { %>
+              <small>La cuenta conservará este rol después de verificar el correo. Solo SuperAdmin puede crear otro SuperAdmin.</small>
+            <% } else { %>
+              <small>Puedes crear clientes y distribuidores. Los demás roles requieren el permiso de gestionar roles.</small>
+            <% } %>
           </div>
         <% } else { %>
           <div class="form-group">

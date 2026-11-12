@@ -91,6 +91,10 @@ async function find(query = {}, actor, id) {
     return { items: items.map(roleForResponse), pagination };
 }
 
+function findDealerRole() {
+    return Roldb.findOne({ nombre: SYSTEM_ROLES.DEALER }).select('_id nombre').lean();
+}
+
 async function update(id, input, actor) {
     const body = parse(schemas.role, input);
     validId(id);
@@ -155,4 +159,4 @@ async function remove(id, actor) {
     return rol;
 }
 
-module.exports = { create, find, update, remove, roleForResponse };
+module.exports = { create, find, findDealerRole, update, remove, roleForResponse };

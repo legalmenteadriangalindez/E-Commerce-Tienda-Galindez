@@ -150,6 +150,39 @@ test(
                 });
                 assert.equal(response.status, 403);
             }
+
+            const managerDealer = await fixture.request(manager, '/api/users', 'POST', {
+                ...data('dealer-no-autorizado'),
+                rol: roleIds.dealer,
+            });
+            assert.equal(managerDealer.status, 403);
+
+            const adminForm = await fixture.request(admin, '/add-user-form');
+            const adminFormHtml = await adminForm.text();
+            assert.match(adminFormHtml, new RegExp(`<option value="${roleIds.dealer}"`));
+            for (const restrictedRole of [roleIds.Admin, roleIds.SuperAdmin, roleIds['Catálogo']]) {
+                assert.doesNotMatch(adminFormHtml, new RegExp(`<option value="${restrictedRole}"`));
+            }
+
+            const adminDealer = await fixture.request(admin, '/api/users', 'POST', {
+                ...data('dealer-admin'),
+                rol: roleIds.dealer,
+            });
+            assert.equal(adminDealer.status, 201);
+            const dealerUser = await savedUser('dealer-admin@example.test');
+            assert.equal(String(dealerUser.rol), roleIds.dealer);
+
+            for (const [name, restrictedRole] of [
+                ['superadmin', roleIds.SuperAdmin],
+                ['custom', roleIds['Catálogo']],
+            ]) {
+                const response = await fixture.request(admin, '/api/users', 'POST', {
+                    ...data('admin-no-' + name),
+                    rol: restrictedRole,
+                });
+                assert.equal(response.status, 403);
+            }
+
             const delegate = await fixture.actor('delegate');
             assert.equal(
                 (
