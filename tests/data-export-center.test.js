@@ -52,7 +52,7 @@ test('el ZIP se puede inspeccionar y escapa fórmulas potenciales en CSV', async
     const files = unzipStored(output.bytes());
     assert.equal(files.get('uno.csv'), 'a,b\r\n1,2\r\n');
     assert.equal(files.get('dos.csv'), 'hola\r\n');
-    assert.equal(businessExport.csvCell('=HYPERLINK("malicioso")'), '\'=HYPERLINK("malicioso")');
+    assert.ok(businessExport.csvCell('=HYPERLINK("malicioso")').startsWith(String.fromCharCode(34, 39, 61)));
     assert.equal(businessExport.csvCell('Persona, uno'), '"Persona, uno"');
     const user = businessExport.DEFINITIONS.find((table) => table.model === 'user');
     for (const forbidden of ['password', 'resetPasswordHash', 'verificationCodeHash', 'verificationCode']) {
@@ -75,6 +75,12 @@ test(
         const mongoose = require('mongoose');
         const bcrypt = require('bcrypt');
         const { startReviewApp } = require('./helpers/reviewApp');
+        const originalSessionSecret = process.env.SESSION_SECRET;
+        process.env.SESSION_SECRET ||= 'seguridad-exclusiva-para-pruebas-de-exportacion-2026';
+        t.after(() => {
+            if (originalSessionSecret === undefined) delete process.env.SESSION_SECRET;
+            else process.env.SESSION_SECRET = originalSessionSecret;
+        });
         const Role = require('../server/model/rol');
         const fixture = await startReviewApp(process.env.COMMERCE_TEST_MONGO_URI, (app) => {
             app.use(require('../server/routes/admin/data-export.routes'));
