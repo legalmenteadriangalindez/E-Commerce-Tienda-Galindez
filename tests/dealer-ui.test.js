@@ -21,8 +21,8 @@ test('el área dealer tiene identidad visual propia sin enlaces administrativos'
     assert.match(footer, /\/dealer\/orders\/history/);
     assert.match(footer, /\/dealer\/perfil/);
     assert.match(footer, /\/change-password/);
-    assert.match(footer, /bootstrap@5\\.3\\.8\\/dist\\/js\\/bootstrap\\.bundle\\.min\\.js/);
-    assert.match(footer, /<\\/body>\\s*<\\/html>/);
+    assert.match(footer, /bootstrap@5\.3\.8\/dist\/js\/bootstrap\.bundle\.min\.js/);
+    assert.match(footer, /<\/body>\s*<\/html>/);
 });
 
 test('las rutas de perfil del dealer conservan su contexto', () => {
@@ -30,13 +30,13 @@ test('las rutas de perfil del dealer conservan su contexto', () => {
     const controller = read('server/controller/pages/renderProfile.js');
     const form = read('views/dealer/profile/Edit_profile.ejs');
 
-    assert.match(routes, /router\\.get\\('\\/perfil', isLogged, isDealer, profilePageController\\.profile_dealer\\)/);
-    assert.match(routes, /router\\.get\\('\\/perfil\\/editar', isLogged, isDealer, profilePageController\\.update_profile_form_dealer\\)/);
-    assert.match(routes, /router\\.post\\('\\/perfil\\/editar\\/:id', isLogged, isDealer, profilePageController\\.update_profile_dealer\\)/);
-    assert.match(controller, /exports\\.profile_dealer = showArea\\('dealer', false, 'dealer'\\)/);
-    assert.match(controller, /exports\\.update_profile_dealer = save\\(false, \\{ redirectTo: '\\/dealer\\/perfil'/);
-    assert.match(form, /action="\\/dealer\\/perfil\\/editar\\/<%= user\\._id %>"/);
-    assert.doesNotMatch(form, /action="\\/perfil\\/editar\\//);
+    assert.match(routes, /router\.get\('\/perfil', isLogged, isDealer, profilePageController\.profile_dealer\)/);
+    assert.match(routes, /router\.get\('\/perfil\/editar', isLogged, isDealer, profilePageController\.update_profile_form_dealer\)/);
+    assert.match(routes, /router\.post\('\/perfil\/editar\/:id', isLogged, isDealer, profilePageController\.update_profile_dealer\)/);
+    assert.match(controller, /exports\.profile_dealer = showArea\('dealer', false, 'dealer'\)/);
+    assert.match(controller, /exports\.update_profile_dealer = save\(false, \{ redirectTo: '\/dealer\/perfil'/);
+    assert.match(form, /action="\/dealer\/perfil\/editar\/<%= user\._id %>"/);
+    assert.doesNotMatch(form, /action="\/perfil\/editar\//);
     assert.match(form, /name="genero"/);
     assert.match(form, /name="puntoReferencia"/);
 });
@@ -48,12 +48,12 @@ test('el dealer dispone de un historial de entregas de solo lectura', () => {
     const view = read('views/dealer/orders/read_orders.ejs');
     const rules = require('../server/business/deliveryRules');
 
-    assert.match(routes, /router\\.get\\('\\/orders\\/history', isLogged, isDealer, dealerPageController\\.history_orders\\)/);
+    assert.match(routes, /router\.get\('\/orders\/history', isLogged, isDealer, dealerPageController\.history_orders\)/);
     assert.match(controller, /history_orders/);
     assert.match(controller, /history: true/);
-    assert.match(operations, /history \\? rules\\.completedDeliveryFilter\\(\\) : rules\\.baseDeliveryFilter\\(\\)/);
+    assert.match(operations, /history \? rules\.completedDeliveryFilter\(\) : rules\.baseDeliveryFilter\(\)/);
     assert.match(view, /history=1/);
-    assert.doesNotMatch(view, /isHistory \\? .*Actualizar/);
+    assert.match(view, /if \(!isHistory\)/);
     assert.deepEqual(rules.completedDeliveryFilter(), {
         estado: 'ENTREGADA',
         estadoPago: 'PAGADO',
@@ -70,7 +70,7 @@ test('la lista dealer conserva sus acciones y agrega soporte visual accesible', 
         assert.match(view, new RegExp(label));
     assert.match(view, /data-label="Estado"/);
     assert.match(view, /dealer-empty-state/);
-    assert.match(styles, /@media \\(max-width: 768px\\)/);
+    assert.match(styles, /@media \(max-width: 768px\)/);
     assert.match(styles, /min-height: 40px/);
 });
 
