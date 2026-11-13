@@ -50,12 +50,12 @@ function cleanText(value, max = 500) {
 function trackingForState(state, note = '') {
     const base = STATE_TRACKING[state] || {
         evento: 'ACTUALIZACION',
-        mensaje: \`El estado del pedido cambió a \${STATUS_LABELS[state] || state}.\`,
+        mensaje: `El estado del pedido cambió a ${STATUS_LABELS[state] || state}.`,
     };
     const extra = cleanText(note);
     return {
         evento: base.evento,
-        mensaje: extra ? \`\${base.mensaje} Nota: \${extra}\`.slice(0, 500) : base.mensaje,
+        mensaje: extra ? `${base.mensaje} Nota: ${extra}`.slice(0, 500) : base.mensaje,
     };
 }
 
