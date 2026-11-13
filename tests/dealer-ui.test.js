@@ -21,8 +21,17 @@ test('el área dealer tiene identidad visual propia sin enlaces administrativos'
     assert.match(footer, /\/dealer\/orders\/history/);
     assert.match(footer, /\/dealer\/perfil/);
     assert.match(footer, /\/change-password/);
+    assert.match(footer, /dealer-footer__main/);
+    assert.match(footer, /dealer-footer__nav/);
+    assert.match(footer, /dealer-footer__status/);
+    assert.doesNotMatch(footer, /dealer-footer__links|app-footer-container/);
     assert.match(footer, /bootstrap@5\.3\.8\/dist\/js\/bootstrap\.bundle\.min\.js/);
     assert.match(footer, /<\/body>\s*<\/html>/);
+
+    const shell = read('public/css/dealer-shell.css');
+    assert.match(shell, /body\.dealer-app > main[\s\S]*flex: 0 0 auto/);
+    assert.match(shell, /body\.dealer-app \.dealer-orders-page[\s\S]*overflow: visible/);
+    assert.match(shell, /\.dealer-footer__nav/);
 });
 
 test('las rutas de perfil del dealer conservan su contexto', () => {
