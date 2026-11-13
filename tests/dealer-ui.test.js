@@ -59,6 +59,7 @@ test('el dealer dispone de un historial de entregas de solo lectura', () => {
         estadoPago: 'PAGADO',
         inventario: 'CONFIRMADO',
     });
+    assert.equal(rules.dealerActiveDeliveryFilter().$or[0].estado.$in.includes('ENTREGADA'), false);
 });
 
 test('la lista dealer conserva sus acciones y agrega soporte visual accesible', () => {
