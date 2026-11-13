@@ -88,3 +88,28 @@ test('todas las vistas del dealer usan el pie de página de reparto', () => {
         assert.doesNotMatch(source, /_footerAdmin/);
     }
 });
+
+
+test('el panel operativo del dealer muestra sus indicadores principales', () => {
+    const controller = read('server/controller/pages/renderDealer.js');
+    const operations = read('server/business/deliveryOperations.js');
+    const resources = read('server/config/pageResources.js');
+    const view = read('views/dealer/orders/read_orders.ejs');
+    const styles = read('public/css/dealer-dashboard.css');
+
+    assert.match(controller, /dashboardForDealer/);
+    assert.match(controller, /dashboard: dashboard/);
+    assert.match(operations, /async function dashboardForDealer/);
+    assert.match(resources, /dealer-dashboard\.css/);
+    for (const label of [
+        'Entregas pendientes',
+        'Entregas en ruta',
+        'Entregas completadas hoy',
+        'Total recaudado contra entrega',
+        'Pedidos atrasados',
+    ]) {
+        assert.match(view, new RegExp(label));
+    }
+    assert.match(view, /dealer-kpi-grid/);
+    assert.match(styles, /@media \(max-width: 768px\)/);
+});

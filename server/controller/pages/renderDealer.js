@@ -4,18 +4,22 @@ const catalogPagination = require('../../services/catalogPagination');
 
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 
-function renderDealerOrders(req, res, result, history = false) {
+function renderDealerOrders(req, res, result, history = false, dashboard = null) {
     return res.render('dealer/orders/read_orders', {
         orders: result.orders,
         statusLabels: delivery.STATUS_LABELS,
         pagination: catalogPagination.buildPagination(req, result),
         history,
+        dashboard,
     });
 }
 
 exports.read_orders = wrap(async (req, res) => {
-    const result = await delivery.listForDealer(req.session.user._id, { page: req.query.page, limit: 10 });
-    return renderDealerOrders(req, res, result, false);
+    const [result, dashboard] = await Promise.all([
+        delivery.listForDealer(req.session.user._id, { page: req.query.page, limit: 10 }),
+        delivery.dashboardForDealer(req.session.user._id),
+    ]);
+    return renderDealerOrders(req, res, result, false, dashboard);
 });
 
 exports.history_orders = wrap(async (req, res) => {

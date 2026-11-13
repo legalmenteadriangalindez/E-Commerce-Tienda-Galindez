@@ -207,7 +207,9 @@ const resources = {
     'admin/rols/update_roles': { pageCss: css('update_roles.css') },
     'admin/profile/profile': { pageCss: css('profile.css') },
     'admin/profile/Edit_profile': { pageCss: css('pages/edit-profile.css') },
-    'dealer/orders/read_orders': { pageCss: css('dealer-shell.css', 'dealer_read_orders.css', 'admin-pagination.css') },
+    'dealer/orders/read_orders': {
+        pageCss: css('dealer-shell.css', 'dealer-dashboard.css', 'dealer_read_orders.css', 'admin-pagination.css'),
+    },
     'dealer/orders/detail_orders': {
         pageCss: css('dealer-shell.css', 'dealer_detail_order.css', 'detail_order.css', 'delivery-tracking.css'),
     },

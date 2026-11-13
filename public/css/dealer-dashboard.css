@@ -1,0 +1,160 @@
+/* Resumen operativo del área de reparto. */
+
+.dealer-dashboard-summary {
+    margin-bottom: 1.25rem;
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-soft);
+}
+
+.dealer-dashboard-summary__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dealer-dashboard-summary__header h2 {
+    margin: 0;
+    color: var(--color-brand-dark);
+    font-size: 1.35rem;
+}
+
+.dealer-dashboard-summary__header p:not(.dealer-eyebrow) {
+    margin: 0.35rem 0 0;
+    color: var(--color-text-muted);
+}
+
+.dealer-dashboard-summary__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    gap: 0.35rem;
+    border-radius: 0.55rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.dealer-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+.dealer-kpi-card {
+    display: flex;
+    min-width: 0;
+    min-height: 8.5rem;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.85rem;
+    background: var(--color-surface-warm);
+}
+
+.dealer-kpi-card__icon {
+    display: inline-grid;
+    width: 2.35rem;
+    height: 2.35rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 0.7rem;
+    background: var(--color-accent-soft);
+    color: var(--color-brand-accent);
+    font-size: 1.1rem;
+}
+
+.dealer-kpi-card p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.dealer-kpi-card strong {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--color-brand-dark);
+    font-size: clamp(1.45rem, 2.2vw, 2rem);
+    line-height: 1.1;
+}
+
+.dealer-kpi-card div > span {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--color-text-muted);
+    font-size: 0.72rem;
+    line-height: 1.35;
+}
+
+.dealer-kpi-card--route .dealer-kpi-card__icon {
+    background: #e5f4fb;
+    color: #14617d;
+}
+
+.dealer-kpi-card--completed .dealer-kpi-card__icon {
+    background: #e6f5e8;
+    color: #216b31;
+}
+
+.dealer-kpi-card--cash .dealer-kpi-card__icon {
+    background: #fff3d7;
+    color: #795815;
+}
+
+.dealer-kpi-card--overdue .dealer-kpi-card__icon {
+    background: #fde8e7;
+    color: #a33b35;
+}
+
+.dealer-dashboard-summary__note {
+    margin: 0.9rem 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+}
+
+.dealer-dashboard-summary__note i {
+    margin-right: 0.2rem;
+    color: var(--color-brand-accent);
+}
+
+@media (max-width: 1200px) {
+    .dealer-kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .dealer-dashboard-summary {
+        padding: 1rem;
+    }
+
+    .dealer-dashboard-summary__header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .dealer-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dealer-dashboard-summary__link {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 520px) {
+    .dealer-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dealer-kpi-card {
+        min-height: auto;
+    }
+}

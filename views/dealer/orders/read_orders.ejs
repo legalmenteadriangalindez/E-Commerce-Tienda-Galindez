@@ -1,6 +1,10 @@
 <%- include('../../include/_headerDealer') %>
 
 <% const isHistory = typeof history !== 'undefined' && history === true; %>
+<%
+    const formatDealerCurrency = (value) =>
+        `$ ${Number(value || 0).toLocaleString('es-CO', { maximumFractionDigits: 0 })}`;
+%>
 
 <main class="container-fluid py-4 dealer-orders-page">
     <header class="dealer-orders-heading">
@@ -21,6 +25,72 @@
             <span><%= isHistory ? 'entrega(s) finalizada(s)' : 'pedido(s) asignado(s)' %></span>
         </div>
     </header>
+
+    <% if (!isHistory && dashboard) { %>
+    <section class="dealer-dashboard-summary" aria-labelledby="dealer-dashboard-title">
+        <div class="dealer-dashboard-summary__header">
+            <div>
+                <p class="dealer-eyebrow">Resumen operativo</p>
+                <h2 id="dealer-dashboard-title">Panel de reparto</h2>
+                <p>Consulta rápidamente el estado de tus entregas y el recaudo contra entrega.</p>
+            </div>
+            <a href="/dealer/orders/history" class="btn btn-outline-secondary dealer-dashboard-summary__link">
+                <i class="bi bi-clock-history" aria-hidden="true"></i> Ver historial
+            </a>
+        </div>
+
+        <div class="dealer-kpi-grid">
+            <article class="dealer-kpi-card dealer-kpi-card--pending">
+                <span class="dealer-kpi-card__icon" aria-hidden="true"><i class="bi bi-hourglass-split"></i></span>
+                <div>
+                    <p>Entregas pendientes</p>
+                    <strong><%= dashboard.pending %></strong>
+                    <span>Asignadas y aún no entregadas</span>
+                </div>
+            </article>
+
+            <article class="dealer-kpi-card dealer-kpi-card--route">
+                <span class="dealer-kpi-card__icon" aria-hidden="true"><i class="bi bi-bicycle"></i></span>
+                <div>
+                    <p>Entregas en ruta</p>
+                    <strong><%= dashboard.inRoute %></strong>
+                    <span>Pedidos con estado en camino</span>
+                </div>
+            </article>
+
+            <article class="dealer-kpi-card dealer-kpi-card--completed">
+                <span class="dealer-kpi-card__icon" aria-hidden="true"><i class="bi bi-check2-circle"></i></span>
+                <div>
+                    <p>Entregas completadas hoy</p>
+                    <strong><%= dashboard.completedToday %></strong>
+                    <span>Confirmadas durante el día</span>
+                </div>
+            </article>
+
+            <article class="dealer-kpi-card dealer-kpi-card--cash">
+                <span class="dealer-kpi-card__icon" aria-hidden="true"><i class="bi bi-cash-coin"></i></span>
+                <div>
+                    <p>Total recaudado contra entrega</p>
+                    <strong><%= formatDealerCurrency(dashboard.cashCollected) %></strong>
+                    <span>Acumulado de pedidos entregados</span>
+                </div>
+            </article>
+
+            <article class="dealer-kpi-card dealer-kpi-card--overdue">
+                <span class="dealer-kpi-card__icon" aria-hidden="true"><i class="bi bi-exclamation-triangle"></i></span>
+                <div>
+                    <p>Pedidos atrasados</p>
+                    <strong><%= dashboard.overdue %></strong>
+                    <span>Asignados antes de hoy</span>
+                </div>
+            </article>
+        </div>
+
+        <p class="dealer-dashboard-summary__note">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            Se considera atrasado un pedido activo asignado antes del inicio del día actual.
+        </p>
+    </section>
 
     <section class="dealer-orders-panel" aria-labelledby="dealer-orders-panel-title">
         <div class="dealer-orders-panel__header">
