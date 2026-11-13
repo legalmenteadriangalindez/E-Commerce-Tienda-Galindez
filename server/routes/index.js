@@ -1,10 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mediaController = require('../controller/media_controller');
-
-// Las imágenes subidas se sirven desde GridFS mediante referencias validadas;
-// no se exponen rutas de archivos del sistema.
-router.get('/uploads/:filename', mediaController.serve);
 
 router.use('/', require('./home.routes'));
 router.use('/', require('./auth.routes'));

@@ -256,6 +256,7 @@ function csrfProtection(req, res, next) {
                 /^\/api\/(productos|marcas)(\/[a-f\d]{24})?\/?$/i.test(req.path)) ||
             (req.method === 'POST' && req.path === '/admin/raffle') ||
             (req.method === 'POST' && /^\/update-marca\/[a-f\d]{24}$/.test(req.path)) ||
+            (req.method === 'POST' && /^\/dealer\/orders\/update\/[a-f\d]{24}$/.test(req.path)) ||
             (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method) &&
                 /^\/api\/(admin\/)?reviews(?:\/[a-f\d]{24}(?:\/(reply|visibility))?)?\/?$/i.test(req.path));
         if (!allowed) {

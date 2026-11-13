@@ -226,7 +226,7 @@ test('la entrega del dealer exige y conserva una foto como comprobante', () => {
     const orderModel = read('server/model/order.js');
     const upload = read('server/middleware/upload.js');
     const media = read('server/business/mediaService.js');
-    const mediaRoute = read('server/routes/index.js');
+    const appConfig = read('server/config/appConfig.js');
     const form = read('views/dealer/orders/update_order.ejs');
     const sharedStatus = read('views/include/orders/delivery-status.ejs');
     const proof = read('views/include/order/partials/delivery-proof.ejs');
@@ -241,8 +241,10 @@ test('la entrega del dealer exige y conserva una foto como comprobante', () => {
     assert.match(orderModel, /fotoUrl/);
     assert.match(upload, /image\/jpeg/);
     assert.match(media, /comprobanteEntrega\.fotoUrl/);
-    assert.match(mediaRoute, /mediaController\.serve/);
-    assert.match(mediaRoute, /uploads\/\:filename/);
+    assert.match(
+        appConfig,
+        /app\.get\('\/uploads\/\:filename', require\('\.\.\/controller\/media_controller'\)\.serve\)/
+    );
     assert.match(form, /enctype="multipart\/form-data"/);
     assert.match(form, /name="fotoEntrega"/);
     assert.match(form, /Obligatoria al confirmar la entrega/);
