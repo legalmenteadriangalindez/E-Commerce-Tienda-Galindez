@@ -138,7 +138,7 @@ async function unassignOrder(orderId, adminId, note = '') {
             order,
             'DESASIGNADO',
             cleanNoteValue
-                ? \`La tienda retiró temporalmente la asignación. Nota: \${cleanNoteValue}\`
+                ? `La tienda retiró temporalmente la asignación. Nota: ${cleanNoteValue}`
                 : 'La tienda retiró temporalmente la asignación.',
             adminId
         );
