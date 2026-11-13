@@ -106,7 +106,7 @@ test('el panel operativo del dealer muestra sus indicadores principales', () => 
     const styles = read('public/css/dealer-dashboard.css');
 
     assert.match(controller, /dashboardForDealer/);
-    assert.match(controller, /dashboard: dashboard/);
+    assert.match(controller, /dashboard,\s/);
     assert.match(operations, /async function dashboardForDealer/);
     assert.match(resources, /dealer-dashboard\.css/);
     for (const label of [
