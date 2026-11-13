@@ -42,7 +42,7 @@ async function listForDealer(dealerId, { page = 1, limit = 20, history = false }
     if (!rules.validId(dealerId)) throw new rules.DeliveryError('Repartidor inválido.', 401);
     const safePage = Math.min(100000, Math.max(1, Number.parseInt(page, 10) || 1));
     const safeLimit = Math.min(50, Math.max(1, Number.parseInt(limit, 10) || 20));
-    const deliveryFilter = history ? rules.completedDeliveryFilter() : rules.baseDeliveryFilter();
+    const deliveryFilter = history ? rules.completedDeliveryFilter() : rules.dealerActiveDeliveryFilter();
     const filter = {
         ...deliveryFilter,
         repartidor: dealerId,
@@ -61,7 +61,7 @@ async function listForDealer(dealerId, { page = 1, limit = 20, history = false }
 
 async function orderForDealer(orderId, dealerId, { history = false } = {}) {
     if (!rules.validId(orderId) || !rules.validId(dealerId)) throw new rules.DeliveryError('Pedido inválido.', 400);
-    const deliveryFilter = history ? rules.completedDeliveryFilter() : rules.baseDeliveryFilter();
+    const deliveryFilter = history ? rules.completedDeliveryFilter() : rules.dealerActiveDeliveryFilter();
     const order = await orderPopulate(
         Order.findOne({
             _id: orderId,
