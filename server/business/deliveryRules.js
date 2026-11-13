@@ -113,6 +113,24 @@ function baseDeliveryFilter(status) {
     return { $or: [paid, cashOnDelivery] };
 }
 
+function dealerActiveDeliveryFilter() {
+    return {
+        $or: [
+            {
+                estadoPago: 'PAGADO',
+                inventario: 'CONFIRMADO',
+                estado: { $in: ['PAGADA', 'PREPARANDO', 'ENVIADA'] },
+            },
+            {
+                metodoPago: 'CASH_ON_DELIVERY',
+                estadoPago: 'PENDIENTE',
+                inventario: 'CONFIRMADO',
+                estado: { $in: ['PENDIENTE', 'PREPARANDO', 'ENVIADA'] },
+            },
+        ],
+    };
+}
+
 function completedDeliveryFilter() {
     return {
         estado: 'ENTREGADA',
@@ -140,6 +158,7 @@ module.exports = {
     cleanText,
     appendTracking,
     baseDeliveryFilter,
+    dealerActiveDeliveryFilter,
     completedDeliveryFilter,
     trackingForState,
     trackState,
