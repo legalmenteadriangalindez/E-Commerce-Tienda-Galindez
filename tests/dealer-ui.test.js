@@ -50,9 +50,9 @@ test('las rutas de perfil del dealer conservan su contexto', () => {
 test('el dealer dispone de un historial de entregas de solo lectura', () => {
     const routes = read('server/routes/dealer.routes.js');
     const controller = read('server/controller/pages/renderDealer.js');
-    const operations = read('server/business/deliveryOperations.js');
     const view = read('views/dealer/orders/read_orders.ejs');
     const rules = require('../server/business/deliveryRules');
+    const delivery = require('../server/business/deliveryService');
 
     assert.match(
         routes,
@@ -60,7 +60,14 @@ test('el dealer dispone de un historial de entregas de solo lectura', () => {
     );
     assert.match(controller, /history_orders/);
     assert.match(controller, /history: true/);
-    assert.match(operations, /history \? rules\.completedDeliveryFilter\(\) : rules\.dealerActiveDeliveryFilter\(\)/);
+    const historyFilter = delivery.buildDealerOrderFilter('507f1f77bcf86cd799439011', true, {
+        status: '',
+        search: '',
+        from: null,
+        to: null,
+    });
+    assert.deepEqual(historyFilter.$and[0], rules.completedDeliveryFilter());
+    assert.deepEqual(historyFilter.$and[1], { repartidor: '507f1f77bcf86cd799439011' });
     assert.match(view, /history=1/);
     assert.match(view, /if \(!isHistory\)/);
     assert.deepEqual(rules.completedDeliveryFilter(), {
