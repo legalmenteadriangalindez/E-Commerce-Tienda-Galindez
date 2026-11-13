@@ -204,6 +204,9 @@
                         </tr>
                     <% } else { %>
                         <% orders.forEach(order => { %>
+                            <% const openIncidentCount = Array.isArray(order.incidenciasEntrega)
+                                ? order.incidenciasEntrega.filter((incident) => incident.estado === 'ABIERTA').length
+                                : 0; %>
                             <tr>
                                 <td data-label="Orden"><strong class="dealer-order-number"><%= order.numeroOrden %></strong></td>
                                 <td data-label="Cliente">
@@ -229,6 +232,9 @@
                                     <span class="dealer-status dealer-status--<%= order.estado.toLowerCase() %>">
                                         <%= statusLabels[order.estado] || order.estado %>
                                     </span>
+                                    <% if (openIncidentCount) { %>
+                                        <span class="dealer-incident-badge"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> <%= openIncidentCount %> incidencia(s)</span>
+                                    <% } %>
                                 </td>
                                 <td data-label="Fecha"><%= new Date(order.createdAt).toLocaleDateString('es-CO') %></td>
                                 <td data-label="Acciones" class="dealer-actions">

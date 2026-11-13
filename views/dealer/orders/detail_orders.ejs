@@ -22,8 +22,13 @@
 
     <%- include('../../include/orders/order-products', { order, isDealer: true }) %>
     <%- include('../../include/orders/financial-summary', { order }) %>
+    <%- include('../../include/order/partials/delivery-incidents', {
+        order,
+        incidentLabels,
+        incidentStatusLabels,
+        readOnly: true
+    }) %>
 </main>
 
 <%- include('../../include/_deliveryTimeline', { order, visibleOnly: true, showActor: false }) %>
-
 <%- include('../../include/_footerDealer') %>

@@ -36,6 +36,8 @@ exports.adminIndex = wrap(async (req, res) => {
         status,
         statuses: delivery.DELIVERY_STATES,
         statusLabels: delivery.STATUS_LABELS,
+        incidentLabels: delivery.INCIDENT_LABELS,
+        incidentStatusLabels: delivery.INCIDENT_STATUS_LABELS,
         pagination: catalogPagination.buildPagination(req, result),
         notice,
     });
@@ -51,6 +53,18 @@ exports.assign = wrap(async (req, res) => {
 exports.unassign = wrap(async (req, res) => {
     await delivery.unassignOrder(req.params.id, req.session.user._id, req.body.nota);
     req.session.deliveryNotice = 'La asignación del pedido fue retirada.';
+    await saveSession(req);
+    return redirectWithStatus(req, res);
+});
+
+exports.resolveIncident = wrap(async (req, res) => {
+    await delivery.resolveIncident(
+        req.params.id,
+        req.params.incidentId,
+        req.session.user._id,
+        req.body.resolution
+    );
+    req.session.deliveryNotice = 'La incidencia fue marcada como atendida.';
     await saveSession(req);
     return redirectWithStatus(req, res);
 });

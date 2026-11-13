@@ -1,0 +1,67 @@
+<%
+    const incidentList = Array.isArray(order?.incidenciasEntrega)
+        ? order.incidenciasEntrega.slice().sort((a, b) => new Date(b.reportadoEn) - new Date(a.reportadoEn))
+        : [];
+    const incidentLabelMap = incidentLabels || {};
+    const incidentStatusMap = incidentStatusLabels || {};
+    const isReadOnly = typeof readOnly !== 'undefined' && readOnly;
+%>
+
+<section class="dealer-incidents-panel" aria-labelledby="dealer-incidents-title">
+    <div class="dealer-incidents-panel__header">
+        <div>
+            <p class="dealer-eyebrow">Seguimiento operativo</p>
+            <h2 id="dealer-incidents-title">Incidencias de entrega</h2>
+            <p>Registra cualquier problema que impida completar la entrega normalmente.</p>
+        </div>
+        <span class="dealer-incidents-panel__count"><%= incidentList.filter(incident => incident.estado === 'ABIERTA').length %> abiertas</span>
+    </div>
+
+    <% if (incidentNotice) { %>
+        <p class="dealer-incident-notice" role="status"><i class="bi bi-check-circle" aria-hidden="true"></i> <%= incidentNotice %></p>
+    <% } %>
+
+    <% if (incidentList.length) { %>
+        <div class="dealer-incidents-list">
+            <% incidentList.forEach(incident => { %>
+                <article class="dealer-incident-card dealer-incident-card--<%= incident.estado.toLowerCase() %>">
+                    <div class="dealer-incident-card__heading">
+                        <strong><%= incidentLabelMap[incident.tipo] || incident.tipo %></strong>
+                        <span><%= incidentStatusMap[incident.estado] || incident.estado %></span>
+                    </div>
+                    <p><%= incident.nota || 'Sin detalle adicional.' %></p>
+                    <small>
+                        Reportada <%= new Date(incident.reportadoEn).toLocaleString('es-CO') %>
+                        <% if (incident.reportadoPor?.nombre) { %> por <%= incident.reportadoPor.nombre %><% } %>
+                    </small>
+                    <% if (incident.estado === 'RESUELTA' && incident.resolucion) { %>
+                        <p class="dealer-incident-card__resolution"><strong>Resolución:</strong> <%= incident.resolucion %></p>
+                    <% } %>
+                </article>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <p class="dealer-incidents-empty">No hay incidencias registradas para este pedido.</p>
+    <% } %>
+
+    <% if (!isReadOnly) { %>
+        <div class="dealer-incident-report">
+            <h3>Reportar una incidencia</h3>
+            <form action="<%= incidentAction %>" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <label for="incident-type">Tipo de incidencia</label>
+                <select id="incident-type" name="tipo" required>
+                    <option value="">Selecciona una opción</option>
+                    <% incidentTypes.forEach(type => { %>
+                        <option value="<%= type %>"><%= incidentLabelMap[type] || type %></option>
+                    <% }) %>
+                </select>
+                <label for="incident-note">Detalle adicional <span>(opcional)</span></label>
+                <textarea id="incident-note" name="nota" maxlength="500" rows="3" placeholder="Describe lo ocurrido para que la tienda pueda actuar."></textarea>
+                <button type="submit" class="btn btn-warning dealer-incident-report__button">
+                    <i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Reportar incidencia
+                </button>
+            </form>
+        </div>
+    <% } %>
+</section>

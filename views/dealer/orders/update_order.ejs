@@ -20,5 +20,15 @@
     </div>
 </div>
 
+<%- include('../../include/order/partials/delivery-incidents', {
+    order,
+    incidentTypes,
+    incidentLabels,
+    incidentStatusLabels,
+    incidentAction,
+    incidentNotice,
+    readOnly: false
+}) %>
+
 <%- include('../../include/_deliveryTimeline', { order, visibleOnly: true, showActor: false }) %>
 <%- include('../../include/_footerDealer') %>

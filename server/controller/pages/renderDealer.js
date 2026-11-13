@@ -8,6 +8,11 @@ function filterStatuses(history) {
     return history ? ['ENTREGADA'] : ['PENDIENTE', 'PAGADA', 'PREPARANDO', 'ENVIADA'];
 }
 
+function incidentAction(orderId, filters) {
+    const query = delivery.buildDealerFilterQuery(filters);
+    return '/dealer/orders/incidents/' + orderId + (query ? '?' + query : '');
+}
+
 function renderDealerOrders(req, res, result, history = false, dashboard = null, filters = {}) {
     return res.render('dealer/orders/read_orders', {
         orders: result.orders,
@@ -56,6 +61,8 @@ exports.detail_order = wrap(async (req, res) => {
         statusLabels: delivery.STATUS_LABELS,
         history,
         backUrl,
+        incidentLabels: delivery.INCIDENT_LABELS,
+        incidentStatusLabels: delivery.INCIDENT_STATUS_LABELS,
     });
 });
 
@@ -65,7 +72,27 @@ exports.update_order = wrap(async (req, res) => {
         order: await delivery.orderForDealer(req.params.id, req.session.user._id),
         statusLabels: delivery.STATUS_LABELS,
         filters,
+        incidentTypes: delivery.INCIDENT_TYPES,
+        incidentLabels: delivery.INCIDENT_LABELS,
+        incidentStatusLabels: delivery.INCIDENT_STATUS_LABELS,
+        incidentAction: incidentAction(req.params.id, filters),
+        incidentNotice: req.query.incident === 'reported'
+            ? 'La incidencia fue reportada a la tienda.'
+            : '',
     });
+});
+
+exports.report_incident = wrap(async (req, res) => {
+    await delivery.reportIncident(
+        req.params.id,
+        req.session.user._id,
+        req.body.tipo,
+        req.body.nota
+    );
+    const filters = delivery.normalizeDealerFilters(req.query, false);
+    const query = delivery.buildDealerFilterQuery(filters);
+    const targetQuery = query ? query + '&incident=reported' : 'incident=reported';
+    return res.redirect(303, '/dealer/orders/update/' + req.params.id + '?' + targetQuery);
 });
 
 exports.update_order_data = wrap(async (req, res) => {

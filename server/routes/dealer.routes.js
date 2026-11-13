@@ -12,6 +12,7 @@ router.get('/orders/history', isLogged, isDealer, dealerPageController.history_o
 router.get('/orders/detail/:id', isLogged, isDealer, dealerPageController.detail_order);
 router.get('/orders/update/:id', isLogged, isDealer, dealerPageController.update_order);
 router.post('/orders/update/:id', isLogged, isDealer, dealerPageController.update_order_data);
+router.post('/orders/incidents/:id', isLogged, isDealer, dealerPageController.report_incident);
 
 router.get('/perfil', isLogged, isDealer, profilePageController.profile_dealer);
 router.get('/perfil/editar', isLogged, isDealer, profilePageController.update_profile_form_dealer);

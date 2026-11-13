@@ -157,3 +157,29 @@ test('el dealer puede filtrar y buscar sus entregas conservando el contexto', ()
     assert.match(detailView, /dealerBackUrl/);
     assert.match(styles, /dealer-orders-filters/);
 });
+
+
+test('el flujo de incidencias está conectado al dealer y al administrador', () => {
+    const dealerRoutes = read('server/routes/dealer.routes.js');
+    const dealerController = read('server/controller/pages/renderDealer.js');
+    const adminRoutes = read('server/routes/admin/orders.routes.js');
+    const adminController = read('server/controller/pages/renderDelivery.js');
+    const orderModel = read('server/model/order.js');
+    const orderCard = read('views/admin/delivery/partials/order-card.ejs');
+    const updateView = read('views/dealer/orders/update_order.ejs');
+    const detailView = read('views/dealer/orders/detail_orders.ejs');
+    const partial = read('views/include/order/partials/delivery-incidents.ejs');
+    const resources = read('server/config/pageResources.js');
+
+    assert.match(dealerRoutes, /orders\/incidents/);
+    assert.match(dealerController, /reportIncident/);
+    assert.match(adminRoutes, /incidents\/.*resolve/);
+    assert.match(adminController, /resolveIncident/);
+    assert.match(orderModel, /incidenciasEntrega/);
+    assert.match(orderCard, /Incidencias abiertas/);
+    assert.match(updateView, /delivery-incidents/);
+    assert.match(detailView, /delivery-incidents/);
+    assert.match(partial, /name="tipo"/);
+    assert.match(partial, /name="nota"/);
+    assert.match(resources, /dealer-incidents\.css/);
+});
