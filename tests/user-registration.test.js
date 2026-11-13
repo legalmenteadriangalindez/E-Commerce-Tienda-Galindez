@@ -309,7 +309,17 @@ test(
                 const secondSession = await fixture.actor('change-' + roleName);
                 const page = await fixture.request(actor, '/change-password');
                 assert.equal(page.status, 200);
-                assert.match(await page.text(), /name="currentPassword"/);
+                const pageHtml = await page.text();
+                assert.match(pageHtml, /name="currentPassword"/);
+                if (roleName === 'dealer') {
+                    assert.match(pageHtml, /class="dealer-app"/);
+                    assert.match(pageHtml, /_footerDealer|dealer-footer/);
+                } else if (['Admin', 'Catálogo'].includes(roleName)) {
+                    assert.match(pageHtml, /class="admin-app"/);
+                    assert.match(pageHtml, /_footerAdmin|Admin Galindez/);
+                } else {
+                    assert.doesNotMatch(pageHtml, /class="dealer-app"|class="admin-app"/);
+                }
                 const password = 'Mi contraseña personal nueva 2026!';
                 for (const invalid of [
                     { currentPassword: 'contraseña incorrecta' },

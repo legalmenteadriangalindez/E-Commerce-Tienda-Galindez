@@ -98,6 +98,14 @@ const resources = {
         pageCss: css('commerce.css', 'components/password-visibility.css'),
         pageJs: js('password-visibility.js'),
     },
+    'admin/auth/change_password': {
+        pageCss: css('commerce.css', 'components/password-visibility.css'),
+        pageJs: js('password-visibility.js'),
+    },
+    'dealer/auth/change_password': {
+        pageCss: css('commerce.css', 'components/password-visibility.css', 'dealer-shell.css'),
+        pageJs: js('password-visibility.js'),
+    },
 
     'admin/home/Billing_point': {
         pageCss: pointOfSaleStyles(),

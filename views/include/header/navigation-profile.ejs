@@ -3,6 +3,9 @@
 <% const headerUser = (typeof authUser !== 'undefined' && authUser)
     || (typeof sessionUser !== 'undefined' && sessionUser)
     || null; %>
+<% const headerRole = String(headerUser?.rol?.nombre || '').trim().toLowerCase(); %>
+<% const headerIsDealer = headerRole === 'dealer'; %>
+<% const headerIsAdmin = headerRole === 'admin'; %>
 
 <div class="dropdown">
 
@@ -18,7 +21,7 @@
 
         <% if (headerUser && headerUser._id) { %>
             <li>
-                <a class="dropdown-item" href="/perfil">
+                <a class="dropdown-item" href="<%= headerIsDealer ? '/dealer/perfil' : headerIsAdmin ? '/admin/perfil' : '/perfil' %>">
                     <i class="bi bi-person"></i>
                     Mi cuenta
                 </a>
@@ -29,7 +32,11 @@
             </li>
 
             <li>
-                <a class="dropdown-item" href="/mis-pedidos">Mis pedidos</a>
+                <% if (headerIsDealer) { %>
+                    <a class="dropdown-item" href="/dealer/orders/read">Mis entregas</a>
+                <% } else if (!headerIsAdmin) { %>
+                    <a class="dropdown-item" href="/mis-pedidos">Mis pedidos</a>
+                <% } %>
                 <a class="dropdown-item" href="/change-password">Cambiar contraseña</a>
                 <form action="/logout" method="POST">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">

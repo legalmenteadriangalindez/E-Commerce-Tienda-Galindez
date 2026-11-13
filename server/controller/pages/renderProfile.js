@@ -1,6 +1,8 @@
 const profiles = require('../../business/profileService');
 const { BusinessError, validId } = require('../../business/errors');
 const { wrap } = require('../../http/handlers');
+const { PERMISSIONS } = require('../../config/permissions');
+const { hasPermission } = require('../../config/authorization');
 
 function owner(req) {
     const id = req.session?.user?._id?.toString();
@@ -33,12 +35,20 @@ function view(user, edit, admin) {
 
 const show = (edit = false, admin = false) =>
     wrap(async (req, res) => {
-        const user = await profiles.get(owner(req));
+        const id = owner(req);
+        const user = await profiles.get(id);
 
-        // Conserva compatibilidad con enlaces antiguos, pero evita que un dealer
-        // termine en el menú del cliente al usar la ruta genérica.
+        // Conserva compatibilidad con enlaces antiguos, pero evita que un
+        // administrador o dealer termine en el menú del cliente al usar una
+        // ruta genérica.
         if (!admin && normalizedRole(user) === 'dealer') {
             return res.redirect(303, edit ? '/dealer/perfil/editar' : '/dealer/perfil');
+        }
+        if (
+            !admin &&
+            (normalizedRole(user) === 'admin' || hasPermission(req.usuarioActual, PERMISSIONS.ADMIN_ACCESS))
+        ) {
+            return res.redirect(303, edit ? `/admin/perfil/editar/${id}` : '/admin/perfil');
         }
 
         return res.render(view(user, edit, admin), { user });
