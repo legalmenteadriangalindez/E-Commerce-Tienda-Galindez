@@ -1,5 +1,6 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
+const bcrypt = require('bcrypt');
 
 const Role = require('../server/model/rol');
 const User = require('../server/model/user');
@@ -19,12 +20,21 @@ test(
     'flujo HTTP completo del dealer: asignación, entrega, historial y aislamiento entre repartidores',
     { skip: integrationSkip },
     async (t) => {
+        const previousSessionSecret = process.env.SESSION_SECRET;
+        process.env.SESSION_SECRET = 'dealer-integration-test-session-secret';
+        t.after(() => {
+            if (previousSessionSecret === undefined) delete process.env.SESSION_SECRET;
+            else process.env.SESSION_SECRET = previousSessionSecret;
+        });
+
         const fixture = await startReviewApp(process.env.COMMERCE_TEST_MONGO_URI, async (app, users) => {
             const dealerRole = await Role.create({ nombre: 'dealer', descripcion: 'Repartidor de pruebas' });
+            const password = 'DealerIntegration2026!';
+            const passwordHash = await bcrypt.hash(password, 4);
             users.dealer = await User.create({
                 nombre: 'Dealer principal',
                 email: 'dealer-principal@example.test',
-                password: 'hash-no-utilizable-en-pruebas',
+                password: passwordHash,
                 telefono: '0000000001',
                 direccion: 'Ruta principal',
                 rol: dealerRole._id,
@@ -34,7 +44,7 @@ test(
             users.otherDealer = await User.create({
                 nombre: 'Dealer ajeno',
                 email: 'dealer-ajeno@example.test',
-                password: 'hash-no-utilizable-en-pruebas',
+                password: passwordHash,
                 telefono: '0000000002',
                 direccion: 'Ruta ajena',
                 rol: dealerRole._id,
@@ -43,6 +53,9 @@ test(
             });
 
             app.use('/dealer', require('../server/routes/dealer.routes'));
+            app.use(require('../server/routes/auth.routes'));
+
+            users.dealerPassword = password;
         });
         t.after(() => fixture.close());
 
@@ -65,8 +78,37 @@ test(
 
         await delivery.assignOrder(order._id, fixture.users.dealer._id, fixture.users.admin._id, 'Ruta de prueba');
 
-        const dealer = await fixture.actor('dealer');
-        const otherDealer = await fixture.actor('otherDealer');
+        async function loginAs(email) {
+            const anonymous = await fixture.actor('anonymous');
+            const response = await fetch(fixture.origin + '/login', {
+                method: 'POST',
+                redirect: 'manual',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Cookie: anonymous.cookie,
+                    'X-CSRF-Token': anonymous.csrfToken,
+                    Origin: fixture.origin,
+                },
+                body: JSON.stringify({ email, password: fixture.users.dealerPassword }),
+            });
+            assert.equal(response.status, 302);
+            assert.equal(response.headers.get('location'), '/dealer/orders/read');
+
+            const cookieHeader = response.headers.get('set-cookie');
+            assert.ok(cookieHeader, 'El inicio de sesión debe crear una sesión autenticada.');
+            const actor = { cookie: cookieHeader.split(';')[0], csrfToken: '' };
+            const page = await fixture.request(actor, '/dealer/orders/read');
+            assert.equal(page.status, 200);
+            const html = await page.text();
+            const csrfMatch = html.match(/<meta name="csrf-token" content="([^"]+)"/);
+            assert.ok(csrfMatch, 'El panel dealer debe exponer el token CSRF de la sesión autenticada.');
+            actor.csrfToken = csrfMatch[1];
+            return actor;
+        }
+
+        const dealer = await loginAs(fixture.users.dealer.email);
+        const otherDealer = await loginAs(fixture.users.otherDealer.email);
 
         const assignedResponse = await fixture.request(dealer, '/dealer/orders/read');
         assert.equal(assignedResponse.status, 200);
