@@ -5,13 +5,13 @@
 
     <div class="summary-line">
       <span class="summary-text">Subtotal</span>
-      <span class="summary-text" id="subtotal">$<%= subtotal.toFixed(2) %></span>
+      <span class="summary-text" id="subtotal"><%= formatCOP(subtotalCents) %></span>
     </div>
 
     <div class="summary-line">
       <span class="summary-text">Envío</span>
       <span class="summary-text free" id="shipping">
-        <%= costoEnvio === 0 ? 'Gratis' : '$' + Number(costoEnvio).toLocaleString('es-CO') %>
+        <%= costoEnvioCents === 0 ? 'Gratis' : formatCOP(costoEnvioCents) %>
       </span>
     </div>
 
@@ -20,10 +20,10 @@
     <div class="summary-line total">
       <span class="summary-text">Total</span>
       <span class="summary-text total-amount" id="total">
-        $<%= Number(total).toLocaleString('es-CO') %>
+        <%= formatCOP(totalCents) %>
       </span>
       <small class="shipping-hint" id="shippingHint">
-        Envío gratis desde $<%= Number(freeShippingFromCents / 100).toLocaleString('es-CO') %>.
+        Envío gratis desde <%= formatCOP(freeShippingFromCents) %>.
       </small>
     </div>
 

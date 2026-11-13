@@ -1,5 +1,4 @@
 <%- include('../../include/_headerAdmin') %>
-<% const cop = value => Number(value || 0).toLocaleString('es-CO', { maximumFractionDigits: 2 }); %>
 <main class="finance-page container-fluid">
     <div class="finance-heading">
         <div>
@@ -17,10 +16,10 @@
 
     <% if (notice) { %><p class="finance-notice" role="status"><%= notice %></p><% } %>
     <section class="finance-metrics" aria-label="Resultado financiero">
-        <article><span>Ventas pagadas</span><strong>$ <%= cop(summary.revenue) %></strong><small>Valor total de las ventas del período</small></article>
-        <article><span>Ganancia bruta</span><strong>$ <%= cop(summary.grossProfit) %></strong><small>Productos vendidos menos su costo de adquisición</small></article>
-        <article><span>Gastos operativos</span><strong>$ <%= cop(summary.expenses) %></strong><small><%= summary.records %> registros del período</small></article>
-        <article class="finance-metric-accent"><span>Resultado operativo estimado</span><strong>$ <%= cop(summary.estimatedNetProfit) %></strong><small>Ganancia bruta menos gastos del período</small></article>
+        <article><span>Ventas pagadas</span><strong><%= formatCOP(summary.revenueCents) %></strong><small>Valor total de las ventas del período</small></article>
+        <article><span>Ganancia bruta</span><strong><%= formatCOPSigned(summary.grossProfitCents) %></strong><small>Productos vendidos menos su costo de adquisición</small></article>
+        <article><span>Gastos operativos</span><strong><%= formatCOP(summary.expensesCents) %></strong><small><%= summary.records %> registros del período</small></article>
+        <article class="finance-metric-accent"><span>Resultado operativo estimado</span><strong><%= formatCOPSigned(summary.estimatedNetProfitCents) %></strong><small>Ganancia bruta menos gastos del período</small></article>
     </section>
     <p class="finance-explanation">Los gastos se reconocen por su fecha de registro, aunque estén pendientes de pago. Las compras a proveedores <strong>no se descuentan de nuevo</strong> del resultado: se reconocen como costo cuando se vende la mercancía. No representa una utilidad neta fiscal ni incluye impuestos y costos no registrados.</p>
 
@@ -74,7 +73,7 @@
                                 <td><%= new Date(item.fechaGasto).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' }) %></td>
                                 <td><%= categories[item.categoria] || item.categoria %></td>
                                 <td><%= item.descripcion %></td>
-                                <td>$ <%= cop(item.montoCents / 100) %></td>
+                                <td><%= formatCOP(item.montoCents) %></td>
                                 <td>
                                     <% if (item.pagadoEn) { %>
                                         <span class="finance-status finance-status-paid">Pagado</span>

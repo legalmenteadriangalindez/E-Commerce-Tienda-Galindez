@@ -1,6 +1,7 @@
 'use strict';
 
 const storeSettings = require('../../business/storeSettingsService');
+const money = require('../../services/money');
 
 function saveSession(req) {
     return new Promise((resolve, reject) => {
@@ -24,8 +25,8 @@ exports.update = async (req, res, next) => {
     try {
         const shipping = await storeSettings.updateShippingPolicy(req.body, req.session.user?._id);
         req.session.shippingSettingsNotice =
-            `Configuración guardada. Envío estándar: $${shipping.shippingPrice.toLocaleString('es-CO')}; ` +
-            `envío gratis desde $${shipping.freeShippingFrom.toLocaleString('es-CO')}.`;
+            `Configuración guardada. Envío estándar: ${money.formatCOP(shipping.shippingPriceCents)}; ` +
+            `envío gratis desde ${money.formatCOP(shipping.freeShippingFromCents)}.`;
         await saveSession(req);
         return res.redirect(303, '/admin/settings/shipping');
     } catch (error) {

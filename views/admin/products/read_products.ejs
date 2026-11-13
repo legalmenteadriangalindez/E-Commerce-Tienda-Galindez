@@ -79,11 +79,11 @@
           </td>
 
           <td class="admin-mobile-secondary" data-label="Inversión">
-            $ <%= (product.precioCosto || 0).toLocaleString('es-CO') %>
+            <%= formatCOP(product.precioCostoCents, product.precioCosto) %>
           </td>
 
           <td data-label="Precio de venta">
-            $ <%= (product.precioVenta || 0).toLocaleString('es-CO') %>
+            <%= formatCOP(product.precioVentaCents, product.precioVenta) %>
           </td>
 
           <td data-label="Stock">

@@ -1,5 +1,4 @@
 <%- include('../../include/_headerAdmin') %>
-<% const cop = value => Number(value || 0).toLocaleString('es-CO', { maximumFractionDigits: 2 }); %>
 <main class="finance-page container-fluid">
     <div class="finance-heading">
         <div>
@@ -15,10 +14,10 @@
         </div>
     </div>
     <section class="finance-metrics" aria-label="Resumen de caja">
-        <article><span>Entradas por ventas pagadas</span><strong>$ <%= cop(cash.incoming) %></strong><small>Ventas registradas como pagadas en el período</small></article>
-        <article><span>Salidas por gastos pagados</span><strong>$ <%= cop(cash.paidExpenses) %></strong><small>Gastos cuyo pago fue confirmado</small></article>
-        <article><span>Salidas por compras pagadas</span><strong>$ <%= cop(cash.paidPurchases) %></strong><small>Pagos registrados a proveedores</small></article>
-        <article class="finance-metric-accent"><span>Movimiento neto estimado</span><strong>$ <%= cop(cash.netMovement) %></strong><small>Entradas menos salidas registradas</small></article>
+        <article><span>Entradas por ventas pagadas</span><strong><%= formatCOP(cash.incomingCents) %></strong><small>Ventas registradas como pagadas en el período</small></article>
+        <article><span>Salidas por gastos pagados</span><strong><%= formatCOP(cash.paidExpensesCents) %></strong><small>Gastos cuyo pago fue confirmado</small></article>
+        <article><span>Salidas por compras pagadas</span><strong><%= formatCOP(cash.paidPurchasesCents) %></strong><small>Pagos registrados a proveedores</small></article>
+        <article class="finance-metric-accent"><span>Movimiento neto estimado</span><strong><%= formatCOPSigned(cash.netMovementCents) %></strong><small>Entradas menos salidas registradas</small></article>
     </section>
     <p class="finance-explanation">Esta vista usa la fecha de registro de ventas pagadas como aproximación al cobro, y la fecha en que marcaste gastos y compras como pagados. No comprueba liquidaciones bancarias ni incluye cobros anteriores, reembolsos bancarios, capital inicial o pagos que no se hayan registrado. No debe usarse como saldo contable conciliado.</p>
     <section class="finance-panel">
@@ -35,7 +34,7 @@
                             <td><%= new Date(item.date).toLocaleString('es-CO', { timeZone: 'America/Bogota', dateStyle: 'short', timeStyle: 'short' }) %></td>
                             <td><%= item.type %></td>
                             <td><%= item.description %></td>
-                            <td class="<%= item.sign > 0 ? 'finance-positive' : 'finance-negative' %>"><%= item.sign > 0 ? '+' : '−' %> $ <%= cop(item.amount) %></td>
+                            <td class="<%= item.sign > 0 ? 'finance-positive' : 'finance-negative' %>"><%= item.sign > 0 ? '+' : '−' %> <%= formatCOP(item.amountCents) %></td>
                         </tr>
                     <% }) %>
                 </tbody>

@@ -5,7 +5,7 @@
         <% } %>
         <span class="raffle-floating-copy">
             <strong><%= activeRaffle.titulo %></strong>
-            <span>Compra desde $<%= Number(activeRaffle.montoMinimo).toLocaleString('es-CO') %></span>
+            <span>Compra desde <%= formatCOP(activeRaffle.montoMinimoCents, activeRaffle.montoMinimo) %></span>
         </span>
     </a>
 <% } %>

@@ -6,7 +6,7 @@
           </div>
           <div class="ap-total">
             <span>Total</span>
-            <strong>$<%= order.total.toLocaleString('es-CO') %> <small>COP</small></strong>
+            <strong><%= formatCOP(order.totalCents, order.total) %> <small>COP</small></strong>
           </div>
         </header>
 

@@ -3,24 +3,24 @@
     <div class="card-body">
         <div class="summary-item">
             <span>Subtotal:</span>
-            <strong>$ <%= order.subtotal.toLocaleString() %></strong>
+            <strong><%= formatCOP(order.subtotalCents, order.subtotal) %></strong>
         </div>
         <div class="summary-item">
             <span>Impuestos:</span>
-            <strong>$ <%= order.impuestos.toLocaleString() %></strong>
+            <strong><%= formatCOP(order.impuestosCents, order.impuestos) %></strong>
         </div>
         <div class="summary-item">
             <span>Envío:</span>
-            <strong>$ <%= order.costoEnvio.toLocaleString() %></strong>
+            <strong><%= formatCOP(order.costoEnvioCents, order.costoEnvio) %></strong>
         </div>
         <div class="summary-item">
             <span>Descuento:</span>
-            <strong>$ <%= order.descuento.toLocaleString() %></strong>
+            <strong><%= formatCOP(order.descuentoCents, order.descuento) %></strong>
         </div>
         <hr>
         <div class="summary-item total">
             <span>Total:</span>
-            <strong>$ <%= order.total.toLocaleString() %></strong>
+            <strong><%= formatCOP(order.totalCents, order.total) %></strong>
         </div>
     </div>
 </div>

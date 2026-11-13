@@ -14,7 +14,7 @@ const notifications = require('./notificationService');
 const media = require('./mediaService');
 const populate = [
     ['usuario', 'nombre apellido email telefono'],
-    ['productos.producto', 'nombre precioVenta fotos'],
+    ['productos.producto', 'nombre precioVenta precioVentaCents fotos'],
     ['repartidor', 'nombre email telefono'],
     ['asignacionReparto.asignadoPor', 'nombre email'],
     ['seguimientoEntrega.actor', 'nombre email'],

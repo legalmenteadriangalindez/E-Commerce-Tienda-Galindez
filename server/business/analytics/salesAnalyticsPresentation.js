@@ -9,6 +9,7 @@ function materializeChannels(rows) {
     return rows.map((row) => ({
         nombre: channelLabel(row.nombre),
         pedidos: Number(row.pedidos || 0),
+        ingresosCents: Number(row.ingresosCents || 0),
         ingresos: money.fromCents(Number(row.ingresosCents || 0)),
     }));
 }
@@ -23,6 +24,7 @@ function materializeProducts(rows) {
             unidades: Number(row.unidades || 0),
             ingresosCents,
             costosCents,
+            gananciaCents: ingresosCents - costosCents,
             ingresos: money.fromCents(ingresosCents),
             costos: money.fromCents(costosCents),
             ganancia: money.fromSignedCents(ingresosCents - costosCents),
@@ -43,6 +45,7 @@ function materializeCategories(rows, names) {
             unidades: Number(row.unidades || 0),
             ingresosCents,
             costosCents,
+            gananciaCents: ingresosCents - costosCents,
             ingresos: money.fromCents(ingresosCents),
             costos: money.fromCents(costosCents),
             ganancia: money.fromSignedCents(ingresosCents - costosCents),
@@ -55,8 +58,10 @@ function materializeTrend(rows) {
         key: row.key,
         label: common.dateLabel(row.createdAt),
         orders: Number(row.orders || 0),
+        revenueCents: Number(row.revenueCents || 0),
         revenue: money.fromCents(Number(row.revenueCents || 0)),
         units: Number(row.units || 0),
+        grossProfitCents: Number(row.grossProfitCents || 0),
         grossProfit: money.fromSignedCents(Number(row.grossProfitCents || 0)),
     }));
 }

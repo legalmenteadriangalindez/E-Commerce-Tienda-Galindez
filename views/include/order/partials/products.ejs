@@ -7,8 +7,8 @@
                 <tr>
                     <td <%= dealer ? 'data-label="Producto"' : '' %>><%= producto.nombre %></td>
                     <td <%= dealer ? 'data-label="Cantidad"' : '' %>><%= producto.cantidad %></td>
-                    <td <%= dealer ? 'data-label="Precio"' : '' %>>$ <%= producto.precioUnitario %></td>
-                    <td <%= dealer ? 'data-label="Subtotal"' : '' %>>$ <%= producto.subtotal %></td>
+                    <td <%= dealer ? 'data-label="Precio"' : '' %>><%= formatCOP(producto.precioUnitarioCents, producto.precioUnitario) %></td>
+                    <td <%= dealer ? 'data-label="Subtotal"' : '' %>><%= formatCOP(producto.subtotalCents, producto.subtotal) %></td>
                 </tr>
             <% }) %></tbody>
         </table>

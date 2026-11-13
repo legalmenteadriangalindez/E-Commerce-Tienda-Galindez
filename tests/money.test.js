@@ -20,6 +20,20 @@ test('los importes se convierten a centavos sin punto flotante', () => {
     }
 });
 
+test('la presentación monetaria usa pesos colombianos y los centavos como fuente', () => {
+    assert.match(money.formatCOP(1234500), /12\.345/);
+    assert.match(money.formatCOP(undefined, 12345), /12\.345/);
+    assert.equal(money.formatCOPInput(1234500), '12345');
+    assert.deepEqual(money.parity(1234500, 12345), {
+        comparable: true,
+        matches: true,
+        cents: 1234500,
+        legacyCents: 1234500,
+    });
+    assert.throws(() => money.parity(Number.NaN, 12345), money.MoneyError);
+    assert.equal(money.formatCOPSigned(-1250000).includes('12.500'), true);
+});
+
 test('los esquemas exponen campos enteros de centavos para cada importe', () => {
     const paths = [
         [Product, ['precioCostoCents', 'precioVentaCents']],

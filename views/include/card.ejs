@@ -13,7 +13,7 @@
 
     <ul class="list-group list-group-flush product-list">
         <li class="list-group-item product-list-item product-price">
-            $ <%= p.precioVenta %>
+            <%= formatCOP(p.precioVentaCents, p.precioVenta) %>
         </li>
         <li class="list-group-item product-list-item">Disponible</li>
         <li class="list-group-item product-list-item">

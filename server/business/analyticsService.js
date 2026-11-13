@@ -59,6 +59,12 @@ async function summary(value = 'week', now = new Date()) {
     const categories = await sales.materializeCategories(categoriesRows);
     const noRotation = await inventory.noRotation(soldIds);
 
+    const compareMoney = (field) => ({
+        ...common.comparison(current[field], previous[field]),
+        currentCents: current[`${field}Cents`],
+        previousCents: previous[`${field}Cents`],
+    });
+
     return {
         period: {
             key: range.key,
@@ -74,11 +80,11 @@ async function summary(value = 'week', now = new Date()) {
             ),
         },
         kpis: {
-            revenue: common.comparison(current.revenue, previous.revenue),
+            revenue: compareMoney('revenue'),
             orders: common.comparison(current.orders, previous.orders),
             units: common.comparison(current.units, previous.units),
-            grossProfit: common.comparison(current.grossProfit, previous.grossProfit),
-            averageTicket: common.comparison(current.averageTicket, previous.averageTicket),
+            grossProfit: compareMoney('grossProfit'),
+            averageTicket: compareMoney('averageTicket'),
             shipping: current.shipping,
             costs: current.costs,
             productRevenue: current.productRevenue,

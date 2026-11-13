@@ -141,7 +141,7 @@
                 </div>
 
                 <small class="shipping-hint" id="shippingHint">
-                    Envío gratis desde $<%= Number(freeShippingFromCents / 100).toLocaleString('es-CO') %>.
+                    Envío gratis desde <%= formatCOP(freeShippingFromCents) %>.
                 </small>
 
                 <div class="divider billing-divider"></div>

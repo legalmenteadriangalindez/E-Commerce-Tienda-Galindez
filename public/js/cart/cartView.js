@@ -6,7 +6,8 @@
     const currency = new Intl.NumberFormat('es-CO', {
         style: 'currency',
         currency: 'COP',
-        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
     });
     const shippingPriceCents = Number(cartRoot?.dataset.shippingPriceCents || 0);
     const freeShippingFromCents = Number(cartRoot?.dataset.freeShippingFromCents || 0);

@@ -31,7 +31,11 @@ exports.checkout = (admin) =>
         await saveSession(req);
         res.render(admin ? 'admin/payment/payment_point' : 'client/payment/payment_point', {
             user: req.usuarioActual || req.session.user,
-            productosCarrito: priced.productos.map((item) => ({ ...item, precio: item.precioUnitario })),
+            productosCarrito: priced.productos.map((item) => ({
+                ...item,
+                precio: item.precioUnitario,
+                precioCents: item.precioUnitarioCents,
+            })),
             ...priced,
             shippingPriceCents: shipping.priceCents,
             freeShippingFromCents: shipping.freeAtCents,

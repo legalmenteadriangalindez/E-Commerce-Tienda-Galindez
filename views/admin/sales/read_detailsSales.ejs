@@ -43,8 +43,8 @@
         </td>
 
         <td><%= detail.cantidad %></td>
-        <td>$ <%= detail.precioUnitario %></td>
-        <td>$ <%= detail.cantidad * detail.precioUnitario %></td>
+        <td><%= formatCOP(detail.precioUnitarioCents, detail.precioUnitario) %></td>
+        <td><%= formatCOP(detail.subtotalCents, detail.cantidad * detail.precioUnitario) %></td>
 
       </tr>
       <% }); %>

@@ -78,7 +78,7 @@
 
             "priceCurrency": "COP",
 
-            "price": product.precioVenta,
+            "price": formatCOPInput(product.precioVentaCents, product.precioVenta),
 
             "availability":
                 product.stock > 0

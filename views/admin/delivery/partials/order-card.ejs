@@ -7,7 +7,7 @@
 <article class="delivery-card">
     <%- include('./status', { order, statusLabels }) %>
     <div class="delivery-card__facts">
-        <span><i class="bi bi-cash-coin"></i> $<%= Number(order.total || 0).toLocaleString('es-CO') %> COP</span>
+        <span><i class="bi bi-cash-coin"></i> <%= formatCOP(order.totalCents, order.total) %></span>
         <span><i class="bi bi-wallet2"></i> <%= paymentMethod === 'CASH_ON_DELIVERY' ? 'Contra entrega' : paymentMethod === 'CASH_AT_COUNTER' ? 'Efectivo en caja' : paymentMethod === 'WOMPI_NEQUI' ? 'Nequi · Wompi' : 'Tarjeta · Wompi' %></span>
         <span><i class="bi bi-calendar3"></i> <%= new Date(order.createdAt).toLocaleDateString('es-CO') %></span>
         <span><i class="bi bi-geo-alt"></i> <%= order.direccionEnvio?.ciudad || 'Ciudad no indicada' %></span>

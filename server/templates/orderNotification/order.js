@@ -2,7 +2,7 @@ const {
     addressParts,
     escapeHtml,
     formatHeaderText,
-    formatMoney,
+    formatMoneyCents,
     formatText,
     publicUrl,
     renderEmailDocument,
@@ -56,7 +56,7 @@ function renderOrderNotification(event) {
                 .map(
                     (item) => `<tr>
                         <td style="padding:8px 0;border-bottom:1px solid #eee">${escapeHtml(item.nombre)} × ${escapeHtml(item.cantidad)}</td>
-                        <td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right">${escapeHtml(formatMoney(item.subtotal))}</td>
+                        <td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right">${escapeHtml(formatMoneyCents(item.subtotalCents, item.subtotal))}</td>
                     </tr>`
                 )
                 .join('')}
@@ -71,10 +71,10 @@ function renderOrderNotification(event) {
         <p><strong>Pedido:</strong> ${number}<br><strong>Estado:</strong> ${status}</p>
         ${items}
         ${addressBlock}
-        <p style="font-size:18px"><strong>Total: ${escapeHtml(formatMoney(data.total))}</strong></p>
+        <p style="font-size:18px"><strong>Total: ${escapeHtml(formatMoneyCents(data.totalCents, data.total))}</strong></p>
         <p>Consulta el estado desde <a href="${publicUrl('/mis-pedidos')}">Mis pedidos</a>.</p>
     `);
-    const textContent = `Hola, ${formatText(data.nombre || 'Cliente')}.\n\n${message}\nPedido: ${formatText(data.numeroOrden || 'Pedido')}\nEstado: ${formatText(data.estadoLabel || data.estado || 'Pendiente')}\nTotal: ${formatMoney(data.total)}\n\nConsulta el estado en Mis pedidos.`;
+    const textContent = `Hola, ${formatText(data.nombre || 'Cliente')}.\n\n${message}\nPedido: ${formatText(data.numeroOrden || 'Pedido')}\nEstado: ${formatText(data.estadoLabel || data.estado || 'Pendiente')}\nTotal: ${formatMoneyCents(data.totalCents, data.total)}\n\nConsulta el estado en Mis pedidos.`;
 
     return {
         subject: subjectForOrder(event),

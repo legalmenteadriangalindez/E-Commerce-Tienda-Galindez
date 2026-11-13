@@ -224,6 +224,8 @@ const DEFINITIONS = Object.freeze([
             'estado',
             'fechaInicio',
             'fechaFin',
+            'montoMinimo',
+            'montoMinimoCents',
             'ganador',
             'createdAt',
             'updatedAt',
@@ -232,7 +234,7 @@ const DEFINITIONS = Object.freeze([
     {
         file: 'participaciones_sorteos.csv',
         model: 'raffleEntry',
-        fields: ['_id', 'raffle', 'usuario', 'pedido', 'createdAt', 'updatedAt'],
+        fields: ['_id', 'raffle', 'usuario', 'pedido', 'montoCompra', 'montoCompraCents', 'createdAt', 'updatedAt'],
     },
     {
         file: 'configuracion_tienda.csv',

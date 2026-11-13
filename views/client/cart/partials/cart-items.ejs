@@ -20,10 +20,11 @@
     <% } %>
 
     <% productosCarrito.forEach((producto, index) => { %>
+      <% const precioCents = producto.precioCents ?? Math.round(Number(producto.precio || 0) * 100); %>
       <article
         class="product-card"
-        data-price="<%= producto.precio %>"
-        data-price-cents="<%= producto.precioCents || Math.round(Number(producto.precio) * 100) %>"
+        data-price="<%= precioCents / 100 %>"
+        data-price-cents="<%= precioCents %>"
       >
         <div class="img-container">
           <img src="<%= producto.foto || '/img/default.jpg' %>" alt="<%= producto.nombre %>">
@@ -66,7 +67,7 @@
         </div>
 
         <p class="price item-total">
-          $<%= Number(producto.precio * producto.cantidad).toLocaleString('es-CO') %>
+          <%= formatCOP(precioCents * producto.cantidad) %>
         </p>
 
         <button

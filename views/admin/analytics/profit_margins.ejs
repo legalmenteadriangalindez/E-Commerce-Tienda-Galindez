@@ -58,21 +58,18 @@
                                 </td>
 
                                 <td>
-                                    $
-                                    <%= product.ingresos.toLocaleString() %>
+                                    <%= formatCOP(product.ingresosCents) %>
                                 </td>
 
                                 <td>
-                                    $
-                                    <%= product.costos.toLocaleString() %>
+                                    <%= formatCOP(product.costosCents) %>
                                 </td>
 
                                 <td>
 
                                     <span class="profit-badge">
 
-                                        $
-                                        <%= product.ganancias.toLocaleString() %>
+                                        <%= formatCOPSigned(product.gananciasCents) %>
 
                                     </span>
 

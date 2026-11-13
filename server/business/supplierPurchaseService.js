@@ -115,7 +115,7 @@ async function list(limit = 40) {
             .limit(limit)
             .lean(),
         Provider.find({}).select('nombre').sort({ nombre: 1 }).limit(500).lean(),
-        Product.find({}).select('nombre stock precioCosto').sort({ nombre: 1 }).limit(500).lean(),
+        Product.find({}).select('nombre stock precioCosto precioCostoCents').sort({ nombre: 1 }).limit(500).lean(),
     ]);
     return { items, providers, products };
 }

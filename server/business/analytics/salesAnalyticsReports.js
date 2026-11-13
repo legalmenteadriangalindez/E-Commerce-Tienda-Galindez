@@ -10,6 +10,9 @@ async function totalProfit() {
         Number(totals.productRevenueCents || 0) - Number(totals.costsCents || 0)
     );
     return {
+        ingresosTotalesCents: Number(totals.productRevenueCents || 0),
+        costosTotalesCents: Number(totals.costsCents || 0),
+        gananciasTotalesCents: Number(totals.productRevenueCents || 0) - Number(totals.costsCents || 0),
         ingresosTotales,
         costosTotales,
         gananciasTotales,
@@ -24,6 +27,7 @@ async function bestSellingProducts(limit = common.PRODUCT_LIMIT) {
         nombre: row.nombre || 'Producto histórico',
         fotos: row.fotos || [],
         unidadesVendidas: Number(row.unidades || 0),
+        ingresosGeneradosCents: Number(row.ingresosCents || 0),
         ingresosGenerados: money.fromCents(Number(row.ingresosCents || 0)),
     }));
 }
@@ -35,6 +39,9 @@ async function profitByProduct(limit = common.ALL_TIME_PRODUCT_LIMIT) {
         nombre: row.nombre || 'Producto histórico',
         fotos: row.fotos || [],
         vendidos: Number(row.unidades || 0),
+        ingresosCents: Number(row.ingresosCents || 0),
+        costosCents: Number(row.costosCents || 0),
+        gananciasCents: Number(row.profitCents || 0),
         ingresos: money.fromCents(Number(row.ingresosCents || 0)),
         costos: money.fromCents(Number(row.costosCents || 0)),
         ganancias: money.fromSignedCents(Number(row.profitCents || 0)),

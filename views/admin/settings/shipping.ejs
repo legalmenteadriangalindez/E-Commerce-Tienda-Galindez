@@ -25,20 +25,20 @@
 
                 <label class="admin-settings-field">
                     <span>Monto mínimo para envío gratis (COP)</span>
-                    <input type="number" name="freeShippingFrom" min="0" max="100000000" step="1" required value="<%= shipping.freeShippingFrom %>">
+                    <input type="number" name="freeShippingFrom" min="0" max="100000000" step="1" required value="<%= formatCOPInput(shipping.freeShippingFromCents) %>">
                     <small>Si el subtotal alcanza este valor, el envío será gratis.</small>
                 </label>
 
                 <label class="admin-settings-field">
                     <span>Costo de envío cuando no se alcanza el mínimo (COP)</span>
-                    <input type="number" name="shippingPrice" min="0" max="100000000" step="1" required value="<%= shipping.shippingPrice %>">
+                    <input type="number" name="shippingPrice" min="0" max="100000000" step="1" required value="<%= formatCOPInput(shipping.shippingPriceCents) %>">
                     <small>Se sumará al total de pedidos por debajo del monto mínimo.</small>
                 </label>
 
                 <div class="admin-settings-preview" aria-live="polite">
                     <strong>Configuración actual</strong>
-                    <span>Envío estándar: $<%= shipping.shippingPrice.toLocaleString('es-CO') %></span>
-                    <span>Envío gratis desde: $<%= shipping.freeShippingFrom.toLocaleString('es-CO') %></span>
+                    <span>Envío estándar: <%= formatCOP(shipping.shippingPriceCents) %></span>
+                    <span>Envío gratis desde: <%= formatCOP(shipping.freeShippingFromCents) %></span>
                 </div>
 
                 <button type="submit" class="admin-settings-submit">

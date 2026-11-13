@@ -1,4 +1,5 @@
 const PDFDocument = require('pdfkit');
+const moneyService = require('./money');
 
 function valueText(value, fallback = '—') {
     if (value === null || value === undefined || value === '') return fallback;
@@ -12,6 +13,13 @@ function money(value) {
         currency: 'COP',
         maximumFractionDigits: 0,
     });
+}
+
+function moneyCents(cents, legacyValue) {
+    if (cents !== undefined && cents !== null && Number.isSafeInteger(Number(cents))) {
+        return moneyService.formatCOP(Number(cents));
+    }
+    return money(legacyValue);
 }
 
 function renderInvoicePdf(data = {}) {
@@ -105,8 +113,11 @@ function renderInvoicePdf(data = {}) {
             document.font('Helvetica').fontSize(9).fillColor(ink);
             document.text(valueText(item.nombre, 'Producto'), 56, rowY, { width: 245, height: 22 });
             document.text(valueText(item.cantidad, '0'), 306, rowY, { width: 45, align: 'right' });
-            document.text(money(item.precioUnitario), 357, rowY, { width: 80, align: 'right' });
-            document.text(money(item.subtotal), 442, rowY, { width: 98, align: 'right' });
+            document.text(moneyCents(item.precioUnitarioCents, item.precioUnitario), 357, rowY, {
+                width: 80,
+                align: 'right',
+            });
+            document.text(moneyCents(item.subtotalCents, item.subtotal), 442, rowY, { width: 98, align: 'right' });
             y = Math.max(document.y, rowY + 13) + 8;
             document
                 .moveTo(48, y - 4)
@@ -134,9 +145,9 @@ function renderInvoicePdf(data = {}) {
             document.text(value, summaryX + 115, y, { width: summaryWidth - 115, align: 'right' });
             y = document.y + (strong ? 9 : 5);
         };
-        summaryLine('Subtotal', money(data.subtotal));
-        summaryLine('Envío', money(data.costoEnvio));
-        summaryLine('Descuento', `-${money(data.descuento)}`);
+        summaryLine('Subtotal', moneyCents(data.subtotalCents, data.subtotal));
+        summaryLine('Envío', moneyCents(data.costoEnvioCents, data.costoEnvio));
+        summaryLine('Descuento', `-${moneyCents(data.descuentoCents, data.descuento)}`);
         document
             .moveTo(summaryX, y)
             .lineTo(summaryX + summaryWidth, y)
@@ -144,7 +155,7 @@ function renderInvoicePdf(data = {}) {
             .strokeColor(ink)
             .stroke();
         y += 9;
-        summaryLine('Total', money(data.total), true);
+        summaryLine('Total', moneyCents(data.totalCents, data.total), true);
 
         ensureSpace(44);
         y += 18;

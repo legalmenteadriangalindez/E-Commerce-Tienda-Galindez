@@ -53,7 +53,7 @@
             <th scope="row" hidden><%= order._id %></th>
             <td data-label="Orden"><strong><%= order.numeroOrden || '—' %></strong></td>
             <td data-label="Usuario"><%= order.usuario?.nombre || 'Sin usuario' %></td>
-            <td data-label="Total"><strong>$ <%= Number(order.total || 0).toLocaleString('es-CO') %></strong></td>
+            <td data-label="Total"><strong><%= formatCOP(order.totalCents, order.total) %></strong></td>
             <td data-label="Medio de pago">
               <%= order.metodoPago === 'CASH_ON_DELIVERY'
                 ? 'Contra entrega'

@@ -3,7 +3,7 @@ const {
     escapeHtml,
     formatDate,
     formatHeaderText,
-    formatMoney,
+    formatMoneyCents,
     formatText,
     publicUrl,
     renderEmailDocument,
@@ -31,8 +31,8 @@ function renderInvoice(data) {
         .map(
             (item) => `<tr>
                 <td style="padding:10px 6px;border-bottom:1px solid #eee">${escapeHtml(item.nombre)} × ${escapeHtml(item.cantidad)}</td>
-                <td style="padding:10px 6px;border-bottom:1px solid #eee;text-align:right">${escapeHtml(formatMoney(item.precioUnitario))}</td>
-                <td style="padding:10px 6px;border-bottom:1px solid #eee;text-align:right">${escapeHtml(formatMoney(item.subtotal))}</td>
+                <td style="padding:10px 6px;border-bottom:1px solid #eee;text-align:right">${escapeHtml(formatMoneyCents(item.precioUnitarioCents, item.precioUnitario))}</td>
+                <td style="padding:10px 6px;border-bottom:1px solid #eee;text-align:right">${escapeHtml(formatMoneyCents(item.subtotalCents, item.subtotal))}</td>
             </tr>`
         )
         .join('');
@@ -63,10 +63,10 @@ function renderInvoice(data) {
         </table>
         ${addressBlock}
         <table role="presentation" style="width:100%;max-width:360px;margin-left:auto;border-collapse:collapse">
-            <tr><td style="padding:5px">Subtotal</td><td style="padding:5px;text-align:right">${escapeHtml(formatMoney(data.subtotal))}</td></tr>
-            <tr><td style="padding:5px">Envío</td><td style="padding:5px;text-align:right">${escapeHtml(formatMoney(data.costoEnvio))}</td></tr>
-            <tr><td style="padding:5px">Descuento</td><td style="padding:5px;text-align:right">-${escapeHtml(formatMoney(data.descuento))}</td></tr>
-            <tr><td style="padding:10px 5px;border-top:2px solid #311b14;font-size:18px"><strong>Total</strong></td><td style="padding:10px 5px;border-top:2px solid #311b14;text-align:right;font-size:18px"><strong>${escapeHtml(formatMoney(data.total))}</strong></td></tr>
+            <tr><td style="padding:5px">Subtotal</td><td style="padding:5px;text-align:right">${escapeHtml(formatMoneyCents(data.subtotalCents, data.subtotal))}</td></tr>
+            <tr><td style="padding:5px">Envío</td><td style="padding:5px;text-align:right">${escapeHtml(formatMoneyCents(data.costoEnvioCents, data.costoEnvio))}</td></tr>
+            <tr><td style="padding:5px">Descuento</td><td style="padding:5px;text-align:right">-${escapeHtml(formatMoneyCents(data.descuentoCents, data.descuento))}</td></tr>
+            <tr><td style="padding:10px 5px;border-top:2px solid #311b14;font-size:18px"><strong>Total</strong></td><td style="padding:10px 5px;border-top:2px solid #311b14;text-align:right;font-size:18px"><strong>${escapeHtml(formatMoneyCents(data.totalCents, data.total))}</strong></td></tr>
         </table>
         <p style="margin-top:24px">Puedes consultar el seguimiento en <a href="${publicUrl('/mis-pedidos')}">Mis pedidos</a>.</p>
         <p style="color:#6d5148;font-size:12px">Este correo es un comprobante digital generado por Tienda Galindez.</p>
@@ -81,13 +81,14 @@ function renderInvoice(data) {
         `Estado del pago: ${formatText(data.estadoPago, 'PENDIENTE')}`,
         '',
         ...products.map(
-            (item) => `${formatText(item.nombre)} x ${formatText(item.cantidad)}: ${formatMoney(item.subtotal)}`
+            (item) =>
+                `${formatText(item.nombre)} x ${formatText(item.cantidad)}: ${formatMoneyCents(item.subtotalCents, item.subtotal)}`
         ),
         '',
-        `Subtotal: ${formatMoney(data.subtotal)}`,
-        `Envío: ${formatMoney(data.costoEnvio)}`,
-        `Descuento: -${formatMoney(data.descuento)}`,
-        `Total: ${formatMoney(data.total)}`,
+        `Subtotal: ${formatMoneyCents(data.subtotalCents, data.subtotal)}`,
+        `Envío: ${formatMoneyCents(data.costoEnvioCents, data.costoEnvio)}`,
+        `Descuento: -${formatMoneyCents(data.descuentoCents, data.descuento)}`,
+        `Total: ${formatMoneyCents(data.totalCents, data.total)}`,
     ].join('\n');
 
     return { subject: subjectForInvoice(data), htmlContent, textContent };

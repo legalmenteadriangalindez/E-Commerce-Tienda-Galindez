@@ -15,10 +15,10 @@
                 <div class="item-icon"><i class="fas fa-box"></i></div>
                 <div class="item-details">
                     <div class="item-title"><%= item.nombre %></div>
-                    <div class="item-price"><%= item.precio %> $</div>
+                    <div class="item-price"><%= formatCOP(item.precioUnitarioCents, item.precio) %></div>
                     <div class="item-quantity">Cantidad: <%= item.cantidad %></div>
                 </div>
-                <div class="item-line-price"><%= item.precio * item.cantidad %> $</div>
+                <div class="item-line-price"><%= formatCOP(item.subtotalCents, item.subtotal ?? item.precio * item.cantidad) %></div>
             </div>
         <% }) %>
     </div>
@@ -27,11 +27,11 @@
 
     <div class="summary-line summary-text">
         <span>Subtotal</span>
-        <span id="checkoutSubtotal"><%= Number(subtotal).toLocaleString('es-CO') %> $</span>
+        <span id="checkoutSubtotal"><%= formatCOP(subtotalCents, subtotal) %></span>
     </div>
     <div class="summary-line summary-text">
         <span>Envío</span>
-        <span id="checkoutShipping"><%= costoEnvio === 0 ? 'Gratis' : '$' + Number(costoEnvio).toLocaleString('es-CO') %></span>
+        <span id="checkoutShipping"><%= costoEnvioCents === 0 ? 'Gratis' : formatCOP(costoEnvioCents, costoEnvio) %></span>
     </div>
     <div class="summary-line summary-text">
         <span>Impuestos</span><span>Incluidos en los precios</span>
@@ -39,14 +39,14 @@
     <div class="promo-code"></div>
     <div class="summary-line total summary-text">
         <span>Total a pagar</span>
-        <span id="checkoutTotal">$<%= Number(total).toLocaleString('es-CO') %></span>
+        <span id="checkoutTotal"><%= formatCOP(totalCents, total) %></span>
     </div>
 
     <small class="shipping-hint">El envío se recalcula automáticamente según el subtotal del pedido.</small>
 
     <button type="submit" class="pay-btn">
         <i class="fas fa-lock"></i>
-        Registrar pedido · $<%= Number(total).toLocaleString('es-CO') %>
+        Registrar pedido · <%= formatCOP(totalCents, total) %>
     </button>
 
     <div class="trust-badge payment-actions"></div>

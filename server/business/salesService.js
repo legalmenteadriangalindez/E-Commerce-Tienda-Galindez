@@ -39,7 +39,7 @@ async function list(query = {}) {
     }
     // Una página contiene como máximo 50 ventas; cada checkout admite 100 líneas.
     const details = await SaleDetail.find({ venta: { $in: page.items.map((sale) => sale._id) } })
-        .populate('producto', 'nombre precioVenta fotos')
+        .populate('producto', 'nombre precioVenta precioVentaCents fotos')
         .sort({ venta: 1, _id: 1 })
         .limit(5000)
         .lean();
@@ -59,7 +59,7 @@ async function get(id) {
         .lean();
     if (!sale) throw new BusinessError('Venta no encontrada.', 404);
     sale.detalles = await SaleDetail.find({ venta: id })
-        .populate('producto', 'nombre precioVenta fotos')
+        .populate('producto', 'nombre precioVenta precioVentaCents fotos')
         .sort({ _id: 1 })
         .limit(200)
         .lean();

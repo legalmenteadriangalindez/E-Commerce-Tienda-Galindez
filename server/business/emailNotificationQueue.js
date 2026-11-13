@@ -8,16 +8,27 @@ function snapshotOrder(order) {
     const cliente = source.cliente || {};
     const direccion = source.direccionEnvio || {};
 
+    const subtotalCents = moneyService.readCents(source.subtotalCents, source.subtotal);
+    const impuestosCents = moneyService.readCents(source.impuestosCents, source.impuestos);
+    const costoEnvioCents = moneyService.readCents(source.costoEnvioCents, source.costoEnvio);
+    const descuentoCents = moneyService.readCents(source.descuentoCents, source.descuento);
+    const totalCents = moneyService.readCents(source.totalCents, source.total);
+
     return {
         numeroOrden: text(source.numeroOrden, 'Pedido'),
         nombre: text(cliente.nombre, 'Cliente'),
         email: normalizeEmail(cliente.email),
         fecha: source.createdAt ? new Date(source.createdAt).toISOString() : new Date().toISOString(),
-        subtotal: moneyService.display(source.subtotalCents, source.subtotal),
-        impuestos: moneyService.display(source.impuestosCents, source.impuestos),
-        costoEnvio: moneyService.display(source.costoEnvioCents, source.costoEnvio),
-        descuento: moneyService.display(source.descuentoCents, source.descuento),
-        total: moneyService.display(source.totalCents, source.total),
+        subtotalCents,
+        impuestosCents,
+        costoEnvioCents,
+        descuentoCents,
+        totalCents,
+        subtotal: moneyService.fromCents(subtotalCents),
+        impuestos: moneyService.fromCents(impuestosCents),
+        costoEnvio: moneyService.fromCents(costoEnvioCents),
+        descuento: moneyService.fromCents(descuentoCents),
+        total: moneyService.fromCents(totalCents),
         estado: text(source.estado, 'PENDIENTE'),
         estadoPago: text(source.estadoPago, 'PENDIENTE'),
         metodoPago: text(source.metodoPago, source.canal === 'CAJA' ? 'CASH_AT_COUNTER' : ''),
@@ -28,12 +39,18 @@ function snapshotOrder(order) {
             referencia: text(direccion.referencia),
         },
         productos: Array.isArray(source.productos)
-            ? source.productos.slice(0, 100).map((item) => ({
-                  nombre: text(item.nombre, 'Producto'),
-                  cantidad: Number.isSafeInteger(Number(item.cantidad)) ? Number(item.cantidad) : 0,
-                  precioUnitario: moneyService.display(item.precioUnitarioCents, item.precioUnitario),
-                  subtotal: moneyService.display(item.subtotalCents, item.subtotal),
-              }))
+            ? source.productos.slice(0, 100).map((item) => {
+                  const precioUnitarioCents = moneyService.readCents(item.precioUnitarioCents, item.precioUnitario);
+                  const itemSubtotalCents = moneyService.readCents(item.subtotalCents, item.subtotal);
+                  return {
+                      nombre: text(item.nombre, 'Producto'),
+                      cantidad: Number.isSafeInteger(Number(item.cantidad)) ? Number(item.cantidad) : 0,
+                      precioUnitarioCents,
+                      subtotalCents: itemSubtotalCents,
+                      precioUnitario: moneyService.fromCents(precioUnitarioCents),
+                      subtotal: moneyService.fromCents(itemSubtotalCents),
+                  };
+              })
             : [],
     };
 }

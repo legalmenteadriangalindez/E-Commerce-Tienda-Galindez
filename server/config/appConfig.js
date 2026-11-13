@@ -2,6 +2,7 @@ const express = require('express');
 const methodOverride = require('method-override');
 const path = require('path');
 const { pageResourcesFor } = require('./pageResources');
+const money = require('../services/money');
 
 module.exports = (app) => {
     require('axios').defaults.timeout = 10000;
@@ -44,7 +45,19 @@ module.exports = (app) => {
                 locals = {};
             }
 
-            return render(view, { ...pageResourcesFor(view), ...(locals || {}) }, done);
+            return render(
+                view,
+                {
+                    ...pageResourcesFor(view),
+                    // Todas las vistas muestran el importe canónico en COP.
+                    // El segundo argumento permite leer documentos históricos.
+                    formatCOP: money.formatCOP,
+                    formatCOPSigned: money.formatCOPSigned,
+                    formatCOPInput: money.formatCOPInput,
+                    ...(locals || {}),
+                },
+                done
+            );
         };
         next();
     });

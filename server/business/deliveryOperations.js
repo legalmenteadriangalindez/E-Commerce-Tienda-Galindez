@@ -449,6 +449,7 @@ async function dashboardForDealer(dealerId) {
         pending: Number(stats.pending || 0),
         inRoute: Number(stats.inRoute || 0),
         completedToday: Number(completedToday || 0),
+        cashCollectedCents: Number(cashCollectedRows[0]?.totalCents || 0),
         cashCollected: Number(cashCollectedRows[0]?.totalCents || 0) / 100,
         overdue: Number(stats.overdue || 0),
     };

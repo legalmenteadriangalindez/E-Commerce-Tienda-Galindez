@@ -26,6 +26,7 @@
         "audit:data": "node scripts/audit-data.js",
         "explain:queries": "node scripts/explain-queries.js",
         "migrate:money": "node scripts/migrate-money-to-cents.js",
+        "verify:money": "node scripts/verify-money-parity.js",
         "seed:admin": "node scripts/seed-admin.js",
         "seed:local": "node scripts/seed-local.js"
     },

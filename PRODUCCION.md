@@ -49,15 +49,19 @@ Antes de activar cobros en una base existente, haz una copia de seguridad y ejec
 npm run migrate:money
 ```
 
+El diagnóstico también compara cada campo legado con su equivalente en centavos. Para revisar únicamente esa paridad usa `npm run verify:money`.
+
 Si el resultado es correcto, aplica el backfill explícitamente:
 
 ```powershell
 $env:MONEY_MIGRATION_APPLY = "true"
+$env:MONEY_MIGRATION_BACKUP_CONFIRMED = "true"
 npm run migrate:money
 Remove-Item Env:MONEY_MIGRATION_APPLY
+Remove-Item Env:MONEY_MIGRATION_BACKUP_CONFIRMED
 ```
 
-El comando es idempotente, no elimina campos antiguos y muestra cuántos documentos revisó y actualizó. Verifica una muestra de pedidos, ventas y productos y conserva la copia de seguridad antes de operar.
+El segundo comando solo debe ejecutarse después de crear y comprobar una copia restaurable (por ejemplo, un respaldo técnico de MongoDB o un `.tgbackup` descargado desde el centro de exportación). El comando es idempotente, no elimina campos antiguos, informa los documentos y campos actualizados y falla si encuentra diferencias entre COP legado y centavos. Conserva la copia de seguridad y verifica una muestra de pedidos, ventas y productos antes de operar.
 
 ## 2. Qué cambió
 

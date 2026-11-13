@@ -11,7 +11,7 @@
                 <h1><%= raffle.titulo %></h1>
                 <p><%= raffle.descripcion %></p>
                 <p class="raffle-public-note">Ronda #<%= raffle.numeroRonda %></p>
-                <strong>Compra mínima: $ <%= Number(raffle.montoMinimo).toLocaleString('es-CO') %> COP</strong>
+                <strong>Compra mínima: <%= formatCOP(raffle.montoMinimoCents, raffle.montoMinimo) %></strong>
                 <% if (raffle.activo) { %>
                     <p class="raffle-public-note">Cada pedido pagado que cumpla el monto recibe una participación única.</p>
                 <% } else { %>

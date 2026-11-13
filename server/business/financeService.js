@@ -97,6 +97,10 @@ async function financialSummary(period = 'week', now = new Date()) {
     const revenuesCents = cents(sales.totalCents);
     return {
         period: range,
+        revenueCents: revenuesCents,
+        grossProfitCents: grossCents,
+        expensesCents: expenses.totalCents,
+        estimatedNetProfitCents: netCents,
         revenue: money.fromCents(revenuesCents),
         grossProfit: money.fromSignedCents(grossCents),
         expenses: money.fromCents(expenses.totalCents),
@@ -136,6 +140,7 @@ async function cashFromSales(range) {
             date: item.createdAt,
             type: 'Entrada',
             description: 'Venta ' + (item.order?.numeroOrden || String(item._id)),
+            amountCents: money.readCents(item.totalCents, item.total),
             amount: money.fromCents(money.readCents(item.totalCents, item.total)),
             sign: 1,
         })),
@@ -163,6 +168,7 @@ async function cashFromExpenses(range) {
             date: item.pagadoEn,
             type: 'Gasto',
             description: CATEGORY_LABELS[item.categoria] + ': ' + item.descripcion,
+            amountCents: item.montoCents,
             amount: money.fromCents(item.montoCents),
             sign: -1,
         })),
@@ -191,6 +197,7 @@ async function cashFromPurchases(range) {
             date: item.pagadoEn,
             type: 'Proveedor',
             description: 'Compra ' + (item.referencia || item.proveedor?.nombre || String(item._id)),
+            amountCents: item.totalCents,
             amount: money.fromCents(item.totalCents),
             sign: -1,
         })),
@@ -213,6 +220,10 @@ async function cashFlow(period = 'week', now = new Date()) {
 
     return {
         period: range,
+        incomingCents: sales.totalCents,
+        paidExpensesCents: expenses.totalCents,
+        paidPurchasesCents: purchases.totalCents,
+        netMovementCents: sales.totalCents - expenses.totalCents - purchases.totalCents,
         incoming: money.fromCents(sales.totalCents),
         paidExpenses: money.fromCents(expenses.totalCents),
         paidPurchases: money.fromCents(purchases.totalCents),

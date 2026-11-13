@@ -47,9 +47,9 @@
   <%- include('../../include/_deliveryTimeline', { order, visibleOnly: true, showActor: false }) %>
   <article class="commerce-card">
     <h2>Resumen</h2>
-    <% order.productos.forEach(item => { %><p><%= item.nombre %> × <%= item.cantidad %> — $<%= item.subtotal.toLocaleString('es-CO') %></p><% }) %>
-    <p>Envío: $<%= order.costoEnvio.toLocaleString('es-CO') %></p>
-    <p><strong>Total: $<%= order.total.toLocaleString('es-CO') %> COP</strong></p>
+    <% order.productos.forEach(item => { %><p><%= item.nombre %> × <%= item.cantidad %> — <%= formatCOP(item.subtotalCents, item.subtotal) %></p><% }) %>
+    <p>Envío: <%= formatCOP(order.costoEnvioCents, order.costoEnvio) %></p>
+    <p><strong>Total: <%= formatCOP(order.totalCents, order.total) %></strong></p>
     <p>Entrega: <%= order.direccionEnvio?.direccion || '' %>, <%= order.direccionEnvio?.ciudad || '' %></p>
   </article>
 </main>

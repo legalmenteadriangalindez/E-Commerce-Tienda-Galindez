@@ -30,6 +30,14 @@ function formatMoney(value) {
     });
 }
 
+function formatMoneyCents(cents, legacyValue = 0) {
+    const money = require('../../services/money');
+    if (cents === undefined || cents === null) {
+        if (typeof legacyValue === 'string' && /[^\d.,\s-]/.test(legacyValue)) return formatMoney(legacyValue);
+    }
+    return money.formatCOP(cents, legacyValue);
+}
+
 function formatDate(value, fallback) {
     return value ? new Date(value).toLocaleString('es-CO') : fallback;
 }
@@ -62,6 +70,7 @@ module.exports = {
     formatDate,
     formatHeaderText,
     formatMoney,
+    formatMoneyCents,
     formatText,
     publicUrl,
     renderEmailDocument,

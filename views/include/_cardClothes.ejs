@@ -32,7 +32,7 @@
 
                 <strong class="price">
 
-                    $ <%= Number(p.precioVenta).toLocaleString("es-CO") %>
+                    <%= formatCOP(p.precioVentaCents, p.precioVenta) %>
 
                 </strong>
 

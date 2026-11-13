@@ -1,4 +1,3 @@
-<% const inventoryMoney = (value) => Number(value || 0).toLocaleString('es-CO', { maximumFractionDigits: 2 }); %>
 <section class="inventory-valuation" aria-labelledby="inventory-valuation-title">
     <div class="inventory-valuation__heading">
         <div>
@@ -11,17 +10,17 @@
     <div class="inventory-valuation__grid">
         <article class="inventory-valuation__metric">
             <span>Inversión estimada en stock</span>
-            <strong>$ <%= inventoryMoney(inventoryValuation.invested) %></strong>
+            <strong><%= formatCOP(inventoryValuation.investedCents) %></strong>
             <small>Existencias disponibles × precio de costo registrado.</small>
         </article>
         <article class="inventory-valuation__metric">
             <span>Valor potencial de venta</span>
-            <strong>$ <%= inventoryMoney(inventoryValuation.potentialSales) %></strong>
+            <strong><%= formatCOP(inventoryValuation.potentialSalesCents) %></strong>
             <small>Existencias disponibles × precio de venta actual, sin descuentos.</small>
         </article>
         <article class="inventory-valuation__metric">
             <span>Ganancia bruta potencial</span>
-            <strong>$ <%= inventoryMoney(inventoryValuation.potentialGrossProfit) %></strong>
+            <strong><%= formatCOPSigned(inventoryValuation.potentialGrossProfitCents) %></strong>
             <small>Diferencia entre valor potencial de venta y costo estimado.</small>
         </article>
     </div>

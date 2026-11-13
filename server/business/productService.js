@@ -184,10 +184,14 @@ async function search(value) {
         nombre: { $regex: text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' },
         stock: { $gt: 0 },
     })
-        .select('nombre precioVenta stock fotos')
+        .select('nombre precioVenta precioVentaCents stock fotos')
         .limit(10)
         .lean();
-    return products.map((product) => ({ ...product, precio: product.precioVenta }));
+    return products.map((product) => ({
+        ...product,
+        precioCents: money.readCents(product.precioVentaCents, product.precioVenta),
+        precio: money.display(product.precioVentaCents, product.precioVenta),
+    }));
 }
 
 async function stockAlerts(query = {}) {

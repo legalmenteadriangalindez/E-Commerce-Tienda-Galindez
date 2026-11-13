@@ -9,7 +9,7 @@ async function lowStock(limit = LOW_STOCK_LIMIT) {
     return Product.find({ $expr: { $lte: [{ $ifNull: ['$stock', 0] }, { $ifNull: ['$stockMinimo', 0] }] } })
         .sort({ stock: 1, nombre: 1 })
         .limit(safeLimit)
-        .select('nombre stock stockMinimo precioVenta')
+        .select('nombre stock stockMinimo precioVenta precioVentaCents')
         .lean();
 }
 
@@ -18,7 +18,7 @@ async function noRotation(soldIds, limit = NO_ROTATION_LIMIT) {
     return Product.find({ stock: { $gt: 0 }, _id: { $nin: soldIds } })
         .sort({ stock: -1, nombre: 1 })
         .limit(safeLimit)
-        .select('nombre stock precioVenta')
+        .select('nombre stock precioVenta precioVentaCents')
         .lean();
 }
 
@@ -55,7 +55,7 @@ async function stockValuation() {
     const [row = {}] = await Product.aggregate(valuationPipeline());
     const investedCents = Number(row.investedCents || 0);
     const potentialSalesCents = Number(row.potentialSalesCents || 0);
-    return {
+    const result = {
         productTypes: Number(row.productTypes || 0),
         units: Number(row.units || 0),
         invested: money.fromCents(investedCents),
@@ -63,6 +63,17 @@ async function stockValuation() {
         potentialGrossProfit: money.fromSignedCents(potentialSalesCents - investedCents),
         zeroCostProducts: Number(row.zeroCostProducts || 0),
     };
+    // Se exponen para las vistas sin alterar el contrato histórico de los
+    // servicios que consumen solamente los valores en pesos.
+    Object.defineProperties(result, {
+        investedCents: { value: investedCents, enumerable: false },
+        potentialSalesCents: { value: potentialSalesCents, enumerable: false },
+        potentialGrossProfitCents: {
+            value: potentialSalesCents - investedCents,
+            enumerable: false,
+        },
+    });
+    return result;
 }
 
 module.exports = { lowStock, noRotation, valuationPipeline, stockValuation };

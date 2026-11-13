@@ -2,7 +2,13 @@
 
 (function () {
     const DEFAULT_IMAGE = '/img/default.jpg';
-    const money = (value) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value);
+    const money = (value) =>
+        new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        }).format(value);
     const input = (id) => document.getElementById(id);
 
     function productImage(product) {
@@ -57,7 +63,11 @@
 
             const price = document.createElement('span');
             price.className = 'search-item__price';
-            price.textContent = money(product.precioVenta);
+            const priceCents =
+                product.precioVentaCents !== undefined && product.precioVentaCents !== null
+                    ? Number(product.precioVentaCents)
+                    : Math.round(Number(product.precioVenta || 0) * 100);
+            price.textContent = money(priceCents / 100);
             button.append(imageWrapper, details, price);
             button.addEventListener('click', () => onSelect(product));
             results.appendChild(button);
@@ -71,7 +81,8 @@
     function selectProduct(product) {
         input('productoId').value = product._id;
         input('productoNombre').value = product.nombre;
-        input('precio').value = product.precioVenta;
+        input('precio').value =
+            Number(product.precioVentaCents ?? Math.round(Number(product.precioVenta || 0) * 100)) / 100;
         input('buscarProducto').value = product.nombre;
         input('resultadosBusqueda').replaceChildren();
     }
@@ -86,9 +97,18 @@
     function updateTotals(data, fallbackSubtotal) {
         const quote = data.quote || {};
         const shippingPolicy = data.shippingPolicy || {};
-        const subtotal = Number.isFinite(Number(quote.subtotal)) ? Number(quote.subtotal) : fallbackSubtotal;
-        const shipping = data.cart.length && Number.isFinite(Number(quote.costoEnvio)) ? Number(quote.costoEnvio) : 0;
-        const total = data.cart.length && Number.isFinite(Number(quote.total)) ? Number(quote.total) : subtotal;
+        const subtotalCents = Number.isSafeInteger(Number(quote.subtotalCents))
+            ? Number(quote.subtotalCents)
+            : Math.round(fallbackSubtotal * 100);
+        const shippingCents =
+            data.cart.length && Number.isSafeInteger(Number(quote.costoEnvioCents)) ? Number(quote.costoEnvioCents) : 0;
+        const totalCents =
+            data.cart.length && Number.isSafeInteger(Number(quote.totalCents))
+                ? Number(quote.totalCents)
+                : subtotalCents + shippingCents;
+        const subtotal = subtotalCents / 100;
+        const shipping = shippingCents / 100;
+        const total = totalCents / 100;
 
         input('subtotal').textContent = money(subtotal);
         input('iva').textContent = 'Incluidos';
@@ -97,7 +117,7 @@
         input('total').textContent = money(total);
 
         const shippingMessage = input('shippingMessage') || input('shippingHint');
-        const freeFrom = Number(shippingPolicy.freeShippingFrom);
+        const freeFrom = Number(shippingPolicy.freeShippingFromCents ?? 0) / 100;
         if (shippingMessage && Number.isFinite(freeFrom) && data.cart.length) {
             shippingMessage.textContent =
                 shipping === 0
@@ -112,7 +132,7 @@
         const list = input('listaProductos');
         list.replaceChildren();
         input('productosHidden').replaceChildren();
-        let subtotal = 0;
+        let subtotalCents = 0;
         for (const item of data.cart) {
             const row = document.createElement('div');
             row.className = 'order-item';
@@ -131,13 +151,14 @@
                 ' ' +
                 (item.cantidad === 1 ? 'unidad' : 'unidades') +
                 ' · ' +
-                money(item.precio) +
+                money(Number(item.precioCents ?? Math.round(Number(item.precio || 0) * 100)) / 100) +
                 ' c/u';
             details.append(title, quantity);
 
             const lineTotal = document.createElement('div');
             lineTotal.className = 'order-item-price';
-            lineTotal.textContent = money(Number(item.precio) * Number(item.cantidad));
+            const priceCents = Number(item.precioCents ?? Math.round(Number(item.precio || 0) * 100));
+            lineTotal.textContent = money((priceCents * Number(item.cantidad)) / 100);
 
             const remove = document.createElement('button');
             remove.type = 'button';
@@ -153,7 +174,7 @@
 
             row.append(imageWrapper, details, lineTotal, remove);
             list.appendChild(row);
-            subtotal += Number(item.precio) * Number(item.cantidad);
+            subtotalCents += priceCents * Number(item.cantidad);
         }
 
         if (!data.cart.length) {
@@ -162,7 +183,7 @@
             empty.textContent = 'Agrega productos a la venta.';
             list.appendChild(empty);
         }
-        updateTotals(data, subtotal);
+        updateTotals(data, subtotalCents / 100);
     }
 
     function showCartError(error) {

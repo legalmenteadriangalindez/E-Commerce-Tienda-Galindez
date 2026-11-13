@@ -13,7 +13,7 @@
     <% if (!entries.length) { %><p class="raffle-empty">No hay participaciones todavía.</p><% } else { %>
         <div class="raffle-table-wrap"><table class="raffle-table">
             <thead><tr><th>Número</th><th>Cliente</th><th>Pedido</th><th>Monto</th><th>Estado</th></tr></thead>
-            <tbody><% entries.forEach(entry => { %><tr><td><strong><%= entry.numero %></strong></td><td><%= entry.clienteNombre %><br><small><%= entry.clienteEmail %></small></td><td><%= entry.order?.numeroOrden || 'Pedido histórico' %></td><td>$ <%= Number(entry.montoCompra).toLocaleString('es-CO') %></td><td><span class="raffle-entry-status <%= entry.ganador ? 'is-winner' : '' %>"><%= entry.ganador ? 'Ganador' : 'Participante' %></span></td></tr><% }) %></tbody>
+            <tbody><% entries.forEach(entry => { %><tr><td><strong><%= entry.numero %></strong></td><td><%= entry.clienteNombre %><br><small><%= entry.clienteEmail %></small></td><td><%= entry.order?.numeroOrden || 'Pedido histórico' %></td><td><%= formatCOP(entry.montoCompraCents, entry.montoCompra) %></td><td><span class="raffle-entry-status <%= entry.ganador ? 'is-winner' : '' %>"><%= entry.ganador ? 'Ganador' : 'Participante' %></span></td></tr><% }) %></tbody>
         </table></div>
     <% } %>
     <%- include('../../../include/_adminPagination', { pagination, label: 'participaciones' }) %>

@@ -4,7 +4,7 @@
 <% const decimal = value => Number(value || 0).toLocaleString('es-CO', { maximumFractionDigits: 2 }); %>
 <% const changeText = value => value === null ? 'Nuevo en este periodo' : `${value > 0 ? '+' : ''}${value}% frente al periodo anterior`; %>
 <% const changeClass = value => value > 0 ? 'trend-positive' : value < 0 ? 'trend-negative' : 'trend-neutral'; %>
-<% const maxRevenue = Math.max(...(trend || []).map(day => Number(day.revenue || 0)), 1); %>
+<% const maxRevenue = Math.max(...(trend || []).map(day => Number(day.revenueCents || 0)), 1); %>
 
 <main class="analytics-dashboard">
     <%- include('./partials/filters', { period }) %>

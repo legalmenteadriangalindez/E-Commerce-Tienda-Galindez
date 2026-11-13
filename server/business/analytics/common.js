@@ -117,6 +117,12 @@ function metricsFromTotals(totals) {
     const grossProfitCents = productRevenueCents - costsCents;
     return {
         orders,
+        revenueCents,
+        productRevenueCents,
+        shippingCents,
+        costsCents,
+        grossProfitCents,
+        averageTicketCents: orders > 0 ? Math.round(revenueCents / orders) : 0,
         revenue: money.fromCents(revenueCents),
         productRevenue: money.fromCents(productRevenueCents),
         shipping: money.fromCents(shippingCents),

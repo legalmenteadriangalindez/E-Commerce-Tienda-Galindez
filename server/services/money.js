@@ -9,6 +9,18 @@
  * documentos históricos.
  */
 const SCALE = 100;
+const COP_FORMATTER = new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+});
+const COP_SIGNED_FORMATTER = new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+});
 
 class MoneyError extends Error {
     constructor(message = 'El importe no es válido.') {
@@ -64,6 +76,36 @@ function display(centsValue, legacyValue = 0) {
     return fromCents(readCents(centsValue, legacyValue));
 }
 
+/**
+ * Presentación oficial para la tienda: pesos colombianos con separadores
+ * locales. Los importes enteros no muestran decimales; si un dato histórico
+ * conserva fracciones de peso, se muestran hasta dos decimales para no perder
+ * información. El segundo argumento solo se usa durante la migración.
+ */
+function formatCOP(centsValue, legacyValue = 0) {
+    return COP_FORMATTER.format(fromCents(readCents(centsValue, legacyValue)));
+}
+
+function formatCOPSigned(centsValue) {
+    return COP_SIGNED_FORMATTER.format(fromSignedCents(centsValue ?? 0));
+}
+
+/**
+ * Valor compatible con <input type="number"> expresado en pesos, no en
+ * centavos. No incluye separadores ni el símbolo de moneda.
+ */
+function formatCOPInput(centsValue, legacyValue = 0) {
+    return String(fromCents(readCents(centsValue, legacyValue)));
+}
+
+function parity(centsValue, legacyValue) {
+    if (centsValue === undefined || centsValue === null) return { comparable: false, matches: true };
+    const cents = assertCents(centsValue);
+    if (legacyValue === undefined || legacyValue === null) return { comparable: false, matches: true, cents };
+    const legacyCents = toCents(legacyValue);
+    return { comparable: true, matches: cents === legacyCents, cents, legacyCents };
+}
+
 function integerCentsPath(options = {}) {
     return {
         ...options,
@@ -85,5 +127,9 @@ module.exports = {
     fromSignedCents,
     readCents,
     display,
+    formatCOP,
+    formatCOPSigned,
+    formatCOPInput,
+    parity,
     integerCentsPath,
 };
