@@ -45,6 +45,14 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const DEALER_ACTIVE_FILTER_STATUSES = Object.freeze(['PENDIENTE', 'PAGADA', 'PREPARANDO', 'ENVIADA']);
 const DEALER_HISTORY_FILTER_STATUSES = Object.freeze(['ENTREGADA']);
+const DEALER_INCIDENT_FILTER_STATUSES = Object.freeze([
+    'CANCELADA',
+    'PENDIENTE',
+    'PAGADA',
+    'PREPARANDO',
+    'ENVIADA',
+    'ENTREGADA',
+]);
 
 function dealerFilterValue(query, key, maxLength = 100) {
     const value = query?.[key];
@@ -76,12 +84,16 @@ function parseDealerDate(value, endOfDay = false) {
     return new Date(date.getTime() + (endOfDay ? DAY_MS : 0));
 }
 
-function normalizeDealerFilters(query = {}, history = false) {
+function normalizeDealerFilters(query = {}, history = false, incidentHistory = false) {
     const status = dealerFilterValue(query, 'status', 30).toUpperCase();
     const search = dealerFilterValue(query, 'search', 100);
     const fromInput = dealerFilterValue(query, 'from', 10);
     const toInput = dealerFilterValue(query, 'to', 10);
-    const allowedStatuses = history ? DEALER_HISTORY_FILTER_STATUSES : DEALER_ACTIVE_FILTER_STATUSES;
+    const allowedStatuses = incidentHistory
+        ? DEALER_INCIDENT_FILTER_STATUSES
+        : history
+          ? DEALER_HISTORY_FILTER_STATUSES
+          : DEALER_ACTIVE_FILTER_STATUSES;
 
     if (status && !allowedStatuses.includes(status)) {
         throw new rules.DeliveryError('El estado seleccionado no es válido para esta lista.', 400);
@@ -123,10 +135,16 @@ function dealerSearchClause(value) {
     };
 }
 
-function buildDealerOrderFilter(dealerId, history, filters) {
+function buildDealerOrderFilter(dealerId, history, filters, incidentHistory = false) {
     const clauses = [
-        history ? rules.completedDeliveryFilter() : rules.dealerActiveDeliveryFilter(),
-        { repartidor: dealerId },
+        incidentHistory
+            ? rules.nonCompletedDeliveryFilter()
+            : history
+              ? rules.completedDeliveryFilter()
+              : rules.dealerActiveDeliveryFilter(),
+        incidentHistory
+            ? { $or: [{ repartidor: dealerId }, { 'incidenciasEntrega.reportadoPor': dealerId }] }
+            : { repartidor: dealerId },
     ];
 
     if (filters.status) clauses.push({ estado: filters.status });
@@ -144,12 +162,12 @@ function buildDealerOrderFilter(dealerId, history, filters) {
 }
 
 async function listForDealer(dealerId, options = {}) {
-    const { page = 1, limit = 20, history = false, filters = null } = options;
+    const { page = 1, limit = 20, history = false, incidentHistory = false, filters = null } = options;
     if (!rules.validId(dealerId)) throw new rules.DeliveryError('Repartidor inválido.', 401);
     const safePage = Math.min(100000, Math.max(1, Number.parseInt(page, 10) || 1));
     const safeLimit = Math.min(50, Math.max(1, Number.parseInt(limit, 10) || 20));
-    const normalizedFilters = filters || normalizeDealerFilters(options, history);
-    const filter = buildDealerOrderFilter(dealerId, history, normalizedFilters);
+    const normalizedFilters = filters || normalizeDealerFilters(options, history, incidentHistory);
+    const filter = buildDealerOrderFilter(dealerId, history, normalizedFilters, incidentHistory);
     const totalItems = await Order.countDocuments(filter);
     const totalPages = Math.ceil(totalItems / safeLimit);
     const currentPage = Math.min(safePage, totalPages || 1);
@@ -162,14 +180,20 @@ async function listForDealer(dealerId, options = {}) {
     return { orders, page: currentPage, limit: safeLimit, totalItems, totalPages };
 }
 
-async function orderForDealer(orderId, dealerId, { history = false } = {}) {
+async function orderForDealer(orderId, dealerId, { history = false, incidentHistory = false } = {}) {
     if (!rules.validId(orderId) || !rules.validId(dealerId)) throw new rules.DeliveryError('Pedido inválido.', 400);
-    const deliveryFilter = history ? rules.completedDeliveryFilter() : rules.dealerActiveDeliveryFilter();
+    const deliveryFilter = incidentHistory
+        ? rules.nonCompletedDeliveryFilter()
+        : history
+          ? rules.completedDeliveryFilter()
+          : rules.dealerActiveDeliveryFilter();
+    const dealerFilter = incidentHistory
+        ? { $or: [{ repartidor: dealerId }, { 'incidenciasEntrega.reportadoPor': dealerId }] }
+        : { repartidor: dealerId };
     const order = await orderPopulate(
         Order.findOne({
             _id: orderId,
-            repartidor: dealerId,
-            ...deliveryFilter,
+            $and: [dealerFilter, deliveryFilter],
         })
     );
     if (!order) throw new rules.DeliveryError('El pedido no está asignado a tu cuenta.', 404);

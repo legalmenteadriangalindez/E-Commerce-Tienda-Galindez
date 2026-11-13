@@ -4,7 +4,8 @@ const catalogPagination = require('../../services/catalogPagination');
 
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 
-function filterStatuses(history) {
+function filterStatuses(history, incidentHistory = false) {
+    if (incidentHistory) return ['CANCELADA', 'PENDIENTE', 'PAGADA', 'PREPARANDO', 'ENVIADA', 'ENTREGADA'];
     return history ? ['ENTREGADA'] : ['PENDIENTE', 'PAGADA', 'PREPARANDO', 'ENVIADA'];
 }
 
@@ -13,15 +14,26 @@ function incidentAction(orderId, filters) {
     return '/dealer/orders/incidents/' + orderId + (query ? '?' + query : '');
 }
 
-function renderDealerOrders(req, res, result, history = false, dashboard = null, filters = {}) {
+function renderDealerOrders(
+    req,
+    res,
+    result,
+    history = false,
+    dashboard = null,
+    filters = {},
+    incidentHistory = false
+) {
     return res.render('dealer/orders/read_orders', {
         orders: result.orders,
         statusLabels: delivery.STATUS_LABELS,
         pagination: catalogPagination.buildPagination(req, result),
         history,
+        incidentHistory,
         dashboard,
         filters,
-        statuses: filterStatuses(history),
+        incidentLabels: delivery.INCIDENT_LABELS,
+        incidentStatusLabels: delivery.INCIDENT_STATUS_LABELS,
+        statuses: filterStatuses(history, incidentHistory),
         filterQuery: delivery.buildDealerFilterQuery(filters),
     });
 }
@@ -50,16 +62,33 @@ exports.history_orders = wrap(async (req, res) => {
     return renderDealerOrders(req, res, result, true, null, filters);
 });
 
+exports.incident_orders = wrap(async (req, res) => {
+    const filters = delivery.normalizeDealerFilters(req.query, false, true);
+    const result = await delivery.listForDealer(req.session.user._id, {
+        page: req.query.page,
+        limit: 10,
+        incidentHistory: true,
+        filters,
+    });
+    return renderDealerOrders(req, res, result, false, null, filters, true);
+});
+
 exports.detail_order = wrap(async (req, res) => {
-    const history = req.query?.history === '1';
-    const filters = delivery.normalizeDealerFilters(req.query, history);
+    const incidentHistory = req.query?.incidents === '1';
+    const history = !incidentHistory && req.query?.history === '1';
+    const filters = delivery.normalizeDealerFilters(req.query, history, incidentHistory);
     const query = delivery.buildDealerFilterQuery(filters);
-    const baseUrl = history ? '/dealer/orders/history' : '/dealer/orders/read';
+    const baseUrl = incidentHistory
+        ? '/dealer/orders/incidents'
+        : history
+          ? '/dealer/orders/history'
+          : '/dealer/orders/read';
     const backUrl = query ? baseUrl + '?' + query : baseUrl;
     return res.render('dealer/orders/detail_orders', {
-        order: await delivery.orderForDealer(req.params.id, req.session.user._id, { history }),
+        order: await delivery.orderForDealer(req.params.id, req.session.user._id, { history, incidentHistory }),
         statusLabels: delivery.STATUS_LABELS,
         history,
+        incidentHistory,
         backUrl,
         incidentLabels: delivery.INCIDENT_LABELS,
         incidentStatusLabels: delivery.INCIDENT_STATUS_LABELS,

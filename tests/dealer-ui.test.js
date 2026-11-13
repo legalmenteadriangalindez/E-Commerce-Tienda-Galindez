@@ -71,6 +71,34 @@ test('el dealer dispone de un historial de entregas de solo lectura', () => {
     assert.equal(rules.dealerActiveDeliveryFilter().$or[0].estado.$in.includes('ENTREGADA'), false);
 });
 
+test('el dealer dispone de una sección separada para incidencias y pedidos no completados', () => {
+    const routes = read('server/routes/dealer.routes.js');
+    const controller = read('server/controller/pages/renderDealer.js');
+    const operations = read('server/business/deliveryOperations.js');
+    const view = read('views/dealer/orders/read_orders.ejs');
+    const header = read('views/include/_headerDealer.ejs');
+    const footer = read('views/include/_footerDealer.ejs');
+    const rules = require('../server/business/deliveryRules');
+    const delivery = require('../server/business/deliveryService');
+
+    assert.match(
+        routes,
+        /router\.get\('\/orders\/incidents', isLogged, isDealer, dealerPageController\.incident_orders\)/
+    );
+    assert.match(controller, /incident_orders/);
+    assert.match(controller, /incidentHistory: true/);
+    assert.match(operations, /nonCompletedDeliveryFilter/);
+    assert.deepEqual(rules.nonCompletedDeliveryFilter(), {
+        $or: [{ estado: 'CANCELADA' }, { 'incidenciasEntrega.0': { $exists: true } }],
+    });
+    assert.equal(delivery.normalizeDealerFilters({ status: 'CANCELADA' }, false, true).status, 'CANCELADA');
+    assert.match(view, /Incidencias y fallidos/);
+    assert.match(view, /incidenciasEntrega/);
+    assert.match(view, /incidents=1/);
+    assert.match(header, /href="\/dealer\/orders\/incidents"/);
+    assert.match(footer, /href="\/dealer\/orders\/incidents"/);
+});
+
 test('la lista dealer conserva sus acciones y agrega soporte visual accesible', () => {
     const view = read('views/dealer/orders/read_orders.ejs');
     const styles = read('public/css/dealer_read_orders.css');

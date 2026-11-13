@@ -141,6 +141,12 @@ function completedDeliveryFilter() {
     };
 }
 
+function nonCompletedDeliveryFilter() {
+    return {
+        $or: [{ estado: 'CANCELADA' }, { 'incidenciasEntrega.0': { $exists: true } }],
+    };
+}
+
 function visibleTracking(order) {
     const events = Array.isArray(order?.seguimientoEntrega) ? order.seguimientoEntrega : [];
     return events
@@ -162,6 +168,7 @@ module.exports = {
     baseDeliveryFilter,
     dealerActiveDeliveryFilter,
     completedDeliveryFilter,
+    nonCompletedDeliveryFilter,
     trackingForState,
     trackState,
     visibleTracking,
