@@ -218,3 +218,35 @@ test('el flujo de incidencias está conectado al dealer y al administrador', () 
     assert.match(partial, /name="nota"/);
     assert.match(resources, /dealer-incidents\.css/);
 });
+
+test('la entrega del dealer exige y conserva una foto como comprobante', () => {
+    const routes = read('server/routes/dealer.routes.js');
+    const controller = read('server/controller/pages/renderDealer.js');
+    const orderService = read('server/business/orderService.js');
+    const orderModel = read('server/model/order.js');
+    const upload = read('server/middleware/upload.js');
+    const media = read('server/business/mediaService.js');
+    const mediaRoute = read('server/routes/index.js');
+    const form = read('views/dealer/orders/update_order.ejs');
+    const sharedStatus = read('views/include/orders/delivery-status.ejs');
+    const proof = read('views/include/order/partials/delivery-proof.ejs');
+    const resources = read('server/config/pageResources.js');
+
+    assert.match(routes, /upload\.single\('fotoEntrega'\)/);
+    assert.match(controller, /req\.file\?\.url \|\| ''/);
+    assert.match(orderService, /proofPhotoUrl = ''/);
+    assert.match(orderService, /Debes adjuntar una foto como comprobante/);
+    assert.match(orderService, /order\.comprobanteEntrega =/);
+    assert.match(orderModel, /comprobanteEntrega/);
+    assert.match(orderModel, /fotoUrl/);
+    assert.match(upload, /image\/jpeg/);
+    assert.match(media, /comprobanteEntrega\.fotoUrl/);
+    assert.match(mediaRoute, /mediaController\.serve/);
+    assert.match(mediaRoute, /uploads\/\:filename/);
+    assert.match(form, /enctype="multipart\/form-data"/);
+    assert.match(form, /name="fotoEntrega"/);
+    assert.match(form, /Obligatoria al confirmar la entrega/);
+    assert.match(sharedStatus, /delivery-proof/);
+    assert.match(proof, /deliveryProof\.fotoUrl/);
+    assert.match(resources, /delivery-proof\.css/);
+});

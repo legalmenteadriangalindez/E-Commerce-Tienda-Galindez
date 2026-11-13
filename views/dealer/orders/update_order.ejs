@@ -5,7 +5,7 @@
 <div class="page-wrapper">
     <div class="page-header"><h1>Actualizar Orden</h1><p>Visualiza la información de la orden y actualiza su estado</p></div>
     <div class="form-card ui-card ui-card--form">
-        <form action="/dealer/orders/update/<%= order._id %>" method="POST">
+        <form action="/dealer/orders/update/<%= order._id %>" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="hidden" name="filterSearch" value="<%= dealerFilters.search || '' %>">
             <input type="hidden" name="filterStatus" value="<%= dealerFilters.status || '' %>">
@@ -15,6 +15,11 @@
             <%- include('../../include/order/partials/products', { order, dealer: true }) %>
             <%- include('../../include/order/partials/totals', { order }) %>
             <%- include('../../include/order/partials/status-dealer', { order, statusLabels }) %>
+            <div class="delivery-proof-upload">
+                <label for="foto-entrega"><i class="bi bi-camera" aria-hidden="true"></i> Foto del comprobante de entrega</label>
+                <input id="foto-entrega" name="fotoEntrega" type="file" accept="image/jpeg,image/png,image/webp">
+                <small>Obligatoria al confirmar la entrega. JPG, PNG o WEBP; máximo 2 MB.</small>
+            </div>
             <%- include('../../include/order/partials/actions') %>
         </form>
     </div>

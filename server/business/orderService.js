@@ -11,6 +11,7 @@ const payments = require('./paymentService');
 const raffle = require('./raffleService');
 const delivery = require('./deliveryService');
 const notifications = require('./notificationService');
+const media = require('./mediaService');
 const populate = [
     ['usuario', 'nombre apellido email telefono'],
     ['productos.producto', 'nombre precioVenta fotos'],
@@ -84,7 +85,7 @@ async function findRetryablePaymentOrder(id, userId, wompiMethods) {
     });
 }
 
-async function changeState(id, state, actorId, dealer = false, note = '', cashConfirmed = false) {
+async function changeState(id, state, actorId, dealer = false, note = '', cashConfirmed = false, proofPhotoUrl = '') {
     if (!mongoose.isObjectIdOrHexString(id)) throw new commerce.CommerceError('Pedido inválido.');
     return mongoose.connection.transaction(async (session) => {
         const order = await Order.findById(id).session(session);
@@ -108,6 +109,19 @@ async function changeState(id, state, actorId, dealer = false, note = '', cashCo
             }
         }
         if (state === order.estado) return order;
+        if (dealer && state === 'ENTREGADA') {
+            if (!media.idFromUrl(proofPhotoUrl)) {
+                throw new commerce.CommerceError(
+                    'Debes adjuntar una foto como comprobante antes de marcar la entrega.',
+                    400
+                );
+            }
+            order.comprobanteEntrega = {
+                fotoUrl: proofPhotoUrl,
+                cargadaEn: new Date(),
+                cargadaPor: actorId,
+            };
+        }
         let payingAtDelivery = false;
         if (state === 'CANCELADA' && !dealer) {
             const cashDelivery = commerce.isCashOnDelivery(order);

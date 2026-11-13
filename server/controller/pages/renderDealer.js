@@ -125,7 +125,8 @@ exports.update_order_data = wrap(async (req, res) => {
         req.session.user._id,
         true,
         req.body.nota,
-        req.body.confirmarPago === 'si'
+        req.body.confirmarPago === 'si',
+        req.file?.url || ''
     );
     const filters = delivery.normalizeDealerFilters(
         {

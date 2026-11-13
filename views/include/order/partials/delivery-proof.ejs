@@ -1,0 +1,23 @@
+<% const deliveryProof = order?.comprobanteEntrega; %>
+<% if (deliveryProof?.fotoUrl) { %>
+    <section class="delivery-proof" aria-labelledby="delivery-proof-title">
+        <div class="delivery-proof__header">
+            <div>
+                <p class="delivery-proof__eyebrow">Comprobante de entrega</p>
+                <h2 id="delivery-proof-title">Foto registrada</h2>
+            </div>
+            <i class="bi bi-camera-fill" aria-hidden="true"></i>
+        </div>
+        <a class="delivery-proof__link" href="<%= deliveryProof.fotoUrl %>" target="_blank" rel="noopener noreferrer">
+            <img
+                class="delivery-proof__image"
+                src="<%= deliveryProof.fotoUrl %>"
+                alt="Foto del comprobante de entrega del pedido <%= order.numeroOrden || '' %>"
+                loading="lazy"
+            >
+        </a>
+        <% if (deliveryProof.cargadaEn) { %>
+            <p class="delivery-proof__meta">Registrada el <%= new Date(deliveryProof.cargadaEn).toLocaleString('es-CO') %>.</p>
+        <% } %>
+    </section>
+<% } %>

@@ -42,6 +42,20 @@ const deliveryIncidentSchema = new mongoose.Schema(
     { _id: true }
 );
 
+const deliveryProofSchema = new mongoose.Schema(
+    {
+        fotoUrl: {
+            type: String,
+            required: true,
+            maxlength: 240,
+            match: /^\/uploads\/[a-f\d]{24}\.webp$/i,
+        },
+        cargadaEn: { type: Date, default: Date.now },
+        cargadaPor: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb', required: true },
+    },
+    { _id: false }
+);
+
 const orderSchema = new mongoose.Schema(
     {
         numeroOrden: {
@@ -247,6 +261,12 @@ const orderSchema = new mongoose.Schema(
         incidenciasEntrega: {
             type: [deliveryIncidentSchema],
             default: [],
+        },
+        // Una foto es el único comprobante solicitado para cerrar una entrega.
+        // Se guarda la referencia de GridFS, nunca el binario dentro del pedido.
+        comprobanteEntrega: {
+            type: deliveryProofSchema,
+            default: undefined,
         },
     },
     {

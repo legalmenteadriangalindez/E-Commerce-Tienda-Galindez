@@ -3,6 +3,7 @@ const router = express.Router();
 const { isLogged } = require('../middleware/auth');
 
 const { isDealer } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 
 const dealerPageController = require('../controller/pages/renderDealer');
 const profilePageController = require('../controller/pages/renderProfile');
@@ -12,7 +13,13 @@ router.get('/orders/history', isLogged, isDealer, dealerPageController.history_o
 router.get('/orders/incidents', isLogged, isDealer, dealerPageController.incident_orders);
 router.get('/orders/detail/:id', isLogged, isDealer, dealerPageController.detail_order);
 router.get('/orders/update/:id', isLogged, isDealer, dealerPageController.update_order);
-router.post('/orders/update/:id', isLogged, isDealer, dealerPageController.update_order_data);
+router.post(
+    '/orders/update/:id',
+    isLogged,
+    isDealer,
+    upload.single('fotoEntrega'),
+    dealerPageController.update_order_data
+);
 router.post('/orders/incidents/:id', isLogged, isDealer, dealerPageController.report_incident);
 
 router.get('/perfil', isLogged, isDealer, profilePageController.profile_dealer);

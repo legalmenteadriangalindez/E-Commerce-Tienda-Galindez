@@ -154,7 +154,7 @@ const resources = {
             'components/admin-mobile-table-cards.css'
         ),
     },
-    'admin/orders/detail_orders': { pageCss: css('detail_order.css', 'delivery-tracking.css') },
+    'admin/orders/detail_orders': { pageCss: css('detail_order.css', 'delivery-tracking.css', 'delivery-proof.css') },
     'admin/orders/update_order': { pageCss: css('update_order.css') },
     'admin/delivery/index': { pageCss: css('admin-delivery.css', 'admin-pagination.css') },
     'admin/raffle/manage': {
@@ -222,11 +222,18 @@ const resources = {
             'dealer-incidents.css',
             'dealer_detail_order.css',
             'detail_order.css',
-            'delivery-tracking.css'
+            'delivery-tracking.css',
+            'delivery-proof.css'
         ),
     },
     'dealer/orders/update_order': {
-        pageCss: css('dealer-shell.css', 'dealer-incidents.css', 'dealer_update_orders.css', 'delivery-tracking.css'),
+        pageCss: css(
+            'dealer-shell.css',
+            'dealer-incidents.css',
+            'dealer_update_orders.css',
+            'delivery-tracking.css',
+            'delivery-proof.css'
+        ),
     },
     'dealer/profile/profile': { pageCss: css('dealer-shell.css', 'profile.css') },
     'dealer/profile/Edit_profile': { pageCss: css('dealer-shell.css', 'pages/edit-profile.css') },

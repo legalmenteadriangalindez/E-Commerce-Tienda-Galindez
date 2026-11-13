@@ -49,12 +49,13 @@ async function storeImage(file) {
 async function removeUnused(url) {
     const id = idFromUrl(url);
     if (!id) return; // Las imágenes incluidas en el repositorio se conservan.
-    const [product, brand, raffle] = await Promise.all([
+    const [product, brand, raffle, deliveryProof] = await Promise.all([
         require('../model/product').exists({ fotos: url }),
         require('../model/brands').exists({ foto: url }),
         require('../model/raffle').exists({ imagenUrl: url }),
+        require('../model/order').exists({ 'comprobanteEntrega.fotoUrl': url }),
     ]);
-    if (!product && !brand && !raffle)
+    if (!product && !brand && !raffle && !deliveryProof)
         await bucket()
             .delete(id)
             .catch((error) => {
