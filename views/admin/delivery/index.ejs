@@ -12,7 +12,7 @@
     <%- include('./partials/filters', { statuses, status, statusLabels, pagination }) %>
     <% if (!dealers.length) { %><div class="delivery-empty delivery-warning"><strong>No hay repartidores activos.</strong><span>Crea un usuario con el rol <code>dealer</code> desde Gestión → Usuarios para poder asignar pedidos.</span></div><% } %>
     <section class="delivery-grid" aria-label="Pedidos para reparto">
-        <% orders.forEach(order => { %><%- include('./partials/order-card', { order, status, statusLabels, dealers, csrfToken }) %><% }) %>
+        <% orders.forEach(order => { %><%- include('./partials/order-card', { order, status, statusLabels, dealers, csrfToken, incidentLabels }) %><% }) %>
     </section>
     <% if (!orders.length) { %><p class="admin-list-empty admin-empty-state">No hay pedidos disponibles para este filtro.</p><% } %>
     <%- include('./partials/pagination', { pagination }) %>

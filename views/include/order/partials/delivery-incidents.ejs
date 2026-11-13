@@ -17,7 +17,7 @@
         <span class="dealer-incidents-panel__count"><%= incidentList.filter(incident => incident.estado === 'ABIERTA').length %> abiertas</span>
     </div>
 
-    <% if (incidentNotice) { %>
+    <% if (typeof incidentNotice !== 'undefined' && incidentNotice) { %>
         <p class="dealer-incident-notice" role="status"><i class="bi bi-check-circle" aria-hidden="true"></i> <%= incidentNotice %></p>
     <% } %>
 
