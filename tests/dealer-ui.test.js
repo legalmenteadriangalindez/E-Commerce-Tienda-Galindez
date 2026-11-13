@@ -51,7 +51,7 @@ test('el dealer dispone de un historial de entregas de solo lectura', () => {
     assert.match(routes, /router\.get\('\/orders\/history', isLogged, isDealer, dealerPageController\.history_orders\)/);
     assert.match(controller, /history_orders/);
     assert.match(controller, /history: true/);
-    assert.match(operations, /history \? rules\.completedDeliveryFilter\(\) : rules\.baseDeliveryFilter\(\)/);
+    assert.match(operations, /history \? rules\.completedDeliveryFilter\(\) : rules\.dealerActiveDeliveryFilter\(\)/);
     assert.match(view, /history=1/);
     assert.match(view, /if \(!isHistory\)/);
     assert.deepEqual(rules.completedDeliveryFilter(), {
