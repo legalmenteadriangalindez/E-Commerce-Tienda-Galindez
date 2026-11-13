@@ -35,9 +35,12 @@ test('las rutas genéricas de perfil redirigen a la sección correcta', () => {
     assert.match(controller, /\/dealer\/perfil/);
     assert.match(controller, /\/admin\/perfil/);
     assert.match(controller, /hasPermission\(req\.usuarioActual, PERMISSIONS\.ADMIN_ACCESS\)/);
+    assert.match(controller, /normalizedRole\(user\) === 'admin'/);
+    assert.match(controller, /options\.redirectTo/);
     assert.match(adminProfile, /href="\/admin\/perfil\/editar\/\<%= user\._id %\>"/);
     assert.match(dealerProfile, /href="\/dealer\/perfil\/editar"/);
     assert.match(navigation, /headerIsDealer/);
     assert.match(navigation, /headerIsAdmin/);
-    assert.doesNotMatch(navigation, /href="\/mis-pedidos"[^]*headerIsAdmin/);
+    assert.match(navigation, /headerPermissions\.includes\('admin:access'\)/);
+    assert.match(navigation, /headerCanManageProfile/);
 });

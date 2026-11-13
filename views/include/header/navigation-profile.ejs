@@ -5,7 +5,9 @@
     || null; %>
 <% const headerRole = String(headerUser?.rol?.nombre || '').trim().toLowerCase(); %>
 <% const headerIsDealer = headerRole === 'dealer'; %>
-<% const headerIsAdmin = headerRole === 'admin'; %>
+<% const headerPermissions = Array.isArray(headerUser?.rol?.permisos) ? headerUser.rol.permisos : []; %>
+<% const headerIsAdmin = headerRole === 'admin' || headerPermissions.includes('admin:access'); %>
+<% const headerCanManageProfile = !headerIsAdmin || headerRole === 'admin' || headerPermissions.includes('profile:manage'); %>
 
 <div class="dropdown">
 
@@ -20,12 +22,14 @@
     <ul class="dropdown-menu dropdown-menu-end">
 
         <% if (headerUser && headerUser._id) { %>
-            <li>
-                <a class="dropdown-item" href="<%= headerIsDealer ? '/dealer/perfil' : headerIsAdmin ? '/admin/perfil' : '/perfil' %>">
-                    <i class="bi bi-person"></i>
-                    Mi cuenta
-                </a>
-            </li>
+            <% if (headerCanManageProfile) { %>
+                <li>
+                    <a class="dropdown-item" href="<%= headerIsDealer ? '/dealer/perfil' : headerIsAdmin ? '/admin/perfil' : '/perfil' %>">
+                        <i class="bi bi-person"></i>
+                        Mi cuenta
+                    </a>
+                </li>
+            <% } %>
 
             <li>
                 <hr class="dropdown-divider">

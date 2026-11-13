@@ -76,7 +76,7 @@ test('perfil: guarda campos editables con CSRF y rechaza tokens, privilegios y p
     assert.match(await form.text(), new RegExp(`name="_csrf" value="${app.csrf}"`));
     for (const [prefix, redirect] of [
         ['/admin/perfil', '/admin/perfil'],
-        ['/perfil', '/perfil'],
+        ['/perfil', '/admin/perfil'],
     ]) {
         const response = await app.post(`${prefix}/editar/${id}`, {
             _csrf: app.csrf,

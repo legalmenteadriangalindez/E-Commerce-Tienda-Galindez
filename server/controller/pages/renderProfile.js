@@ -76,7 +76,11 @@ const save = (admin = false, options = {}) =>
 
         const redirectTo =
             options.redirectTo ||
-            (admin ? '/admin/perfil' : normalizedRole(user) === 'dealer' ? '/dealer/perfil' : '/perfil');
+            (admin || normalizedRole(user) === 'admin' || hasPermission(req.usuarioActual, PERMISSIONS.ADMIN_ACCESS)
+                ? '/admin/perfil'
+                : normalizedRole(user) === 'dealer'
+                  ? '/dealer/perfil'
+                  : '/perfil');
 
         return res.redirect(303, redirectTo);
     });
