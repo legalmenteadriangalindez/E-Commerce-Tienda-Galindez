@@ -50,12 +50,12 @@ function cleanText(value, max = 500) {
 function trackingForState(state, note = '') {
     const base = STATE_TRACKING[state] || {
         evento: 'ACTUALIZACION',
-        mensaje: `El estado del pedido cambió a ${STATUS_LABELS[state] || state}.`,
+        mensaje: \`El estado del pedido cambió a \${STATUS_LABELS[state] || state}.\`,
     };
     const extra = cleanText(note);
     return {
         evento: base.evento,
-        mensaje: extra ? `${base.mensaje} Nota: ${extra}`.slice(0, 500) : base.mensaje,
+        mensaje: extra ? \`\${base.mensaje} Nota: \${extra}\`.slice(0, 500) : base.mensaje,
     };
 }
 
@@ -113,6 +113,14 @@ function baseDeliveryFilter(status) {
     return { $or: [paid, cashOnDelivery] };
 }
 
+function completedDeliveryFilter() {
+    return {
+        estado: 'ENTREGADA',
+        estadoPago: 'PAGADO',
+        inventario: 'CONFIRMADO',
+    };
+}
+
 function visibleTracking(order) {
     const events = Array.isArray(order?.seguimientoEntrega) ? order.seguimientoEntrega : [];
     return events
@@ -132,6 +140,7 @@ module.exports = {
     cleanText,
     appendTracking,
     baseDeliveryFilter,
+    completedDeliveryFilter,
     trackingForState,
     trackState,
     visibleTracking,
