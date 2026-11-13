@@ -38,12 +38,13 @@ async function listForAdmin({ page = 1, limit = 10, status = '' } = {}) {
     return { orders, page: currentPage, limit: safeLimit, totalItems, totalPages };
 }
 
-async function listForDealer(dealerId, { page = 1, limit = 20 } = {}) {
+async function listForDealer(dealerId, { page = 1, limit = 20, history = false } = {}) {
     if (!rules.validId(dealerId)) throw new rules.DeliveryError('Repartidor inválido.', 401);
     const safePage = Math.min(100000, Math.max(1, Number.parseInt(page, 10) || 1));
     const safeLimit = Math.min(50, Math.max(1, Number.parseInt(limit, 10) || 20));
+    const deliveryFilter = history ? rules.completedDeliveryFilter() : rules.baseDeliveryFilter();
     const filter = {
-        ...rules.baseDeliveryFilter(),
+        ...deliveryFilter,
         repartidor: dealerId,
     };
     const totalItems = await Order.countDocuments(filter);
@@ -58,13 +59,14 @@ async function listForDealer(dealerId, { page = 1, limit = 20 } = {}) {
     return { orders, page: currentPage, limit: safeLimit, totalItems, totalPages };
 }
 
-async function orderForDealer(orderId, dealerId) {
+async function orderForDealer(orderId, dealerId, { history = false } = {}) {
     if (!rules.validId(orderId) || !rules.validId(dealerId)) throw new rules.DeliveryError('Pedido inválido.', 400);
+    const deliveryFilter = history ? rules.completedDeliveryFilter() : rules.baseDeliveryFilter();
     const order = await orderPopulate(
         Order.findOne({
             _id: orderId,
             repartidor: dealerId,
-            ...rules.baseDeliveryFilter(),
+            ...deliveryFilter,
         })
     );
     if (!order) throw new rules.DeliveryError('El pedido no está asignado a tu cuenta.', 404);
@@ -119,8 +121,9 @@ async function assignOrder(orderId, dealerId, adminId, note = '') {
 }
 
 async function unassignOrder(orderId, adminId, note = '') {
-    if (!rules.validId(orderId) || !rules.validId(adminId))
+    if (!rules.validId(orderId) || !rules.validId(adminId)) {
         throw new rules.DeliveryError('Pedido o administrador inválido.', 400);
+    }
     return mongoose.connection.transaction(async (session) => {
         const order = await Order.findById(orderId).session(session);
         if (!order) throw new rules.DeliveryError('Pedido no encontrado.', 404);
@@ -135,8 +138,8 @@ async function unassignOrder(orderId, adminId, note = '') {
             order,
             'DESASIGNADO',
             cleanNoteValue
-                ? `La tienda retiró temporalmente la asignación. Nota: ${cleanNoteValue}`
-                : 'La tienda retiró temporalmente la asignación de reparto.',
+                ? \`La tienda retiró temporalmente la asignación. Nota: \${cleanNoteValue}\`
+                : 'La tienda retiró temporalmente la asignación.',
             adminId
         );
         await order.save({ session });
