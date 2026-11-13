@@ -79,7 +79,7 @@ body.dealer-app #header {
 
 .dealer-footer {
     margin-top: auto;
-    background: var(--color-brand-dark-deep);
+    background: var(--color-footer-background);
 }
 
 .dealer-footer .app-footer-container {
