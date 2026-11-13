@@ -15,7 +15,6 @@ const connectDB = require('./server/database/connection');
 const sessionConfig = require('./server/config/session');
 const csrfProtection = require('./server/middleware/csrfProtection');
 const cartMiddleware = require('./server/middleware/cartMiddleware');
-const sessionLogger = require('./server/middleware/sessionLogger');
 const raffleBanner = require('./server/middleware/raffleBanner');
 const { apiContract, isApiRequest } = require('./server/middleware/apiContract');
 const appConfig = require('./server/config/appConfig');
@@ -70,7 +69,6 @@ app.use(
     })
 );
 app.use(cartMiddleware);
-app.use(sessionLogger);
 app.use(raffleBanner);
 app.use('/', require('./server/routes'));
 app.use((req, res) => {
