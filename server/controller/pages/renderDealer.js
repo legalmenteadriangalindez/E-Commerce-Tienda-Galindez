@@ -1,27 +1,48 @@
 const orders = require('../../business/orderService');
 const delivery = require('../../business/deliveryService');
 const catalogPagination = require('../../services/catalogPagination');
+
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
-exports.read_orders = wrap(async (req, res) => {
-    const result = await delivery.listForDealer(req.session.user._id, { page: req.query.page, limit: 10 });
-    res.render('dealer/orders/read_orders', {
+
+function renderDealerOrders(req, res, result, history = false) {
+    return res.render('dealer/orders/read_orders', {
         orders: result.orders,
         statusLabels: delivery.STATUS_LABELS,
         pagination: catalogPagination.buildPagination(req, result),
+        history,
+    });
+}
+
+exports.read_orders = wrap(async (req, res) => {
+    const result = await delivery.listForDealer(req.session.user._id, { page: req.query.page, limit: 10 });
+    return renderDealerOrders(req, res, result, false);
+});
+
+exports.history_orders = wrap(async (req, res) => {
+    const result = await delivery.listForDealer(req.session.user._id, {
+        page: req.query.page,
+        limit: 10,
+        history: true,
+    });
+    return renderDealerOrders(req, res, result, true);
+});
+
+exports.detail_order = wrap(async (req, res) => {
+    const history = req.query?.history === '1';
+    return res.render('dealer/orders/detail_orders', {
+        order: await delivery.orderForDealer(req.params.id, req.session.user._id, { history }),
+        statusLabels: delivery.STATUS_LABELS,
+        history,
     });
 });
-exports.detail_order = wrap(async (req, res) =>
-    res.render('dealer/orders/detail_orders', {
+
+exports.update_order = wrap(async (req, res) => {
+    return res.render('dealer/orders/update_order', {
         order: await delivery.orderForDealer(req.params.id, req.session.user._id),
         statusLabels: delivery.STATUS_LABELS,
-    })
-);
-exports.update_order = wrap(async (req, res) =>
-    res.render('dealer/orders/update_order', {
-        order: await delivery.orderForDealer(req.params.id, req.session.user._id),
-        statusLabels: delivery.STATUS_LABELS,
-    })
-);
+    });
+});
+
 exports.update_order_data = wrap(async (req, res) => {
     await delivery.orderForDealer(req.params.id, req.session.user._id);
     await orders.changeState(
@@ -32,5 +53,5 @@ exports.update_order_data = wrap(async (req, res) => {
         req.body.nota,
         req.body.confirmarPago === 'si'
     );
-    res.redirect(303, '/dealer/orders/read');
+    return res.redirect(303, '/dealer/orders/read');
 });
