@@ -41,7 +41,6 @@ async function listForAdmin({ page = 1, limit = 10, status = '' } = {}) {
     return { orders, page: currentPage, limit: safeLimit, totalItems, totalPages };
 }
 
-
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const DEALER_ACTIVE_FILTER_STATUSES = Object.freeze(['PENDIENTE', 'PAGADA', 'PREPARANDO', 'ENVIADA']);
@@ -66,11 +65,7 @@ function parseDealerDate(value, endOfDay = false) {
 
     const [year, month, day] = value.split('-').map(Number);
     const check = new Date(Date.UTC(year, month - 1, day));
-    if (
-        check.getUTCFullYear() !== year ||
-        check.getUTCMonth() !== month - 1 ||
-        check.getUTCDate() !== day
-    ) {
+    if (check.getUTCFullYear() !== year || check.getUTCMonth() !== month - 1 || check.getUTCDate() !== day) {
         throw new rules.DeliveryError('La fecha ' + value + ' no existe.', 400);
     }
 
@@ -236,11 +231,12 @@ async function unassignOrder(orderId, adminId, note = '') {
         const order = await Order.findById(orderId).session(session);
         if (!order) throw new rules.DeliveryError('Pedido no encontrado.', 404);
         if (!order.repartidor) throw new rules.DeliveryError('El pedido no tiene repartidor asignado.', 409);
-        const hasOpenIncident = Array.isArray(order.incidenciasEntrega)
-            && order.incidenciasEntrega.some((incident) => incident.estado === rules.INCIDENT_STATUS.OPEN);
+        const hasOpenIncident =
+            Array.isArray(order.incidenciasEntrega) &&
+            order.incidenciasEntrega.some((incident) => incident.estado === rules.INCIDENT_STATUS.OPEN);
         if (
-            !['PENDIENTE', 'PAGADA', 'PREPARANDO'].includes(order.estado)
-            && !(order.estado === 'ENVIADA' && hasOpenIncident)
+            !['PENDIENTE', 'PAGADA', 'PREPARANDO'].includes(order.estado) &&
+            !(order.estado === 'ENVIADA' && hasOpenIncident)
         ) {
             throw new rules.DeliveryError('No se puede retirar un pedido que ya está en camino o entregado.', 409);
         }
@@ -285,10 +281,10 @@ async function reportIncident(orderId, dealerId, type, note = '') {
             throw new rules.DeliveryError('La incidencia de cobro solo aplica a pedidos contra entrega.', 409);
         }
 
-        const hasSameOpenIncident = Array.isArray(order.incidenciasEntrega)
-            && order.incidenciasEntrega.some(
-                (incident) =>
-                    incident.tipo === incidentType && incident.estado === rules.INCIDENT_STATUS.OPEN
+        const hasSameOpenIncident =
+            Array.isArray(order.incidenciasEntrega) &&
+            order.incidenciasEntrega.some(
+                (incident) => incident.tipo === incidentType && incident.estado === rules.INCIDENT_STATUS.OPEN
             );
         if (hasSameOpenIncident) {
             throw new rules.DeliveryError('Ya existe una incidencia abierta de este tipo para el pedido.', 409);
@@ -340,18 +336,13 @@ async function resolveIncident(orderId, incidentId, adminId, resolution = '') {
         incident.resolucion = cleanResolution;
         incident.resueltoPor = adminId;
         incident.resueltoEn = new Date();
-        rules.appendTracking(
-            order,
-            'ACTUALIZACION',
-            'La tienda atendió una incidencia de entrega.',
-            adminId,
-            { visibleCliente: false }
-        );
+        rules.appendTracking(order, 'ACTUALIZACION', 'La tienda atendió una incidencia de entrega.', adminId, {
+            visibleCliente: false,
+        });
         await order.save({ session });
         return order;
     });
 }
-
 
 async function dashboardForDealer(dealerId) {
     if (!rules.validId(dealerId)) throw new rules.DeliveryError('Repartidor inválido.', 401);
@@ -378,11 +369,7 @@ async function dashboardForDealer(dealerId) {
                     _id: null,
                     pending: {
                         $sum: {
-                            $cond: [
-                                { $in: ['$estado', ['PENDIENTE', 'PAGADA', 'PREPARANDO']] },
-                                1,
-                                0,
-                            ],
+                            $cond: [{ $in: ['$estado', ['PENDIENTE', 'PAGADA', 'PREPARANDO']] }, 1, 0],
                         },
                     },
                     inRoute: {
@@ -394,10 +381,7 @@ async function dashboardForDealer(dealerId) {
                         $sum: {
                             $cond: [
                                 {
-                                    $lt: [
-                                        { $ifNull: ['$asignacionReparto.asignadoEn', '$createdAt'] },
-                                        startOfToday,
-                                    ],
+                                    $lt: [{ $ifNull: ['$asignacionReparto.asignadoEn', '$createdAt'] }, startOfToday],
                                 },
                                 1,
                                 0,

@@ -32,6 +32,10 @@ router.get('/read-profit-margins', requirePermission(P.SALES_READ), salesPageCon
 router.get('/admin/delivery', requirePermission(P.DELIVERY_MANAGE), deliveryPageController.adminIndex);
 router.post('/admin/delivery/:id/assign', requirePermission(P.DELIVERY_MANAGE), deliveryPageController.assign);
 router.post('/admin/delivery/:id/unassign', requirePermission(P.DELIVERY_MANAGE), deliveryPageController.unassign);
-router.post('/admin/delivery/:id/incidents/:incidentId/resolve', requirePermission(P.DELIVERY_MANAGE), deliveryPageController.resolveIncident);
+router.post(
+    '/admin/delivery/:id/incidents/:incidentId/resolve',
+    requirePermission(P.DELIVERY_MANAGE),
+    deliveryPageController.resolveIncident
+);
 
 module.exports = router;

@@ -90,15 +90,12 @@ async function changeState(id, state, actorId, dealer = false, note = '', cashCo
         const order = await Order.findById(id).session(session);
         if (!order) throw new commerce.CommerceError('Pedido no encontrado.', 404);
         if (
-            dealer
-            && state === 'ENTREGADA'
-            && Array.isArray(order.incidenciasEntrega)
-            && order.incidenciasEntrega.some((incident) => incident.estado === 'ABIERTA')
+            dealer &&
+            state === 'ENTREGADA' &&
+            Array.isArray(order.incidenciasEntrega) &&
+            order.incidenciasEntrega.some((incident) => incident.estado === 'ABIERTA')
         ) {
-            throw new commerce.CommerceError(
-                'Resuelve la incidencia abierta antes de cerrar la entrega.',
-                409
-            );
+            throw new commerce.CommerceError('Resuelve la incidencia abierta antes de cerrar la entrega.', 409);
         }
 
         if (dealer && String(order.repartidor || '') !== String(actorId)) {

@@ -31,8 +31,14 @@ test('las rutas de perfil del dealer conservan su contexto', () => {
     const form = read('views/dealer/profile/Edit_profile.ejs');
 
     assert.match(routes, /router\.get\('\/perfil', isLogged, isDealer, profilePageController\.profile_dealer\)/);
-    assert.match(routes, /router\.get\('\/perfil\/editar', isLogged, isDealer, profilePageController\.update_profile_form_dealer\)/);
-    assert.match(routes, /router\.post\('\/perfil\/editar\/:id', isLogged, isDealer, profilePageController\.update_profile_dealer\)/);
+    assert.match(
+        routes,
+        /router\.get\('\/perfil\/editar', isLogged, isDealer, profilePageController\.update_profile_form_dealer\)/
+    );
+    assert.match(
+        routes,
+        /router\.post\('\/perfil\/editar\/:id', isLogged, isDealer, profilePageController\.update_profile_dealer\)/
+    );
     assert.match(controller, /exports\.profile_dealer = showArea\('dealer', false, 'dealer'\)/);
     assert.match(controller, /exports\.update_profile_dealer = save\(false, \{ redirectTo: '\/dealer\/perfil'/);
     assert.match(form, /action="\/dealer\/perfil\/editar\/<%= user\._id %>"/);
@@ -48,7 +54,10 @@ test('el dealer dispone de un historial de entregas de solo lectura', () => {
     const view = read('views/dealer/orders/read_orders.ejs');
     const rules = require('../server/business/deliveryRules');
 
-    assert.match(routes, /router\.get\('\/orders\/history', isLogged, isDealer, dealerPageController\.history_orders\)/);
+    assert.match(
+        routes,
+        /router\.get\('\/orders\/history', isLogged, isDealer, dealerPageController\.history_orders\)/
+    );
     assert.match(controller, /history_orders/);
     assert.match(controller, /history: true/);
     assert.match(operations, /history \? rules\.completedDeliveryFilter\(\) : rules\.dealerActiveDeliveryFilter\(\)/);
@@ -89,7 +98,6 @@ test('todas las vistas del dealer usan el pie de página de reparto', () => {
     }
 });
 
-
 test('el panel operativo del dealer muestra sus indicadores principales', () => {
     const controller = read('server/controller/pages/renderDealer.js');
     const operations = read('server/business/deliveryOperations.js');
@@ -114,7 +122,6 @@ test('el panel operativo del dealer muestra sus indicadores principales', () => 
     assert.match(styles, /@media \(max-width: 768px\)/);
 });
 
-
 test('el dealer puede filtrar y buscar sus entregas conservando el contexto', () => {
     const delivery = require('../server/business/deliveryService');
     const controller = read('server/controller/pages/renderDealer.js');
@@ -138,14 +145,8 @@ test('el dealer puede filtrar y buscar sus entregas conservando el contexto', ()
     assert.equal(filters.fromInput, '2026-11-01');
     assert.equal(filters.toInput, '2026-11-13');
     assert.match(delivery.buildDealerFilterQuery(filters), /search=ORD-123/);
-    assert.throws(
-        () => delivery.normalizeDealerFilters({ status: 'CANCELADA' }, false),
-        /estado seleccionado/
-    );
-    assert.throws(
-        () => delivery.normalizeDealerFilters({ from: '2026-02-30' }, false),
-        /no existe/
-    );
+    assert.throws(() => delivery.normalizeDealerFilters({ status: 'CANCELADA' }, false), /estado seleccionado/);
+    assert.throws(() => delivery.normalizeDealerFilters({ from: '2026-02-30' }, false), /no existe/);
 
     assert.match(controller, /normalizeDealerFilters/);
     assert.match(operations, /buildDealerOrderFilter/);
@@ -157,7 +158,6 @@ test('el dealer puede filtrar y buscar sus entregas conservando el contexto', ()
     assert.match(detailView, /dealerBackUrl/);
     assert.match(styles, /dealer-orders-filters/);
 });
-
 
 test('el flujo de incidencias está conectado al dealer y al administrador', () => {
     const dealerRoutes = read('server/routes/dealer.routes.js');

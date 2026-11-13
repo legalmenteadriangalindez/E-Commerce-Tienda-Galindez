@@ -19,13 +19,9 @@ test('las incidencias de entrega tienen tipos y estados controlados', () => {
 
 test('el seguimiento de una incidencia se registra como evento privado', () => {
     const order = { seguimientoEntrega: [] };
-    delivery.appendTracking(
-        order,
-        'REQUIERE_REVISION',
-        'Se reportó una incidencia.',
-        '507f1f77bcf86cd799439011',
-        { visibleCliente: false }
-    );
+    delivery.appendTracking(order, 'REQUIERE_REVISION', 'Se reportó una incidencia.', '507f1f77bcf86cd799439011', {
+        visibleCliente: false,
+    });
     assert.equal(order.seguimientoEntrega[0].visibleCliente, false);
     assert.equal(delivery.visibleTracking(order).length, 0);
 });

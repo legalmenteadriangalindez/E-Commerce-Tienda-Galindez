@@ -141,7 +141,6 @@ body.dealer-app #header {
     }
 }
 
-
 /* Responsive refinements for dealer views */
 /* Estas reglas están aisladas al área dealer y complementan los estilos
    específicos de cada vista sin modificar la lógica ni las vistas HTML. */

@@ -76,19 +76,12 @@ exports.update_order = wrap(async (req, res) => {
         incidentLabels: delivery.INCIDENT_LABELS,
         incidentStatusLabels: delivery.INCIDENT_STATUS_LABELS,
         incidentAction: incidentAction(req.params.id, filters),
-        incidentNotice: req.query.incident === 'reported'
-            ? 'La incidencia fue reportada a la tienda.'
-            : '',
+        incidentNotice: req.query.incident === 'reported' ? 'La incidencia fue reportada a la tienda.' : '',
     });
 });
 
 exports.report_incident = wrap(async (req, res) => {
-    await delivery.reportIncident(
-        req.params.id,
-        req.session.user._id,
-        req.body.tipo,
-        req.body.nota
-    );
+    await delivery.reportIncident(req.params.id, req.session.user._id, req.body.tipo, req.body.nota);
     const filters = delivery.normalizeDealerFilters(req.query, false);
     const query = delivery.buildDealerFilterQuery(filters);
     const targetQuery = query ? query + '&incident=reported' : 'incident=reported';

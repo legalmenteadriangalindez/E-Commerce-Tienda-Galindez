@@ -58,12 +58,7 @@ exports.unassign = wrap(async (req, res) => {
 });
 
 exports.resolveIncident = wrap(async (req, res) => {
-    await delivery.resolveIncident(
-        req.params.id,
-        req.params.incidentId,
-        req.session.user._id,
-        req.body.resolution
-    );
+    await delivery.resolveIncident(req.params.id, req.params.incidentId, req.session.user._id, req.body.resolution);
     req.session.deliveryNotice = 'La incidencia fue marcada como atendida.';
     await saveSession(req);
     return redirectWithStatus(req, res);

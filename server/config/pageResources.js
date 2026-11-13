@@ -208,10 +208,22 @@ const resources = {
     'admin/profile/profile': { pageCss: css('profile.css') },
     'admin/profile/Edit_profile': { pageCss: css('pages/edit-profile.css') },
     'dealer/orders/read_orders': {
-        pageCss: css('dealer-shell.css', 'dealer-dashboard.css', 'dealer-incidents.css', 'dealer_read_orders.css', 'admin-pagination.css'),
+        pageCss: css(
+            'dealer-shell.css',
+            'dealer-dashboard.css',
+            'dealer-incidents.css',
+            'dealer_read_orders.css',
+            'admin-pagination.css'
+        ),
     },
     'dealer/orders/detail_orders': {
-        pageCss: css('dealer-shell.css', 'dealer-incidents.css', 'dealer_detail_order.css', 'detail_order.css', 'delivery-tracking.css'),
+        pageCss: css(
+            'dealer-shell.css',
+            'dealer-incidents.css',
+            'dealer_detail_order.css',
+            'detail_order.css',
+            'delivery-tracking.css'
+        ),
     },
     'dealer/orders/update_order': {
         pageCss: css('dealer-shell.css', 'dealer-incidents.css', 'dealer_update_orders.css', 'delivery-tracking.css'),
