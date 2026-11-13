@@ -5,7 +5,51 @@ function verification(code) {
     );
     return {
         subject: process.env.EMAIL_SUBJECT || 'Código de verificación',
-        htmlContent: `<!doctype html><html lang="es"><head><meta charset="UTF-8"><title>Verificación de cuenta</title></head><body><h2>Verificación de cuenta</h2><p>Gracias por registrarte en Tienda Galindez.</p><p>Tu código de verificación es:</p><h1>${safeCode}</h1><p>Este código es válido durante 10 minutos.</p></body></html>`,
+        htmlContent: `<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>Verificación de cuenta</title>
+</head>
+<body style="margin:0;padding:0;background:#f6f1ec;font-family:Arial,Helvetica,sans-serif;color:#332923;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+        Tu código de verificación de Tienda Galindez.
+    </div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f6f1ec" style="width:100%;background:#f6f1ec;">
+        <tr>
+            <td align="center" style="padding:32px 16px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background:#ffffff;border:1px solid #e0d6cf;border-radius:16px;overflow:hidden;">
+                    <tr>
+                        <td align="center" style="padding:26px 30px;background:#311b14;">
+                            <div style="color:#e0cfc7;font-size:13px;font-weight:bold;letter-spacing:1.5px;">TIENDA GALINDEZ</div>
+                            <div style="margin-top:8px;color:#ffffff;font-size:22px;font-weight:bold;">Verificación de cuenta</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:32px 30px;background:#ffffff;">
+                            <h1 style="margin:0 0 16px;color:#311b14;font-size:28px;line-height:1.25;">Confirma tu correo</h1>
+                            <p style="margin:0 0 16px;color:#332923;font-size:16px;line-height:1.6;">Gracias por registrarte en Tienda Galindez. Usa el siguiente código para activar tu cuenta:</p>
+                            <div style="margin:26px 0;padding:22px 16px;background:#fef2e8;border:1px solid #d58d51;border-radius:12px;text-align:center;">
+                                <div style="margin-bottom:10px;color:#b94725;font-size:12px;font-weight:bold;letter-spacing:1.5px;">CÓDIGO DE VERIFICACIÓN</div>
+                                <div style="color:#311b14;font-size:36px;font-weight:bold;letter-spacing:8px;line-height:1.2;">${safeCode}</div>
+                            </div>
+                            <p style="margin:0 0 12px;color:#6b5b55;font-size:14px;line-height:1.6;"><strong style="color:#43251c;">Importante:</strong> este código es válido durante 10 minutos y solo puede utilizarse una vez.</p>
+                            <p style="margin:0;color:#6b5b55;font-size:14px;line-height:1.6;">Si no solicitaste esta cuenta, puedes ignorar este mensaje.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding:18px 30px;background:#f6f3f1;border-top:1px solid #e0d6cf;">
+                            <p style="margin:0;color:#6b5b55;font-size:12px;line-height:1.5;">Este es un mensaje automático de Tienda Galindez.<br>Por favor, no respondas a este correo.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`,
     };
 }
 function passwordReset(link) {
