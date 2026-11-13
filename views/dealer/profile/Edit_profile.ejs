@@ -1,74 +1,58 @@
 <%- include('../../include/_headerDealer') %>
 
-
 <div class="edit-profile-container">
-
     <div class="edit-profile-card">
-
-        <!-- HEADER -->
         <div class="edit-profile-header">
-
             <div class="avatar-wrapper">
                 <i class="bi bi-person-circle"></i>
             </div>
 
             <h2>Editar Perfil</h2>
-
-            <p>
-                Actualiza tu información personal
-            </p>
-
+            <p>Actualiza tu información personal</p>
         </div>
 
-        <!-- FORM -->
         <form
-            action="/perfil/editar/<%= user._id %>?_method=POST"
+            action="/dealer/perfil/editar/<%= user._id %>"
             method="POST"
             class="edit-profile-form"
         >
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-            <!-- NOMBRE -->
             <div class="form-group">
-
-                <label>Nombre completo</label>
-
+                <label for="profile-nombre">Nombre completo</label>
                 <input
+                    id="profile-nombre"
                     type="text"
                     name="nombre"
                     value="<%= user.nombre %>"
+                    autocomplete="name"
                     required
                 >
-
             </div>
 
-            <!-- EMAIL -->
             <div class="form-group">
-
-                <label>Correo electrónico</label>
-
+                <label for="profile-email">Correo electrónico</label>
                 <input
+                    id="profile-email"
                     type="email"
                     value="<%= user.email %>"
+                    autocomplete="email"
                     disabled
                 >
-
+                <small class="form-help">El correo se utiliza para iniciar sesión y no se puede cambiar aquí.</small>
             </div>
 
-            <!-- TELÉFONO -->
             <div class="form-group">
-
-                <label>Teléfono</label>
-
+                <label for="profile-telefono">Teléfono</label>
                 <input
+                    id="profile-telefono"
                     type="text"
                     name="telefono"
                     value="<%= user.telefono %>"
+                    autocomplete="tel"
                 >
-
             </div>
 
-            <!-- IDENTIFICACIÓN OPCIONAL -->
             <div class="form-group">
                 <label for="profile-cedula">Cédula (opcional)</label>
                 <input
@@ -83,69 +67,69 @@
                 >
             </div>
 
-            <!-- DIRECCIÓN -->
             <div class="form-group">
-
-                <label>Dirección</label>
-
+                <label for="profile-direccion">Dirección</label>
                 <input
+                    id="profile-direccion"
                     type="text"
                     name="direccion"
                     value="<%= user.direccion %>"
+                    autocomplete="street-address"
                 >
-
             </div>
 
-            <!-- CIUDAD -->
             <div class="form-group">
-
-                <label>Ciudad</label>
-
+                <label for="profile-ciudad">Ciudad</label>
                 <input
+                    id="profile-ciudad"
                     type="text"
                     name="ciudad"
                     value="<%= user.ciudad %>"
+                    autocomplete="address-level2"
                 >
-
             </div>
 
-            <!-- BARRIO -->
             <div class="form-group">
-
-                <label>Barrio</label>
-
+                <label for="profile-barrio">Barrio</label>
                 <input
+                    id="profile-barrio"
                     type="text"
                     name="barrio"
-                    value="<%= user.barrio %>"
+                    value="<%= user.barrio || '' %>"
+                    autocomplete="address-level3"
                 >
-
             </div>
 
-            <!-- BOTONES -->
+            <div class="form-group">
+                <label for="profile-genero">Género</label>
+                <input
+                    id="profile-genero"
+                    type="text"
+                    name="genero"
+                    value="<%= user.genero || '' %>"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="profile-referencia">Punto de referencia</label>
+                <input
+                    id="profile-referencia"
+                    type="text"
+                    name="puntoReferencia"
+                    value="<%= user.puntoReferencia || '' %>"
+                    autocomplete="off"
+                >
+            </div>
+
             <div class="form-actions">
-
-                <a
-                    href="/dealer/orders/read"
-                    class="btn-cancel"
-                >
-                    Cancelar
-                </a>
-
-                <button
-                    type="submit"
-                    class="btn-save"
-                >
+                <a href="/dealer/perfil" class="btn-cancel">Cancelar</a>
+                <button type="submit" class="btn-save">
                     <i class="bi bi-check-circle"></i>
                     Guardar cambios
                 </button>
-
             </div>
-
         </form>
-
     </div>
-
 </div>
 
 <%- include('../../include/_footerDealer') %>
