@@ -69,7 +69,7 @@ test('el dealer dispone de un historial de entregas de solo lectura', () => {
     assert.deepEqual(historyFilter.$and[0], rules.completedDeliveryFilter());
     assert.deepEqual(historyFilter.$and[1], { repartidor: '507f1f77bcf86cd799439011' });
     assert.match(view, /history=1/);
-    assert.match(view, /if \(!isHistory\)/);
+    assert.match(view, /!isHistory && !isIncidentHistory/);
     assert.deepEqual(rules.completedDeliveryFilter(), {
         estado: 'ENTREGADA',
         estadoPago: 'PAGADO',
