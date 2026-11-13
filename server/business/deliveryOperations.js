@@ -10,7 +10,7 @@ function orderPopulate(query) {
         .populate('usuario', 'nombre email telefono')
         .populate('repartidor', 'nombre email telefono')
         .populate('asignacionReparto.asignadoPor', 'nombre email')
-        .populate('seguimientoEntrega.actor', 'nombre email');
+        .populate('seguimientoEntrega.actor', 'nombre email')
         .populate('incidenciasEntrega.reportadoPor', 'nombre email')
         .populate('incidenciasEntrega.resueltoPor', 'nombre email');
 }
