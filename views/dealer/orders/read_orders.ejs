@@ -1,18 +1,24 @@
 <%- include('../../include/_headerDealer') %>
 
+<% const isHistory = typeof history !== 'undefined' && history === true; %>
+
 <main class="container-fluid py-4 dealer-orders-page">
     <header class="dealer-orders-heading">
         <div class="dealer-orders-heading__identity">
             <span class="dealer-orders-heading__icon" aria-hidden="true"><i class="bi bi-bicycle"></i></span>
             <div>
                 <p class="dealer-eyebrow">Operación de entregas</p>
-                <h1 id="dealer-orders-title" class="title-orders">Mis entregas</h1>
-                <p class="dealer-description">Pedidos asignados para entregar y actualizar.</p>
+                <h1 id="dealer-orders-title" class="title-orders"><%= isHistory ? 'Historial de entregas' : 'Mis entregas' %></h1>
+                <p class="dealer-description">
+                    <%= isHistory
+                        ? 'Consulta los pedidos que ya fueron entregados.'
+                        : 'Pedidos asignados para entregar y actualizar.' %>
+                </p>
             </div>
         </div>
-        <div class="dealer-orders-count" aria-label="Total de pedidos asignados">
+        <div class="dealer-orders-count" aria-label="<%= isHistory ? 'Total de entregas finalizadas' : 'Total de pedidos asignados' %>">
             <strong><%= pagination.totalItems %></strong>
-            <span>pedido(s) asignado(s)</span>
+            <span><%= isHistory ? 'entrega(s) finalizada(s)' : 'pedido(s) asignado(s)' %></span>
         </div>
     </header>
 
@@ -20,14 +26,17 @@
         <div class="dealer-orders-panel__header">
             <div>
                 <p class="dealer-eyebrow">Tu jornada</p>
-                <h2 id="dealer-orders-panel-title">Pedidos asignados</h2>
+                <h2 id="dealer-orders-panel-title"><%= isHistory ? 'Entregas finalizadas' : 'Pedidos asignados' %></h2>
             </div>
-            <span class="dealer-orders-panel__hint"><i class="bi bi-info-circle" aria-hidden="true"></i> Mantén el estado actualizado</span>
+            <span class="dealer-orders-panel__hint">
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                <%= isHistory ? 'Consulta el detalle y seguimiento de cada entrega.' : 'Mantén el estado actualizado' %>
+            </span>
         </div>
 
         <div class="table-responsive dealer-orders-table-wrapper">
             <table class="table table-hover align-middle orders-table dealer-orders-table">
-                <caption class="visually-hidden">Pedidos asignados al repartidor</caption>
+                <caption class="visually-hidden"><%= isHistory ? 'Entregas finalizadas del repartidor' : 'Pedidos asignados al repartidor' %></caption>
                 <thead>
                     <tr>
                         <th scope="col">Orden</th>
@@ -46,8 +55,8 @@
                             <td colspan="8">
                                 <div class="dealer-empty-state" role="status">
                                     <span class="dealer-empty-state__icon" aria-hidden="true"><i class="bi bi-inbox"></i></span>
-                                    <strong>Todavía no tienes pedidos asignados</strong>
-                                    <span>Cuando la tienda te asigne una entrega, aparecerá aquí.</span>
+                                    <strong><%= isHistory ? 'Todavía no tienes entregas finalizadas' : 'Todavía no tienes pedidos asignados' %></strong>
+                                    <span><%= isHistory ? 'Cuando completes una entrega, aparecerá aquí.' : 'Cuando la tienda te asigne una entrega, aparecerá aquí.' %></span>
                                 </div>
                             </td>
                         </tr>
@@ -81,8 +90,10 @@
                                 </td>
                                 <td data-label="Fecha"><%= new Date(order.createdAt).toLocaleDateString('es-CO') %></td>
                                 <td data-label="Acciones" class="dealer-actions">
-                                    <a href="/dealer/orders/update/<%= order._id %>" class="btn btn-success btn-sm dealer-action-btn dealer-action-btn--primary" aria-label="Actualizar estado del pedido <%= order.numeroOrden %>"><i class="bi bi-pencil-square" aria-hidden="true"></i> Actualizar</a>
-                                    <a href="/dealer/orders/detail/<%= order._id %>" class="btn btn-outline-secondary btn-sm dealer-action-btn" aria-label="Ver seguimiento del pedido <%= order.numeroOrden %>"><i class="bi bi-geo-alt" aria-hidden="true"></i> Seguimiento</a>
+                                    <% if (!isHistory) { %>
+                                        <a href="/dealer/orders/update/<%= order._id %>" class="btn btn-success btn-sm dealer-action-btn dealer-action-btn--primary" aria-label="Actualizar estado del pedido <%= order.numeroOrden %>"><i class="bi bi-pencil-square" aria-hidden="true"></i> Actualizar</a>
+                                    <% } %>
+                                    <a href="/dealer/orders/detail/<%= order._id %><%= isHistory ? '?history=1' : '' %>" class="btn btn-outline-secondary btn-sm dealer-action-btn" aria-label="<%= isHistory ? 'Ver detalle de la entrega ' : 'Ver seguimiento del pedido ' %><%= order.numeroOrden %>"><i class="bi bi-geo-alt" aria-hidden="true"></i> <%= isHistory ? 'Ver detalle' : 'Seguimiento' %></a>
                                 </td>
                             </tr>
                         <% }) %>
@@ -92,7 +103,7 @@
         </div>
     </section>
 
-    <%- include('../../include/_adminPagination', { pagination, label: 'entregas' }) %>
+    <%- include('../../include/_adminPagination', { pagination, label: isHistory ? 'historial de entregas' : 'entregas' }) %>
 </main>
 
 <%- include('../../include/_footerDealer') %>

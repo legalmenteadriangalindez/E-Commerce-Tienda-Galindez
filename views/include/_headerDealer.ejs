@@ -22,18 +22,13 @@
         const pageCssValues = typeof pageCss === 'undefined' ? [] : pageCss;
         const pageJsValues = typeof pageJs === 'undefined' ? [] : pageJs;
         const headerPageCss = [...new Set((Array.isArray(pageCssValues) ? pageCssValues : []).filter(value => validPageResource(value, '/css/')))];
-        const headerPageJs = [...new Set((Array.isArray(pageJsValues) ? pageJsValues : []).filter(value => validPageResource(value, '/js/')))];
+        const headerPageJs = [...new Set((Array.isArray(pageJsValues) ? pageJsValues : []).filter(value => validPageResource(value, '/js/')))]; 
     %>
     <% headerPageCss.forEach(href => { %><link rel="stylesheet" href="<%= href %>"><% }) %>
     <% headerPageJs.forEach(src => { %><script nonce="<%= cspNonce %>" defer src="<%= src %>"></script><% }) %>
     <!-- ICONO DE LA PESTAÑA -->
     <link rel="icon" type="image/png" href="/img/favicon.png">
     <!-- Los estilos de cada pantalla llegan mediante pageCss. -->
-
-
-
-
-
 </head>
 <body class="dealer-app">
 
@@ -54,9 +49,11 @@
             <span class="dealer-profile-label">Mi cuenta</span>
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-label="Opciones de cuenta">
-            <li><a class="dropdown-item" href="/dealer/perfil/editar"><i class="bi bi-person"></i> Perfil</a></li>
-            <li><a class="dropdown-item" href="/change-password"><i class="bi bi-key"></i> Cambiar contraseña</a></li>
+            <li><a class="dropdown-item" href="/dealer/perfil"><i class="bi bi-person"></i> Perfil</a></li>
+            <li><a class="dropdown-item" href="/dealer/perfil/editar"><i class="bi bi-pencil-square"></i> Editar perfil</a></li>
             <li><a class="dropdown-item" href="/dealer/orders/read"><i class="bi bi-bicycle"></i> Mis entregas</a></li>
+            <li><a class="dropdown-item" href="/dealer/orders/history"><i class="bi bi-clock-history"></i> Historial de entregas</a></li>
+            <li><a class="dropdown-item" href="/change-password"><i class="bi bi-key"></i> Cambiar contraseña</a></li>
             <li><hr class="dropdown-divider"></li>
             <li>
               <form action="/logout" method="POST">
