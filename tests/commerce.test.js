@@ -442,7 +442,17 @@ test(
             await assert.rejects(commerce.changeState(order.id, 'CANCELADA', app.users.admin.id));
             await commerce.changeState(order.id, 'PREPARANDO', app.users.admin.id);
             await commerce.changeState(order.id, 'ENVIADA', app.users.admin.id, true);
-            await commerce.changeState(order.id, 'ENTREGADA', app.users.admin.id, true);
+            await commerce.changeState(
+                order.id,
+                'ENTREGADA',
+                app.users.admin.id,
+                true,
+                '',
+                false,
+                '/uploads/507f1f77bcf86cd799439011.webp'
+            );
+            const completed = await Order.findById(order._id);
+            assert.equal(completed.comprobanteEntrega.fotoUrl, '/uploads/507f1f77bcf86cd799439011.webp');
         });
         await t.test('contra entrega reserva inventario y exige confirmar efectivo al entregar', async () => {
             await reset(10);
