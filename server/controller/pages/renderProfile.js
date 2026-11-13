@@ -48,7 +48,7 @@ const showArea = (area, edit = false, requiredRole = null) =>
     wrap(async (req, res) => {
         const user = await profiles.get(owner(req));
         if (requiredRole) ensureRole(user, requiredRole);
-        return res.render(\`\${area}/profile/\${edit ? 'Edit_profile' : 'profile'}\`, { user });
+        return res.render(`${area}/profile/${edit ? 'Edit_profile' : 'profile'}`, { user });
     });
 
 const save = (admin = false, options = {}) =>
