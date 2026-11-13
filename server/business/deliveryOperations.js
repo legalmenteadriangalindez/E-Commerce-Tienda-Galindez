@@ -121,6 +121,7 @@ function dealerSearchClause(value) {
             { 'direccionEnvio.departamento': pattern },
             { 'direccionEnvio.direccion': pattern },
             { 'direccionEnvio.referencia': pattern },
+            { 'direccionEnvio.nombreRecibe': pattern },
         ],
     };
 }
@@ -145,11 +146,12 @@ function buildDealerOrderFilter(dealerId, history, filters) {
     return { $and: clauses };
 }
 
-async function listForDealer(dealerId, { page = 1, limit = 20, history = false, filters = null } = {}) {
+async function listForDealer(dealerId, options = {}) {
+    const { page = 1, limit = 20, history = false, filters = null } = options;
     if (!rules.validId(dealerId)) throw new rules.DeliveryError('Repartidor inválido.', 401);
     const safePage = Math.min(100000, Math.max(1, Number.parseInt(page, 10) || 1));
     const safeLimit = Math.min(50, Math.max(1, Number.parseInt(limit, 10) || 20));
-    const normalizedFilters = filters || normalizeDealerFilters(arguments[1] || {}, history);
+    const normalizedFilters = filters || normalizeDealerFilters(options, history);
     const filter = buildDealerOrderFilter(dealerId, history, normalizedFilters);
     const totalItems = await Order.countDocuments(filter);
     const totalPages = Math.ceil(totalItems / safeLimit);
