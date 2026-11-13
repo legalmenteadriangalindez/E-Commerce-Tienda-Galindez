@@ -1,4 +1,12 @@
 const mongoose = require('mongoose');
+const incidentConfig = require('../config/deliveryIncidents');
+const {
+    INCIDENT_TYPES,
+    INCIDENT_LABELS,
+    INCIDENT_STATUS,
+    INCIDENT_STATUSES,
+    INCIDENT_STATUS_LABELS,
+} = incidentConfig;
 
 const DELIVERY_STATES = ['PENDIENTE', 'PAGADA', 'PREPARANDO', 'ENVIADA', 'ENTREGADA'];
 const PAID_DELIVERY_STATES = ['PAGADA', 'PREPARANDO', 'ENVIADA', 'ENTREGADA'];
@@ -163,4 +171,9 @@ module.exports = {
     trackingForState,
     trackState,
     visibleTracking,
+    INCIDENT_TYPES,
+    INCIDENT_LABELS,
+    INCIDENT_STATUS,
+    INCIDENT_STATUSES,
+    INCIDENT_STATUS_LABELS,
 };

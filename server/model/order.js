@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { integerCentsPath } = require('../services/money');
+const { INCIDENT_TYPES, INCIDENT_STATUS, INCIDENT_STATUSES } = require('../config/deliveryIncidents');
 
 const trackingSchema = new mongoose.Schema(
     {
@@ -23,6 +24,20 @@ const trackingSchema = new mongoose.Schema(
         fecha: { type: Date, default: Date.now },
         actor: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb' },
         visibleCliente: { type: Boolean, default: true },
+    },
+    { _id: true }
+);
+
+const deliveryIncidentSchema = new mongoose.Schema(
+    {
+        tipo: { type: String, enum: INCIDENT_TYPES, required: true },
+        estado: { type: String, enum: INCIDENT_STATUSES, default: INCIDENT_STATUS.OPEN },
+        nota: { type: String, maxlength: 500, default: '' },
+        reportadoPor: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb', required: true },
+        reportadoEn: { type: Date, default: Date.now },
+        resueltoPor: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb' },
+        resueltoEn: Date,
+        resolucion: { type: String, maxlength: 500 },
     },
     { _id: true }
 );
@@ -229,6 +244,10 @@ const orderSchema = new mongoose.Schema(
             type: [trackingSchema],
             default: [],
         },
+        incidenciasEntrega: {
+            type: [deliveryIncidentSchema],
+            default: [],
+        },
     },
     {
         timestamps: true,
@@ -243,6 +262,7 @@ orderSchema.index({ createdAt: -1, _id: -1 });
 orderSchema.index({ canal: 1, metodoPago: 1, _id: 1 });
 orderSchema.index({ inventario: 1, reservaHasta: 1 });
 orderSchema.index({ repartidor: 1, estado: 1, createdAt: -1 });
+orderSchema.index({ repartidor: 1, 'incidenciasEntrega.estado': 1, 'incidenciasEntrega.reportadoEn': -1 });
 orderSchema.index(
     { usuario: 1, canal: 1 },
     { unique: true, partialFilterExpression: { canal: 'WOMPI', inventario: 'RESERVADO' } }
