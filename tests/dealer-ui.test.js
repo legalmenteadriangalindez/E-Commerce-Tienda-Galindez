@@ -113,3 +113,47 @@ test('el panel operativo del dealer muestra sus indicadores principales', () => 
     assert.match(view, /dealer-kpi-grid/);
     assert.match(styles, /@media \(max-width: 768px\)/);
 });
+
+
+test('el dealer puede filtrar y buscar sus entregas conservando el contexto', () => {
+    const delivery = require('../server/business/deliveryService');
+    const controller = read('server/controller/pages/renderDealer.js');
+    const operations = read('server/business/deliveryOperations.js');
+    const view = read('views/dealer/orders/read_orders.ejs');
+    const updateView = read('views/dealer/orders/update_order.ejs');
+    const detailView = read('views/dealer/orders/detail_orders.ejs');
+    const styles = read('public/css/dealer_read_orders.css');
+
+    const filters = delivery.normalizeDealerFilters(
+        {
+            search: '  ORD-123  ',
+            status: 'enviada',
+            from: '2026-11-01',
+            to: '2026-11-13',
+        },
+        false
+    );
+    assert.equal(filters.search, 'ORD-123');
+    assert.equal(filters.status, 'ENVIADA');
+    assert.equal(filters.fromInput, '2026-11-01');
+    assert.equal(filters.toInput, '2026-11-13');
+    assert.match(delivery.buildDealerFilterQuery(filters), /search=ORD-123/);
+    assert.throws(
+        () => delivery.normalizeDealerFilters({ status: 'CANCELADA' }, false),
+        /estado seleccionado/
+    );
+    assert.throws(
+        () => delivery.normalizeDealerFilters({ from: '2026-02-30' }, false),
+        /no existe/
+    );
+
+    assert.match(controller, /normalizeDealerFilters/);
+    assert.match(operations, /buildDealerOrderFilter/);
+    for (const field of ['name="search"', 'name="status"', 'name="from"', 'name="to"']) {
+        assert.match(view, new RegExp(field));
+    }
+    assert.match(view, /dealerDetailSuffix/);
+    assert.match(updateView, /name="filterSearch"/);
+    assert.match(detailView, /dealerBackUrl/);
+    assert.match(styles, /dealer-orders-filters/);
+});

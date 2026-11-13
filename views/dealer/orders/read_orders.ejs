@@ -5,6 +5,18 @@
     const formatDealerCurrency = (value) =>
         `$ ${Number(value || 0).toLocaleString('es-CO', { maximumFractionDigits: 0 })}`;
 %>
+<%
+    const dealerFilters = typeof filters === 'object' && filters ? filters : {};
+    const filterQueryValue = typeof filterQuery === 'string' ? filterQuery : '';
+    const dealerListPath = isHistory ? '/dealer/orders/history' : '/dealer/orders/read';
+    const dealerDetailSuffix = isHistory
+        ? (filterQueryValue ? '?history=1&' + filterQueryValue : '?history=1')
+        : (filterQueryValue ? '?' + filterQueryValue : '');
+    const hasDealerFilters = Boolean(
+        dealerFilters.search || dealerFilters.status || dealerFilters.fromInput || dealerFilters.toInput
+    );
+    const dealerStatuses = Array.isArray(statuses) ? statuses : [];
+%>
 
 <main class="container-fluid py-4 dealer-orders-page">
     <header class="dealer-orders-heading">
@@ -25,6 +37,62 @@
             <span><%= isHistory ? 'entrega(s) finalizada(s)' : 'pedido(s) asignado(s)' %></span>
         </div>
     </header>
+
+    <section class="dealer-orders-filters" aria-labelledby="dealer-orders-filters-title">
+        <div class="dealer-orders-filters__header">
+            <div>
+                <p class="dealer-eyebrow">Consulta de entregas</p>
+                <h2 id="dealer-orders-filters-title">Buscar una entrega</h2>
+                <p>Filtra por estado, fecha, número de pedido, cliente o ciudad/zona.</p>
+            </div>
+            <span class="dealer-orders-filters__hint"><i class="bi bi-funnel" aria-hidden="true"></i> Los filtros se conservan al cambiar de página.</span>
+        </div>
+
+        <form class="dealer-orders-filter-form" method="get" action="<%= dealerListPath %>">
+            <label class="dealer-filter-field dealer-filter-field--search">
+                Pedido, cliente o zona
+                <input
+                    type="search"
+                    name="search"
+                    value="<%= dealerFilters.search || '' %>"
+                    maxlength="100"
+                    autocomplete="off"
+                    placeholder="Ej.: ORD-123, María o Centro"
+                >
+            </label>
+
+            <label class="dealer-filter-field">
+                Estado
+                <select name="status">
+                    <option value="">Todos los estados</option>
+                    <% dealerStatuses.forEach(status => { %>
+                        <option value="<%= status %>" <%= dealerFilters.status === status ? 'selected' : '' %>>
+                            <%= statusLabels[status] || status %>
+                        </option>
+                    <% }) %>
+                </select>
+            </label>
+
+            <label class="dealer-filter-field">
+                Desde
+                <input type="date" name="from" value="<%= dealerFilters.fromInput || '' %>">
+            </label>
+
+            <label class="dealer-filter-field">
+                Hasta
+                <input type="date" name="to" value="<%= dealerFilters.toInput || '' %>">
+            </label>
+
+            <div class="dealer-filter-actions">
+                <button class="btn btn-success dealer-filter-button" type="submit">
+                    <i class="bi bi-search" aria-hidden="true"></i> Aplicar filtros
+                </button>
+                <a class="btn btn-outline-secondary dealer-filter-button" href="<%= dealerListPath %>">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+    </section>
 
     <% if (!isHistory && dashboard) { %>
     <section class="dealer-dashboard-summary" aria-labelledby="dealer-dashboard-title">
@@ -125,8 +193,12 @@
                             <td colspan="8">
                                 <div class="dealer-empty-state" role="status">
                                     <span class="dealer-empty-state__icon" aria-hidden="true"><i class="bi bi-inbox"></i></span>
-                                    <strong><%= isHistory ? 'Todavía no tienes entregas finalizadas' : 'Todavía no tienes pedidos asignados' %></strong>
-                                    <span><%= isHistory ? 'Cuando completes una entrega, aparecerá aquí.' : 'Cuando la tienda te asigne una entrega, aparecerá aquí.' %></span>
+                                    <strong><%= hasDealerFilters
+    ? 'No encontramos entregas con esos filtros'
+    : (isHistory ? 'Todavía no tienes entregas finalizadas' : 'Todavía no tienes pedidos asignados') %></strong>
+                                    <span><%= hasDealerFilters
+    ? 'Prueba con otros criterios o limpia los filtros.'
+    : (isHistory ? 'Cuando completes una entrega, aparecerá aquí.' : 'Cuando la tienda te asigne una entrega, aparecerá aquí.') %></span>
                                 </div>
                             </td>
                         </tr>
@@ -161,9 +233,9 @@
                                 <td data-label="Fecha"><%= new Date(order.createdAt).toLocaleDateString('es-CO') %></td>
                                 <td data-label="Acciones" class="dealer-actions">
                                     <% if (!isHistory) { %>
-                                        <a href="/dealer/orders/update/<%= order._id %>" class="btn btn-success btn-sm dealer-action-btn dealer-action-btn--primary" aria-label="Actualizar estado del pedido <%= order.numeroOrden %>"><i class="bi bi-pencil-square" aria-hidden="true"></i> Actualizar</a>
+                                        <a href="/dealer/orders/update/<%= order._id %><%= dealerDetailSuffix %>" class="btn btn-success btn-sm dealer-action-btn dealer-action-btn--primary" aria-label="Actualizar estado del pedido <%= order.numeroOrden %>"><i class="bi bi-pencil-square" aria-hidden="true"></i> Actualizar</a>
                                     <% } %>
-                                    <a href="/dealer/orders/detail/<%= order._id %><%= isHistory ? '?history=1' : '' %>" class="btn btn-outline-secondary btn-sm dealer-action-btn" aria-label="<%= isHistory ? 'Ver detalle de la entrega ' : 'Ver seguimiento del pedido ' %><%= order.numeroOrden %>"><i class="bi bi-geo-alt" aria-hidden="true"></i> <%= isHistory ? 'Ver detalle' : 'Seguimiento' %></a>
+                                    <a href="/dealer/orders/detail/<%= order._id %><%= dealerDetailSuffix %>" class="btn btn-outline-secondary btn-sm dealer-action-btn" aria-label="<%= isHistory ? 'Ver detalle de la entrega ' : 'Ver seguimiento del pedido ' %><%= order.numeroOrden %>"><i class="bi bi-geo-alt" aria-hidden="true"></i> <%= isHistory ? 'Ver detalle' : 'Seguimiento' %></a>
                                 </td>
                             </tr>
                         <% }) %>

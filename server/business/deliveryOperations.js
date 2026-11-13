@@ -3,6 +3,7 @@ const Order = require('../model/order');
 const Userdb = require('../model/user');
 const Roldb = require('../model/rol');
 const rules = require('./deliveryRules');
+const search = require('./adminSalesSearch');
 
 function orderPopulate(query) {
     return query
@@ -38,15 +39,118 @@ async function listForAdmin({ page = 1, limit = 10, status = '' } = {}) {
     return { orders, page: currentPage, limit: safeLimit, totalItems, totalPages };
 }
 
-async function listForDealer(dealerId, { page = 1, limit = 20, history = false } = {}) {
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const DEALER_ACTIVE_FILTER_STATUSES = Object.freeze(['PENDIENTE', 'PAGADA', 'PREPARANDO', 'ENVIADA']);
+const DEALER_HISTORY_FILTER_STATUSES = Object.freeze(['ENTREGADA']);
+
+function dealerFilterValue(query, key, maxLength = 100) {
+    const value = query?.[key];
+    if (value === undefined || value === '') return '';
+    if (typeof value !== 'string') throw new rules.DeliveryError('El filtro ' + key + ' no es válido.', 400);
+    const trimmed = value.trim();
+    if (trimmed.length > maxLength) {
+        throw new rules.DeliveryError('El filtro ' + key + ' supera el máximo permitido.', 400);
+    }
+    return trimmed;
+}
+
+function parseDealerDate(value, endOfDay = false) {
+    if (!value) return null;
+    if (!DATE_PATTERN.test(value)) {
+        throw new rules.DeliveryError('Las fechas deben tener el formato AAAA-MM-DD.', 400);
+    }
+
+    const [year, month, day] = value.split('-').map(Number);
+    const check = new Date(Date.UTC(year, month - 1, day));
+    if (
+        check.getUTCFullYear() !== year ||
+        check.getUTCMonth() !== month - 1 ||
+        check.getUTCDate() !== day
+    ) {
+        throw new rules.DeliveryError('La fecha ' + value + ' no existe.', 400);
+    }
+
+    const date = new Date(value + 'T00:00:00.000-05:00');
+    if (Number.isNaN(date.getTime())) {
+        throw new rules.DeliveryError('La fecha ' + value + ' no existe.', 400);
+    }
+    return new Date(date.getTime() + (endOfDay ? DAY_MS : 0));
+}
+
+function normalizeDealerFilters(query = {}, history = false) {
+    const status = dealerFilterValue(query, 'status', 30).toUpperCase();
+    const search = dealerFilterValue(query, 'search', 100);
+    const fromInput = dealerFilterValue(query, 'from', 10);
+    const toInput = dealerFilterValue(query, 'to', 10);
+    const allowedStatuses = history ? DEALER_HISTORY_FILTER_STATUSES : DEALER_ACTIVE_FILTER_STATUSES;
+
+    if (status && !allowedStatuses.includes(status)) {
+        throw new rules.DeliveryError('El estado seleccionado no es válido para esta lista.', 400);
+    }
+
+    const from = parseDealerDate(fromInput);
+    const to = parseDealerDate(toInput, true);
+    if (from && to && from >= to) {
+        throw new rules.DeliveryError('La fecha inicial debe ser anterior o igual a la fecha final.', 400);
+    }
+
+    return { status, search, from, to, fromInput, toInput };
+}
+
+function buildDealerFilterQuery(filters = {}) {
+    const params = new URLSearchParams();
+    if (filters.search) params.set('search', filters.search);
+    if (filters.status) params.set('status', filters.status);
+    if (filters.fromInput) params.set('from', filters.fromInput);
+    if (filters.toInput) params.set('to', filters.toInput);
+    return params.toString();
+}
+
+function dealerSearchClause(value) {
+    if (!value) return null;
+    const pattern = search.searchPattern(value);
+    return {
+        $or: [
+            { numeroOrden: pattern },
+            { 'cliente.nombre': pattern },
+            { 'cliente.email': pattern },
+            { 'cliente.telefono': pattern },
+            { 'direccionEnvio.ciudad': pattern },
+            { 'direccionEnvio.departamento': pattern },
+            { 'direccionEnvio.direccion': pattern },
+            { 'direccionEnvio.referencia': pattern },
+        ],
+    };
+}
+
+function buildDealerOrderFilter(dealerId, history, filters) {
+    const clauses = [
+        history ? rules.completedDeliveryFilter() : rules.dealerActiveDeliveryFilter(),
+        { repartidor: dealerId },
+    ];
+
+    if (filters.status) clauses.push({ estado: filters.status });
+    const searchClause = dealerSearchClause(filters.search);
+    if (searchClause) clauses.push(searchClause);
+
+    if (filters.from || filters.to) {
+        const createdAt = {};
+        if (filters.from) createdAt.$gte = filters.from;
+        if (filters.to) createdAt.$lt = filters.to;
+        clauses.push({ createdAt });
+    }
+
+    return { $and: clauses };
+}
+
+async function listForDealer(dealerId, { page = 1, limit = 20, history = false, filters = null } = {}) {
     if (!rules.validId(dealerId)) throw new rules.DeliveryError('Repartidor inválido.', 401);
     const safePage = Math.min(100000, Math.max(1, Number.parseInt(page, 10) || 1));
     const safeLimit = Math.min(50, Math.max(1, Number.parseInt(limit, 10) || 20));
-    const deliveryFilter = history ? rules.completedDeliveryFilter() : rules.dealerActiveDeliveryFilter();
-    const filter = {
-        ...deliveryFilter,
-        repartidor: dealerId,
-    };
+    const normalizedFilters = filters || normalizeDealerFilters(arguments[1] || {}, history);
+    const filter = buildDealerOrderFilter(dealerId, history, normalizedFilters);
     const totalItems = await Order.countDocuments(filter);
     const totalPages = Math.ceil(totalItems / safeLimit);
     const currentPage = Math.min(safePage, totalPages || 1);
@@ -246,6 +350,9 @@ module.exports = {
     listForAdmin,
     listForDealer,
     dashboardForDealer,
+    normalizeDealerFilters,
+    buildDealerFilterQuery,
+    buildDealerOrderFilter,
     orderForDealer,
     assignOrder,
     unassignOrder,

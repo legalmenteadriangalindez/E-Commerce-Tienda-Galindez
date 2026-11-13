@@ -1,11 +1,18 @@
-<!-- include header -->
 <%- include('../../include/_headerDealer') %>
-<!-- /include header -->
 
+<%
+    const dealerBackUrl = typeof backUrl === 'string' ? backUrl : '/dealer/orders/read';
+%>
 
 <main class="detail-order-container">
-    <div class="title-container">
-        <h1>Detalle de Orden</h1>
+    <div class="title-container dealer-detail-heading">
+        <div>
+            <p class="dealer-eyebrow">Operación de entregas</p>
+            <h1>Detalle de Orden</h1>
+        </div>
+        <a class="btn btn-outline-secondary" href="<%= dealerBackUrl %>">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i> Volver a la lista
+        </a>
     </div>
 
     <%- include('../../include/orders/delivery-status', { order, isDealer: true }) %>
@@ -19,6 +26,4 @@
 
 <%- include('../../include/_deliveryTimeline', { order, visibleOnly: true, showActor: false }) %>
 
-<!-- include footer -->
 <%- include('../../include/_footerDealer') %>
-<!-- /include footer -->

@@ -1,10 +1,16 @@
 <%- include('../../include/_headerDealer') %>
 
+<% const dealerFilters = typeof filters === 'object' && filters ? filters : {}; %>
+
 <div class="page-wrapper">
     <div class="page-header"><h1>Actualizar Orden</h1><p>Visualiza la información de la orden y actualiza su estado</p></div>
     <div class="form-card ui-card ui-card--form">
         <form action="/dealer/orders/update/<%= order._id %>" method="POST">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="filterSearch" value="<%= dealerFilters.search || '' %>">
+            <input type="hidden" name="filterStatus" value="<%= dealerFilters.status || '' %>">
+            <input type="hidden" name="filterFrom" value="<%= dealerFilters.fromInput || '' %>">
+            <input type="hidden" name="filterTo" value="<%= dealerFilters.toInput || '' %>">
             <%- include('../../include/order/partials/summary', { order, dealer: true }) %>
             <%- include('../../include/order/partials/products', { order, dealer: true }) %>
             <%- include('../../include/order/partials/totals', { order }) %>
