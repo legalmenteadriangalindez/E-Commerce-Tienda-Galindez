@@ -140,3 +140,360 @@ body.dealer-app #header {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* Responsive refinements for dealer views */
+/* Estas reglas están aisladas al área dealer y complementan los estilos
+   específicos de cada vista sin modificar la lógica ni las vistas HTML. */
+
+body.dealer-app .dealer-navbar__inner {
+    min-width: 0;
+}
+
+body.dealer-app .dealer-navbar .navbar-brand {
+    min-width: 0;
+    max-width: 100%;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+body.dealer-app .dealer-navbar .app-brand-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.dealer-app .dealer-navbar .app-nav-right {
+    flex: 0 0 auto;
+}
+
+body.dealer-app .dealer-navbar .dropdown-menu {
+    max-width: calc(100vw - 1.5rem);
+}
+
+body.dealer-app .dealer-navbar .dropdown-item {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    gap: 0.5rem;
+    white-space: normal;
+}
+
+body.dealer-app .profile-container {
+    min-height: auto;
+    align-items: flex-start;
+    padding: clamp(1.25rem, 4vw, 3rem) 1rem;
+}
+
+body.dealer-app .profile-card {
+    max-width: 640px;
+    border: 1px solid var(--color-border);
+    padding: clamp(1rem, 4vw, 2rem);
+}
+
+body.dealer-app .profile-card:hover {
+    transform: none;
+}
+
+body.dealer-app .profile-card .profile-header h3,
+body.dealer-app .profile-card .info-item p {
+    overflow-wrap: anywhere;
+}
+
+body.dealer-app .edit-profile-container {
+    min-height: auto;
+    align-items: flex-start;
+    padding: clamp(1.25rem, 4vw, 2.5rem) 1rem;
+    background: var(--color-background);
+}
+
+body.dealer-app .edit-profile-card {
+    max-width: 700px;
+    border: 1px solid var(--color-border);
+    padding: clamp(1rem, 4vw, 2.25rem);
+}
+
+body.dealer-app .edit-profile-form {
+    width: 100%;
+}
+
+body.dealer-app .edit-profile-form input {
+    min-height: 46px;
+    max-width: 100%;
+}
+
+body.dealer-app .edit-profile-form .btn-cancel,
+body.dealer-app .edit-profile-form .btn-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+}
+
+body.dealer-app .dealer-orders-page {
+    overflow: hidden;
+}
+
+body.dealer-app .dealer-orders-table td .dealer-cell-primary,
+body.dealer-app .dealer-orders-table td small,
+body.dealer-app .dealer-orders-table td {
+    overflow-wrap: anywhere;
+}
+
+body.dealer-app .page-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+body.dealer-app .page-wrapper .page-header h1 {
+    color: var(--color-brand-dark);
+    font-size: clamp(1.45rem, 4vw, 2rem);
+}
+
+body.dealer-app .page-wrapper .form-card {
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-soft);
+}
+
+body.dealer-app .page-wrapper .form-group input,
+body.dealer-app .page-wrapper .form-group select,
+body.dealer-app .page-wrapper .form-group textarea {
+    width: 100%;
+    max-width: 100%;
+    min-height: 46px;
+}
+
+body.dealer-app .page-wrapper .form-group textarea {
+    resize: vertical;
+}
+
+body.dealer-app .detail-order-container .order-card {
+    min-width: 0;
+}
+
+body.dealer-app .detail-order-container .order-card p {
+    overflow-wrap: anywhere;
+}
+
+body.dealer-app .detail-order-container .product-table {
+    min-width: 0;
+}
+
+body.dealer-app .detail-order-container .delivery-timeline,
+body.dealer-app .detail-order-container .order-card {
+    max-width: 100%;
+}
+
+body.dealer-app .delivery-timeline__heading > div,
+body.dealer-app .delivery-timeline__content {
+    min-width: 0;
+}
+
+body.dealer-app .delivery-timeline__content p {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+    body.dealer-app .dealer-navbar {
+        padding: 0.65rem 1rem;
+    }
+
+    body.dealer-app .dealer-navbar__inner {
+        gap: 0.6rem;
+    }
+
+    body.dealer-app .dealer-navbar .navbar-brand {
+        gap: 0.5rem;
+    }
+
+    body.dealer-app .dealer-navbar .app-brand-text {
+        font-size: clamp(0.92rem, 3.8vw, 1.08rem);
+    }
+
+    body.dealer-app .dealer-profile-btn {
+        padding: 0.45rem 0.6rem;
+    }
+
+    body.dealer-app .dealer-orders-heading {
+        align-items: stretch;
+    }
+
+    body.dealer-app .dealer-orders-table-wrapper {
+        overflow-x: visible;
+    }
+
+    body.dealer-app .dealer-orders-table {
+        min-width: 0;
+    }
+
+    body.dealer-app .dealer-orders-table td {
+        padding-right: 0.5rem;
+        padding-left: 40%;
+    }
+
+    body.dealer-app .dealer-orders-table td::before {
+        width: 35%;
+        font-size: 0.68rem;
+    }
+
+    body.dealer-app .dealer-orders-table .dealer-payment-method {
+        justify-content: flex-end;
+        text-align: right;
+        white-space: normal;
+    }
+
+    body.dealer-app .dealer-orders-table .dealer-status {
+        min-width: 0;
+    }
+
+    body.dealer-app .detail-order-container {
+        margin: 1rem auto;
+        padding: 0 0.75rem;
+    }
+
+    body.dealer-app .detail-order-container .title-container {
+        margin-bottom: 1rem;
+        text-align: left;
+    }
+
+    body.dealer-app .detail-order-container .product-table tr {
+        margin-bottom: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    body.dealer-app .detail-order-container .product-table td {
+        min-height: 2.5rem;
+        padding: 0.55rem 0.25rem 0.55rem 42%;
+    }
+
+    body.dealer-app .detail-order-container .product-table td::before {
+        top: 0.55rem;
+        left: 0.25rem;
+        width: 38%;
+        color: var(--color-text-muted);
+        font-size: 0.72rem;
+    }
+
+    body.dealer-app .detail-order-container .card-body:has(.product-table),
+    body.dealer-app .detail-order-container .table-responsive:has(.product-table) {
+        overflow-x: visible;
+    }
+
+    body.dealer-app .page-wrapper {
+        padding: 1rem 0.75rem 1.5rem;
+    }
+
+    body.dealer-app .page-wrapper .form-card {
+        padding: 1rem;
+    }
+
+    body.dealer-app .page-wrapper .form-section {
+        margin-bottom: 1.5rem;
+    }
+
+    body.dealer-app .page-wrapper .form-actions {
+        display: grid;
+        gap: 0.65rem;
+    }
+
+    body.dealer-app .page-wrapper .form-actions button {
+        min-height: 48px;
+    }
+
+    body.dealer-app .page-wrapper .table-orders td {
+        overflow-wrap: anywhere;
+    }
+
+    body.dealer-app .edit-profile-form .form-actions {
+        flex-direction: column;
+        gap: 0.7rem;
+    }
+}
+
+@media (max-width: 576px) {
+    body.dealer-app .dealer-navbar {
+        padding-right: 0.75rem;
+        padding-left: 0.75rem;
+    }
+
+    body.dealer-app .dealer-orders-page {
+        padding-right: 0.75rem;
+        padding-left: 0.75rem;
+    }
+
+    body.dealer-app .dealer-orders-heading__identity {
+        gap: 0.65rem;
+    }
+
+    body.dealer-app .dealer-orders-heading__icon {
+        width: 2.75rem;
+        height: 2.75rem;
+        font-size: 1.2rem;
+    }
+
+    body.dealer-app .title-orders {
+        font-size: 1.45rem;
+    }
+
+    body.dealer-app .dealer-description {
+        font-size: 0.9rem;
+    }
+
+    body.dealer-app .dealer-orders-count {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    body.dealer-app .dealer-orders-panel__header {
+        padding: 0.95rem;
+    }
+
+    body.dealer-app .dealer-orders-table-wrapper {
+        padding-right: 0.5rem;
+        padding-left: 0.5rem;
+    }
+
+    body.dealer-app .profile-card,
+    body.dealer-app .edit-profile-card {
+        border-radius: 1rem;
+    }
+
+    body.dealer-app .edit-profile-card {
+        padding: 1rem;
+    }
+
+    body.dealer-app .edit-profile-form {
+        gap: 1rem;
+    }
+
+    body.dealer-app .delivery-timeline {
+        margin: 1rem 0;
+        padding: 0.9rem;
+    }
+}
+
+@media (max-width: 420px) {
+    body.dealer-app .dealer-navbar .app-brand-text {
+        max-width: calc(100vw - 8rem);
+    }
+
+    body.dealer-app .dealer-brand-icon {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    body.dealer-app .dealer-profile-btn {
+        min-width: 42px;
+        padding: 0.4rem;
+    }
+
+    body.dealer-app .detail-order-container .product-table td {
+        padding-left: 38%;
+    }
+
+    body.dealer-app .detail-order-container .product-table td::before {
+        width: 34%;
+    }
+}
