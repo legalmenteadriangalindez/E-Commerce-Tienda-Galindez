@@ -263,4 +263,3 @@ function pageResourcesFor(view) {
 }
 
 module.exports = { pageResourcesFor, resources };
-

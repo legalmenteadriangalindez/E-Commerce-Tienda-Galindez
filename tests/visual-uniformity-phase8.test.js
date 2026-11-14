@@ -10,11 +10,7 @@ const read = (relativePath) => {
     const actualPath = path.join(root, relativePath);
     const stagingPath = path.join(root, '.phase8', path.basename(relativePath));
     const fallback = path.join(root, '.phase8', relativePath);
-    const sourcePath = fs.existsSync(actualPath)
-        ? actualPath
-        : fs.existsSync(fallback)
-          ? fallback
-          : stagingPath;
+    const sourcePath = fs.existsSync(actualPath) ? actualPath : fs.existsSync(fallback) ? fallback : stagingPath;
     return fs.readFileSync(sourcePath, 'utf8');
 };
 
@@ -37,8 +33,5 @@ test('el layout del detalle neutraliza el desbordamiento de Bootstrap sin tocar 
 });
 
 test('la hoja del detalle está registrada como recurso exclusivo de la vista', () => {
-    assert.match(
-        pageResources,
-        /'client\/products\/product_detail':\s*\{[\s\S]*?'pages\/product-detail\.css'/
-    );
+    assert.match(pageResources, /'client\/products\/product_detail':\s*\{[\s\S]*?'pages\/product-detail\.css'/);
 });
