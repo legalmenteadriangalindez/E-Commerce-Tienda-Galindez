@@ -1,16 +1,12 @@
 <%- include('../../include/_headerAdmin') %>
 
-
-
 <div class="page-wrapper">
-
   <div class="page-header">
     <h1>Categorías</h1>
     <p>Crea y organiza las categorías de tus productos</p>
   </div>
 
   <div class="form-card ui-card ui-card--form small-card">
-
     <% if (locals.error) { %>
       <div class="alert error"><%= error %></div>
     <% } %>
@@ -20,20 +16,25 @@
     <% } %>
 
     <form action="/create-categoria" method="POST" class="category-form">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
       <div class="form-group">
-        <label>Nombre de la categoría</label>
-        <input type="text" name="nombre" placeholder="Ej: Tecnología" required autofocus>
+        <label for="category-name">Nombre de la categoría</label>
+        <input
+          id="category-name"
+          type="text"
+          name="nombre"
+          placeholder="Ej: Tecnología"
+          required
+          autofocus
+        >
         <small>El nombre debe ser único</small>
       </div>
 
       <div class="form-actions">
         <button type="submit">Guardar categoría</button>
       </div>
-
     </form>
-
   </div>
 </div>
 
