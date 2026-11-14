@@ -4,6 +4,11 @@ const money = require('../../services/money');
 const LOW_STOCK_LIMIT = 20;
 const NO_ROTATION_LIMIT = 10;
 
+// Se utiliza la misma conversión en el resumen y en el detalle de cada producto.
+function unitPriceCents(centsField, legacyField) {
+    return { $ifNull: [centsField, { $round: [{ $multiply: [{ $ifNull: [legacyField, 0] }, 100] }, 0] }] };
+}
+
 async function lowStock(limit = LOW_STOCK_LIMIT) {
     const safeLimit = Math.max(1, Math.min(Number(limit) || LOW_STOCK_LIMIT, LOW_STOCK_LIMIT));
     return Product.find({ $expr: { $lte: [{ $ifNull: ['$stock', 0] }, { $ifNull: ['$stockMinimo', 0] }] } })
@@ -25,17 +30,13 @@ async function noRotation(soldIds, limit = NO_ROTATION_LIMIT) {
 // El stock representa existencias disponibles: las reservas ya están descontadas.
 // Se utilizan los centavos persistidos y se admite el precio legado en COP.
 function valuationPipeline() {
-    const unitCents = (centsField, legacyField) => ({
-        $ifNull: [centsField, { $round: [{ $multiply: [{ $ifNull: [legacyField, 0] }, 100] }, 0] }],
-    });
-
     return [
         { $match: { stock: { $gt: 0 } } },
         {
             $project: {
                 stock: 1,
-                costUnitCents: unitCents('$precioCostoCents', '$precioCosto'),
-                saleUnitCents: unitCents('$precioVentaCents', '$precioVenta'),
+                costUnitCents: unitPriceCents('$precioCostoCents', '$precioCosto'),
+                saleUnitCents: unitPriceCents('$precioVentaCents', '$precioVenta'),
             },
         },
         {
@@ -76,4 +77,4 @@ async function stockValuation() {
     return result;
 }
 
-module.exports = { lowStock, noRotation, valuationPipeline, stockValuation };
+module.exports = { lowStock, noRotation, unitPriceCents, valuationPipeline, stockValuation };

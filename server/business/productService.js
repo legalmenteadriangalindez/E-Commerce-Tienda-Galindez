@@ -15,7 +15,13 @@ const { uploadedFiles, discardUploads, updatedPhotos } = require('./productMedia
 const inventory = require('./inventoryService');
 
 function priceCents(value) {
-    if (String(value).trim() === '') throw new BusinessError('El precio es obligatorio.');
+    const input = String(value).trim();
+    if (input === '') throw new BusinessError('El precio es obligatorio.');
+    // En Colombia, 50.000 puede confundirse con cincuenta mil. Number('50.000') devuelve 50.
+    // Se exigen pesos sin separadores de miles y un máximo de dos decimales.
+    if (!/^\d+(?:\.\d{1,2})?$/.test(input)) {
+        throw new BusinessError('Escribe el precio sin separadores de miles: 50000, no 50.000. Usa punto solo para centavos (50000.50).');
+    }
     try {
         return money.toCents(value);
     } catch (error) {

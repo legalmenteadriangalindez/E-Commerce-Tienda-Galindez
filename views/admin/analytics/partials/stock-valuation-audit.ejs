@@ -1,0 +1,105 @@
+<section id="stock-valuation-detail" class="stock-audit" aria-labelledby="stock-audit-title">
+    <div class="stock-audit__heading">
+        <div>
+            <p class="admin-list-eyebrow">Comprobación de valores</p>
+            <h2 id="stock-audit-title">¿De dónde salen los totales del inventario?</h2>
+            <p>Estos productos tienen unidades disponibles. La tabla inferior de alertas muestra otro grupo: productos agotados o por debajo del mínimo.</p>
+        </div>
+        <span class="stock-audit__reference-count"><%= valuationAudit.totals.references.toLocaleString('es-CO') %> referencias con stock</span>
+    </div>
+
+    <% const fullTotalsMatch = valuationAudit.totals.investedCents === inventoryValuation.investedCents &&
+        valuationAudit.totals.potentialSalesCents === inventoryValuation.potentialSalesCents &&
+        valuationAudit.totals.units === inventoryValuation.units; %>
+    <% if (!fullTotalsMatch) { %>
+        <p class="stock-audit__warning" role="alert">Los totales cambiaron entre las consultas. Vuelve a cargar la página para verificar si hubo movimientos de inventario.</p>
+    <% } %>
+
+    <% if (valuationAudit.totals.flaggedProducts > 0) { %>
+        <div class="stock-audit__warning" role="note">
+            <strong><%= valuationAudit.totals.flaggedProducts %> referencias requieren revisión.</strong>
+            La auditoría encontró:
+            <%= valuationAudit.totals.costMismatchProducts %> con diferencias en costo,
+            <%= valuationAudit.totals.saleMismatchProducts %> con diferencias en venta,
+            <%= valuationAudit.totals.missingCentsProducts %> que usan precios históricos sin centavos,
+            <%= valuationAudit.totals.zeroCostProducts %> con costo $0,
+            <%= valuationAudit.totals.zeroSaleProducts %> con venta $0
+            y <%= valuationAudit.totals.belowCostProducts %> con precio de venta inferior al costo.
+            Una referencia puede aparecer en más de una categoría.
+        </div>
+    <% } else { %>
+        <p class="stock-audit__ok">No se encontraron diferencias de precios ni costos nulos en las referencias con stock. Esto no garantiza que los precios ingresados sean los correctos: comprueba cada importe.</p>
+    <% } %>
+
+    <div class="stock-audit__table-scroll">
+        <table class="stock-audit__table">
+            <thead>
+                <tr>
+                    <th scope="col">Producto</th>
+                    <th scope="col" class="stock-audit__number">Unidades</th>
+                    <th scope="col" class="stock-audit__number">Costo unitario</th>
+                    <th scope="col" class="stock-audit__number">Inversión</th>
+                    <th scope="col" class="stock-audit__number">Venta unitaria</th>
+                    <th scope="col" class="stock-audit__number">Venta potencial</th>
+                    <th scope="col" class="stock-audit__number">Ganancia potencial</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!valuationAudit.products.length) { %>
+                    <tr><td colspan="7">No hay productos con unidades disponibles.</td></tr>
+                <% } %>
+                <% valuationAudit.products.forEach(product => { %>
+                    <tr>
+                        <td>
+                            <strong><%= product.nombre %></strong>
+                            <% if (canEditProductPrices) { %>
+                                <a class="stock-audit__edit" href="/update-producto/<%= product._id %>">Verificar precio</a>
+                            <% } %>
+                            <% if (product.issues.length) { %>
+                                <ul class="stock-audit__issues">
+                                    <% product.issues.forEach(issue => { %>
+                                        <li><%= issue %></li>
+                                    <% }) %>
+                                </ul>
+                            <% } %>
+                        </td>
+                        <td class="stock-audit__number"><%= product.stock.toLocaleString('es-CO') %></td>
+                        <td class="stock-audit__number"><%= formatCOP(product.costUnitCents) %></td>
+                        <td class="stock-audit__number"><strong><%= formatCOP(product.investedCents) %></strong></td>
+                        <td class="stock-audit__number"><%= formatCOP(product.saleUnitCents) %></td>
+                        <td class="stock-audit__number"><strong><%= formatCOP(product.potentialSalesCents) %></strong></td>
+                        <td class="stock-audit__number"><%= formatCOPSigned(product.potentialGrossProfitCents) %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+            <% if (valuationAudit.products.length) { %>
+                <% const pageInvestment = valuationAudit.products.reduce((total, product) => total + product.investedCents, 0); %>
+                <% const pageSales = valuationAudit.products.reduce((total, product) => total + product.potentialSalesCents, 0); %>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" scope="row">Subtotal de esta página</th>
+                        <td class="stock-audit__number"><%= formatCOP(pageInvestment) %></td>
+                        <td></td>
+                        <td class="stock-audit__number"><%= formatCOP(pageSales) %></td>
+                        <td class="stock-audit__number"><%= formatCOPSigned(pageSales - pageInvestment) %></td>
+                    </tr>
+                </tfoot>
+            <% } %>
+        </table>
+    </div>
+
+    <div class="stock-audit__footer">
+        <p>Referencias <%= valuationAudit.pagination.totalItems ? (valuationAudit.pagination.page - 1) * valuationAudit.pagination.limit + 1 : 0 %>–<%= Math.min(valuationAudit.pagination.page * valuationAudit.pagination.limit, valuationAudit.pagination.totalItems) %>
+            de <%= valuationAudit.pagination.totalItems %>. Los totales superiores corresponden a <strong>todas</strong> las referencias con stock, no solamente a esta página.</p>
+        <nav aria-label="Páginas de valoración de stock" class="stock-audit__pagination">
+            <% if (valuationAudit.pagination.page > 1) { %>
+                <a href="/read-stock?page=<%= pagination.currentPage %>&valuationPage=<%= valuationAudit.pagination.page - 1 %>#stock-valuation-detail">Anterior</a>
+            <% } %>
+            <span>Página <%= valuationAudit.pagination.page %> de <%= valuationAudit.pagination.totalPages || 1 %></span>
+            <% if (valuationAudit.pagination.page < valuationAudit.pagination.totalPages) { %>
+                <a href="/read-stock?page=<%= pagination.currentPage %>&valuationPage=<%= valuationAudit.pagination.page + 1 %>#stock-valuation-detail">Siguiente</a>
+            <% } %>
+        </nav>
+    </div>
+    <p class="stock-audit__explanation">Se calculan las existencias disponibles × el costo o precio unitario registrado. Las reservas ya están descontadas del stock. Los productos con cero existencias no generan inversión ni venta potencial. Los precios en centavos tienen prioridad sobre los antiguos; cualquier diferencia se señala para revisión sin modificar la base de datos.</p>
+</section>
