@@ -403,7 +403,6 @@ body {
     .form-actions {
         text-align: center;
     }
-
 }
 
 @media (max-width: 480px) {
@@ -414,7 +413,6 @@ body {
     .form-card {
         padding: 15px;
     }
-
 
     .form-actions button {
         width: 100%;
