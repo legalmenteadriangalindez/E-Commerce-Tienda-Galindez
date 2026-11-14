@@ -64,7 +64,9 @@ body {
   color: #172033;
   font: inherit;
   resize: vertical;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .provider-form input {
@@ -103,7 +105,9 @@ body {
   cursor: pointer;
   font: inherit;
   font-weight: 700;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .provider-form .form-actions button:hover {

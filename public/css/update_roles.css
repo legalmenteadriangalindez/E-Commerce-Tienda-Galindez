@@ -44,7 +44,7 @@ body {
   font-weight: 700;
 }
 
-.role-form input[type='text'],
+.role-form input[type="text"],
 .role-form textarea {
   width: 100%;
   box-sizing: border-box;
@@ -55,14 +55,16 @@ body {
   color: #172033;
   font: inherit;
   resize: vertical;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.role-form input[type='text'] {
+.role-form input[type="text"] {
   min-height: 46px;
 }
 
-.role-form input[type='text']:focus,
+.role-form input[type="text"]:focus,
 .role-form textarea:focus {
   border-color: #2563eb;
   outline: none;
@@ -101,7 +103,9 @@ body {
   background: #f9fbfd;
   cursor: pointer;
   font-weight: 600 !important;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
 .permission-option:hover {
@@ -145,7 +149,9 @@ body {
   font: inherit;
   font-weight: 700;
   text-decoration: none;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .role-form .form-actions button:hover,

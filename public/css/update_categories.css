@@ -58,7 +58,9 @@ body {
   background: #fff;
   color: #172033;
   font: inherit;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .category-form input:focus {
@@ -91,7 +93,9 @@ body {
   cursor: pointer;
   font: inherit;
   font-weight: 700;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .category-form .form-actions button:hover {
