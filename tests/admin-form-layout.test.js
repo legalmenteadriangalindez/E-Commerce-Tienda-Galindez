@@ -70,5 +70,8 @@ test('la barra lateral reserva espacio solo en escritorio y el resto de páginas
     assert.match(sidebar, /@media \(max-width: 991px\)\s*\{\s*body\.admin-app\s*\{\s*padding-left:\s*0;/);
     assert.match(admin, /\.admin-shell\s*\{[^}]*width:\s*min\(100% - 2rem, 1440px\)/);
     assert.match(adminUi, /@media \(max-width: 760px\)/);
-    assert.match(adminUi, /body\.admin-app > :not\(header\):not\(footer\) :is\(img, video, canvas\)\s*\{\s*max-width:\s*100%;/);
+    assert.match(
+        adminUi,
+        /body\.admin-app > :not\(header\):not\(footer\) :is\(img, video, canvas\)\s*\{\s*max-width:\s*100%;/
+    );
 });

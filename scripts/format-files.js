@@ -49,12 +49,4 @@ const result = spawnSync(
     [require.resolve('prettier/bin/prettier.cjs'), check ? '--check' : '--write', ...files],
     { cwd: root, stdio: 'inherit' }
 );
-if (check && result.status !== 0 && process.env.CI === 'true') {
-    const inspect = ['tests/admin-form-layout.test.js'];
-    spawnSync(process.execPath, [require.resolve('prettier/bin/prettier.cjs'), '--write', ...inspect], {
-        cwd: root,
-    });
-    const difference = spawnSync('git', ['diff', '--', ...inspect], { cwd: root, encoding: 'utf8' });
-    process.stdout.write('=== ADMIN CENTER FORMAT START ===\\n' + (difference.stdout || '') + '\\n=== ADMIN CENTER FORMAT END ===\\n');
-}
 process.exit(result.status || (ejsFailures ? 1 : (result.status ?? 1)));
