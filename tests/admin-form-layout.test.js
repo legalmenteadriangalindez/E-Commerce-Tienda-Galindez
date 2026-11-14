@@ -35,7 +35,7 @@ test('los estilos globales no anulan los anchos máximos de cada pantalla admini
         assert.ok(source.includes('max-width: ' + maximum + ';'), file + ' debe conservar su ancho');
     }
 
-    const brands = read('public/css/update_brands.css');
+    const brands = read('public/css/pages/admin-brand-forms.css');
     assert.match(brands, /body\s*>\s*form\s*\{[^}]*max-width:\s*650px;/);
     assert.match(brands, /body\s*>\s*form\s*\{[^}]*margin:\s*0 auto 40px;/);
 });
