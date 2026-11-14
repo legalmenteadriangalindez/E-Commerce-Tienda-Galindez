@@ -49,4 +49,17 @@ const result = spawnSync(
     [require.resolve('prettier/bin/prettier.cjs'), check ? '--check' : '--write', ...files],
     { cwd: root, stdio: 'inherit' }
 );
+if (check && result.status !== 0 && process.env.CI === 'true') {
+    const filesToInspect = [
+        'server/business/analytics/stockValuationAudit.js',
+        'server/business/productService.js',
+        'server/config/pageResources.js',
+        'tests/stock-valuation-audit.test.js',
+    ];
+    spawnSync(process.execPath, [require.resolve('prettier/bin/prettier.cjs'), '--write', ...filesToInspect], {
+        cwd: root,
+    });
+    const formatted = spawnSync('git', ['diff', '--', ...filesToInspect], { cwd: root, encoding: 'utf8' });
+    process.stdout.write('=== STOCK FORMAT DIFF START ===\\n' + (formatted.stdout || '') + '\\n=== STOCK FORMAT DIFF END ===\\n');
+}
 process.exit(result.status || (ejsFailures ? 1 : (result.status ?? 1)));
