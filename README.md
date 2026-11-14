@@ -46,6 +46,19 @@ Los cálculos se dejan dentro de MongoDB para no traer todas las ventas a la mem
 
 Estas funciones pequeñas evitan repetir bloques extensos. No cambian las reglas, nombres públicos de funciones, rutas, cálculos ni formato de datos. Las pruebas ejecutan escenarios de doble solicitud, pagos, devoluciones y consulta semanal/mensual.
 
+## Verificación de valoración de stock (solo lectura)
+
+La página administrativa `/read-stock` diferencia **dos listas**:
+
+- **Valor del inventario disponible**: productos con `stock > 0`, calculados con cantidad × costo y cantidad × venta en centavos de COP. Incluye un desglose paginado (20 referencias por página) y un subtotal de la página; los indicadores superiores incluyen **todas las referencias**.
+- **Alertas de stock**: productos agotados o cuyas existencias son menores o iguales al mínimo. No equivalen al listado de valoración.
+
+El desglose señala precios anteriores diferentes de los importes en centavos (se prefieren los campos `*Cents`), precios sin migrar, costos o precios cero y ventas bajo costo. **La auditoría no modifica la base de datos ni corrige importes automáticamente.** Los valores financieros se muestran únicamente a usuarios con permiso `analytics:read`; los precios solo pueden editarse con el permiso de catálogo correspondiente.
+
+Los formularios de producto aceptan pesos sin separadores de miles: escribir `50000` para cincuenta mil, o `50000.50` si se requieren centavos. La cadena ambigua `50.000` se rechaza para evitar guardarla como $50 COP.
+
+Si el desglose señala un producto con precio incorrecto, comprobar el comprobante de compra y actualizar el precio desde **Editar producto**; las existencias deben modificarse únicamente mediante movimientos de inventario. Si existen diferencias entre campos históricos y nuevos, ejecutar primero `npm run verify:money` sobre la base correspondiente y conservar un respaldo antes de cualquier migración.
+
 ## Validación
 
 ```text
