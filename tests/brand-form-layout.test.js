@@ -6,12 +6,17 @@ const path = require('node:path');
 const test = require('node:test');
 
 const root = path.resolve(__dirname, '..');
-const read = (name) => fs.readFileSync(path.join(root, name), 'utf8');
+const read = (name, stagingName = name) => {
+    const actualPath = path.join(root, name);
+    const stagingPath = path.join(root, '.phase6', stagingName);
+    return fs.readFileSync(fs.existsSync(actualPath) ? actualPath : stagingPath, 'utf8');
+};
 
 const createView = read('views/admin/brands/create_marca.ejs');
 const updateView = read('views/admin/brands/update_brands.ejs');
-const createStyles = read('public/css/create_brands.css');
-const updateStyles = read('public/css/update_brands.css');
+const sharedStyles = read('public/css/pages/admin-brand-forms.css', 'admin-brand-forms.css');
+const createStyles = read('public/css/create_brands.css', 'create_brands.css');
+const updateStyles = read('public/css/update_brands.css', 'update_brands.css');
 
 test('la creación de marcas conserva el contrato del formulario y usa una tarjeta propia', () => {
     assert.match(createView, /action="\/api\/marcas"/);
@@ -27,7 +32,7 @@ test('la creación de marcas conserva el contrato del formulario y usa una tarje
 test('la edición de marcas tiene un solo título y conserva los campos originales', () => {
     assert.equal((updateView.match(/<h1[\s\S]*?<\/h1>/g) || []).length, 1);
     assert.equal((updateView.match(/Editar marca/g) || []).length, 1);
-    assert.doesNotMatch(updateView, /<br\s*\/?>/i);
+    assert.doesNotMatch(updateView, /<br\s*\/?\s*>/i);
     assert.match(updateView, /action="\/update-marca\/<%= brand\._id %>"/);
     assert.match(updateView, /name="_csrf"/);
     assert.match(updateView, /name="nombre"/);
@@ -37,16 +42,20 @@ test('la edición de marcas tiene un solo título y conserva los campos original
     assert.match(updateView, /decoding="async"/);
 });
 
-test('ambas hojas centran la tarjeta y limitan la vista previa', () => {
-    for (const source of [createStyles, updateStyles]) {
-        assert.match(source, /\.admin-brand-form\s*\{[^}]*max-width:\s*650px;/);
-        assert.match(source, /\.admin-brand-form\s*\{[^}]*margin:\s*0 auto 40px;/);
-        assert.match(source, /\.brand-file-picker\s*\{/);
-        assert.match(source, /\.brand-form__file-input::file-selector-button/);
-    }
-
+test('las marcas comparten la base visual y conservan sus reglas específicas', () => {
+    assert.match(sharedStyles, /\.admin-brand-form\s*\{[^}]*max-width:\s*650px;/);
+    assert.match(sharedStyles, /\.admin-brand-form\s*\{[^}]*margin:\s*0 auto 40px;/);
+    assert.match(sharedStyles, /\.brand-file-picker\s*\{/);
+    assert.match(sharedStyles, /\.brand-form__file-input::file-selector-button/);
     assert.match(updateStyles, /\.brand-image-preview img\s*\{[^}]*width:\s*240px;/);
     assert.match(updateStyles, /\.brand-image-preview img\s*\{[^}]*height:\s*180px;/);
     assert.match(updateStyles, /object-fit:\s*contain;/);
     assert.match(updateStyles, /@media \(max-width: 480px\)/);
+    assert.match(createStyles, /\.brand-form__field-header\s*\{/);
+    assert.match(updateStyles, /\.brand-section-heading\s*\{/);
+});
+
+test('las hojas específicas de marcas importan una sola base compartida', () => {
+    assert.match(createStyles, /@import url\('\/css\/pages\/admin-brand-forms\.css'\);/);
+    assert.match(updateStyles, /@import url\('\/css\/pages\/admin-brand-forms\.css'\);/);
 });

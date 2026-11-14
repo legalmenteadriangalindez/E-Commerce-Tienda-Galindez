@@ -5,19 +5,30 @@ const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
 
-const read = (file, stagingFile = file) => {
-    const actualPath = path.join(__dirname, '..', file);
-    const stagingPath = path.join(__dirname, '..', '.phase4', stagingFile);
+const root = path.resolve(__dirname, '..');
+const read = (name, stagingName = name) => {
+    const actualPath = path.join(root, name);
+    const stagingPath = path.join(root, '.phase6', stagingName);
     return fs.readFileSync(fs.existsSync(actualPath) ? actualPath : stagingPath, 'utf8');
 };
 
 const views = {
-    categoryCreate: read('views/admin/categories/create_categoria.ejs', 'create_categoria.ejs'),
-    categoryUpdate: read('views/admin/categories/update_category.ejs', 'update_category.ejs'),
-    roleCreate: read('views/admin/rols/create_rol.ejs', 'create_rol.ejs'),
-    roleUpdate: read('views/admin/rols/update_roles.ejs', 'update_roles.ejs'),
-    providerCreate: read('views/admin/providers/create_proveedor.ejs', 'create_proveedor.ejs'),
-    providerUpdate: read('views/admin/providers/update_provider.ejs', 'update_provider.ejs'),
+    categoryCreate: read('views/admin/categories/create_categoria.ejs'),
+    categoryUpdate: read('views/admin/categories/update_category.ejs'),
+    roleCreate: read('views/admin/rols/create_rol.ejs'),
+    roleUpdate: read('views/admin/rols/update_roles.ejs'),
+    providerCreate: read('views/admin/providers/create_proveedor.ejs'),
+    providerUpdate: read('views/admin/providers/update_provider.ejs'),
+};
+
+const sharedStyles = read('public/css/pages/admin-catalog-forms.css', 'admin-catalog-forms.css');
+const styles = {
+    categoryCreate: read('public/css/create_categories.css', 'create_categories.css'),
+    categoryUpdate: read('public/css/update_categories.css', 'update_categories.css'),
+    roleCreate: read('public/css/create_roles.css', 'create_roles.css'),
+    roleUpdate: read('public/css/update_roles.css', 'update_roles.css'),
+    providerCreate: read('public/css/create_providers.css', 'create_providers.css'),
+    providerUpdate: read('public/css/update_providers.css', 'update_providers.css'),
 };
 
 test('las seis vistas conservan sus formularios y rutas administrativas', () => {
@@ -72,35 +83,21 @@ test('los formularios de proveedores mantienen campos y validación del plazo', 
     assert.match(views.providerCreate, /name="email"/);
 });
 
-test('las hojas de estilo fijan anchos, centrado y comportamiento responsive', () => {
-    const styles = {
-        categoryCreate: read('public/css/create_categories.css', 'create_categories.css'),
-        categoryUpdate: read('public/css/update_categories.css', 'update_categories.css'),
-        roleCreate: read('public/css/create_roles.css', 'create_roles.css'),
-        roleUpdate: read('public/css/update_roles.css', 'update_roles.css'),
-        providerCreate: read('public/css/create_providers.css', 'create_providers.css'),
-        providerUpdate: read('public/css/update_providers.css', 'update_providers.css'),
-    };
-
+test('las hojas específicas importan la base visual compartida y conservan anchos', () => {
     ['categoryCreate', 'categoryUpdate'].forEach((name) => {
         assert.match(styles[name], /max-width: 700px/);
         assert.match(styles[name], /margin: 40px auto/);
+        assert.match(styles[name], /@import url\('\/css\/pages\/admin-catalog-forms\.css'\);/);
     });
 
     ['roleCreate', 'roleUpdate', 'providerCreate', 'providerUpdate'].forEach((name) => {
         assert.match(styles[name], /max-width: 900px/);
         assert.match(styles[name], /margin: 40px auto/);
+        assert.match(styles[name], /@import url\('\/css\/pages\/admin-catalog-forms\.css'\);/);
     });
 
-    ['roleCreate', 'roleUpdate'].forEach((name) => {
-        assert.match(styles[name], /\.permission-grid/);
-        assert.match(styles[name], /grid-template-columns/);
-        assert.match(styles[name], /@media \(max-width: 620px\)/);
-    });
-
-    ['providerCreate', 'providerUpdate'].forEach((name) => {
-        assert.match(styles[name], /\.provider-form \.form-grid/);
-        assert.match(styles[name], /\.form-group\.full/);
-        assert.match(styles[name], /@media \(max-width: 680px\)/);
-    });
+    assert.match(sharedStyles, /\.permission-grid/);
+    assert.match(sharedStyles, /@media \(max-width: 620px\)/);
+    assert.match(sharedStyles, /\.provider-form \.form-grid/);
+    assert.match(sharedStyles, /@media \(max-width: 680px\)/);
 });

@@ -1,0 +1,288 @@
+/* Base compartida de categorías, roles y proveedores. */
+
+body {
+    background: #f6f8fb;
+}
+
+.page-header {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.page-header h1 {
+    margin: 0 0 8px;
+    color: #172033;
+    font-size: clamp(1.7rem, 3vw, 2.25rem);
+}
+
+.page-header p {
+    margin: 0;
+    color: #657084;
+}
+
+.form-card.small-card {
+    width: 100%;
+    max-width: 600px;
+    margin-inline: auto;
+    box-sizing: border-box;
+}
+
+.page-wrapper > .form-card {
+    width: 100%;
+    box-sizing: border-box;
+    margin-inline: auto;
+}
+
+.category-form,
+.category-form .form-group {
+    width: 100%;
+}
+
+.category-form .form-group {
+    margin-bottom: 22px;
+}
+
+.category-form label,
+.role-form label,
+.provider-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #263247;
+    font-weight: 700;
+}
+
+.category-form input {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 46px;
+    padding: 11px 13px;
+    border: 1px solid #cbd3df;
+    border-radius: 10px;
+    background: #fff;
+    color: #172033;
+    font: inherit;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.category-form input:focus {
+    border-color: #2563eb;
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 15%);
+}
+
+.category-form small,
+.role-form small,
+.provider-form small {
+    display: block;
+    margin-top: 7px;
+    color: #6b7280;
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+
+.role-form .form-group {
+    margin-bottom: 22px;
+}
+
+.role-form input[type='text'],
+.role-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 13px;
+    border: 1px solid #cbd3df;
+    border-radius: 10px;
+    background: #fff;
+    color: #172033;
+    font: inherit;
+    resize: vertical;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.role-form input[type='text'] {
+    min-height: 46px;
+}
+
+.role-form input[type='text']:focus,
+.role-form textarea:focus {
+    border-color: #2563eb;
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 15%);
+}
+
+.role-form .permission-field > label {
+    margin-bottom: 0;
+}
+
+.permission-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.permission-option {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 10px;
+    min-height: 44px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 11px 12px;
+    border: 1px solid #d9e0e9;
+    border-radius: 9px;
+    background: #f9fbfd;
+    cursor: pointer;
+    font-weight: 600 !important;
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.permission-option:hover {
+    border-color: #9bb8ed;
+    background: #f2f6ff;
+}
+
+.permission-option input {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    accent-color: #2563eb;
+}
+
+.permission-option span {
+    color: #344054;
+    font-size: 0.92rem;
+    line-height: 1.35;
+}
+
+.permission-option.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.62;
+}
+
+.role-form .permission-field > label {
+    margin-bottom: 0;
+}
+
+.provider-form .form-card,
+.provider-form .form-grid {
+    width: 100%;
+}
+
+.provider-form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.provider-form .form-group {
+    min-width: 0;
+}
+
+.provider-form .form-group.full {
+    grid-column: 1 / -1;
+}
+
+.provider-form input,
+.provider-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 13px;
+    border: 1px solid #cbd3df;
+    border-radius: 10px;
+    background: #fff;
+    color: #172033;
+    font: inherit;
+    resize: vertical;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.provider-form input {
+    min-height: 46px;
+}
+
+.provider-form input:focus,
+.provider-form textarea:focus {
+    border-color: #2563eb;
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 15%);
+}
+
+.category-form .form-actions,
+.role-form .form-actions,
+.provider-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.category-form .form-actions button,
+.role-form .form-actions button,
+.role-form .form-actions .btn,
+.provider-form .form-actions button {
+    min-height: 44px;
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 9px;
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.category-form .form-actions button:hover,
+.role-form .form-actions button:hover,
+.role-form .form-actions .btn:hover,
+.provider-form .form-actions button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.role-form .form-actions .btn-secondary {
+    background: #e7ebf2;
+    color: #344054;
+}
+
+.role-form .form-actions .btn-secondary:hover {
+    background: #d8dee9;
+}
+
+@media (max-width: 680px) {
+    .provider-form .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .provider-form .form-group.full {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 620px) {
+    .permission-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .category-form .form-actions,
+    .category-form .form-actions button,
+    .role-form .form-actions,
+    .role-form .form-actions button,
+    .role-form .form-actions .btn,
+    .provider-form .form-actions,
+    .provider-form .form-actions button {
+        width: 100%;
+    }
+}
