@@ -12,10 +12,18 @@ body.admin-app {
     font-family: 'Segoe UI', Arial, sans-serif;
 }
 
+/* No imponer max-width aquí: las páginas definen su propio ancho máximo.
+ * La regla anterior sobrescribía .page-wrapper, .admin-brand-form y otros
+ * formularios centrados, porque tenía mayor especificidad que sus CSS. */
 body.admin-app > :not(header):not(footer) {
     box-sizing: border-box;
     min-width: 0;
-    max-width: 100%;
+}
+
+/* Los formularios pequeños de categorías y roles se centran dentro
+ * del ancho que ya establece su contenedor de página. */
+body.admin-app > .page-wrapper > .form-card.small-card {
+    margin-inline: auto;
 }
 
 body.admin-app > :not(header):not(footer) :is(img, video, canvas) {
