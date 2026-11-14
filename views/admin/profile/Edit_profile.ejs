@@ -1,151 +1,75 @@
 <%- include('../../include/_headerAdmin') %>
 
-
 <div class="edit-profile-container">
+  <div class="edit-profile-card">
+    <div class="edit-profile-header">
+      <div class="avatar-wrapper">
+        <i class="bi bi-person-circle" aria-hidden="true"></i>
+      </div>
 
-    <div class="edit-profile-card">
-
-        <!-- HEADER -->
-        <div class="edit-profile-header">
-
-            <div class="avatar-wrapper">
-                <i class="bi bi-person-circle"></i>
-            </div>
-
-            <h2>Editar Perfil</h2>
-
-            <p>
-                Actualiza tu información personal
-            </p>
-
-        </div>
-
-        <!-- FORM -->
-        <form
-            action="/admin/perfil/editar/<%= user._id %>"
-            method="POST"
-            class="edit-profile-form"
-        >
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-
-            <!-- NOMBRE -->
-            <div class="form-group">
-
-                <label>Nombre completo</label>
-
-                <input
-                    type="text"
-                    name="nombre"
-                    value="<%= user.nombre %>"
-                    required
-                >
-
-            </div>
-
-            <!-- EMAIL -->
-            <div class="form-group">
-
-                <label>Correo electrónico</label>
-
-                <input
-                    type="email"
-                    value="<%= user.email %>"
-                    disabled
-                >
-
-            </div>
-
-            <!-- TELÉFONO -->
-            <div class="form-group">
-
-                <label>Teléfono</label>
-
-                <input
-                    type="text"
-                    name="telefono"
-                    value="<%= user.telefono %>"
-                >
-
-            </div>
-
-            <!-- IDENTIFICACIÓN OPCIONAL -->
-            <div class="form-group">
-                <label for="profile-cedula">Cédula (opcional)</label>
-                <input
-                    id="profile-cedula"
-                    type="text"
-                    name="cedula"
-                    inputmode="numeric"
-                    pattern="[0-9]{5,15}"
-                    maxlength="15"
-                    autocomplete="off"
-                    value="<%= user.cedula || '' %>"
-                >
-            </div>
-
-            <!-- DIRECCIÓN -->
-            <div class="form-group">
-
-                <label>Dirección</label>
-
-                <input
-                    type="text"
-                    name="direccion"
-                    value="<%= user.direccion %>"
-                >
-
-            </div>
-
-            <!-- CIUDAD -->
-            <div class="form-group">
-
-                <label>Ciudad</label>
-
-                <input
-                    type="text"
-                    name="ciudad"
-                    value="<%= user.ciudad %>"
-                >
-
-            </div>
-
-            <!-- BARRIO -->
-            <div class="form-group">
-
-                <label>Barrio</label>
-
-                <input
-                    type="text"
-                    name="barrio"
-                    value="<%= user.barrio %>"
-                >
-
-            </div>
-
-            <!-- BOTONES -->
-            <div class="form-actions">
-
-                <a
-                    href="/admin/perfil"
-                    class="btn-cancel"
-                >
-                    Cancelar
-                </a>
-
-                <button
-                    type="submit"
-                    class="btn-save"
-                >
-                    <i class="bi bi-check-circle"></i>
-                    Guardar cambios
-                </button>
-
-            </div>
-
-        </form>
-
+      <h2>Editar Perfil</h2>
+      <p>Actualiza tu información personal</p>
     </div>
 
+    <form action="/admin/perfil/editar/<%= user._id %>" method="POST" class="edit-profile-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+      <div class="profile-form-grid">
+        <div class="form-group">
+          <label for="profile-name">Nombre completo</label>
+          <input id="profile-name" type="text" name="nombre" value="<%= user.nombre %>" required>
+        </div>
+
+        <div class="form-group">
+          <label for="profile-email">Correo electrónico</label>
+          <input id="profile-email" type="email" value="<%= user.email %>" disabled>
+          <small>El correo no se puede modificar desde el perfil.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="profile-phone">Teléfono</label>
+          <input id="profile-phone" type="text" name="telefono" value="<%= user.telefono %>">
+        </div>
+
+        <div class="form-group">
+          <label for="profile-cedula">Cédula (opcional)</label>
+          <input
+            id="profile-cedula"
+            type="text"
+            name="cedula"
+            inputmode="numeric"
+            pattern="[0-9]{5,15}"
+            maxlength="15"
+            autocomplete="off"
+            value="<%= user.cedula || '' %>"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="profile-address">Dirección</label>
+          <input id="profile-address" type="text" name="direccion" value="<%= user.direccion %>">
+        </div>
+
+        <div class="form-group">
+          <label for="profile-city">Ciudad</label>
+          <input id="profile-city" type="text" name="ciudad" value="<%= user.ciudad %>">
+        </div>
+
+        <div class="form-group full">
+          <label for="profile-neighborhood">Barrio</label>
+          <input id="profile-neighborhood" type="text" name="barrio" value="<%= user.barrio %>">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="/admin/perfil" class="btn-cancel">Cancelar</a>
+        <button type="submit" class="btn-save">
+          <i class="bi bi-check-circle" aria-hidden="true"></i>
+          Guardar cambios
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <%- include('../../include/_footerAdmin') %>

@@ -1,17 +1,21 @@
 <%- include('../../include/_headerAdmin') %>
 
-<div class="page-wrapper">
-    <div class="page-header"><h1>Actualizar Orden</h1><p>Visualiza la información de la orden y actualiza su estado</p></div>
-    <div class="form-card ui-card ui-card--form">
-        <form action="/update-order/<%= order._id %>" method="POST">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <%- include('../../include/order/partials/summary', { order, dealer: false }) %>
-            <%- include('../../include/order/partials/products', { order, dealer: false }) %>
-            <%- include('../../include/order/partials/totals', { order }) %>
-            <%- include('../../include/order/partials/status-admin', { order }) %>
-            <%- include('../../include/order/partials/actions') %>
-        </form>
-    </div>
+<div class="page-wrapper order-page-wrapper">
+  <div class="page-header order-page-header">
+    <h1>Actualizar Orden</h1>
+    <p>Visualiza la información de la orden y actualiza su estado</p>
+  </div>
+
+  <div class="form-card ui-card ui-card--form order-form-card">
+    <form action="/update-order/<%= order._id %>" method="POST" class="order-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <%- include('../../include/order/partials/summary', { order, dealer: false }) %>
+      <%- include('../../include/order/partials/products', { order, dealer: false }) %>
+      <%- include('../../include/order/partials/totals', { order }) %>
+      <%- include('../../include/order/partials/status-admin', { order }) %>
+      <%- include('../../include/order/partials/actions') %>
+    </form>
+  </div>
 </div>
 
 <%- include('../../include/_footerAdmin') %>
