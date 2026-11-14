@@ -1,0 +1,203 @@
+/* Base compartida de los formularios de creación y edición de marcas. */
+
+body {
+    background: var(--color-background);
+    color: var(--color-brand-dark);
+    font-family: Arial, sans-serif;
+}
+
+/* Se conserva este contrato para los formularios administrativos directos. */
+body > form {
+    max-width: 650px;
+    margin: 0 auto 40px;
+}
+
+.brand-page__header {
+    width: calc(100% - 2rem);
+    max-width: 650px;
+    margin: 40px auto 20px;
+}
+
+.brand-page__eyebrow {
+    margin: 0 0 5px;
+    color: var(--color-brand-accent);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.brand-page__header h1 {
+    margin: 0;
+    color: var(--color-brand-dark);
+    font-size: clamp(1.55rem, 3vw, 2rem);
+    line-height: 1.2;
+}
+
+.brand-page__description {
+    max-width: 600px;
+    margin: 8px 0 0;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
+.admin-brand-form {
+    display: grid;
+    gap: 22px;
+    width: calc(100% - 2rem);
+    max-width: 650px;
+    margin: 0 auto 40px;
+    padding: 30px;
+    box-sizing: border-box;
+    border: 1px solid rgba(213, 141, 81, 0.2);
+    border-radius: 14px;
+    background: var(--color-surface);
+    box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
+}
+
+.brand-form__field {
+    display: grid;
+    gap: 7px;
+}
+
+.brand-form__field label,
+.brand-form__field-header label {
+    color: var(--color-brand-dark);
+    font-weight: 700;
+}
+
+.brand-form__control,
+.brand-form__file-input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+    color: var(--color-text-strong, #40332e);
+    font: inherit;
+    outline: none;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.brand-form__control {
+    padding: 11px 13px;
+}
+
+.brand-form__control:focus,
+.brand-form__file-input:focus {
+    border-color: var(--color-brand-accent);
+    box-shadow: 0 0 0 3px rgba(216, 92, 50, 0.15);
+}
+
+.brand-file-picker {
+    display: grid;
+    gap: 3px;
+    padding: 13px 14px;
+    border: 1px dashed var(--color-brand-accent);
+    border-radius: 10px;
+    background: var(--color-surface-warm, #fff8f1);
+    cursor: pointer;
+}
+
+.brand-file-picker:hover {
+    background: var(--color-accent-soft, #fff0e4);
+}
+
+.brand-file-picker__title {
+    color: var(--color-brand-dark);
+    font-weight: 700;
+}
+
+.brand-file-picker__hint,
+.brand-form__helper {
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+.brand-form__file-input {
+    padding: 8px;
+    background: var(--color-surface-warm, #fff8f1);
+    cursor: pointer;
+}
+
+.brand-form__file-input::file-selector-button {
+    margin-right: 8px;
+    padding: 7px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 7px;
+    background: var(--color-surface);
+    color: var(--color-brand-dark);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.brand-form__file-input::file-selector-button:hover {
+    border-color: var(--color-brand-accent);
+    background: var(--color-accent-soft, #fff0e4);
+}
+
+.brand-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 4px;
+    border-top: 1px solid var(--color-border);
+}
+
+.brand-form__submit {
+    min-width: 150px;
+    padding: 11px 22px;
+    border: 1px solid var(--color-brand-accent);
+    border-radius: 9px;
+    background: var(--color-brand-accent);
+    color: var(--color-surface);
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.brand-form__submit:hover {
+    border-color: var(--color-brand-dark);
+    background: var(--color-brand-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(49, 27, 20, 0.2);
+}
+
+.brand-form__submit:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+@media (max-width: 768px) {
+    .brand-page__header {
+        margin-top: 25px;
+    }
+
+    .admin-brand-form {
+        padding: 20px;
+    }
+
+    .brand-form__submit {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand-page__header,
+    .admin-brand-form {
+        width: calc(100% - 1.25rem);
+    }
+
+    .admin-brand-form {
+        padding: 16px;
+    }
+}
