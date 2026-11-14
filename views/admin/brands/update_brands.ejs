@@ -1,50 +1,84 @@
 <%- include('../../include/_headerAdmin') %>
 
-<h1>Editar Marca</h1>
-
-
-
-<h1>Editar Marca</h1>
+<div class="brand-page__header">
+  <p class="brand-page__eyebrow">Catálogo de productos</p>
+  <h1 id="update-brand-title">Editar marca</h1>
+  <p class="brand-page__description">Actualiza el nombre o reemplaza la imagen asociada a esta marca.</p>
+</div>
 
 <form
-    action="/update-marca/<%= brand._id %>"
-    method="POST"
-    enctype="multipart/form-data"
+  action="/update-marca/<%= brand._id %>"
+  method="POST"
+  enctype="multipart/form-data"
+  class="admin-brand-form"
+  aria-labelledby="update-brand-title"
 >
-    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
+  <div class="brand-form__field">
+    <label for="brand-name">Nombre de la marca</label>
     <input
-        type="text"
-        name="nombre"
-        value="<%= brand.nombre %>"
-        required
-    />
+      id="brand-name"
+      type="text"
+      name="nombre"
+      value="<%= brand.nombre %>"
+      class="form-control brand-form__control"
+      autocomplete="organization"
+      required
+    >
+  </div>
 
-    <br><br>
+  <section class="brand-current-image" aria-labelledby="current-brand-image-title">
+    <div class="brand-section-heading">
+      <div>
+        <p class="brand-page__eyebrow">Vista previa</p>
+        <h2 id="current-brand-image-title">Imagen actual</h2>
+      </div>
+      <span class="brand-section-heading__hint"><%= brand.foto ? 'Registrada' : 'Sin imagen' %></span>
+    </div>
 
     <% if (brand.foto) { %>
+      <div class="brand-image-preview">
         <img
-            src="<%= brand.foto %>"
-            width="100"
-            alt="<%= brand.nombre %>"
+          src="<%= brand.foto %>"
+          alt="Imagen de la marca <%= brand.nombre %>"
+          width="240"
+          height="180"
+          loading="lazy"
+          decoding="async"
         >
+      </div>
+      <p class="brand-form__helper brand-image-preview__help">La imagen se conservará si no seleccionas un nuevo archivo.</p>
+    <% } else { %>
+      <div class="brand-image-preview brand-image-preview--empty" role="status">Esta marca todavía no tiene una imagen.</div>
     <% } %>
+  </section>
 
-    <br><br>
+  <div class="brand-form__field">
+    <div class="brand-form__field-header">
+      <label for="brand-photo">Reemplazar imagen</label>
+      <span class="brand-form__optional">Opcional</span>
+    </div>
+
+    <label class="brand-file-picker" for="brand-photo">
+      <span class="brand-file-picker__title">Seleccionar nueva imagen</span>
+      <span class="brand-file-picker__hint">Solo selecciona un archivo si deseas reemplazar la imagen actual.</span>
+    </label>
 
     <input
-        type="file"
-        name="foto"
-        accept="image/jpeg,image/png,image/webp"
-    />
-    <small class="text-muted">JPG, PNG o WEBP; máximo 2 MB.</small>
+      id="brand-photo"
+      type="file"
+      name="foto"
+      class="form-control brand-form__file-input"
+      accept="image/jpeg,image/png,image/webp"
+      aria-describedby="brand-photo-help"
+    >
+    <small id="brand-photo-help" class="brand-form__helper">JPG, PNG o WEBP; máximo 2 MB.</small>
+  </div>
 
-    <br><br>
-
-    <button type="submit">
-        Actualizar Marca
-    </button>
-
+  <div class="brand-form__actions">
+    <button type="submit" class="btn btn-primary brand-form__submit">Actualizar marca</button>
+  </div>
 </form>
 
 <%- include('../../include/_footerAdmin') %>

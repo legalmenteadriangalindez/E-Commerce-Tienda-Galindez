@@ -1,263 +1,281 @@
 /* =========================================================
    UPDATE BRANDS
-   GESTIÓN DE MARCAS
+   FORMULARIO DE MARCAS
    TIENDA GALINDEZ
-   ========================================================= */
-
-/* =========================================================
-   VARIABLES
-   ========================================================= */
-/* =========================================================
-   BODY
    ========================================================= */
 
 body {
     background: var(--color-background);
+    color: var(--color-brand-dark);
     font-family: Arial, sans-serif;
-    color: var(--color-brand-dark);
 }
 
-/* =========================================================
-   CONTENEDOR PRINCIPAL
-   ========================================================= */
-
-main,
-body > h1,
+/* Se conserva este contrato para los formularios administrativos directos. */
 body > form {
-    box-sizing: border-box;
-}
-
-/* =========================================================
-   TITULO
-   ========================================================= */
-
-body > h1 {
     max-width: 650px;
-
-    margin: 40px auto 20px;
-
-    padding: 0 20px;
-
-    color: var(--color-brand-dark);
-
-    font-size: 1.8rem;
-
-    font-weight: 700;
-}
-
-/* =========================================================
-   FORMULARIO
-   ========================================================= */
-
-body > form {
-    width: calc(100% - 40px);
-
-    max-width: 650px;
-
     margin: 0 auto 40px;
+}
 
+.brand-page__header {
+    width: calc(100% - 2rem);
+    max-width: 650px;
+    margin: 40px auto 20px;
+}
+
+.brand-page__eyebrow {
+    margin: 0 0 5px;
+    color: var(--color-brand-accent);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.brand-page__header h1 {
+    margin: 0;
+    color: var(--color-brand-dark);
+    font-size: clamp(1.55rem, 3vw, 2rem);
+    line-height: 1.2;
+}
+
+.brand-page__description {
+    max-width: 600px;
+    margin: 8px 0 0;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
+.admin-brand-form {
+    display: grid;
+    gap: 22px;
+    width: calc(100% - 2rem);
+    max-width: 650px;
+    margin: 0 auto 40px;
     padding: 30px;
-
-    background: var(--color-surface);
-
+    box-sizing: border-box;
     border: 1px solid rgba(213, 141, 81, 0.2);
-
     border-radius: 14px;
-
+    background: var(--color-surface);
     box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
 }
 
-/* =========================================================
-   INPUT NOMBRE
-   ========================================================= */
+.brand-form__field {
+    display: grid;
+    gap: 7px;
+}
 
-body > form input[type='text'] {
+.brand-form__field-header,
+.brand-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.brand-form__field label,
+.brand-form__field-header label {
+    color: var(--color-brand-dark);
+    font-weight: 700;
+}
+
+.brand-form__optional,
+.brand-section-heading__hint {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+}
+
+.brand-form__control,
+.brand-form__file-input {
     width: 100%;
-
+    min-width: 0;
     box-sizing: border-box;
-
-    padding: 11px 13px;
-
     border: 1px solid var(--color-border);
-
     border-radius: 8px;
-
-    outline: none;
-
     background: var(--color-surface);
-
-    color: #40332e;
-
-    font-size: 0.95rem;
-
+    color: var(--color-text-strong, #40332e);
+    font: inherit;
+    outline: none;
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
 }
 
-/* =========================================================
-   INPUT FOCUS
-   ========================================================= */
+.brand-form__control {
+    padding: 11px 13px;
+}
 
-body > form input[type='text']:focus {
+.brand-form__control:focus,
+.brand-form__file-input:focus {
     border-color: var(--color-brand-accent);
-
     box-shadow: 0 0 0 3px rgba(216, 92, 50, 0.15);
 }
 
-/* =========================================================
-   IMAGEN ACTUAL
-   ========================================================= */
-
-body > form img {
-    display: block;
-
-    width: 100px;
-
-    height: 100px;
-
-    object-fit: contain;
-
-    padding: 5px;
-
-    box-sizing: border-box;
-
-    background: var(--color-surface);
-
+.brand-current-image {
+    padding: 18px;
     border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-surface-warm, #fff8f1);
+}
 
+.brand-section-heading {
+    align-items: flex-start;
+}
+
+.brand-section-heading h2 {
+    margin: 0;
+    color: var(--color-brand-dark);
+    font-size: 1.05rem;
+}
+
+.brand-image-preview {
+    display: grid;
+    width: min(100%, 300px);
+    min-height: 210px;
+    margin: 16px auto 0;
+    padding: 14px;
+    place-items: center;
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
     border-radius: 10px;
-
-    margin: 20px 0;
+    background: var(--color-surface);
 }
 
-/* =========================================================
-   INPUT FILE
-   ========================================================= */
+.brand-image-preview img {
+    display: block;
+    width: 240px;
+    height: 180px;
+    max-width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+}
 
-body > form input[type='file'] {
-    width: 100%;
-
-    box-sizing: border-box;
-
-    padding: 8px;
-
-    border: 1px solid var(--color-border);
-
-    border-radius: 8px;
-
-    background: var(--color-surface-warm);
-
+.brand-image-preview--empty {
+    min-height: 150px;
+    padding: 24px;
     color: var(--color-text-muted);
+    text-align: center;
+}
 
-    font-size: 0.85rem;
+.brand-image-preview__help {
+    display: block;
+    margin: 10px 0 0;
+    text-align: center;
+}
 
+.brand-file-picker {
+    display: grid;
+    gap: 3px;
+    padding: 13px 14px;
+    border: 1px dashed var(--color-brand-accent);
+    border-radius: 10px;
+    background: var(--color-surface-warm, #fff8f1);
     cursor: pointer;
 }
 
-/* =========================================================
-   BOTÓN
-   ========================================================= */
+.brand-file-picker:hover {
+    background: var(--color-accent-soft, #fff0e4);
+}
 
-body > form button {
-    border: none;
-
-    padding: 11px 20px;
-
-    margin-top: 5px;
-
-    border-radius: 9px;
-
-    background: var(--color-brand-accent);
-
-    color: var(--color-surface);
-
-    font-size: 0.9rem;
-
+.brand-file-picker__title {
+    color: var(--color-brand-dark);
     font-weight: 700;
+}
 
+.brand-file-picker__hint,
+.brand-form__helper {
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+.brand-form__file-input {
+    padding: 8px;
+    background: var(--color-surface-warm, #fff8f1);
     cursor: pointer;
+}
 
+.brand-form__file-input::file-selector-button {
+    margin-right: 8px;
+    padding: 7px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 7px;
+    background: var(--color-surface);
+    color: var(--color-brand-dark);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.brand-form__file-input::file-selector-button:hover {
+    border-color: var(--color-brand-accent);
+    background: var(--color-accent-soft, #fff0e4);
+}
+
+.brand-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 4px;
+    border-top: 1px solid var(--color-border);
+}
+
+.brand-form__submit {
+    min-width: 150px;
+    padding: 11px 22px;
+    border: 1px solid var(--color-brand-accent);
+    border-radius: 9px;
+    background: var(--color-brand-accent);
+    color: var(--color-surface);
+    font-weight: 700;
+    cursor: pointer;
     transition:
         background-color 0.2s ease,
+        border-color 0.2s ease,
         transform 0.2s ease,
         box-shadow 0.2s ease;
 }
 
-/* =========================================================
-   BUTTON HOVER
-   ========================================================= */
-
-body > form button:hover {
+.brand-form__submit:hover {
+    border-color: var(--color-brand-dark);
     background: var(--color-brand-dark);
-
     transform: translateY(-2px);
-
     box-shadow: 0 5px 12px rgba(49, 27, 20, 0.2);
 }
 
-/* =========================================================
-   BUTTON ACTIVE
-   ========================================================= */
-
-body > form button:active {
+.brand-form__submit:active {
     transform: translateY(0);
-
     box-shadow: none;
 }
 
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
 @media (max-width: 768px) {
-    body > h1 {
+    .brand-page__header {
         margin-top: 25px;
-
-        padding: 0 15px;
-
-        font-size: 1.5rem;
     }
 
-    body > form {
-        width: calc(100% - 30px);
-
+    .admin-brand-form {
         padding: 20px;
     }
 
-    body > form button {
+    .brand-form__submit {
         width: 100%;
     }
 }
 
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
 @media (max-width: 480px) {
-    body > h1 {
-        padding: 0 10px;
-
-        font-size: 1.35rem;
+    .brand-page__header,
+    .admin-brand-form {
+        width: calc(100% - 1.25rem);
     }
 
-    body > form {
-        width: calc(100% - 20px);
-
-        padding: 15px;
+    .admin-brand-form {
+        padding: 16px;
     }
 
-    body > form input[type='text'] {
-        padding: 10px;
-    }
-
-    body > form input[type='file'] {
-        font-size: 0.75rem;
-    }
-
-    body > form img {
-        width: 80px;
-
-        height: 80px;
+    .brand-form__field-header,
+    .brand-section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
     }
 }
