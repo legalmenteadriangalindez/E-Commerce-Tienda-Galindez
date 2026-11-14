@@ -146,35 +146,51 @@
       <div class="image-section">
 
         <h2>Imágenes actuales</h2>
+        <p id="product-images-instructions" class="image-section__description">
+          Puedes conservar cada imagen, reemplazarla o marcarla para eliminarla al guardar.
+          No reemplaces y elimines la misma imagen en una sola actualización.
+        </p>
 
-        <div class="image-grid">
+        <div class="image-grid" aria-describedby="product-images-instructions">
 
           <% if (producto.fotos && producto.fotos.length > 0) { %>
 
             <% producto.fotos.forEach(function(foto, index) { %>
 
               <div class="image-card">
+                <p class="image-card__number">Imagen <%= index + 1 %> de <%= producto.fotos.length %></p>
 
-                <img
-                  src="<%= foto %>"
-                  alt="<%= producto.nombre %>"
-                >
+                <div class="image-card__preview">
+                  <img
+                    src="<%= foto %>"
+                    alt="Foto <%= index + 1 %> del producto <%= producto.nombre %>"
+                    width="200"
+                    height="170"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                </div>
 
                 <div class="image-actions">
 
+                  <label for="product-image-replace-<%= index %>" class="image-actions__label">
+                    Reemplazar esta imagen
+                  </label>
                   <input
+                    id="product-image-replace-<%= index %>"
                     type="file"
                     name="foto_<%= index %>"
                     accept="image/jpeg,image/png,image/webp"
                   >
 
-                  <label class="delete-check">
+                  <label class="delete-check" for="product-image-remove-<%= index %>">
                     <input
+                      id="product-image-remove-<%= index %>"
                       type="checkbox"
                       name="eliminarFotos"
                       value="<%= foto %>"
                     >
-                    Eliminar
+                    <span>Eliminar al guardar</span>
                   </label>
 
                 </div>
@@ -185,9 +201,7 @@
 
           <% } else { %>
 
-            <p class="empty">
-              Sin imágenes registradas
-            </p>
+            <p class="empty">Sin imágenes registradas</p>
 
           <% } %>
 
@@ -197,13 +211,18 @@
 
           <h3>Agregar nuevas imágenes</h3>
 
-          <small class="text-muted">JPG, PNG o WEBP; máximo 2 MB por imagen y 4 imágenes por solicitud.</small>
+          <label for="product-new-images">Seleccionar imágenes adicionales</label>
+          <small class="text-muted" id="product-new-images-help">
+            JPG, PNG o WEBP; máximo 2 MB por imagen y 4 imágenes por solicitud.
+          </small>
 
           <input
+            id="product-new-images"
             type="file"
             name="nuevasFotos"
             multiple
             accept="image/jpeg,image/png,image/webp"
+            aria-describedby="product-new-images-help"
           >
 
         </div>

@@ -148,6 +148,15 @@ body {
 
 .image-section {
     margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid var(--color-border);
+}
+
+.image-section__description {
+    max-width: 680px;
+    margin: 0 0 20px;
+    color: var(--color-text-muted);
+    line-height: 1.5;
 }
 
 .image-section h2 {
@@ -161,10 +170,10 @@ body {
    ========================================================= */
 
 .image-grid {
-    display: grid;
-
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: center;
     gap: 15px;
 }
 
@@ -173,19 +182,26 @@ body {
    ========================================================= */
 
 .image-card {
+    display: flex;
+    flex: 0 1 220px;
+    flex-direction: column;
+    width: min(100%, 220px);
+    min-width: 0;
+    padding: 12px;
     border: 1px solid var(--color-border);
-
-    border-radius: 10px;
-
-    padding: 10px;
-
+    border-radius: 12px;
     background: var(--color-surface);
-
     box-sizing: border-box;
-
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
+}
+
+.image-card__number {
+    margin: 0 0 10px;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
 }
 
 .image-card:hover {
@@ -198,16 +214,26 @@ body {
    IMAGE
    ========================================================= */
 
-.image-card img {
+.image-card__preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-
+    height: 170px;
+    margin-bottom: 12px;
+    padding: 8px;
+    overflow: hidden;
     border-radius: 8px;
+    background: var(--color-surface-warm);
+}
 
-    margin-bottom: 8px;
-
+.image-card__preview img {
     display: block;
-
-    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 /* =========================================================
@@ -216,10 +242,26 @@ body {
 
 .image-actions {
     display: flex;
-
     flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+    margin-top: auto;
+}
 
-    gap: 6px;
+.image-actions__label {
+    color: var(--color-brand-dark);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.image-actions input[type='file'],
+.upload-new input[type='file'] {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    color: var(--color-text-strong);
+    font-size: 0.8rem;
 }
 
 /* =========================================================
@@ -227,25 +269,42 @@ body {
    ========================================================= */
 
 .delete-check {
-    font-size: 12px;
-
-    color: #a33;
-
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 9px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: #fff7f5;
+    color: var(--color-danger);
+    font-size: 0.8rem;
+    font-weight: 650;
     cursor: pointer;
 }
 
-.delete-check input {
-    margin-right: 5px;
+.delete-check:focus-within {
+    outline: 2px solid var(--color-brand-accent);
+    outline-offset: 2px;
+}
+
+.delete-check input[type='checkbox'] {
+    flex: 0 0 auto;
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    accent-color: var(--color-danger);
 }
 
 /* =========================================================
    EMPTY
    ========================================================= */
 
-.empty {
-    color: #777;
-
+.image-grid .empty {
+    width: 100%;
     margin: 10px 0;
+    color: var(--color-text-muted);
+    text-align: center;
 }
 
 /* =========================================================
@@ -253,13 +312,30 @@ body {
    ========================================================= */
 
 .upload-new {
-    margin-top: 20px;
+    max-width: 540px;
+    margin: 24px auto 0;
+    padding: 16px;
+    border: 1px dashed var(--color-border);
+    border-radius: 12px;
+    background: var(--color-surface-warm);
 }
 
 .upload-new h3 {
-    color: var(--color-brand-dark);
-
     margin-bottom: 10px;
+    color: var(--color-brand-dark);
+}
+
+.upload-new label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--color-brand-dark);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.upload-new small {
+    display: block;
+    margin-bottom: 12px;
 }
 
 /* =========================================================
@@ -327,10 +403,6 @@ body {
     .form-actions {
         text-align: center;
     }
-
-    .image-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
 }
 
 @media (max-width: 480px) {
@@ -340,10 +412,6 @@ body {
 
     .form-card {
         padding: 15px;
-    }
-
-    .image-grid {
-        grid-template-columns: 1fr;
     }
 
     .form-actions button {
