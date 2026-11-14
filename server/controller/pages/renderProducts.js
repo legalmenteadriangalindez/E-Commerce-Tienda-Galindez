@@ -9,6 +9,7 @@ const { PERMISSIONS: P } = require('../../config/permissions');
 const reviewService = require('../../business/reviewService');
 const catalog = require('../../business/catalogService');
 const inventoryAnalytics = require('../../business/analytics/inventoryAnalytics');
+const stockAudit = require('../../business/analytics/stockValuationAudit');
 const siteUrl = (process.env.BASE_URL || 'http://localhost:3000').replace(/\/$/, '');
 exports.product_detail = async (req, res) => {
     const id = req.params.id;
@@ -95,14 +96,17 @@ exports.read_products = wrap(async (req, res) => {
 });
 exports.read_stock = wrap(async (req, res) => {
     const canSeeFinancials = hasPermission(req.usuarioActual, P.ANALYTICS_READ);
-    const [result, inventoryValuation] = await Promise.all([
+    const [result, inventoryValuation, valuationAudit] = await Promise.all([
         products.stockAlerts({ page: req.query.page, limit: 10 }),
         canSeeFinancials ? inventoryAnalytics.stockValuation() : null,
+        canSeeFinancials ? stockAudit.read({ page: req.query.valuationPage }) : null,
     ]);
     res.render('admin/analytics/stock', {
         stockAlerts: result.productos,
         totalAlertas: result.totalAlertas,
         inventoryValuation,
+        valuationAudit,
+        canEditProductPrices: hasPermission(req.usuarioActual, P.CATALOG_WRITE),
         pagination: pagination.buildPagination(req, result.pagination),
     });
 });

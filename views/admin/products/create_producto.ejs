@@ -29,12 +29,14 @@
 
         <div class="form-group">
           <label>Precio de costo</label>
-          <input type="number" step="0.01" min="0" name="precioCosto" required>
+          <input type="number" step="0.01" min="0" name="precioCosto" required placeholder="Ej. 50000" aria-describedby="cost-price-cop-help">
+          <small id="cost-price-cop-help">Pesos colombianos: escribe 50000 (no 50.000). Usa punto solo para centavos.</small>
         </div>
 
         <div class="form-group">
           <label>Precio de venta</label>
-          <input type="number" step="0.01" min="0" name="precioVenta" required>
+          <input type="number" step="0.01" min="0" name="precioVenta" required placeholder="Ej. 80000" aria-describedby="sale-price-cop-help">
+          <small id="sale-price-cop-help">Precio en COP sin puntos de miles. Ejemplo: 80000.</small>
         </div>
 
         <div class="form-group">

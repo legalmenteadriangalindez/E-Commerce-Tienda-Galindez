@@ -27,6 +27,7 @@
 
     <% if (inventoryValuation) { %>
         <%- include('./partials/inventory-valuation', { inventoryValuation }) %>
+        <%- include('./partials/stock-valuation-audit', { valuationAudit, inventoryValuation, canEditProductPrices }) %>
     <% } %>
 
     <!-- RESUMEN -->
