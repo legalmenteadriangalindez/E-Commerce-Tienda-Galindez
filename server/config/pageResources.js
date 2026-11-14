@@ -64,7 +64,8 @@ const resources = {
             'components/carousel.css',
             'components/product-info.css',
             'components/reviews.css',
-            'components/buttons.css'
+            'components/buttons.css',
+            'pages/product-detail.css'
         ),
         pageJs: js('Add_to_cart_client_nav.js', 'product-reviews.js'),
     },

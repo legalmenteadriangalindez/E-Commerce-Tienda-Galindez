@@ -6,24 +6,26 @@
 <!-- CONTENIDO DEL PRODUCTO -->
 <!-- ========================================= -->
 
-<div class="row">
+<main class="product-detail-page">
+    <div class="row">
 
-    <!-- CAROUSEL -->
-    <div class="col-md-6">
+        <!-- CAROUSEL -->
+        <div class="col-md-6">
 
-        <%- include('./partials/product-carousel', { product }) %>
+            <%- include('./partials/product-carousel', { product }) %>
+
+        </div>
+
+
+        <!-- INFO -->
+        <div class="col-md-6">
+
+            <%- include('./partials/product-info', { product }) %>
+
+        </div>
 
     </div>
-
-
-    <!-- INFO -->
-    <div class="col-md-6">
-
-        <%- include('./partials/product-info', { product }) %>
-
-    </div>
-
-</div>
+</main>
 
 <%- include('./partials/product-reviews') %>
 

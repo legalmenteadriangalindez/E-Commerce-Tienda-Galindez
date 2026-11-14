@@ -1,0 +1,14 @@
+/* ================= DETALLE PÚBLICO DE PRODUCTO ================= */
+
+/* Bootstrap .row usa márgenes laterales negativos. Este contenedor aporta
+   el gutter correspondiente para que el layout no desborde el viewport. */
+.product-detail-page {
+    width: 100%;
+    padding-inline: var(--bs-gutter-x, 0.75rem);
+}
+
+@media (max-width: 767px) {
+    .product-detail-page {
+        padding-inline: var(--bs-gutter-x, 0.75rem);
+    }
+}
