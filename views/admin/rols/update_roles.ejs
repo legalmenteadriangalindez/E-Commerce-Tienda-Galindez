@@ -1,48 +1,53 @@
 <%- include('../../include/_headerAdmin') %>
 
-
-
 <div class="page-wrapper">
-
   <div class="page-header">
     <h1>Editar Rol</h1>
     <p>Actualiza el nombre, descripción y permisos del rol</p>
   </div>
 
   <div class="form-card ui-card ui-card--form small-card">
-
     <form action="/update-rol" method="POST" class="role-form">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <input type="hidden" name="id" value="<%= rol._id %>">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="id" value="<%= rol._id %>">
 
       <div class="form-group">
-        <label>Nombre del rol</label>
-
+        <label for="role-name">Nombre del rol</label>
         <input
+          id="role-name"
           type="text"
           name="nombre"
           value="<%= rol.nombre %>"
           required
           autofocus
         >
-
         <small>Este nombre define el nivel de acceso</small>
       </div>
 
       <div class="form-group">
-        <label>Descripción</label>
-        <textarea name="descripcion" rows="3" maxlength="500"><%= rol.descripcion || '' %></textarea>
+        <label for="role-description">Descripción</label>
+        <textarea id="role-description" name="descripcion" rows="3" maxlength="500"><%= rol.descripcion || '' %></textarea>
       </div>
 
       <% const systemRole = ['Admin', 'Cliente', 'dealer'].includes(rol.nombre); %>
-      <div class="form-group">
-        <label>Permisos</label>
+      <div class="form-group permission-field">
+        <label for="role-permissions">Permisos</label>
         <% if (systemRole) { %>
-          <small>Este rol del sistema está protegido y no puede renombrarse ni modificar sus permisos desde el panel.</small>
+          <small id="role-permissions-help">
+            Este rol del sistema está protegido y no puede renombrarse ni modificar sus permisos desde el panel.
+          </small>
         <% } else { %>
-          <small>El acceso al panel se añade automáticamente cuando seleccionas cualquier permiso administrativo.</small>
+          <small id="role-permissions-help">
+            El acceso al panel se añade automáticamente cuando seleccionas cualquier permiso administrativo.
+          </small>
         <% } %>
-        <div class="permission-grid" role="group" aria-label="Permisos del rol">
+        <div
+          id="role-permissions"
+          class="permission-grid"
+          role="group"
+          aria-label="Permisos del rol"
+          aria-describedby="role-permissions-help"
+        >
           <% (permissionKeys || []).forEach(function(permission) { %>
             <label class="permission-option <%= systemRole ? 'is-disabled' : '' %>">
               <input type="checkbox" name="permisos" value="<%= permission %>"
@@ -61,9 +66,7 @@
           <button type="submit">Actualizar rol</button>
         <% } %>
       </div>
-
     </form>
-
   </div>
 </div>
 
