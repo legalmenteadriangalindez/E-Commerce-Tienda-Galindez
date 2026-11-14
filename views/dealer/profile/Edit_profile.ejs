@@ -1,7 +1,7 @@
 <%- include('../../include/_headerDealer') %>
 
-<div class="edit-profile-container">
-    <div class="edit-profile-card">
+<div class="edit-profile-container dealer-profile-edit">
+    <div class="edit-profile-card dealer-profile-edit__card">
         <div class="edit-profile-header">
             <div class="avatar-wrapper">
                 <i class="bi bi-person-circle"></i>
@@ -18,107 +18,109 @@
         >
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-            <div class="form-group">
-                <label for="profile-nombre">Nombre completo</label>
-                <input
-                    id="profile-nombre"
-                    type="text"
-                    name="nombre"
-                    value="<%= user.nombre %>"
-                    autocomplete="name"
-                    required
-                >
-            </div>
+            <div class="profile-form-grid">
+                <div class="form-group">
+                    <label for="profile-nombre">Nombre completo</label>
+                    <input
+                        id="profile-nombre"
+                        type="text"
+                        name="nombre"
+                        value="<%= user.nombre %>"
+                        autocomplete="name"
+                        required
+                    >
+                </div>
 
-            <div class="form-group">
-                <label for="profile-email">Correo electrónico</label>
-                <input
-                    id="profile-email"
-                    type="email"
-                    value="<%= user.email %>"
-                    autocomplete="email"
-                    disabled
-                >
-                <small class="form-help">El correo se utiliza para iniciar sesión y no se puede cambiar aquí.</small>
-            </div>
+                <div class="form-group">
+                    <label for="profile-email">Correo electrónico</label>
+                    <input
+                        id="profile-email"
+                        type="email"
+                        value="<%= user.email %>"
+                        autocomplete="email"
+                        disabled
+                    >
+                    <small class="form-help">El correo se utiliza para iniciar sesión y no se puede cambiar aquí.</small>
+                </div>
 
-            <div class="form-group">
-                <label for="profile-telefono">Teléfono</label>
-                <input
-                    id="profile-telefono"
-                    type="text"
-                    name="telefono"
-                    value="<%= user.telefono %>"
-                    autocomplete="tel"
-                >
-            </div>
+                <div class="form-group">
+                    <label for="profile-telefono">Teléfono</label>
+                    <input
+                        id="profile-telefono"
+                        type="text"
+                        name="telefono"
+                        value="<%= user.telefono %>"
+                        autocomplete="tel"
+                    >
+                </div>
 
-            <div class="form-group">
-                <label for="profile-cedula">Cédula (opcional)</label>
-                <input
-                    id="profile-cedula"
-                    type="text"
-                    name="cedula"
-                    inputmode="numeric"
-                    pattern="[0-9]{5,15}"
-                    maxlength="15"
-                    autocomplete="off"
-                    value="<%= user.cedula || '' %>"
-                >
-            </div>
+                <div class="form-group">
+                    <label for="profile-cedula">Cédula (opcional)</label>
+                    <input
+                        id="profile-cedula"
+                        type="text"
+                        name="cedula"
+                        inputmode="numeric"
+                        pattern="[0-9]{5,15}"
+                        maxlength="15"
+                        autocomplete="off"
+                        value="<%= user.cedula || '' %>"
+                    >
+                </div>
 
-            <div class="form-group">
-                <label for="profile-direccion">Dirección</label>
-                <input
-                    id="profile-direccion"
-                    type="text"
-                    name="direccion"
-                    value="<%= user.direccion %>"
-                    autocomplete="street-address"
-                >
-            </div>
+                <div class="form-group">
+                    <label for="profile-direccion">Dirección</label>
+                    <input
+                        id="profile-direccion"
+                        type="text"
+                        name="direccion"
+                        value="<%= user.direccion %>"
+                        autocomplete="street-address"
+                    >
+                </div>
 
-            <div class="form-group">
-                <label for="profile-ciudad">Ciudad</label>
-                <input
-                    id="profile-ciudad"
-                    type="text"
-                    name="ciudad"
-                    value="<%= user.ciudad %>"
-                    autocomplete="address-level2"
-                >
-            </div>
+                <div class="form-group">
+                    <label for="profile-ciudad">Ciudad</label>
+                    <input
+                        id="profile-ciudad"
+                        type="text"
+                        name="ciudad"
+                        value="<%= user.ciudad %>"
+                        autocomplete="address-level2"
+                    >
+                </div>
 
-            <div class="form-group">
-                <label for="profile-barrio">Barrio</label>
-                <input
-                    id="profile-barrio"
-                    type="text"
-                    name="barrio"
-                    value="<%= user.barrio || '' %>"
-                    autocomplete="address-level3"
-                >
-            </div>
+                <div class="form-group">
+                    <label for="profile-barrio">Barrio</label>
+                    <input
+                        id="profile-barrio"
+                        type="text"
+                        name="barrio"
+                        value="<%= user.barrio || '' %>"
+                        autocomplete="address-level3"
+                    >
+                </div>
 
-            <div class="form-group">
-                <label for="profile-genero">Género</label>
-                <input
-                    id="profile-genero"
-                    type="text"
-                    name="genero"
-                    value="<%= user.genero || '' %>"
-                >
-            </div>
+                <div class="form-group">
+                    <label for="profile-genero">Género</label>
+                    <input
+                        id="profile-genero"
+                        type="text"
+                        name="genero"
+                        value="<%= user.genero || '' %>"
+                    >
+                </div>
 
-            <div class="form-group">
-                <label for="profile-referencia">Punto de referencia</label>
-                <input
-                    id="profile-referencia"
-                    type="text"
-                    name="puntoReferencia"
-                    value="<%= user.puntoReferencia || '' %>"
-                    autocomplete="off"
-                >
+                <div class="form-group full">
+                    <label for="profile-referencia">Punto de referencia</label>
+                    <input
+                        id="profile-referencia"
+                        type="text"
+                        name="puntoReferencia"
+                        value="<%= user.puntoReferencia || '' %>"
+                        autocomplete="off"
+                    >
+                </div>
             </div>
 
             <div class="form-actions">
