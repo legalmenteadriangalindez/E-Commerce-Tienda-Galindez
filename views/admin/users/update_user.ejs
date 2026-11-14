@@ -1,166 +1,121 @@
 <%- include('../../include/_headerAdmin') %>
 
-
-
-<div class="page-wrapper">
-
-  <div class="page-header">
+<div class="page-wrapper user-page-wrapper">
+  <div class="page-header user-page-header">
     <h1>Editar Usuario</h1>
     <p>Actualiza la información del usuario registrado</p>
   </div>
 
-  <div class="form-card ui-card ui-card--form">
-
+  <div class="form-card ui-card ui-card--form user-form-card">
     <form action="/update-user/<%= user._id %>" method="POST" class="user-form">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-      <div class="form-grid ui-form-grid">
-
-        <!-- Nombre -->
-        <div class="form-group full">
-          <label>Nombre completo</label>
-          <input
-            type="text"
-            name="nombre"
-            value="<%= user.nombre %>"
-            required
-          >
+      <section class="user-form-section">
+        <div class="user-form-section__header">
+          <h2>Información personal</h2>
+          <p>Datos básicos y de contacto del usuario.</p>
         </div>
 
-        <!-- Email -->
-        <div class="form-group full">
-          <label>Correo electrónico</label>
-          <input
-            type="email"
-            name="email"
-            value="<%= user.email %>"
-            readonly
-          >
+        <div class="user-form-grid">
+          <div class="form-group">
+            <label for="edit-user-name">Nombre completo</label>
+            <input id="edit-user-name" type="text" name="nombre" value="<%= user.nombre %>" required>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-user-email">Correo electrónico</label>
+            <input id="edit-user-email" type="email" name="email" value="<%= user.email %>" readonly>
+            <small>El correo se utiliza como identificador y no se puede modificar aquí.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-user-phone">Teléfono</label>
+            <input id="edit-user-phone" type="text" name="telefono" value="<%= user.telefono %>">
+          </div>
+
+          <div class="form-group">
+            <label for="edit-user-cedula">Cédula (opcional)</label>
+            <input id="edit-user-cedula" type="text" name="cedula" value="<%= user.cedula || '' %>" inputmode="numeric" pattern="[0-9]{5,15}" maxlength="15" autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label for="edit-user-gender">Género</label>
+            <input id="edit-user-gender" type="text" name="genero" value="<%= user.genero %>">
+          </div>
+        </div>
+      </section>
+
+      <section class="user-form-section">
+        <div class="user-form-section__header">
+          <h2>Dirección y entrega</h2>
+          <p>Información utilizada para contacto y despacho.</p>
         </div>
 
-        <!-- Teléfono -->
-        <div class="form-group">
-          <label>Teléfono</label>
-          <input
-            type="text"
-            name="telefono"
-            value="<%= user.telefono %>"
-          >
+        <div class="user-form-grid">
+          <div class="form-group full">
+            <label for="edit-user-address">Dirección</label>
+            <input id="edit-user-address" type="text" name="direccion" value="<%= user.direccion %>">
+          </div>
+
+          <div class="form-group">
+            <label for="edit-user-neighborhood">Barrio</label>
+            <input id="edit-user-neighborhood" type="text" name="barrio" value="<%= user.barrio %>">
+          </div>
+
+          <div class="form-group">
+            <label for="edit-user-city">Ciudad</label>
+            <input id="edit-user-city" type="text" name="ciudad" value="<%= user.ciudad %>">
+          </div>
+
+          <div class="form-group full">
+            <label for="edit-user-reference">Punto de referencia</label>
+            <input id="edit-user-reference" type="text" name="puntoReferencia" value="<%= user.puntoReferencia %>">
+          </div>
         </div>
+      </section>
 
-        <!-- Cédula opcional -->
-        <div class="form-group">
-          <label for="edit-user-cedula">Cédula (opcional)</label>
-          <input id="edit-user-cedula" type="text" name="cedula" value="<%= user.cedula || '' %>" inputmode="numeric" pattern="[0-9]{5,15}" maxlength="15" autocomplete="off">
+      <section class="user-form-section">
+        <div class="user-form-section__header">
+          <h2>Estado y acceso</h2>
+          <p>Administra el estado de la cuenta y el rol asignado.</p>
         </div>
-
-        <!-- Género -->
-        <div class="form-group">
-          <label>Género</label>
-          <input
-            type="text"
-            name="genero"
-            value="<%= user.genero %>"
-          >
-        </div>
-
-        <!-- Dirección -->
-        <div class="form-group full">
-          <label>Dirección</label>
-          <input
-            type="text"
-            name="direccion"
-            value="<%= user.direccion %>"
-          >
-        </div>
-
-        <!-- Barrio -->
-        <div class="form-group">
-          <label>Barrio</label>
-          <input
-            type="text"
-            name="barrio"
-            value="<%= user.barrio %>"
-          >
-        </div>
-
-        <!-- Ciudad -->
-        <div class="form-group">
-          <label>Ciudad</label>
-          <input
-            type="text"
-            name="ciudad"
-            value="<%= user.ciudad %>"
-          >
-        </div>
-
-        <!-- Punto de referencia -->
-        <div class="form-group full">
-          <label>Punto de referencia</label>
-          <input
-            type="text"
-            name="puntoReferencia"
-            value="<%= user.puntoReferencia %>"
-          >
-        </div>
-
-        <!-- Estado -->
-      <div class="form-group">
-        <label>Estado</label>
-
-        <select name="estado">
-
-          <option
-            value="Activo"
-            <%= user.estado === "Activo" ? "selected" : "" %>
-          >
-            Activo
-          </option>
-
-          <option
-            value="Inactivo"
-            <%= user.estado === "Inactivo" ? "selected" : "" %>
-          >
-            Inactivo
-          </option>
-
-        </select>
-      </div>
-
-      <!-- Rol -->
-      <div class="form-group">
-        <label>Rol</label>
 
         <% const isOwnUser = authUser && String(authUser._id) === String(user._id); %>
-        <% if (canManageRoles && !isOwnUser) { %>
-          <select name="rol">
-            <% roles.forEach(rol => { %>
-              <option
-                value="<%= rol._id %>"
-                <%= user.rol && user.rol._id.toString() === rol._id.toString()
-                  ? "selected"
-                  : ""
-                %>
-              >
-                <%= rol.nombre %>
-              </option>
-            <% }) %>
-          </select>
-          <small>Cambiar roles requiere roles:manage. Los roles del sistema están protegidos.</small>
-        <% } else { %>
-          <input type="text" value="<%= user.rol?.nombre || 'Sin rol' %>" readonly>
-          <small><%= isOwnUser ? 'No puedes cambiar el rol de tu propia cuenta.' : 'Solo un usuario con roles:manage puede cambiar roles.' %></small>
-        <% } %>
-      </div>
+        <div class="user-form-grid">
+          <div class="form-group">
+            <label for="edit-user-status">Estado</label>
+            <select id="edit-user-status" name="estado">
+              <option value="Activo" <%= user.estado === 'Activo' ? 'selected' : '' %>>Activo</option>
+              <option value="Inactivo" <%= user.estado === 'Inactivo' ? 'selected' : '' %>>Inactivo</option>
+            </select>
+          </div>
 
-      </div>
+          <div class="form-group">
+            <label for="edit-user-role">Rol</label>
+            <% if (canManageRoles && !isOwnUser) { %>
+              <select id="edit-user-role" name="rol">
+                <% roles.forEach(rol => { %>
+                  <option
+                    value="<%= rol._id %>"
+                    <%= user.rol && user.rol._id.toString() === rol._id.toString() ? 'selected' : '' %>
+                  >
+                    <%= rol.nombre %>
+                  </option>
+                <% }) %>
+              </select>
+              <small>Cambiar roles requiere roles:manage. Los roles del sistema están protegidos.</small>
+            <% } else { %>
+              <input id="edit-user-role" type="text" value="<%= user.rol?.nombre || 'Sin rol' %>" readonly>
+              <small><%= isOwnUser ? 'No puedes cambiar el rol de tu propia cuenta.' : 'Solo un usuario con roles:manage puede cambiar roles.' %></small>
+            <% } %>
+          </div>
+        </div>
+      </section>
 
       <div class="form-actions">
         <button type="submit">Actualizar usuario</button>
       </div>
-
     </form>
-
   </div>
 </div>
 
