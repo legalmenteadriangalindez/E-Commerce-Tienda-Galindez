@@ -20,7 +20,7 @@ test('la creación de marcas conserva el contrato del formulario y usa una tarje
     assert.match(createView, /name="_csrf"/);
     assert.match(createView, /name="nombre"/);
     assert.match(createView, /name="foto"/);
-    assert.match(createView, /class="admin-brand-form brand-form"/);
+    assert.match(createView, /class="admin-brand-form"/);
     assert.match(createView, /id="brand-photo"/);
 });
 

@@ -46,6 +46,8 @@ body > form {
 }
 
 .admin-brand-form {
+    display: grid;
+    gap: 22px;
     width: calc(100% - 2rem);
     max-width: 650px;
     margin: 0 auto 40px;
@@ -55,11 +57,6 @@ body > form {
     border-radius: 14px;
     background: var(--color-surface);
     box-shadow: 0 8px 25px rgba(49, 27, 20, 0.08);
-}
-
-.brand-form {
-    display: grid;
-    gap: 22px;
 }
 
 .brand-form__field {
