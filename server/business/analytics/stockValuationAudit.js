@@ -60,14 +60,7 @@ function valuationStages() {
             $addFields: {
                 potentialGrossProfitCents: { $subtract: ['$potentialSalesCents', '$investedCents'] },
                 needsReview: {
-                    $or: [
-                        '$missingCents',
-                        '$costMismatch',
-                        '$saleMismatch',
-                        '$zeroCost',
-                        '$zeroSale',
-                        '$belowCost',
-                    ],
+                    $or: ['$missingCents', '$costMismatch', '$saleMismatch', '$zeroCost', '$zeroSale', '$belowCost'],
                 },
             },
         },

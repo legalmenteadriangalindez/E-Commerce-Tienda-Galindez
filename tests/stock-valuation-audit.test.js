@@ -77,7 +77,10 @@ test(
         assert.equal(breakdown.totals.investedCents, expected.investedCents);
         assert.equal(breakdown.totals.potentialSalesCents, expected.potentialSalesCents);
         assert.equal(breakdown.totals.flaggedProducts, 0);
-        assert.deepEqual(breakdown.products.map((p) => p.nombre), ['Artículo A', 'Artículo B']);
+        assert.deepEqual(
+            breakdown.products.map((p) => p.nombre),
+            ['Artículo A', 'Artículo B']
+        );
         assert.equal(
             breakdown.products.reduce((total, product) => total + product.investedCents, 0),
             expected.investedCents
@@ -106,10 +109,7 @@ test(
         assert.match(changed.products[0].issues.join(' '), /diferentes/);
 
         // Los registros antiguos sin campos de centavos siguen calculándose en COP.
-        await fixture.Product.updateOne(
-            { _id: second._id },
-            { $unset: { precioCostoCents: 1, precioVentaCents: 1 } }
-        );
+        await fixture.Product.updateOne({ _id: second._id }, { $unset: { precioCostoCents: 1, precioVentaCents: 1 } });
         const legacy = await audit.read();
         assert.equal(legacy.totals.missingCentsProducts, 1);
 
@@ -163,10 +163,7 @@ test(
             precioVenta: '80000',
         };
         const productsBefore = await fixture.Product.countDocuments();
-        await assert.rejects(
-            () => service.create(input, [], fixture.users.admin),
-            /sin separadores de miles/
-        );
+        await assert.rejects(() => service.create(input, [], fixture.users.admin), /sin separadores de miles/);
         assert.equal(await fixture.Product.countDocuments(), productsBefore);
 
         // El formato sin separadores y con hasta dos decimales sí es válido.

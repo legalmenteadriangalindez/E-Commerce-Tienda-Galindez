@@ -135,7 +135,12 @@ const resources = {
         ),
     },
     'admin/analytics/stock': {
-        pageCss: css('pages/stock.css', 'pages/inventory-valuation.css', 'pages/stock-valuation-audit.css', 'admin-pagination.css'),
+        pageCss: css(
+            'pages/stock.css',
+            'pages/inventory-valuation.css',
+            'pages/stock-valuation-audit.css',
+            'admin-pagination.css'
+        ),
     },
     'admin/inventory/replenishment': {
         pageCss: css(
