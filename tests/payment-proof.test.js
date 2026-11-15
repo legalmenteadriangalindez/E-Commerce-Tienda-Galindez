@@ -66,7 +66,12 @@ test(
         form.append('comprobantePago', new Blob([png], { type: 'image/png' }), 'comprobante-pago.png');
         const uploadResponse = await fetch(fixture.origin + '/_test/private-payment-proof', {
             method: 'POST',
-            headers: { Cookie: admin.cookie, Origin: fixture.origin, Accept: 'application/json' },
+            headers: {
+                Cookie: admin.cookie,
+                Origin: fixture.origin,
+                Accept: 'application/json',
+                'X-CSRF-Token': admin.csrfToken,
+            },
             body: form,
         });
         assert.equal(uploadResponse.status, 200);
@@ -146,7 +151,12 @@ test(
         invalidForm.append('comprobantePago', new Blob(['not-an-image'], { type: 'text/plain' }), 'comprobante.txt');
         const invalidUpload = await fetch(fixture.origin + '/_test/private-payment-proof', {
             method: 'POST',
-            headers: { Cookie: admin.cookie, Origin: fixture.origin, Accept: 'application/json' },
+            headers: {
+                Cookie: admin.cookie,
+                Origin: fixture.origin,
+                Accept: 'application/json',
+                'X-CSRF-Token': admin.csrfToken,
+            },
             body: invalidForm,
         });
         assert.equal(invalidUpload.status, 400);
