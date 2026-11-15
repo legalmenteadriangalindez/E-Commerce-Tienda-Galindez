@@ -19,6 +19,118 @@ const populate = [
     ['asignacionReparto.asignadoPor', 'nombre email'],
     ['seguimientoEntrega.actor', 'nombre email'],
 ];
+
+const NEXT_ORDER_STATE = Object.freeze({
+    PAGADA: 'PREPARANDO',
+    PREPARANDO: 'ENVIADA',
+    ENVIADA: 'ENTREGADA',
+});
+
+const DEALER_ALLOWED_STATES = new Set(['PREPARANDO', 'ENVIADA', 'ENTREGADA']);
+
+function hasOpenDeliveryIncident(order) {
+    return (
+        Array.isArray(order.incidenciasEntrega) &&
+        order.incidenciasEntrega.some((incident) => incident.estado === 'ABIERTA')
+    );
+}
+
+function assertDeliveryCanBeCompleted(order, state, dealer) {
+    if (dealer && state === 'ENTREGADA' && hasOpenDeliveryIncident(order)) {
+        throw new commerce.CommerceError('Resuelve la incidencia abierta antes de cerrar la entrega.', 409);
+    }
+}
+
+async function assertDealerCanChangeOrder(order, dealer, actorId, session) {
+    if (!dealer || String(order.repartidor || '') === String(actorId)) return;
+
+    // En producción las rutas de repartidor ya entregan únicamente pedidos
+    // asignados. El permiso Admin se conserva aquí para conciliaciones y
+    // pruebas internas que simulan ese actor.
+    const actor = await Userdb.findById(actorId).populate('rol', 'nombre').session(session);
+    if (actor?.rol?.nombre !== 'Admin') {
+        throw new commerce.CommerceError('El pedido no está asignado a este repartidor.', 403);
+    }
+}
+
+function attachDeliveryProof(order, state, dealer, actorId, proofPhotoUrl) {
+    if (!dealer || state !== 'ENTREGADA') return;
+    if (!media.idFromUrl(proofPhotoUrl)) {
+        throw new commerce.CommerceError('Debes adjuntar una foto como comprobante antes de marcar la entrega.', 400);
+    }
+
+    order.comprobanteEntrega = {
+        fotoUrl: proofPhotoUrl,
+        cargadaEn: new Date(),
+        cargadaPor: actorId,
+    };
+}
+
+async function cancelOrder(order, actorId, note, session) {
+    const cashDelivery = commerce.isCashOnDelivery(order);
+    const canCancelCashDelivery =
+        cashDelivery &&
+        order.estadoPago === 'PENDIENTE' &&
+        order.inventario === 'CONFIRMADO' &&
+        ['PENDIENTE', 'PREPARANDO', 'ENVIADA'].includes(order.estado);
+    const canCancelReservation = !cashDelivery && order.estadoPago === 'PENDIENTE' && order.inventario === 'RESERVADO';
+
+    if (!canCancelCashDelivery && !canCancelReservation) {
+        throw new commerce.CommerceError(
+            'Solo se pueden cancelar reservas pendientes o pedidos contra entrega aún no cobrados.',
+            409
+        );
+    }
+
+    if (!cashDelivery && (await PaymentEvent.exists({ order: order._id, estado: 'PENDIENTE' }).session(session))) {
+        throw new commerce.CommerceError('Espera la respuesta del proveedor antes de cancelar.', 409);
+    }
+
+    const releaseMetadata = {
+        actorId,
+        reason: `Pedido cancelado${note ? `: ${note}` : ''}`,
+    };
+    if (cashDelivery) await inventory.releaseConfirmed(order, session, releaseMetadata);
+    else await inventory.release(order, session, releaseMetadata);
+}
+
+function validateProgression(order, state, dealer, cashConfirmed) {
+    const cashDelivery = commerce.isCashOnDelivery(order);
+    const payingAtDelivery = cashDelivery && state === 'ENTREGADA' && order.estadoPago === 'PENDIENTE';
+
+    if (payingAtDelivery && !cashConfirmed) {
+        throw new commerce.CommerceError('Confirma el efectivo recibido antes de cerrar la entrega.', 409);
+    }
+
+    const invalidTransition =
+        (!cashDelivery && order.estadoPago !== 'PAGADO') ||
+        order.inventario !== 'CONFIRMADO' ||
+        (cashDelivery && order.estado === 'PENDIENTE' && state !== 'PREPARANDO' && !payingAtDelivery) ||
+        ((!cashDelivery || order.estado !== 'PENDIENTE') && NEXT_ORDER_STATE[order.estado] !== state) ||
+        (dealer && !DEALER_ALLOWED_STATES.has(state));
+
+    if (invalidTransition) {
+        throw new commerce.CommerceError(
+            'Transición no permitida. Confirma primero el pago y sigue el orden de entrega.',
+            409
+        );
+    }
+
+    return { payingAtDelivery };
+}
+
+async function settleCashOnDelivery(order, actorId, session) {
+    order.estadoPago = 'PAGADO';
+    order.confirmadoPor = actorId;
+    order.pagoConfirmadoEn = new Date();
+    await payments.recordSale(order, session);
+    await inventory.recordSale(order, session, {
+        actorId,
+        reason: 'Pago contra entrega confirmado al marcar la entrega',
+    });
+    await raffle.recordEligibleOrder(order, session);
+}
+
 async function get(id) {
     let query = Order.findById(validId(id, 'Pedido'));
     for (const item of populate) query = query.populate(...item);
@@ -90,96 +202,20 @@ async function changeState(id, state, actorId, dealer = false, note = '', cashCo
     return mongoose.connection.transaction(async (session) => {
         const order = await Order.findById(id).session(session);
         if (!order) throw new commerce.CommerceError('Pedido no encontrado.', 404);
-        if (
-            dealer &&
-            state === 'ENTREGADA' &&
-            Array.isArray(order.incidenciasEntrega) &&
-            order.incidenciasEntrega.some((incident) => incident.estado === 'ABIERTA')
-        ) {
-            throw new commerce.CommerceError('Resuelve la incidencia abierta antes de cerrar la entrega.', 409);
-        }
 
-        if (dealer && String(order.repartidor || '') !== String(actorId)) {
-            // En producción las rutas de repartidor ya entregan únicamente
-            // pedidos asignados. El permiso Admin se conserva aquí para
-            // conciliaciones y pruebas internas que simulan ese actor.
-            const actor = await Userdb.findById(actorId).populate('rol', 'nombre').session(session);
-            if (actor?.rol?.nombre !== 'Admin') {
-                throw new commerce.CommerceError('El pedido no está asignado a este repartidor.', 403);
-            }
-        }
+        assertDeliveryCanBeCompleted(order, state, dealer);
+        await assertDealerCanChangeOrder(order, dealer, actorId, session);
         if (state === order.estado) return order;
-        if (dealer && state === 'ENTREGADA') {
-            if (!media.idFromUrl(proofPhotoUrl)) {
-                throw new commerce.CommerceError(
-                    'Debes adjuntar una foto como comprobante antes de marcar la entrega.',
-                    400
-                );
-            }
-            order.comprobanteEntrega = {
-                fotoUrl: proofPhotoUrl,
-                cargadaEn: new Date(),
-                cargadaPor: actorId,
-            };
-        }
+
+        attachDeliveryProof(order, state, dealer, actorId, proofPhotoUrl);
+
         let payingAtDelivery = false;
         if (state === 'CANCELADA' && !dealer) {
-            const cashDelivery = commerce.isCashOnDelivery(order);
-            const canCancelCashDelivery =
-                cashDelivery &&
-                order.estadoPago === 'PENDIENTE' &&
-                order.inventario === 'CONFIRMADO' &&
-                ['PENDIENTE', 'PREPARANDO', 'ENVIADA'].includes(order.estado);
-            const canCancelReservation =
-                !cashDelivery && order.estadoPago === 'PENDIENTE' && order.inventario === 'RESERVADO';
-            if (!canCancelCashDelivery && !canCancelReservation) {
-                throw new commerce.CommerceError(
-                    'Solo se pueden cancelar reservas pendientes o pedidos contra entrega aún no cobrados.',
-                    409
-                );
-            }
-            if (
-                !cashDelivery &&
-                (await PaymentEvent.exists({ order: order._id, estado: 'PENDIENTE' }).session(session))
-            ) {
-                throw new commerce.CommerceError('Espera la respuesta del proveedor antes de cancelar.', 409);
-            }
-            const releaseMetadata = {
-                actorId,
-                reason: `Pedido cancelado${note ? `: ${note}` : ''}`,
-            };
-            if (cashDelivery) await inventory.releaseConfirmed(order, session, releaseMetadata);
-            else await inventory.release(order, session, releaseMetadata);
+            await cancelOrder(order, actorId, note, session);
         } else {
-            const next = { PAGADA: 'PREPARANDO', PREPARANDO: 'ENVIADA', ENVIADA: 'ENTREGADA' };
-            const cashDelivery = commerce.isCashOnDelivery(order);
-            payingAtDelivery = cashDelivery && state === 'ENTREGADA' && order.estadoPago === 'PENDIENTE';
-            if (payingAtDelivery && !cashConfirmed) {
-                throw new commerce.CommerceError('Confirma el efectivo recibido antes de cerrar la entrega.', 409);
-            }
-            if (
-                (!cashDelivery && order.estadoPago !== 'PAGADO') ||
-                order.inventario !== 'CONFIRMADO' ||
-                (cashDelivery && order.estado === 'PENDIENTE' && state !== 'PREPARANDO' && !payingAtDelivery) ||
-                ((!cashDelivery || order.estado !== 'PENDIENTE') && next[order.estado] !== state) ||
-                (dealer && !['PREPARANDO', 'ENVIADA', 'ENTREGADA'].includes(state))
-            ) {
-                throw new commerce.CommerceError(
-                    'Transición no permitida. Confirma primero el pago y sigue el orden de entrega.',
-                    409
-                );
-            }
+            ({ payingAtDelivery } = validateProgression(order, state, dealer, cashConfirmed));
             if (payingAtDelivery) {
-                order.estadoPago = 'PAGADO';
-                order.confirmadoPor = actorId;
-                order.pagoConfirmadoEn = new Date();
-                order.estado = 'ENTREGADA';
-                await payments.recordSale(order, session);
-                await inventory.recordSale(order, session, {
-                    actorId,
-                    reason: 'Pago contra entrega confirmado al marcar la entrega',
-                });
-                await raffle.recordEligibleOrder(order, session);
+                await settleCashOnDelivery(order, actorId, session);
             }
         }
         order.estado = payingAtDelivery ? 'ENTREGADA' : state;
