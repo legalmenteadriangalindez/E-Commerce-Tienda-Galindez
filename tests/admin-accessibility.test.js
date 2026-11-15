@@ -9,6 +9,8 @@ const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'u
 test('el menú administrativo es responsive y gestiona el foco', () => {
     const css = read('public/css/components/admin-sidebar.css');
     const js = read('public/js/admin-sidebar.js');
+    const adminHeader = read('views/include/_headerAdmin.ejs');
+    const publicHeader = read('views/include/header/navigation.ejs');
 
     assert.match(css, /@media \(max-width: 991px\)/);
     assert.match(css, /min-height: 2\.75rem/);
@@ -16,6 +18,9 @@ test('el menú administrativo es responsive y gestiona el foco', () => {
     assert.match(js, /aria-hidden/);
     assert.match(js, /\.inert =/);
     assert.match(js, /event\.key === 'Escape'/);
+    assert.equal((adminHeader.match(/data-admin-sidebar-toggle/g) || []).length, 1);
+    assert.doesNotMatch(adminHeader, /class="navbar-toggler"/);
+    assert.match(publicHeader, /class="navbar-toggler"/);
 });
 
 test('los controles administrativos conservan foco visible y tamaño táctil', () => {
