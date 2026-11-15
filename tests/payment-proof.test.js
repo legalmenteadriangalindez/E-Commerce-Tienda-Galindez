@@ -42,9 +42,51 @@ test(
                 estado: 'Activo',
             });
 
-            app.post('/_test/private-payment-proof', upload.privateSingle('comprobantePago'), (req, res) =>
-                res.json({ id: String(req.file.id), url: req.file.url })
-            );
+            app.post('/_test/private-payment-proof', upload.privateSingle('comprobantePago'), async (req, res) => {
+                // La referencia se crea antes de terminar la respuesta para que
+                // el limpiador de cargas temporales no elimine una imagen válida.
+                const order = await Order.create({
+                    numeroOrden: 'ORD-PAYMENT-PROOF-' + Date.now(),
+                    usuario: users.owner._id,
+                    cliente: {
+                        nombre: users.owner.nombre,
+                        email: users.owner.email,
+                        telefono: users.owner.telefono,
+                    },
+                    productos: [
+                        {
+                            producto: new mongoose.Types.ObjectId(),
+                            nombre: 'Producto de prueba',
+                            cantidad: 1,
+                            precioUnitario: 12000,
+                            precioCostoUnitario: 8000,
+                            subtotal: 12000,
+                        },
+                    ],
+                    subtotal: 12000,
+                    total: 12000,
+                    canal: 'WOMPI',
+                    metodoPago: 'WOMPI_CARD',
+                    inventario: 'CONFIRMADO',
+                    estadoPago: 'PAGADO',
+                    estado: 'PAGADA',
+                    repartidor: users.dealer._id,
+                    revisionPago: {
+                        accion: 'DEVOLUCION',
+                        motivo: 'Comprobante cargado para revisión de prueba',
+                        comprobante: 'REF-PAYMENT-PROOF',
+                        administrador: users.admin._id,
+                        fecha: new Date(),
+                        comprobanteFoto: {
+                            mediaId: req.file.id,
+                            fotoUrl: req.file.url,
+                            cargadaPor: users.admin._id,
+                            cargadaEn: new Date(),
+                        },
+                    },
+                });
+                return res.json({ id: String(req.file.id), url: req.file.url, orderId: String(order._id) });
+            });
             app.use(require('../server/routes/paymentProof.routes'));
             app.use(require('../server/routes/admin/payments.routes'));
             app.use('/dealer', require('../server/routes/dealer.routes'));
@@ -80,46 +122,8 @@ test(
         const uploaded = await uploadResponse.json();
         assert.match(uploaded.url, /^\/private-media\/payment-proof\/[a-f\d]{24}\.webp$/i);
 
-        const order = await Order.create({
-            numeroOrden: 'ORD-PAYMENT-PROOF-' + Date.now(),
-            usuario: fixture.users.owner._id,
-            cliente: {
-                nombre: fixture.users.owner.nombre,
-                email: fixture.users.owner.email,
-                telefono: fixture.users.owner.telefono,
-            },
-            productos: [
-                {
-                    producto: fixture.product._id,
-                    nombre: fixture.product.nombre,
-                    cantidad: 1,
-                    precioUnitario: 12000,
-                    precioCostoUnitario: 8000,
-                    subtotal: 12000,
-                },
-            ],
-            subtotal: 12000,
-            total: 12000,
-            canal: 'WOMPI',
-            metodoPago: 'WOMPI_CARD',
-            inventario: 'CONFIRMADO',
-            estadoPago: 'PAGADO',
-            estado: 'PAGADA',
-            repartidor: fixture.users.dealer._id,
-            revisionPago: {
-                accion: 'DEVOLUCION',
-                motivo: 'Comprobante cargado para revisión de prueba',
-                comprobante: 'REF-PAYMENT-PROOF',
-                administrador: fixture.users.admin._id,
-                fecha: new Date(),
-                comprobanteFoto: {
-                    mediaId: new mongoose.Types.ObjectId(uploaded.id),
-                    fotoUrl: uploaded.url,
-                    cargadaPor: fixture.users.admin._id,
-                    cargadaEn: new Date(),
-                },
-            },
-        });
+        const order = await Order.findById(uploaded.orderId);
+        assert.ok(order, 'la prueba no pudo crear la orden que referencia el archivo');
 
         const persistedOrder = await Order.findById(order._id).lean();
         assert.equal(String(persistedOrder.revisionPago.comprobanteFoto.mediaId), uploaded.id);
