@@ -131,10 +131,6 @@ async function changeStock({
 }
 
 /**
- * Reserva o descuenta unidades y registra el cambio en la misma transacción.
- * El movimiento de VENTA se registra después, cuando el pago queda confirmado.
- */
-/**
  * Cambia existencias de una lista de productos y registra cada movimiento.
  * La operación se realiza por producto para conservar su propia clave
  * idempotente: si llega dos veces la misma solicitud, no se descuenta dos veces.
@@ -189,6 +185,10 @@ async function recordOrderMovement(order, session, metadata, operation) {
     }
 }
 
+/**
+ * Reserva o descuenta unidades y registra el cambio en la misma transacción.
+ * El movimiento de VENTA se registra después, cuando el pago queda confirmado.
+ */
 async function debit(items, session, metadata = {}) {
     await changeItemStocks(items, session, {
         action: 'reserva',

@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 const Product = require('../model/product');
 const InventoryMovement = require('../model/inventoryMovement');
 const Category = require('../model/categories');
-const Brand = require('../model/brands');
-const Provider = require('../model/provider');
 const Order = require('../model/order');
 const SaleDetail = require('../model/saleDetails');
 const Review = require('../model/review');
@@ -12,80 +10,10 @@ const media = require('./mediaService');
 const queryPage = require('./queryPage');
 const pagination = require('../services/adminPagination');
 const money = require('../services/money');
-const { BusinessError, validId, parse } = require('./errors');
-const { product: schema } = require('../validation/schemas');
+const { BusinessError, validId } = require('./errors');
 const { uploadedFiles, discardUploads, updatedPhotos } = require('./productMedia');
 const inventory = require('./inventoryService');
-
-function priceCents(value) {
-    const input = String(value).trim();
-    if (input === '') throw new BusinessError('El precio es obligatorio.');
-    // En Colombia, 50.000 puede confundirse con cincuenta mil. Number('50.000') devuelve 50.
-    // Se exigen pesos sin separadores de miles y un máximo de dos decimales.
-    if (!/^\d+(?:\.\d{1,2})?$/.test(input)) {
-        throw new BusinessError(
-            'Escribe el precio sin separadores de miles: 50000, no 50.000. Usa punto solo para centavos (50000.50).'
-        );
-    }
-    try {
-        return money.toCents(value);
-    } catch (error) {
-        if (error instanceof money.MoneyError) throw new BusinessError(error.message);
-        throw error;
-    }
-}
-
-async function productFields(input, current = {}) {
-    const body = parse(schema, input);
-    const nombre = body.nombre === undefined ? current.nombre : body.nombre;
-    if (!nombre) throw new BusinessError('El nombre es obligatorio.');
-    const stock = body.stock === undefined ? current.stock : body.stock;
-    if (!Number.isSafeInteger(stock) || stock < 0) throw new BusinessError('El stock debe ser un entero no negativo.');
-    const stockMinimo = body.stockMinimo === undefined ? Number(current.stockMinimo || 0) : body.stockMinimo;
-    if (!Number.isSafeInteger(stockMinimo) || stockMinimo < 0)
-        throw new BusinessError('El stock mínimo debe ser un entero no negativo.');
-    const enPromocion = body.enPromocion === undefined ? Boolean(current.enPromocion) : body.enPromocion;
-    const precioCostoCents =
-        body.precioCosto === undefined
-            ? money.readCents(current.precioCostoCents, current.precioCosto)
-            : priceCents(body.precioCosto);
-    const precioVentaCents =
-        body.precioVenta === undefined
-            ? money.readCents(current.precioVentaCents, current.precioVenta)
-            : priceCents(body.precioVenta);
-    if (precioVentaCents < precioCostoCents) throw new BusinessError('El precio de venta no puede ser menor al costo.');
-    const categoria = body.categoria === undefined ? current.categoria : body.categoria;
-    const marca = body.marca === undefined ? current.marca : body.marca;
-    const proveedor = body.proveedor === undefined ? current.proveedor : body.proveedor || null;
-    validId(categoria, 'Categoría');
-    validId(marca, 'Marca');
-    if (proveedor) validId(proveedor, 'Proveedor');
-    const [category, brand, provider] = await Promise.all([
-        Category.exists({ _id: categoria }),
-        Brand.exists({ _id: marca }),
-        proveedor ? Provider.findById(proveedor).select('activo').lean() : null,
-    ]);
-    if (!category || !brand || (proveedor && !provider))
-        throw new BusinessError('La categoría, marca o proveedor no existe.');
-    const currentProvider = current.proveedor?._id || current.proveedor;
-    if (proveedor && provider?.activo === false && String(currentProvider || '') !== String(proveedor)) {
-        throw new BusinessError('El proveedor está retirado y no puede asignarse a un producto nuevo.');
-    }
-    return {
-        nombre,
-        descripcion: body.descripcion ?? current.descripcion ?? '',
-        stock,
-        stockMinimo,
-        enPromocion,
-        precioCostoCents,
-        precioVentaCents,
-        precioCosto: money.fromCents(precioCostoCents),
-        precioVenta: money.fromCents(precioVentaCents),
-        categoria,
-        marca,
-        proveedor: proveedor || null,
-    };
-}
+const { productFields } = require('./productInput');
 
 async function create(body, files = [], actor) {
     let committed = false;

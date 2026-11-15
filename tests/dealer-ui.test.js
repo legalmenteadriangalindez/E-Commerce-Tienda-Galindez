@@ -6,6 +6,30 @@ const test = require('node:test');
 const root = path.join(__dirname, '..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
 
+test('las operaciones de reparto conservan una fachada estable tras la modularización', () => {
+    const delivery = require('../server/business/deliveryService');
+    const operations = require('../server/business/deliveryOperations');
+    const facadeSource = read('server/business/deliveryOperations.js');
+
+    for (const name of [
+        'listForAdmin',
+        'listForDealer',
+        'orderForDealer',
+        'assignOrder',
+        'unassignOrder',
+        'reportIncident',
+        'resolveIncident',
+        'dashboardForDealer',
+    ]) {
+        assert.equal(typeof operations[name], 'function');
+        assert.equal(operations[name], delivery[name]);
+    }
+
+    for (const moduleName of ['deliveryQueries', 'deliveryAssignments', 'deliveryIncidents', 'deliveryDashboard']) {
+        assert.match(facadeSource, new RegExp(moduleName));
+    }
+});
+
 test('el área dealer tiene identidad visual propia sin enlaces administrativos', () => {
     const header = read('views/include/_headerDealer.ejs');
     const footer = read('views/include/_footerDealer.ejs');
@@ -90,7 +114,7 @@ test('el dealer dispone de un historial de entregas de solo lectura', () => {
 test('el dealer dispone de una sección separada para incidencias y pedidos no completados', () => {
     const routes = read('server/routes/dealer.routes.js');
     const controller = read('server/controller/pages/renderDealer.js');
-    const operations = read('server/business/deliveryOperations.js');
+    const queries = read('server/business/deliveryQueries.js');
     const view = read('views/dealer/orders/read_orders.ejs');
     const header = read('views/include/_headerDealer.ejs');
     const footer = read('views/include/_footerDealer.ejs');
@@ -103,7 +127,7 @@ test('el dealer dispone de una sección separada para incidencias y pedidos no c
     );
     assert.match(controller, /incident_orders/);
     assert.match(controller, /incidentHistory: true/);
-    assert.match(operations, /nonCompletedDeliveryFilter/);
+    assert.match(queries, /nonCompletedDeliveryFilter/);
     assert.deepEqual(rules.nonCompletedDeliveryFilter(), {
         $or: [{ estado: 'CANCELADA' }, { 'incidenciasEntrega.0': { $exists: true } }],
     });
@@ -144,14 +168,14 @@ test('todas las vistas del dealer usan el pie de página de reparto', () => {
 
 test('el panel operativo del dealer muestra sus indicadores principales', () => {
     const controller = read('server/controller/pages/renderDealer.js');
-    const operations = read('server/business/deliveryOperations.js');
+    const dashboard = read('server/business/deliveryDashboard.js');
     const resources = read('server/config/pageResources.js');
     const view = read('views/dealer/orders/read_orders.ejs');
     const styles = read('public/css/dealer-dashboard.css');
 
     assert.match(controller, /dashboardForDealer/);
     assert.match(controller, /dashboard,\s/);
-    assert.match(operations, /async function dashboardForDealer/);
+    assert.match(dashboard, /async function dashboardForDealer/);
     assert.match(resources, /dealer-dashboard\.css/);
     for (const label of [
         'Entregas pendientes',
@@ -169,7 +193,7 @@ test('el panel operativo del dealer muestra sus indicadores principales', () => 
 test('el dealer puede filtrar y buscar sus entregas conservando el contexto', () => {
     const delivery = require('../server/business/deliveryService');
     const controller = read('server/controller/pages/renderDealer.js');
-    const operations = read('server/business/deliveryOperations.js');
+    const queries = read('server/business/deliveryQueries.js');
     const view = read('views/dealer/orders/read_orders.ejs');
     const updateView = read('views/dealer/orders/update_order.ejs');
     const detailView = read('views/dealer/orders/detail_orders.ejs');
@@ -193,7 +217,7 @@ test('el dealer puede filtrar y buscar sus entregas conservando el contexto', ()
     assert.throws(() => delivery.normalizeDealerFilters({ from: '2026-02-30' }, false), /no existe/);
 
     assert.match(controller, /normalizeDealerFilters/);
-    assert.match(operations, /buildDealerOrderFilter/);
+    assert.match(queries, /buildDealerOrderFilter/);
     for (const field of ['name="search"', 'name="status"', 'name="from"', 'name="to"']) {
         assert.match(view, new RegExp(field));
     }
