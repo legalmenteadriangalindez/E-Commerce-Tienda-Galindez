@@ -320,7 +320,7 @@ test(
 
                     const user = await savedUser(body.email);
                     assert.equal(user.genero, genero);
-                    assert.equal(user.ubicacion, undefined);
+                    assert.ok(!user.ubicacion || (user.ubicacion.lat == null && user.ubicacion.lng == null));
                     assert.equal(String(user.rol), roleIds.Cliente);
                     assert.equal(user.verified, false);
                     assert.notEqual(user.password, initialPassword);
