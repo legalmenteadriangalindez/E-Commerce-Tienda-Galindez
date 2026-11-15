@@ -36,6 +36,7 @@
       <th scope="col">email</th>
       <th scope="col">rol</th>
       <th scope="col" class="admin-mobile-secondary">telefono</th>
+      <th scope="col" class="admin-mobile-secondary">cedula</th>
       <th scope="col" class="admin-mobile-secondary">genero</th>
       <th scope="col" class="admin-mobile-secondary">direccion</th>
       <th scope="col" class="admin-mobile-secondary">barrio</th>
@@ -57,6 +58,7 @@
       <td data-label="Correo"><%= user.email %></td>
       <td data-label="Rol"><%= user.rol ? user.rol.nombre : "" %></td>
       <td data-label="Teléfono" class="admin-mobile-secondary"><%= user.telefono %></td>
+      <td data-label="Cédula" class="admin-mobile-secondary"><%= user.cedula || 'No registrada' %></td>
       <td data-label="Género" class="admin-mobile-secondary"><%= user.genero %></td>
       <td data-label="Dirección" class="admin-mobile-secondary"><%= user.direccion %></td>
       <td data-label="Barrio" class="admin-mobile-secondary"><%= user.barrio %></td>

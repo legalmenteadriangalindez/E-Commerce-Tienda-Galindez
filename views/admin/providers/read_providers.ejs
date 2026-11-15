@@ -12,6 +12,19 @@
     actionHref: '/create-proveedor',
     actionLabel: 'Crear proveedor'
   }) %>
+
+  <%- include('../../include/_adminAlert', {
+    type: 'success',
+    icon: 'bi bi-check-circle-fill',
+    message: providerNotice
+  }) %>
+  <%- include('../../include/_adminAlert', {
+    type: 'error',
+    icon: 'bi bi-exclamation-triangle-fill',
+    role: 'alert',
+    message: providerError
+  }) %>
+
   <div class="admin-card admin-table-wrap ui-table-wrap">
   <table class="table ui-table admin-table">
     <thead>

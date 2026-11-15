@@ -13,6 +13,12 @@
         </div>
     </div>
     <% if (notice) { %><p class="finance-notice" role="status"><%= notice %></p><% } %>
+    <%- include('../../include/_adminAlert', {
+        type: 'error',
+        icon: 'bi bi-exclamation-triangle-fill',
+        role: 'alert',
+        message: purchaseError
+    }) %>
     <p class="finance-explanation">Registrar una compra <strong>no incrementa el inventario</strong>. Solo la acción «Recibir mercancía» añade existencias, registra un movimiento de inventario y actualiza el costo unitario promedio de las unidades disponibles. Registrar el pago refleja una salida en el flujo de caja, sin duplicar costos en las ganancias.</p>
     <div class="finance-columns">
         <% if (canManage) { %>
@@ -28,6 +34,7 @@
                                 <option value="<%= provider._id %>"><%= provider.nombre %></option>
                             <% }) %>
                         </select>
+                        <small>Selecciona el nombre del proveedor; el código interno se envía automáticamente.</small>
                     </label>
                     <label>Producto
                         <select name="producto" required>

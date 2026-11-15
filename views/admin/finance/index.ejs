@@ -15,6 +15,12 @@
     </div>
 
     <% if (notice) { %><p class="finance-notice" role="status"><%= notice %></p><% } %>
+    <%- include('../../include/_adminAlert', {
+        type: 'error',
+        icon: 'bi bi-exclamation-triangle-fill',
+        role: 'alert',
+        message: financeError
+    }) %>
     <section class="finance-metrics" aria-label="Resultado financiero">
         <article><span>Ventas pagadas</span><strong><%= formatCOP(summary.revenueCents) %></strong><small>Valor total de las ventas del período</small></article>
         <article><span>Ganancia bruta</span><strong><%= formatCOPSigned(summary.grossProfitCents) %></strong><small>Productos vendidos menos su costo de adquisición</small></article>

@@ -9,6 +9,19 @@
             <p>Visualiza la información de la orden y actualiza su estado</p>
         </div>
 
+        <% if (dealerOrderNotice) { %>
+            <div class="dealer-order-feedback dealer-order-feedback--success" role="status">
+                <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                <span><%= dealerOrderNotice %></span>
+            </div>
+        <% } %>
+        <% if (dealerOrderError) { %>
+            <div class="dealer-order-feedback dealer-order-feedback--error" role="alert">
+                <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+                <span><%= dealerOrderError %></span>
+            </div>
+        <% } %>
+
         <div class="form-card ui-card ui-card--form dealer-order-update__card">
             <form
                 action="/dealer/orders/update/<%= order._id %>"
@@ -28,7 +41,7 @@
                 <div class="delivery-proof-upload">
                     <label for="foto-entrega"><i class="bi bi-camera" aria-hidden="true"></i> Foto del comprobante de entrega</label>
                     <input id="foto-entrega" name="fotoEntrega" type="file" accept="image/jpeg,image/png,image/webp">
-                    <small>Obligatoria al confirmar la entrega. JPG, PNG o WEBP; máximo 2 MB.</small>
+                    <small>Obligatoria al confirmar la entrega. Después de guardar, la foto y la confirmación quedan visibles en el historial. JPG, PNG o WEBP; máximo 2 MB.</small>
                 </div>
                 <%- include('../../include/order/partials/actions') %>
             </form>

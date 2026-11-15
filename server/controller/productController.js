@@ -2,6 +2,7 @@ const products = require('../business/productService');
 const catalog = require('../business/catalogService');
 const { BusinessError } = require('../business/errors');
 const { wrap } = require('../http/handlers');
+const { saveSession } = require('../http/session');
 exports.create = wrap(async (req, res) => {
     const product = await products.create(req.body, req.files, req.usuarioActual);
     return req.is('application/json') ? res.status(201).json(product) : res.redirect('/read-producto');
@@ -14,10 +15,20 @@ exports.delete = wrap(async (req, res) => {
     await products.remove(req.params.id);
     res.json({ message: 'Producto eliminado correctamente.' });
 });
-exports.deleteFromPage = wrap(async (req, res) => {
-    await products.remove(req.params.id);
-    res.redirect(303, '/read-producto');
-});
+exports.deleteFromPage = async (req, res, next) => {
+    try {
+        await products.remove(req.params.id);
+        req.session.catalogNotice = 'Producto eliminado correctamente.';
+    } catch (error) {
+        req.session.catalogError = error.expose ? error.message : 'No se pudo eliminar el producto.';
+    }
+    try {
+        await saveSession(req);
+        return res.redirect(303, '/read-producto');
+    } catch (error) {
+        return next(error);
+    }
+};
 exports.find = wrap(async (req, res) =>
     res.json(req.query.id ? await products.get(req.query.id) : await products.list(req.query))
 );

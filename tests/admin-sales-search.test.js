@@ -21,10 +21,14 @@ test('la búsqueda de ventas se aplica antes de la paginación y de limitar el C
         search: 'ORD-TEST',
         canal: 'caja',
         estadoPago: 'pagado',
+        metodoPago: 'cash_at_counter',
     });
     const pipeline = search.salesPipeline(filters);
     assert.equal(pipeline[0].$match.estadoPago, 'PAGADO');
     assert.ok(pipeline.some((stage) => stage.$match?.['order.canal'] === 'CAJA'));
+    assert.ok(
+        pipeline.some((stage) => stage.$match?.$or?.some((match) => match['order.metodoPago'] === 'CASH_AT_COUNTER'))
+    );
     assert.ok(pipeline.some((stage) => stage.$match?.$or));
     const csv = analyticsExport.aggregatePipeline(filters);
     const searchIndex = csv.findIndex((stage) => stage.$match?.$or);

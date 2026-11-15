@@ -6,6 +6,18 @@
     <p>Visualiza la información de la orden y actualiza su estado</p>
   </div>
 
+  <%- include('../../include/_adminAlert', {
+    type: 'success',
+    icon: 'bi bi-check-circle-fill',
+    message: orderNotice
+  }) %>
+  <%- include('../../include/_adminAlert', {
+    type: 'error',
+    icon: 'bi bi-exclamation-triangle-fill',
+    role: 'alert',
+    message: orderError
+  }) %>
+
   <div class="form-card ui-card ui-card--form order-form-card">
     <form action="/update-order/<%= order._id %>" method="POST" class="order-form">
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">

@@ -43,6 +43,17 @@
         </div>
     </header>
 
+    <% if (dealerOrderNotice) { %>
+        <div class="alert alert-success dealer-order-list-feedback" role="status">
+            <i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i><%= dealerOrderNotice %>
+        </div>
+    <% } %>
+    <% if (dealerOrderError) { %>
+        <div class="alert alert-danger dealer-order-list-feedback" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-1" aria-hidden="true"></i><%= dealerOrderError %>
+        </div>
+    <% } %>
+
     <section class="dealer-orders-filters" aria-labelledby="dealer-orders-filters-title">
         <div class="dealer-orders-filters__header">
             <div>

@@ -11,6 +11,7 @@ const DEFAULT_MAX_ROWS = 100000;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const PAYMENT_STATUSES = Object.freeze(['PAGADO', 'PENDIENTE', 'FALLIDO', 'RECHAZADO', 'REEMBOLSADO']);
 const CHANNELS = Object.freeze(['WOMPI', 'CAJA', 'WEB']);
+const PAYMENT_METHODS = Object.freeze(['WOMPI_CARD', 'WOMPI_NEQUI', 'CASH_ON_DELIVERY', 'CASH_AT_COUNTER']);
 class SaleExportFilterError extends Error {
     constructor(message) {
         super(message);
@@ -52,6 +53,7 @@ function parseFilters(query = {}) {
     const toInput = queryValue(query, 'to');
     const status = queryValue(query, 'estadoPago').toUpperCase();
     const channel = queryValue(query, 'canal').toUpperCase();
+    const paymentMethod = queryValue(query, 'metodoPago').toUpperCase();
     const search = adminSearch.normalizeSearch(queryValue(query, 'search'));
     const from = parseLocalDate(fromInput);
     const to = parseLocalDate(toInput, true);
@@ -60,10 +62,12 @@ function parseFilters(query = {}) {
         throw new SaleExportFilterError('El estado de pago seleccionado no es válido.');
     if (channel && !CHANNELS.includes(channel))
         throw new SaleExportFilterError('El canal de venta seleccionado no es válido.');
+    if (paymentMethod && !PAYMENT_METHODS.includes(paymentMethod))
+        throw new SaleExportFilterError('El medio de pago seleccionado no es válido.');
     if (from && to && from >= to)
         throw new SaleExportFilterError('La fecha inicial debe ser anterior o igual a la fecha final.');
 
-    return { fromInput, toInput, status, channel, search, from, to };
+    return { fromInput, toInput, status, channel, paymentMethod, search, from, to };
 }
 
 async function saleFindFilter(filters) {
@@ -74,8 +78,19 @@ async function saleFindFilter(filters) {
         if (filters.from) filter.createdAt.$gte = filters.from;
         if (filters.to) filter.createdAt.$lt = filters.to;
     }
-    if (filters.channel) {
-        const orderIds = await Order.find({ canal: filters.channel }).distinct('_id');
+    const orderFilter = {};
+    if (filters.channel) orderFilter.canal = filters.channel;
+    if (filters.paymentMethod) {
+        orderFilter.$or = [{ metodoPago: filters.paymentMethod }, { metodoPagoConfirmado: filters.paymentMethod }];
+        if (filters.paymentMethod === 'CASH_AT_COUNTER') {
+            orderFilter.$or.push({ canal: 'CAJA', metodoPago: { $exists: false } });
+        }
+        if (filters.paymentMethod === 'WOMPI_CARD') {
+            orderFilter.$or.push({ canal: 'WOMPI', metodoPago: { $exists: false } });
+        }
+    }
+    if (Object.keys(orderFilter).length) {
+        const orderIds = await Order.find(orderFilter).distinct('_id');
         filter.order = { $in: orderIds };
     }
     return filter;
@@ -173,6 +188,7 @@ function csvCursor(filters) {
 
 module.exports = {
     CHANNELS,
+    PAYMENT_METHODS,
     PAYMENT_STATUSES,
     SaleExportFilterError,
     aggregatePipeline,

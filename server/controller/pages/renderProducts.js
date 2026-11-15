@@ -89,9 +89,15 @@ exports.update_products = wrap(async (req, res) => {
 });
 exports.read_products = wrap(async (req, res) => {
     const result = await products.list({ page: req.query.page, limit: 10 });
+    const catalogNotice = req.session.catalogNotice || '';
+    const catalogError = req.session.catalogError || '';
+    delete req.session.catalogNotice;
+    delete req.session.catalogError;
     res.render('admin/products/read_products', {
         productos: result.items,
         pagination: pagination.buildPagination(req, result.pagination),
+        catalogNotice,
+        catalogError,
     });
 });
 exports.read_stock = wrap(async (req, res) => {
