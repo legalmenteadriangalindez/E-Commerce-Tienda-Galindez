@@ -4,6 +4,8 @@
     <div class="form-group"><label>Fecha</label><input type="text" value="<%= new Date(order.createdAt).toLocaleString() %>" disabled></div>
 </div>
 
+<% const address = order.direccionEnvio || {}; %>
+
 <% if (dealer) { %>
     <div class="form-section delivery-assigned-summary">
         <h3>Asignación</h3>
@@ -22,8 +24,8 @@
 
 <div class="form-section">
     <h3>Dirección de Envío</h3>
-    <div class="form-group"><label>Departamento</label><input type="text" value="<%= order.direccionEnvio.departamento %>" disabled></div>
-    <div class="form-group"><label>Ciudad</label><input type="text" value="<%= order.direccionEnvio.ciudad %>" disabled></div>
-    <div class="form-group"><label>Dirección</label><input type="text" value="<%= order.direccionEnvio.direccion %>" disabled></div>
-    <div class="form-group"><label>Referencia</label><input type="text" value="<%= order.direccionEnvio.referencia %>" disabled></div>
+    <div class="form-group"><label>Departamento</label><input type="text" value="<%= address.departamento || '' %>" disabled></div>
+    <div class="form-group"><label>Ciudad</label><input type="text" value="<%= address.ciudad || '' %>" disabled></div>
+    <div class="form-group"><label>Dirección</label><input type="text" value="<%= address.direccion || '' %>" disabled></div>
+    <div class="form-group"><label>Referencia</label><input type="text" value="<%= address.referencia || '' %>" disabled></div>
 </div>

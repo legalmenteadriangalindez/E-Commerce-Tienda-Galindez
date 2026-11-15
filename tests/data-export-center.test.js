@@ -8,6 +8,8 @@ const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
+const Order = require('../server/model/order');
+const InventoryMovement = require('../server/model/inventoryMovement');
 
 const { ZipWriter } = require('../server/services/zipWriter');
 const businessExport = require('../server/business/businessDataExport');
@@ -130,6 +132,49 @@ test(
             upload.end(Buffer.from('contenido-de-imagen-de-prueba'));
         });
 
+        const restoreOrderNumber = 'RESTORE-' + crypto.randomBytes(5).toString('hex');
+        const sourceOrder = await Order.create({
+            numeroOrden: restoreOrderNumber,
+            usuario: fixture.users.owner._id,
+            cliente: {
+                nombre: 'Cliente de restauración',
+                email: 'cliente-restauracion@example.test',
+                telefono: '0000000000',
+            },
+            productos: [
+                {
+                    producto: fixture.product._id,
+                    nombre: fixture.product.nombre,
+                    cantidad: 1,
+                    precioUnitario: 12000,
+                    precioUnitarioCents: 1200000,
+                    subtotal: 12000,
+                    subtotalCents: 1200000,
+                },
+            ],
+            subtotal: 12000,
+            subtotalCents: 1200000,
+            total: 12000,
+            totalCents: 1200000,
+            canal: 'CAJA',
+            metodoPago: 'CASH_AT_COUNTER',
+            estadoPago: 'PAGADO',
+            estado: 'PAGADA',
+            inventario: 'CONFIRMADO',
+        });
+        const sourceMovement = await InventoryMovement.create({
+            producto: fixture.product._id,
+            tipo: 'ENTRADA',
+            cantidad: 1,
+            deltaStock: 1,
+            stockAntes: 10,
+            stockDespues: 11,
+            motivo: 'Movimiento conservado en prueba de restauración',
+            actor: fixture.users.admin._id,
+            actorNombre: 'Persona admin',
+            claveIdempotencia: 'restore-' + crypto.randomBytes(8).toString('hex'),
+        });
+
         const password = 'EstaClaveSirveParaLaCopia!2026';
         const response = await fixture.request(admin, '/admin/exportaciones/respaldo', 'POST', {
             currentPassword,
@@ -179,7 +224,41 @@ test(
             assert.equal(await db.collection('media.files').countDocuments(), 1);
             assert.equal(await db.collection(fixture.Product.collection.name).countDocuments(), 1);
             assert.equal(await db.collection(fixture.User.collection.name).countDocuments(), 5);
+            assert.equal(await db.collection(Order.collection.name).countDocuments(), 1);
+            assert.equal(await db.collection(InventoryMovement.collection.name).countDocuments(), 1);
             assert.ok(await db.collection('media.chunks').findOne({}));
+
+            const restoredOrder = await db
+                .collection(Order.collection.name)
+                .findOne({ numeroOrden: restoreOrderNumber });
+            const restoredMovement = await db
+                .collection(InventoryMovement.collection.name)
+                .findOne({ _id: sourceMovement._id });
+            assert.equal(restoredOrder.estado, sourceOrder.estado);
+            assert.equal(restoredOrder.totalCents, sourceOrder.totalCents);
+            assert.equal(restoredMovement.motivo, sourceMovement.motivo);
+
+            const orderIndexes = await db.collection(Order.collection.name).listIndexes().toArray();
+            const movementIndexes = await db.collection(InventoryMovement.collection.name).listIndexes().toArray();
+            assert.ok(orderIndexes.some((index) => index.name === 'numeroOrden_1' && index.unique));
+            assert.ok(movementIndexes.some((index) => index.name === 'claveIdempotencia_1' && index.unique));
+
+            const restoreChecks = {
+                usuarios: true,
+                productos: true,
+                ordenes: restoredOrder?.numeroOrden === restoreOrderNumber,
+                movimientos: restoredMovement?.motivo === sourceMovement.motivo,
+                gridfs: true,
+                indices: orderIndexes.length > 1 && movementIndexes.length > 1,
+            };
+            assert.deepEqual(restoreChecks, {
+                usuarios: true,
+                productos: true,
+                ordenes: true,
+                movimientos: true,
+                gridfs: true,
+                indices: true,
+            });
             await db.dropDatabase();
         } finally {
             await client.close();

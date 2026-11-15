@@ -2,6 +2,7 @@ const money = require('../services/money');
 const repository = require('./raffleRepository');
 const rules = require('./raffleRules');
 const rounds = require('./raffleRoundService');
+const banner = require('../middleware/raffleBanner');
 
 async function updateConfig(body, file) {
     const config = rules.parseConfig(body);
@@ -30,7 +31,20 @@ async function updateConfig(body, file) {
     if (previousImage && previousImage !== raffle.imagenUrl) {
         await require('./mediaService').removeUnused(previousImage);
     }
+    banner.clearCache();
     return raffle;
+}
+
+async function drawWinner() {
+    const result = await rounds.drawWinner();
+    banner.clearCache();
+    return result;
+}
+
+async function resetRaffle() {
+    const result = await rounds.resetRaffle();
+    banner.clearCache();
+    return result;
 }
 
 module.exports = {
@@ -44,6 +58,6 @@ module.exports = {
     entryForOrder: repository.entryForOrder,
     entriesForOrders: repository.entriesForOrders,
     recordEligibleOrder: rounds.recordEligibleOrder,
-    drawWinner: rounds.drawWinner,
-    resetRaffle: rounds.resetRaffle,
+    drawWinner,
+    resetRaffle,
 };
