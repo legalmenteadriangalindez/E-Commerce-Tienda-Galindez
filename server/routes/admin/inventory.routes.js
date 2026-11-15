@@ -8,6 +8,7 @@ const { validate } = require('../../middleware/validateRequest');
 const schemas = require('../../validation/schemas');
 const inventoryMovementsPageController = require('../../controller/pages/renderInventoryMovements');
 const replenishmentPageController = require('../../controller/pages/renderInventoryReplenishment');
+const inventoryReconciliationPageController = require('../../controller/pages/renderInventoryReconciliation');
 
 const router = express.Router();
 
@@ -29,6 +30,12 @@ router.get(
     requireAnyPermission([P.INVENTORY_READ, P.CATALOG_WRITE]),
     validate(schemas.pagination, 'query'),
     replenishmentPageController.index
+);
+router.get(
+    '/inventory/reconciliation',
+    requireAnyPermission([P.INVENTORY_READ, P.CATALOG_WRITE]),
+    validate(schemas.pagination, 'query'),
+    inventoryReconciliationPageController.index
 );
 
 module.exports = router;

@@ -39,7 +39,7 @@ test('producto: valida importes y relaciones, persiste centavos y limpia cargas 
     assert.equal(created._csrf, undefined);
     assert.equal(created.authVersion, undefined);
     assert.deepEqual(cleaned, []);
-    assert.equal(movements[0].tipo, 'ENTRADA');
+    assert.equal(movements[0].tipo, 'SALDO_INICIAL');
     assert.equal(movements[0].stockAntes, 0);
     assert.equal(movements[0].stockDespues, 8);
     assert.equal(movements[0].actor, id);

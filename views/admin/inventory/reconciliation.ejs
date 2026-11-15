@@ -1,0 +1,96 @@
+<%- include('../../include/_headerAdmin') %>
+
+<main class="admin-shell admin-list-page im-page" aria-labelledby="inventory-reconciliation-title">
+    <header class="admin-list-heading im-heading">
+        <div>
+            <p class="admin-list-eyebrow">Control de inventario</p>
+            <h1 id="inventory-reconciliation-title"><span class="im-heading__icon" aria-hidden="true"><i class="bi bi-clipboard2-pulse"></i></span>Conciliación de inventario</h1>
+            <p class="admin-list-description">Compara el stock almacenado con el resultado del historial de movimientos, sin modificar existencias.</p>
+        </div>
+
+        <nav class="im-actions" aria-label="Acciones de auditoría">
+            <a class="im-action im-action--secondary" href="/inventory/movements">
+                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                Ver historial
+            </a>
+            <a class="im-action im-action--secondary" href="/read-Stock">
+                <i class="bi bi-box-seam" aria-hidden="true"></i>
+                Control de stock
+            </a>
+        </nav>
+    </header>
+
+    <p class="im-notice" role="status">
+        <i class="bi bi-shield-check" aria-hidden="true"></i>
+        <span><strong>Auditoría de solo lectura.</strong> No se corrige el stock automáticamente. El cálculo usa <strong>SALDO_INICIAL</strong> como tipo canónico, conserva <strong>ENTRADA</strong> histórica y no descuenta dos veces una <strong>VENTA</strong>: la reserva ya redujo las unidades.</span>
+    </p>
+
+    <section class="im-panel im-history" aria-labelledby="inventory-reconciliation-table-title">
+        <header class="im-history__heading">
+            <div>
+                <p class="admin-list-eyebrow">Libro contra existencias</p>
+                <h2 id="inventory-reconciliation-table-title">Resultado por producto</h2>
+                <p>La diferencia se calcula como stock almacenado menos stock calculado por movimientos.</p>
+            </div>
+            <% if (pagination.totalItems > 0) { %>
+                <span class="im-count"><strong><%= pagination.totalItems %></strong> <%= pagination.totalItems === 1 ? 'producto' : 'productos' %></span>
+            <% } %>
+        </header>
+
+        <% if (rows.length) { %>
+            <div class="im-table-scroll" role="region" aria-label="Conciliación de inventario por producto" tabindex="0">
+                <table class="table im-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Stock almacenado</th>
+                            <th scope="col">Stock calculado</th>
+                            <th scope="col">Diferencia</th>
+                            <th scope="col">Último movimiento</th>
+                            <th scope="col">Posible causa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% rows.forEach(row => { %>
+                            <tr>
+                                <td data-label="Producto">
+                                    <strong class="im-product-name"><%= row.producto.nombre %></strong>
+                                    <% if (row.producto.activo === false) { %><small class="im-cell-note">Retirado de venta</small><% } %>
+                                </td>
+                                <td data-label="Stock almacenado"><strong><%= row.stockAlmacenado %></strong> <span class="im-unit">unidades</span></td>
+                                <td data-label="Stock calculado">
+                                    <strong><%= row.stockCalculado %></strong> <span class="im-unit">unidades</span>
+                                    <small class="im-cell-note">Inicial <%= row.saldoInicial %> · entradas <%= row.entradas %> · reservas −<%= row.reservas %> · liberaciones +<%= row.liberaciones %> · devoluciones +<%= row.devoluciones %> · ajustes <%= row.ajustes >= 0 ? '+' : '' %><%= row.ajustes %></small>
+                                </td>
+                                <td data-label="Diferencia">
+                                    <strong class="im-stock-change"><%= row.diferencia > 0 ? '+' : '' %><%= row.diferencia %></strong>
+                                </td>
+                                <td data-label="Último movimiento">
+                                    <% if (row.ultimoMovimiento) { %>
+                                        <span class="im-type"><%= labels[row.ultimoMovimiento.tipo] || row.ultimoMovimiento.tipo %></span>
+                                        <small class="im-cell-note"><%= new Date(row.ultimoMovimiento.createdAt).toLocaleString('es-CO', { timeZone: 'America/Bogota' }) %></small>
+                                        <% if (row.ultimoMovimiento.motivo) { %><small class="im-cell-note"><%= row.ultimoMovimiento.motivo %></small><% } %>
+                                    <% } else { %>
+                                        <span class="im-cell-note">Sin movimientos</span>
+                                    <% } %>
+                                </td>
+                                <td class="im-reason" data-label="Posible causa"><%= row.posibleCausa %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="im-empty admin-list-empty">
+                <span class="im-empty__icon" aria-hidden="true"><i class="bi bi-clipboard-x"></i></span>
+                <h3>No hay productos para auditar</h3>
+                <p>Cuando existan productos y movimientos, este reporte mostrará la conciliación sin modificar el inventario.</p>
+                <a href="/read-producto">Ver productos</a>
+            </div>
+        <% } %>
+    </section>
+
+    <%- include('../../include/_adminPagination', { pagination, label: 'productos auditados' }) %>
+</main>
+
+<%- include('../../include/_footerAdmin') %>

@@ -21,6 +21,12 @@
                     Reposición guiada
                 </a>
             <% } %>
+            <% if (can('inventory:read') || can('catalog:write')) { %>
+                <a class="im-action im-action--secondary" href="/inventory/reconciliation">
+                    <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i>
+                    Conciliación
+                </a>
+            <% } %>
         </nav>
     </header>
 

@@ -33,6 +33,7 @@
       <a class="admin-sidebar__link" href="/inventory/replenishment" data-admin-route="/inventory/replenishment"><i class="bi bi-basket" aria-hidden="true"></i><span>Reposición guiada</span></a>
       <% if (canAccess('inventory:read')) { %><a class="admin-sidebar__link" href="/read-Stock" data-admin-route="/read-Stock"><i class="bi bi-boxes" aria-hidden="true"></i><span>Stock</span></a><% } %>
       <a class="admin-sidebar__link" href="/inventory/movements" data-admin-route="/inventory/movements"><i class="bi bi-clock-history" aria-hidden="true"></i><span>Historial de movimientos</span></a>
+      <a class="admin-sidebar__link" href="/inventory/reconciliation" data-admin-route="/inventory/reconciliation"><i class="bi bi-clipboard2-pulse" aria-hidden="true"></i><span>Conciliación de inventario</span></a>
     <% } %>
 
     <% if (canAccess('roles:manage') || canAccess('reviews:moderate') || canAccess('users:manage')) { %>
