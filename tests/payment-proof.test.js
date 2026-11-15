@@ -9,6 +9,7 @@ const User = require('../server/model/user');
 const Order = require('../server/model/order');
 const upload = require('../server/middleware/upload');
 const media = require('../server/business/mediaService');
+const paymentProofService = require('../server/business/paymentProofService');
 const { startReviewApp } = require('./helpers/reviewApp');
 
 const integrationSkip = process.env.COMMERCE_TEST_MONGO_URI ? false : 'Ejecuta npm run test:integration.';
@@ -120,6 +121,14 @@ test(
             },
         });
 
+        const persistedOrder = await Order.findById(order._id).lean();
+        assert.equal(String(persistedOrder.revisionPago.comprobanteFoto.mediaId), uploaded.id);
+        const persistedAdmin = await User.findById(fixture.users.admin._id).populate('rol', 'nombre permisos').lean();
+        assert.ok(
+            await paymentProofService.findAuthorizedOrder(new mongoose.Types.ObjectId(uploaded.id), persistedAdmin),
+            'el servicio no reconoce al administrador autorizado'
+        );
+
         const adminPage = await fixture.request(admin, `/admin/payments?order=${order._id}`);
         assert.equal(adminPage.status, 200);
         const adminHtml = await adminPage.text();
@@ -134,7 +143,11 @@ test(
         assert.match(await dealerUpdate.text(), /Comprobante de pago/);
 
         const adminImage = await fixture.request(admin, uploaded.url);
-        assert.equal(adminImage.status, 200);
+        assert.equal(
+            adminImage.status,
+            200,
+            `respuesta inesperada del comprobante privado: ${await adminImage.text()}`
+        );
         assert.equal(adminImage.headers.get('cache-control'), 'private, no-store, max-age=0');
         assert.equal(adminImage.headers.get('content-type'), 'image/webp');
 
