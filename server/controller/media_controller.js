@@ -6,6 +6,9 @@ async function serve(req, res, next) {
         if (!id) return res.sendStatus(404);
         const [file] = await bucket().find({ _id: id }).limit(1).toArray();
         if (!file) return res.sendStatus(404);
+        // Los comprobantes de pago viven en GridFS, pero nunca deben quedar
+        // disponibles mediante el endpoint público de imágenes.
+        if (file.metadata?.purpose === 'payment-proof') return res.sendStatus(404);
         res.set({
             'Content-Type': 'image/webp',
             'Content-Length': String(file.length),

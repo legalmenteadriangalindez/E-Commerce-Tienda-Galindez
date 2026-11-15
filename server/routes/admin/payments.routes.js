@@ -1,6 +1,7 @@
 const express = require('express');
 const { requirePermission } = require('../../middleware/auth');
 const { PERMISSIONS: P } = require('../../config/permissions');
+const upload = require('../../middleware/upload');
 
 const paymentPointPage = require('../../controller/pages/paymentPointPage');
 const cartPageController = require('../../controller/pages/renderCart');
@@ -17,7 +18,12 @@ router.post(
     commercePageController.confirmCash
 );
 router.post('/admin/payments/:id/cancel', requirePermission(P.PAYMENTS_MANAGE), commercePageController.cancel);
-router.post('/admin/payments/:id/resolve', requirePermission(P.PAYMENTS_MANAGE), commercePageController.resolveOrder);
+router.post(
+    '/admin/payments/:id/resolve',
+    requirePermission(P.PAYMENTS_MANAGE),
+    upload.privateSingle('comprobantePago', 'payment-proof'),
+    commercePageController.resolveOrder
+);
 router.post(
     '/admin/payments/events/:id/resolve',
     requirePermission(P.PAYMENTS_MANAGE),

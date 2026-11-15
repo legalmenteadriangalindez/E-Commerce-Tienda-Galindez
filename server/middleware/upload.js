@@ -36,7 +36,7 @@ const parser = multer({
     },
 });
 
-function checked(parse) {
+function checked(parse, store = media.storeImage) {
     return (req, res, next) => {
         const contentLength = Number(req.headers['content-length']);
         if (Number.isFinite(contentLength) && contentLength > UPLOAD_LIMITS.requestSizeBytes) {
@@ -78,7 +78,7 @@ function checked(parse) {
                 res.once('finish', cleanup);
                 try {
                     for (const file of files) {
-                        const result = await media.storeImage(file);
+                        const result = await store(file);
                         Object.assign(file, result);
                         delete file.buffer;
                         uploaded.push(result.url);
@@ -94,6 +94,8 @@ function checked(parse) {
 }
 module.exports = {
     single: (name) => checked(parser.single(name)),
+    privateSingle: (name, purpose = 'payment-proof') =>
+        checked(parser.single(name), (file) => media.storePrivateImage(file, purpose)),
     array: (name, count) => checked(parser.array(name, count)),
     fields: (fields) => checked(parser.fields(fields)),
     none: () => checked(parser.none()),

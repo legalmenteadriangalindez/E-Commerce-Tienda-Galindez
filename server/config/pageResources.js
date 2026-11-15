@@ -125,7 +125,8 @@ const resources = {
             'pages/admin-payments.css',
             'pages/admin-payments-workflow.css',
             'pages/admin-payments-orders.css',
-            'pages/admin-payments-responsive.css'
+            'pages/admin-payments-responsive.css',
+            'delivery-proof.css'
         ),
     },
     'admin/analytics/index': {

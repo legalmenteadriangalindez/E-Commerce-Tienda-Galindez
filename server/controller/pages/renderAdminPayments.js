@@ -65,13 +65,22 @@ exports.cancel = wrap(async (req, res) => {
 });
 exports.resolveOrder = wrap(async (req, res) => {
     if (req.body.confirmar !== 'si') throw new CommerceError('Confirma la revisión antes de guardar.');
+    const paymentProof = req.file?.url
+        ? {
+              mediaId: req.file.id,
+              fotoUrl: req.file.url,
+              cargadaEn: new Date(),
+              cargadaPor: req.session.user._id,
+          }
+        : null;
     await payments.resolveOrder(
         req.params.id,
         req.body.accion,
         req.body.motivo,
         req.body.comprobante,
         req.session.user._id,
-        req.body.reponer === 'si'
+        req.body.reponer === 'si',
+        paymentProof
     );
     req.session.commerceNotice = 'Revisión registrada. Se conservó el comprobante y el administrador responsable.';
     await saveSession(req);

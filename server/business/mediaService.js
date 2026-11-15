@@ -11,10 +11,15 @@ function bucket() {
     return new mongoose.mongo.GridFSBucket(mongoose.connection.db, { bucketName: 'media' });
 }
 function idFromUrl(url) {
-    const match = typeof url === 'string' && /^\/uploads\/([a-f\d]{24})\.webp$/.exec(url);
+    const match =
+        typeof url === 'string' && /^(?:\/uploads|\/private-media\/[a-z0-9-]+)\/([a-f\d]{24})\.webp$/i.exec(url);
     return match ? new mongoose.Types.ObjectId(match[1]) : null;
 }
-async function storeImage(file) {
+async function storeImage(file, options = {}) {
+    const urlPrefix = typeof options.urlPrefix === 'string' ? options.urlPrefix : '/uploads';
+    if (!/^\/(?:uploads|private-media\/[a-z0-9-]+)$/.test(urlPrefix)) {
+        throw new Error('Ruta de almacenamiento de imágenes inválida');
+    }
     let buffer;
     try {
         if (!Buffer.isBuffer(file?.buffer) || file.buffer.length > MAX_IMAGE_BYTES) {
@@ -35,7 +40,9 @@ async function storeImage(file) {
         error.expose = true;
         throw error;
     }
-    const stream = bucket().openUploadStream('imagen.webp', { metadata: { contentType: 'image/webp' } });
+    const stream = bucket().openUploadStream('imagen.webp', {
+        metadata: { ...(options.metadata || {}), contentType: 'image/webp' },
+    });
     try {
         await pipeline(Readable.from(buffer), stream);
     } catch (error) {
@@ -44,18 +51,30 @@ async function storeImage(file) {
             .catch(() => {});
         throw error;
     }
-    return { id: stream.id, url: `/uploads/${stream.id}.webp`, filename: `${stream.id}.webp` };
+    return { id: stream.id, url: `${urlPrefix}/${stream.id}.webp`, filename: `${stream.id}.webp` };
+}
+async function storePrivateImage(file, purpose = 'payment-proof') {
+    if (typeof purpose !== 'string' || !/^[a-z0-9-]+$/.test(purpose)) {
+        throw new Error('Propósito de imagen privada inválido');
+    }
+    return storeImage(file, {
+        urlPrefix: `/private-media/${purpose}`,
+        metadata: { purpose },
+    });
 }
 async function removeUnused(url) {
     const id = idFromUrl(url);
     if (!id) return; // Las imágenes incluidas en el repositorio se conservan.
-    const [product, brand, raffle, deliveryProof] = await Promise.all([
+    const [product, brand, raffle, deliveryProof, paymentProof] = await Promise.all([
         require('../model/product').exists({ fotos: url }),
         require('../model/brands').exists({ foto: url }),
         require('../model/raffle').exists({ imagenUrl: url }),
         require('../model/order').exists({ 'comprobanteEntrega.fotoUrl': url }),
+        require('../model/order').exists({
+            $or: [{ 'revisionPago.comprobanteFoto.fotoUrl': url }, { 'historialPago.comprobanteFoto.fotoUrl': url }],
+        }),
     ]);
-    if (!product && !brand && !raffle && !deliveryProof)
+    if (!product && !brand && !raffle && !deliveryProof && !paymentProof)
         await bucket()
             .delete(id)
             .catch((error) => {
@@ -68,10 +87,15 @@ async function cleanup() {
         .sort({ uploadDate: -1 })
         .limit(100)
         .toArray();
-    for (const file of old) await removeUnused(`/uploads/${file._id}.webp`);
+    for (const file of old) {
+        const purpose = file.metadata?.purpose;
+        const url = purpose ? `/private-media/${purpose}/${file._id}.webp` : `/uploads/${file._id}.webp`;
+        await removeUnused(url);
+    }
 }
 module.exports = {
     storeImage,
+    storePrivateImage,
     removeUnused,
     cleanup,
     bucket,

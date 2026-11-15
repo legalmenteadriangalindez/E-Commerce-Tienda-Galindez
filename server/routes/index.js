@@ -3,6 +3,7 @@ const router = express.Router();
 
 router.use('/', require('./home.routes'));
 router.use('/', require('./auth.routes'));
+router.use('/', require('./paymentProof.routes'));
 
 router.use('/api/users', require('./user.routes'));
 router.use('/api/productos', require('./product.routes'));

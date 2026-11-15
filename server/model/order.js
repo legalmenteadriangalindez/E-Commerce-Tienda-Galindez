@@ -56,6 +56,26 @@ const deliveryProofSchema = new mongoose.Schema(
     { _id: false }
 );
 
+// El comprobante fotográfico de pago tiene un circuito de acceso distinto al
+// comprobante de entrega. La URL nunca apunta al directorio público /uploads.
+const paymentProofSchema = new mongoose.Schema(
+    {
+        mediaId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+        },
+        fotoUrl: {
+            type: String,
+            required: true,
+            maxlength: 300,
+            match: /^\/private-media\/payment-proof\/[a-f\d]{24}\.webp$/i,
+        },
+        cargadaEn: { type: Date, default: Date.now },
+        cargadaPor: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb', required: true },
+    },
+    { _id: false }
+);
+
 const orderSchema = new mongoose.Schema(
     {
         numeroOrden: {
@@ -87,6 +107,7 @@ const orderSchema = new mongoose.Schema(
             accion: String,
             motivo: String,
             comprobante: String,
+            comprobanteFoto: { type: paymentProofSchema, default: undefined },
             administrador: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb' },
             fecha: Date,
         },
@@ -96,6 +117,7 @@ const orderSchema = new mongoose.Schema(
                     accion: String,
                     motivo: String,
                     comprobante: String,
+                    comprobanteFoto: { type: paymentProofSchema, default: undefined },
                     administrador: { type: mongoose.Schema.Types.ObjectId, ref: 'userdb' },
                     fecha: Date,
                 },

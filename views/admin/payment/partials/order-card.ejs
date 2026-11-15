@@ -55,7 +55,7 @@
               <details class="ap-details ap-details--wide">
                 <summary>Disponibilidad o devolución ya realizada</summary>
                 <p>Registrar una devolución no mueve dinero. Primero debes efectuarla y comprobarla en Wompi o en caja. Solo admite devolución total.</p>
-                <form action="/admin/payments/<%= order._id %>/resolve" method="post" class="ap-form ap-form--stack">
+                <form action="/admin/payments/<%= order._id %>/resolve" method="post" enctype="multipart/form-data" class="ap-form ap-form--stack">
                   <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                   <label class="ap-field" for="order-resolution-action-<%= order._id %>">
                     <span>Acción</span>
@@ -72,6 +72,11 @@
                   <label class="ap-field" for="order-resolution-proof-<%= order._id %>">
                     <span>Referencia del comprobante</span>
                     <input id="order-resolution-proof-<%= order._id %>" name="comprobante" required maxlength="150">
+                  </label>
+                  <label class="ap-field ap-field--wide" for="order-resolution-proof-image-<%= order._id %>">
+                    <span>Foto del comprobante de pago (opcional)</span>
+                    <input id="order-resolution-proof-image-<%= order._id %>" name="comprobantePago" type="file" accept="image/jpeg,image/png,image/webp">
+                    <small>JPG, PNG o WEBP; máximo 2 MB y 8 megapíxeles. Solo estará disponible para administración y el dealer asignado.</small>
                   </label>
                   <label class="ap-check">
                     <input type="checkbox" name="reponer" value="si">
@@ -103,4 +108,6 @@
             <span>Comprobante: <%= order.revisionPago.comprobante %></span>
           </div>
         <% } %>
+
+        <%- include('../../../include/orders/payment-proof', { order, visible: true }) %>
       </article>

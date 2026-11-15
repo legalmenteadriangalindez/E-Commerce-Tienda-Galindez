@@ -1,0 +1,23 @@
+<% const paymentProof = order?.revisionPago?.comprobanteFoto; %>
+<% if (visible && paymentProof?.fotoUrl) { %>
+    <section class="delivery-proof payment-proof" aria-labelledby="payment-proof-title-<%= order._id %>">
+        <div class="delivery-proof__header">
+            <div>
+                <p class="delivery-proof__eyebrow">Comprobante de pago</p>
+                <h2 id="payment-proof-title-<%= order._id %>">Foto registrada</h2>
+            </div>
+            <i class="bi bi-receipt-cutoff" aria-hidden="true"></i>
+        </div>
+        <a class="delivery-proof__link" href="<%= paymentProof.fotoUrl %>" target="_blank" rel="noopener noreferrer">
+            <img
+                class="delivery-proof__image"
+                src="<%= paymentProof.fotoUrl %>"
+                alt="Foto del comprobante de pago del pedido <%= order.numeroOrden || '' %>"
+                loading="lazy"
+            >
+        </a>
+        <% if (paymentProof.cargadaEn) { %>
+            <p class="delivery-proof__meta">Registrada el <%= new Date(paymentProof.cargadaEn).toLocaleString('es-CO') %>.</p>
+        <% } %>
+    </section>
+<% } %>
