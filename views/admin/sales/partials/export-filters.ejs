@@ -33,8 +33,19 @@
         Canal
         <select name="canal">
           <option value="">Todos</option>
+          <% const channelLabels = { WOMPI: 'Wompi', CAJA: 'Caja', WEB: 'Tienda online' }; %>
           <% channels.forEach(channel => { %>
-            <option value="<%= channel %>" <%= filters.canal === channel ? 'selected' : '' %>><%= channel === 'WOMPI' ? 'Wompi' : 'Caja' %></option>
+            <option value="<%= channel %>" <%= filters.canal === channel ? 'selected' : '' %>><%= channelLabels[channel] || channel %></option>
+          <% }) %>
+        </select>
+      </label>
+      <label>
+        Medio de pago
+        <select name="metodoPago">
+          <option value="">Todos</option>
+          <% const paymentMethodLabels = { WOMPI_CARD: 'Tarjeta Wompi', WOMPI_NEQUI: 'Nequi Wompi', CASH_ON_DELIVERY: 'Efectivo contra entrega', CASH_AT_COUNTER: 'Efectivo en caja' }; %>
+          <% paymentMethods.forEach(method => { %>
+            <option value="<%= method %>" <%= filters.metodoPago === method ? 'selected' : '' %>><%= paymentMethodLabels[method] || method %></option>
           <% }) %>
         </select>
       </label>

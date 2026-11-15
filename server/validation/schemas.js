@@ -226,6 +226,7 @@ const salesQuery = pagination.extend({
         .optional(),
     estadoPago: z.string().trim().max(40).optional(),
     canal: z.string().trim().max(40).optional(),
+    metodoPago: z.string().trim().max(40).optional(),
 });
 const searchQuery = pagination.extend({ search: z.string().trim().max(100).optional() });
 

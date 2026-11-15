@@ -5,7 +5,7 @@ const analytics = require('../../business/analyticsService');
 const analyticsExport = require('../../business/analytics/analyticsExport');
 exports.sales = wrap(async (req, res) => {
     const filters = Object.fromEntries(
-        ['search', 'from', 'to', 'estadoPago', 'canal'].map((key) => [
+        ['search', 'from', 'to', 'estadoPago', 'canal', 'metodoPago'].map((key) => [
             key,
             typeof req.query[key] === 'string' ? req.query[key].trim() : '',
         ])
@@ -18,6 +18,7 @@ exports.sales = wrap(async (req, res) => {
         filters,
         paymentStatuses: analyticsExport.PAYMENT_STATUSES,
         channels: analyticsExport.CHANNELS,
+        paymentMethods: analyticsExport.PAYMENT_METHODS,
         exportUrl: '/api/ventas/export.csv' + (query ? '?' + query : ''),
     });
 });

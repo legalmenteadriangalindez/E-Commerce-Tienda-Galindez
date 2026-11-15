@@ -12,6 +12,18 @@
     actionLabel: 'Crear producto'
   }) %>
 
+  <%- include('../../include/_adminAlert', {
+    type: 'success',
+    icon: 'bi bi-check-circle-fill',
+    message: catalogNotice
+  }) %>
+  <%- include('../../include/_adminAlert', {
+    type: 'error',
+    icon: 'bi bi-exclamation-triangle-fill',
+    role: 'alert',
+    message: catalogError
+  }) %>
+
   <div class="admin-card admin-table-wrap ui-table-wrap admin-mobile-card-wrap">
   <table
     class="table ui-table admin-table admin-mobile-card-table admin-products-card-table"

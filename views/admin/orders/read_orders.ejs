@@ -9,6 +9,18 @@
     description: 'Supervisa el estado de los pedidos y continúa su proceso de entrega.'
   }) %>
 
+  <%- include('../../include/_adminAlert', {
+    type: 'success',
+    icon: 'bi bi-check-circle-fill',
+    message: orderNotice
+  }) %>
+  <%- include('../../include/_adminAlert', {
+    type: 'error',
+    icon: 'bi bi-exclamation-triangle-fill',
+    role: 'alert',
+    message: orderError
+  }) %>
+
   <section class="sales-export-panel admin-card" aria-labelledby="orders-search-title">
     <div class="sales-export-panel__heading">
       <div>

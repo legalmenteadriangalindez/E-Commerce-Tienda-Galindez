@@ -53,6 +53,24 @@ function salesPipeline(filters) {
         { $unwind: { path: '$order', preserveNullAndEmptyArrays: true } },
     ];
     if (filters.channel) pipeline.push({ $match: { 'order.canal': filters.channel } });
+    if (filters.paymentMethod) {
+        const paymentMatches = [
+            { 'order.metodoPago': filters.paymentMethod },
+            { 'order.metodoPagoConfirmado': filters.paymentMethod },
+            { metodoPago: filters.paymentMethod },
+        ];
+        if (filters.paymentMethod === 'CASH_AT_COUNTER') {
+            paymentMatches.push({ 'order.canal': 'CAJA', 'order.metodoPago': { $exists: false } });
+        }
+        if (filters.paymentMethod === 'WOMPI_CARD') {
+            paymentMatches.push({ 'order.canal': 'WOMPI', 'order.metodoPago': { $exists: false } });
+        }
+        pipeline.push({
+            $match: {
+                $or: paymentMatches,
+            },
+        });
+    }
 
     if (filters.search) {
         pipeline.push(

@@ -9,7 +9,7 @@
     <header class="ar-card-heading">
         <div>
             <% if (r.producto) { %>
-                <a class="ar-product-name" href="/Detalles/<%= r.producto._id %>#resenas"><%= r.producto.nombre %></a>
+                <a class="ar-product-name" href="/update-producto/<%= r.producto._id %>"><%= r.producto.nombre %></a>
             <% } else { %>
                 <strong class="ar-product-name">Producto eliminado</strong>
             <% } %>

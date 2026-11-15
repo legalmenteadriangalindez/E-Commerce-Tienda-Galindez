@@ -9,10 +9,12 @@ test('normaliza filtros de exportación y conserva el rango colombiano', () => {
         to: '2026-10-27',
         estadoPago: 'pagado',
         canal: 'wompi',
+        metodoPago: 'cash_at_counter',
     });
 
     assert.equal(filters.status, 'PAGADO');
     assert.equal(filters.channel, 'WOMPI');
+    assert.equal(filters.paymentMethod, 'CASH_AT_COUNTER');
     assert.equal(filters.fromInput, '2026-10-01');
     assert.equal(filters.toInput, '2026-10-27');
     assert.ok(filters.from < filters.to);
@@ -22,6 +24,7 @@ test('rechaza fechas, estados y canales inválidos', () => {
     assert.throws(() => salesCsv.parseFilters({ from: '2026-02-30' }), /no existe/);
     assert.throws(() => salesCsv.parseFilters({ estadoPago: 'CANCELADO' }), /estado/);
     assert.throws(() => salesCsv.parseFilters({ canal: 'TRANSFERENCIA' }), /canal/);
+    assert.throws(() => salesCsv.parseFilters({ metodoPago: 'TRANSFERENCIA' }), /medio/);
     assert.throws(() => salesCsv.parseFilters({ from: '2026-10-28', to: '2026-10-27' }), /inicial/);
 });
 

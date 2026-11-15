@@ -1,14 +1,26 @@
 <div class="form-section">
     <h3>Estado de la Orden</h3>
     <div class="form-group">
-        <label>Estado</label>
-        <select name="estado" required>
-            <option value="PENDIENTE" <%= order.estado === 'PENDIENTE' ? 'selected' : '' %>>PENDIENTE</option>
-            <option value="PAGADA" <%= order.estado === 'PAGADA' ? 'selected' : '' %>>PAGADA</option>
-            <option value="PREPARANDO" <%= order.estado === 'PREPARANDO' ? 'selected' : '' %>>PREPARANDO</option>
-            <option value="ENVIADA" <%= order.estado === 'ENVIADA' ? 'selected' : '' %>>ENVIADA</option>
-            <option value="ENTREGADA" <%= order.estado === 'ENTREGADA' ? 'selected' : '' %>>ENTREGADA</option>
-            <option value="CANCELADA" <%= order.estado === 'CANCELADA' ? 'selected' : '' %>>CANCELADA</option>
+        <label for="admin-order-state">Estado</label>
+        <% const cashDelivery = order.metodoPago === 'CASH_ON_DELIVERY'; %>
+        <% const canCancel =
+            (cashDelivery && order.estadoPago === 'PENDIENTE' && order.inventario === 'CONFIRMADO' && ['PENDIENTE', 'PREPARANDO', 'ENVIADA'].includes(order.estado)) ||
+            (!cashDelivery && order.estadoPago === 'PENDIENTE' && order.inventario === 'RESERVADO'); %>
+        <select id="admin-order-state" name="estado" required>
+            <option value="<%= order.estado %>" selected>Estado actual: <%= order.estado %></option>
+            <% if (order.estado === 'PENDIENTE' && cashDelivery) { %>
+                <option value="PREPARANDO">Marcar como en preparación</option>
+            <% } else if (order.estado === 'PAGADA') { %>
+                <option value="PREPARANDO">Marcar como en preparación</option>
+            <% } else if (order.estado === 'PREPARANDO') { %>
+                <option value="ENVIADA">Marcar como enviada</option>
+            <% } else if (order.estado === 'ENVIADA') { %>
+                <option value="ENTREGADA">Confirmar entrega</option>
+            <% } %>
+            <% if (canCancel && order.estado !== 'CANCELADA') { %>
+                <option value="CANCELADA">Cancelar pedido</option>
+            <% } %>
         </select>
+        <small class="form-help">Solo se muestran transiciones válidas. Los pedidos pagados avanzan desde el módulo de pagos.</small>
     </div>
 </div>

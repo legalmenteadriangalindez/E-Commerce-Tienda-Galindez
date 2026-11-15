@@ -34,6 +34,44 @@ body.dealer-app .dealer-order-update__header p {
     color: var(--color-text-muted);
 }
 
+body.dealer-app .dealer-order-feedback {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 1rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    line-height: 1.45;
+}
+
+body.dealer-app .dealer-order-feedback > i {
+    flex: 0 0 auto;
+    margin-top: 0.12rem;
+}
+
+body.dealer-app .dealer-order-feedback--success {
+    border-color: #b8dec2;
+    background: #f0faf2;
+    color: var(--color-text-strong);
+}
+
+body.dealer-app .dealer-order-feedback--success > i {
+    color: var(--color-success);
+}
+
+body.dealer-app .dealer-order-feedback--error {
+    border-color: #e6b8b8;
+    background: #fff5f5;
+    color: var(--color-text-strong);
+}
+
+body.dealer-app .dealer-order-feedback--error > i {
+    color: var(--color-danger);
+}
+
 body.dealer-app .dealer-order-update__card {
     width: 100%;
     box-sizing: border-box;

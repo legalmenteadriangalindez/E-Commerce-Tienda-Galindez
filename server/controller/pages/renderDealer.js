@@ -1,6 +1,7 @@
 const orders = require('../../business/orderService');
 const delivery = require('../../business/deliveryService');
 const catalogPagination = require('../../services/catalogPagination');
+const { saveSession } = require('../../http/session');
 
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 
@@ -23,6 +24,10 @@ function renderDealerOrders(
     filters = {},
     incidentHistory = false
 ) {
+    const dealerOrderNotice = req.session.dealerOrderNotice || '';
+    const dealerOrderError = req.session.dealerOrderError || '';
+    delete req.session.dealerOrderNotice;
+    delete req.session.dealerOrderError;
     return res.render('dealer/orders/read_orders', {
         orders: result.orders,
         statusLabels: delivery.STATUS_LABELS,
@@ -35,6 +40,8 @@ function renderDealerOrders(
         incidentStatusLabels: delivery.INCIDENT_STATUS_LABELS,
         statuses: filterStatuses(history, incidentHistory),
         filterQuery: delivery.buildDealerFilterQuery(filters),
+        dealerOrderNotice,
+        dealerOrderError,
     });
 }
 
@@ -97,6 +104,10 @@ exports.detail_order = wrap(async (req, res) => {
 
 exports.update_order = wrap(async (req, res) => {
     const filters = delivery.normalizeDealerFilters(req.query, false);
+    const dealerOrderNotice = req.session.dealerOrderNotice || '';
+    const dealerOrderError = req.session.dealerOrderError || '';
+    delete req.session.dealerOrderNotice;
+    delete req.session.dealerOrderError;
     return res.render('dealer/orders/update_order', {
         order: await delivery.orderForDealer(req.params.id, req.session.user._id),
         statusLabels: delivery.STATUS_LABELS,
@@ -106,6 +117,8 @@ exports.update_order = wrap(async (req, res) => {
         incidentStatusLabels: delivery.INCIDENT_STATUS_LABELS,
         incidentAction: incidentAction(req.params.id, filters),
         incidentNotice: req.query.incident === 'reported' ? 'La incidencia fue reportada a la tienda.' : '',
+        dealerOrderNotice,
+        dealerOrderError,
     });
 });
 
@@ -117,26 +130,49 @@ exports.report_incident = wrap(async (req, res) => {
     return res.redirect(303, '/dealer/orders/update/' + req.params.id + '?' + targetQuery);
 });
 
-exports.update_order_data = wrap(async (req, res) => {
-    await delivery.orderForDealer(req.params.id, req.session.user._id);
-    await orders.changeState(
-        req.params.id,
-        req.body.estado,
-        req.session.user._id,
-        true,
-        req.body.nota,
-        req.body.confirmarPago === 'si',
-        req.file?.url || ''
-    );
-    const filters = delivery.normalizeDealerFilters(
-        {
-            search: req.body.filterSearch,
-            status: req.body.filterStatus,
-            from: req.body.filterFrom,
-            to: req.body.filterTo,
-        },
-        false
-    );
-    const query = delivery.buildDealerFilterQuery(filters);
-    return res.redirect(303, query ? '/dealer/orders/read?' + query : '/dealer/orders/read');
-});
+exports.update_order_data = async (req, res, next) => {
+    const filterInput = {
+        search: req.body.filterSearch,
+        status: req.body.filterStatus,
+        from: req.body.filterFrom,
+        to: req.body.filterTo,
+    };
+    let updateUrl = '/dealer/orders/update/' + encodeURIComponent(req.params.id);
+    let listUrl = '/dealer/orders/read';
+    try {
+        const filters = delivery.normalizeDealerFilters(filterInput, false);
+        const query = delivery.buildDealerFilterQuery(filters);
+        updateUrl += query ? '?' + query : '';
+        listUrl += query ? '?' + query : '';
+    } catch (error) {
+        // Los valores ocultos solo conservan filtros de navegación; no deben
+        // impedir la actualización ni ocultar el mensaje de negocio.
+    }
+
+    try {
+        await delivery.orderForDealer(req.params.id, req.session.user._id);
+        await orders.changeState(
+            req.params.id,
+            req.body.estado,
+            req.session.user._id,
+            true,
+            req.body.nota,
+            req.body.confirmarPago === 'si',
+            req.file?.url || ''
+        );
+        req.session.dealerOrderNotice = 'Estado actualizado. La entrega quedó registrada con la evidencia enviada.';
+        await saveSession(req);
+        return res.redirect(303, listUrl);
+    } catch (error) {
+        if (req.accepts('json') === 'json') return next(error);
+        req.session.dealerOrderError = error.expose
+            ? error.message
+            : 'No se pudo actualizar la entrega. Revisa el estado y la foto del comprobante.';
+        try {
+            await saveSession(req);
+        } catch (sessionError) {
+            return next(sessionError);
+        }
+        return res.redirect(303, updateUrl);
+    }
+};
