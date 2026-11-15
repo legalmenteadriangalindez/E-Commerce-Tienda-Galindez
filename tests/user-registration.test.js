@@ -289,6 +289,58 @@ test(
             assert.ok(await bcrypt.compare(initialPassword, (await savedUser('publico-vacio@example.test')).password));
         });
 
+        await t.test(
+            'Fase 9: registro HTTP conserva género, cifra contraseña, envía verificación y no guarda ubicación textual',
+            async () => {
+                const anonymous = await fixture.actor('anonymous');
+                const page = await fixture.request(anonymous, '/register');
+                assert.equal(page.status, 200);
+                const html = await page.text();
+                for (const genero of ['Masculino', 'Femenino', 'Otro', 'Prefiero no decir']) {
+                    assert.match(html, new RegExp(`value="${genero}"`));
+                }
+                assert.doesNotMatch(html, /name="ubicacion"/);
+
+                for (const genero of ['Masculino', 'Femenino', 'Otro', 'Prefiero no decir']) {
+                    const body = {
+                        ...data('fase9-' + genero.toLowerCase().replace(/\s+/g, '-')),
+                        genero,
+                        // Un valor manipulado tampoco se persiste: el registro
+                        // público no ofrece ni utiliza ubicación geográfica.
+                        ubicacion: 'Popayán, Cauca',
+                        rol: roleIds.Admin,
+                        verified: 'true',
+                    };
+                    const response = await formPost(anonymous, '/register', body);
+                    assert.equal(response.status, 303);
+                    assert.equal(
+                        response.headers.get('location'),
+                        '/verify-email?email=' + encodeURIComponent(body.email)
+                    );
+
+                    const user = await savedUser(body.email);
+                    assert.equal(user.genero, genero);
+                    assert.equal(user.ubicacion, undefined);
+                    assert.equal(String(user.rol), roleIds.Cliente);
+                    assert.equal(user.verified, false);
+                    assert.notEqual(user.password, initialPassword);
+                    assert.ok(await bcrypt.compare(initialPassword, user.password));
+
+                    const mail = mailFor(body.email);
+                    assert.ok(mail);
+                    assert.match(mail.code, /^\d{6}$/);
+                    assert.ok(user.verificationCodeHash);
+
+                    const verification = await fixture.request(anonymous, '/verify-email', 'POST', {
+                        email: body.email,
+                        code: mail.code,
+                    });
+                    assert.equal(verification.status, 303);
+                    assert.equal((await savedUser(body.email)).verified, true);
+                }
+            }
+        );
+
         await t.test('cada tipo de cuenta puede cambiar su contraseña y revocar sesiones anteriores', async () => {
             for (const roleName of ['Cliente', 'dealer', 'Admin', 'Catálogo']) {
                 const email =
