@@ -44,6 +44,7 @@ test(
             app.post('/_test/private-payment-proof', upload.privateSingle('comprobantePago'), (req, res) =>
                 res.json({ id: String(req.file.id), url: req.file.url })
             );
+            app.use(require('../server/routes/paymentProof.routes'));
             app.use(require('../server/routes/admin/payments.routes'));
             app.use('/dealer', require('../server/routes/dealer.routes'));
         });
