@@ -8,6 +8,13 @@
         Productos Más Vendidos
     </h1>
 
+    <nav class="best-selling-period" aria-label="Periodo de productos más vendidos">
+        <a class="<%= period.key === 'all' ? 'active' : '' %>" href="/admin-best_selling_products?period=all">Todo el historial</a>
+        <a class="<%= period.key === 'week' ? 'active' : '' %>" href="/admin-best_selling_products?period=week">Últimos 7 días</a>
+        <a class="<%= period.key === 'month' ? 'active' : '' %>" href="/admin-best_selling_products?period=month">Últimos 30 días</a>
+    </nav>
+    <p class="best-selling-period__summary"><%= period.label %>. Ordenado por unidades vendidas y luego por ingresos.</p>
+
     <div class="row g-4">
 
         <% if (!products || products.length === 0) { %>

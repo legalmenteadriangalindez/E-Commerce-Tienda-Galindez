@@ -37,7 +37,7 @@
 
     <div class="ar-results-heading">
         <h2><%= pagination.totalItems %> <%= pagination.totalItems === 1 ? 'reseña encontrada' : 'reseñas encontradas' %></h2>
-        <span>Más recientes primero</span>
+        <span><%= filters.orden === 'mas_resenas' ? 'Productos con más reseñas primero' : 'Más recientes primero' %></span>
     </div>
     <p class="ar-policy">Las críticas sobre el producto también son válidas. Usa la opción de ocultar para contenido inapropiado, spam o datos personales e indica siempre el motivo.</p>
 

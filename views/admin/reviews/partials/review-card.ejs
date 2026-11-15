@@ -14,6 +14,7 @@
                 <strong class="ar-product-name">Producto eliminado</strong>
             <% } %>
             <p class="ar-meta"><%= r.usuario?.nombre || 'Usuario eliminado' %> · <%= formatDate(r.fecha) %></p>
+            <% if (r.productReviewCount) { %><p class="ar-meta"><%= r.productReviewCount %> reseñas de este producto</p><% } %>
             <% if (r.fechaEdicion) { %><p class="ar-meta">Editada por el cliente: <%= formatDate(r.fechaEdicion) %></p><% } %>
         </div>
         <div class="ar-badges">

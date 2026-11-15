@@ -1,6 +1,9 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const { compareSnapshots } = require('../scripts/verify-gridfs-restore');
+const backupScript = require('../scripts/create-encrypted-backup');
 
 function snapshot(overrides = {}) {
     return {
@@ -48,4 +51,19 @@ test('la verificación de GridFS detecta archivos o contenido alterado', () => {
     const result = compareSnapshots(snapshot(), target, 'media');
     assert.equal(result.passed, false);
     assert.match(result.failures.join(' '), /chunks|sha256/);
+});
+
+test('el respaldo automático exige una clave fuerte y usa una marca de tiempo estable', () => {
+    assert.throws(() => backupScript.requiredEnv('VARIABLE_INEXISTENTE_PARA_LA_PRUEBA'), /Falta la variable/);
+    assert.equal(backupScript.stamp(new Date('2026-11-15T07:00:00.000Z')), '20261115T070000Z');
+});
+
+test('la política de respaldo diario conserva cifrado, retención y secretos requeridos', () => {
+    const workflow = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'mongodb-backup.yml'), 'utf8');
+    assert.match(workflow, /cron: '0 7 \* \* \*'/);
+    assert.match(workflow, /PROD_MONGO_URI/);
+    assert.match(workflow, /PROD_MONGO_DB_NAME/);
+    assert.match(workflow, /PROD_BACKUP_PASSPHRASE/);
+    assert.match(workflow, /retention-days: 35/);
+    assert.match(workflow, /backup:encrypted/);
 });
