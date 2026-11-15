@@ -141,6 +141,7 @@ test(
             descuento: 0,
             total: 24000,
             canal: 'CAJA',
+            metodoPago: 'CASH_AT_COUNTER',
             inventario: 'CONFIRMADO',
             estadoPago: 'PAGADO',
             estado: 'ENTREGADA',
@@ -154,6 +155,7 @@ test(
             descuento: 0,
             total: 24000,
             estadoPago: 'PAGADO',
+            metodoPago: 'CASH_AT_COUNTER',
         });
         await Detail.create({
             venta: sale._id,
@@ -164,13 +166,65 @@ test(
             subtotal: 24000,
         });
 
-        const actor = await app.actor('admin');
-        const response = await fetch(`${app.origin}/api/ventas/export.csv?estadoPago=PAGADO&canal=CAJA`, {
-            headers: {
-                Accept: 'text/csv',
-                Cookie: actor.cookie,
+        const otherOrder = await Order.create({
+            numeroOrden: 'ORD-CSV-002',
+            usuario: app.users.owner._id,
+            cliente: {
+                nombre: 'Cliente CSV online',
+                email: 'csv-online@example.test',
+                telefono: '0000000000',
             },
+            productos: [
+                {
+                    producto: app.product._id,
+                    nombre: app.product.nombre,
+                    cantidad: 1,
+                    precioUnitario: 12000,
+                    precioCostoUnitario: 8000,
+                    subtotal: 12000,
+                },
+            ],
+            subtotal: 12000,
+            impuestos: 0,
+            costoEnvio: 0,
+            descuento: 0,
+            total: 12000,
+            canal: 'WEB',
+            metodoPago: 'WOMPI_CARD',
+            inventario: 'CONFIRMADO',
+            estadoPago: 'PAGADO',
+            estado: 'ENTREGADA',
         });
+        const otherSale = await Sale.create({
+            cliente: app.users.owner._id,
+            order: otherOrder._id,
+            subtotal: 12000,
+            impuestos: 0,
+            costoEnvio: 0,
+            descuento: 0,
+            total: 12000,
+            estadoPago: 'PAGADO',
+            metodoPago: 'WOMPI_CARD',
+        });
+        await Detail.create({
+            venta: otherSale._id,
+            producto: app.product._id,
+            cantidad: 1,
+            precioUnitario: 12000,
+            precioCostoUnitario: 8000,
+            subtotal: 12000,
+        });
+
+        const actor = await app.actor('admin');
+        const response = await fetch(
+            `${app.origin}/api/ventas/export.csv?estadoPago=PAGADO&canal=CAJA&metodoPago=CASH_AT_COUNTER`,
+            {
+                headers: {
+                    Accept: 'text/csv',
+                    Cookie: actor.cookie,
+                },
+            }
+        );
 
         assert.equal(response.status, 200);
         assert.match(response.headers.get('content-type') || '', /text\/csv/);
@@ -187,6 +241,7 @@ test(
         assert.match(csv, /24000/);
         assert.match(csv, /16000/);
         assert.match(csv, /8000/);
+        assert.doesNotMatch(csv, /ORD-CSV-002/);
         assert.equal(csv.split('\r\n').filter(Boolean).length, 2);
 
         assert.equal(mongoose.connection.readyState, 1);

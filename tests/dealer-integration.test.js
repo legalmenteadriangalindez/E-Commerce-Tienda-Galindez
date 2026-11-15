@@ -169,6 +169,10 @@ test(
         assert.equal(completed.inventario, 'CONFIRMADO');
         assert.match(completed.comprobanteEntrega.fotoUrl, /^\/uploads\/[a-f\d]{24}\.webp$/i);
 
+        const completedList = await fixture.request(dealer, '/dealer/orders/read');
+        assert.equal(completedList.status, 200);
+        assert.match(await completedList.text(), /Estado actualizado[\s\S]*evidencia enviada/i);
+
         const photoResponse = await fixture.request(dealer, completed.comprobanteEntrega.fotoUrl);
         assert.equal(photoResponse.status, 200);
         assert.equal(photoResponse.headers.get('content-type'), 'image/webp');
