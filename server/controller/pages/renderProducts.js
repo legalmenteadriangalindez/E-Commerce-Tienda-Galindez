@@ -72,7 +72,7 @@ async function options(actor, product = {}) {
     const [brandList, categoryPage, providerPage] = await Promise.all([
         brands.publicList(),
         categories.list({ limit: 50 }),
-        hasPermission(actor, P.PROVIDERS_MANAGE) ? providers.list({ limit: 50 }) : { items: [] },
+        hasPermission(actor, P.PROVIDERS_MANAGE) ? providers.listActive({ limit: 50 }) : { items: [] },
     ]);
     return {
         marcas: includeSelected(brandList, product.marca),

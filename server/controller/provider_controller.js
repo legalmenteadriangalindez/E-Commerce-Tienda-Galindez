@@ -20,4 +20,12 @@ exports.delete = wrap(async (req, res) => {
     await service.remove(req.params.id);
     return res.json({ message: 'Proveedor eliminado correctamente.' });
 });
+exports.retire = wrap(async (req, res) => {
+    const provider = await service.retire(req.params.id);
+    return res.json({ message: 'Proveedor retirado.', provider });
+});
+exports.reactivate = wrap(async (req, res) => {
+    const provider = await service.reactivate(req.params.id);
+    return res.json({ message: 'Proveedor reactivado.', provider });
+});
 exports.findById = wrap(async (req, res) => res.json(await service.get(req.params.id)));

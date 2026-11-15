@@ -30,33 +30,48 @@
     <thead>
       <tr>
         <th scope="col" hidden>#</th>
+        <th scope="col">Código</th>
         <th scope="col">Nombre</th>
+        <th scope="col">Contacto</th>
+        <th scope="col">Email</th>
         <th scope="col">Teléfono</th>
         <th scope="col">Entrega (días)</th>
         <th scope="col">Dirección</th>
         <th scope="col">Descripcion</th>
+        <th scope="col">Estado</th>
         <th scope="col">Editar</th>
-        <th scope="col">Eliminar</th>
+        <th scope="col">Acción</th>
       </tr>
     </thead>
     <tbody>
       <% providers.forEach(function(provider) { %>
       <tr>
         <th scope="row" hidden><%= provider._id %></th>
+        <td><%= provider.codigo || 'Sin código' %></td>
         <td><%= provider.nombre %></td>
-        <td><%= provider.telefono %></td>
+        <td><%= provider.contacto || 'No registrada' %></td>
+        <td><%= provider.email || 'No registrado' %></td>
+        <td><%= provider.telefono || 'No registrado' %></td>
         <td><%= Number.isInteger(provider.diasEntrega) ? provider.diasEntrega : 'Sin configurar' %></td>
-        <td><%= provider.direccion %></td>
-        <td><%= provider.descripcion %></td>
+        <td><%= provider.direccion || 'No registrada' %></td>
+        <td><%= provider.descripcion || 'Sin descripción' %></td>
+        <td><%= provider.activo === false ? 'Retirado' : 'Activo' %></td>
         <td>
           <a href="/update-proveedor?id=<%= provider._id %>" class="btn btn-success admin-button admin-button--primary">Editar</a>
         </td>
 
         <td>
-          <form action="/delete-proveedor/<%= provider._id %>" method="POST" class="d-inline">
+          <% if (provider.activo === false) { %>
+            <form action="/reactivar-proveedor/<%= provider._id %>" method="POST" class="d-inline">
               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <button type="submit" class="btn btn-danger admin-button admin-button--danger">Eliminar</button>
-          </form>
+              <button type="submit" class="btn btn-success admin-button admin-button--primary">Reactivar</button>
+            </form>
+          <% } else { %>
+            <form action="/retirar-proveedor/<%= provider._id %>" method="POST" class="d-inline">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="btn btn-warning admin-button">Retirar</button>
+            </form>
+          <% } %>
         </td>
       </tr>
       <% }); %>

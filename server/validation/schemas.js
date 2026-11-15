@@ -69,7 +69,9 @@ const changePassword = z
 const category = passthrough({ nombre: text(100).min(1) });
 const provider = passthrough({
     nombre: optionalText(160),
+    contacto: optionalText(160),
     telefono: optionalText(40),
+    email: z.union([z.literal(''), z.string().trim().email().max(254)]).optional(),
     direccion: optionalText(200),
     descripcion: optionalText(500),
     diasEntrega: z.coerce.number().int().min(0).max(365).optional(),

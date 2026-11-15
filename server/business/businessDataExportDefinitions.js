@@ -18,6 +18,7 @@ const DEFINITIONS = Object.freeze([
             'marca',
             'categoria',
             'enPromocion',
+            'activo',
             'fechaIngreso',
             'fotos',
         ],
@@ -35,7 +36,18 @@ const DEFINITIONS = Object.freeze([
     {
         file: 'proveedores.csv',
         model: 'provider',
-        fields: ['_id', 'nombre', 'contacto', 'telefono', 'email', 'direccion', 'descripcion', 'diasEntrega'],
+        fields: [
+            '_id',
+            'codigo',
+            'nombre',
+            'contacto',
+            'telefono',
+            'email',
+            'direccion',
+            'descripcion',
+            'diasEntrega',
+            'activo',
+        ],
     },
     {
         file: 'clientes_usuarios.csv',

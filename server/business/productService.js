@@ -5,6 +5,9 @@ const Category = require('../model/categories');
 const Brand = require('../model/brands');
 const Provider = require('../model/provider');
 const Order = require('../model/order');
+const SaleDetail = require('../model/saleDetails');
+const Review = require('../model/review');
+const SupplierPurchase = require('../model/supplierPurchase');
 const media = require('./mediaService');
 const queryPage = require('./queryPage');
 const pagination = require('../services/adminPagination');
@@ -60,9 +63,14 @@ async function productFields(input, current = {}) {
     const [category, brand, provider] = await Promise.all([
         Category.exists({ _id: categoria }),
         Brand.exists({ _id: marca }),
-        proveedor ? Provider.exists({ _id: proveedor }) : true,
+        proveedor ? Provider.findById(proveedor).select('activo').lean() : null,
     ]);
-    if (!category || !brand || !provider) throw new BusinessError('La categoría, marca o proveedor no existe.');
+    if (!category || !brand || (proveedor && !provider))
+        throw new BusinessError('La categoría, marca o proveedor no existe.');
+    const currentProvider = current.proveedor?._id || current.proveedor;
+    if (proveedor && provider?.activo === false && String(currentProvider || '') !== String(proveedor)) {
+        throw new BusinessError('El proveedor está retirado y no puede asignarse a un producto nuevo.');
+    }
     return {
         nombre,
         descripcion: body.descripcion ?? current.descripcion ?? '',
@@ -171,6 +179,24 @@ async function remove(id) {
                 409
             );
         }
+        if (await SupplierPurchase.exists({ producto: id }).session(session)) {
+            throw new BusinessError(
+                'Este producto tiene compras históricas. Consérvalo y retíralo de la venta en lugar de borrarlo.',
+                409
+            );
+        }
+        if (await SaleDetail.exists({ producto: id }).session(session)) {
+            throw new BusinessError(
+                'Este producto tiene ventas históricas. Consérvalo y retíralo de la venta en lugar de borrarlo.',
+                409
+            );
+        }
+        if (await Review.exists({ producto: id }).session(session)) {
+            throw new BusinessError(
+                'Este producto tiene reseñas históricas. Consérvalo y retíralo de la venta en lugar de borrarlo.',
+                409
+            );
+        }
         const current = await Product.findById(id).select('stock').session(session);
         if (current?.stock > 0) {
             throw new BusinessError(
@@ -185,12 +211,35 @@ async function remove(id) {
     await Promise.all(photos.map(media.removeUnused));
 }
 
+async function retire(id) {
+    const productId = validId(id, 'Producto');
+    const product = await Product.findByIdAndUpdate(
+        productId,
+        { $set: { activo: false } },
+        { returnDocument: 'after', runValidators: true }
+    );
+    if (!product) throw new BusinessError('Producto no encontrado.', 404);
+    return product;
+}
+
+async function reactivate(id) {
+    const productId = validId(id, 'Producto');
+    const product = await Product.findByIdAndUpdate(
+        productId,
+        { $set: { activo: true } },
+        { returnDocument: 'after', runValidators: true }
+    );
+    if (!product) throw new BusinessError('Producto no encontrado.', 404);
+    return product;
+}
+
 async function search(value) {
     const text = typeof value === 'string' ? value.trim().slice(0, 100) : '';
     if (text.length < 2) throw new BusinessError('Mínimo 2 caracteres para buscar.');
     const products = await Product.find({
         nombre: { $regex: text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' },
         stock: { $gt: 0 },
+        activo: { $ne: false },
     })
         .select('nombre precioVenta precioVentaCents stock fotos')
         .limit(10)
@@ -204,7 +253,10 @@ async function search(value) {
 
 async function stockAlerts(query = {}) {
     const { page, limit } = pagination.requested(query, 10);
-    const filter = { $expr: { $lte: [{ $ifNull: ['$stock', 0] }, { $ifNull: ['$stockMinimo', 0] }] } };
+    const filter = {
+        activo: { $ne: false },
+        $expr: { $lte: [{ $ifNull: ['$stock', 0] }, { $ifNull: ['$stockMinimo', 0] }] },
+    };
     const totalItems = await Product.countDocuments(filter);
     const metadata = pagination.metadata(page, limit, totalItems);
     const productos = await Product.aggregate([
@@ -241,6 +293,8 @@ module.exports = {
     create,
     get,
     update,
+    retire,
+    reactivate,
     remove,
     search,
     stockAlerts,

@@ -41,3 +41,38 @@ exports.delete_provider = async (req, res, next) => {
         return next(error);
     }
 };
+
+async function changeAvailability(req, res, next, action, successMessage, fallbackMessage) {
+    try {
+        await action(req.params.id);
+        req.session.providerNotice = successMessage;
+    } catch (error) {
+        req.session.providerError = error.expose ? error.message : fallbackMessage;
+    }
+    try {
+        await saveSession(req);
+        return res.redirect(303, '/read-proveedor');
+    } catch (error) {
+        return next(error);
+    }
+}
+
+exports.retire_provider = (req, res, next) =>
+    changeAvailability(
+        req,
+        res,
+        next,
+        providers.retire,
+        'Proveedor retirado. Se conservaron sus productos y compras históricas.',
+        'No se pudo retirar el proveedor.'
+    );
+
+exports.reactivate_provider = (req, res, next) =>
+    changeAvailability(
+        req,
+        res,
+        next,
+        providers.reactivate,
+        'Proveedor reactivado y disponible para nuevas compras.',
+        'No se pudo reactivar el proveedor.'
+    );

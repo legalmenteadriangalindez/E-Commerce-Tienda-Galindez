@@ -15,6 +15,14 @@ exports.delete = wrap(async (req, res) => {
     await products.remove(req.params.id);
     res.json({ message: 'Producto eliminado correctamente.' });
 });
+exports.retire = wrap(async (req, res) => {
+    const product = await products.retire(req.params.id);
+    return res.json({ message: 'Producto retirado de la venta.', product });
+});
+exports.reactivate = wrap(async (req, res) => {
+    const product = await products.reactivate(req.params.id);
+    return res.json({ message: 'Producto reactivado.', product });
+});
 exports.deleteFromPage = async (req, res, next) => {
     try {
         await products.remove(req.params.id);
@@ -29,6 +37,41 @@ exports.deleteFromPage = async (req, res, next) => {
         return next(error);
     }
 };
+
+async function changeAvailabilityFromPage(req, res, next, action, successMessage, fallbackMessage) {
+    try {
+        await action(req.params.id);
+        req.session.catalogNotice = successMessage;
+    } catch (error) {
+        req.session.catalogError = error.expose ? error.message : fallbackMessage;
+    }
+    try {
+        await saveSession(req);
+        return res.redirect(303, '/read-producto');
+    } catch (error) {
+        return next(error);
+    }
+}
+
+exports.retireFromPage = (req, res, next) =>
+    changeAvailabilityFromPage(
+        req,
+        res,
+        next,
+        products.retire,
+        'Producto retirado de la venta. Su historial y existencias se conservaron.',
+        'No se pudo retirar el producto de la venta.'
+    );
+
+exports.reactivateFromPage = (req, res, next) =>
+    changeAvailabilityFromPage(
+        req,
+        res,
+        next,
+        products.reactivate,
+        'Producto reactivado y disponible para el catálogo.',
+        'No se pudo reactivar el producto.'
+    );
 exports.find = wrap(async (req, res) =>
     res.json(req.query.id ? await products.get(req.query.id) : await products.list(req.query))
 );

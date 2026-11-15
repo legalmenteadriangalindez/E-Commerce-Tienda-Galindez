@@ -12,7 +12,8 @@ function subtotalCents(cart = []) {
 
 async function addProduct(cart = [], productoId, cantidad) {
     const product = await Product.findById(productoId).populate('categoria');
-    if (!product) throw new commerce.CommerceError('Producto no encontrado.', 404);
+    if (!product || product.activo === false)
+        throw new commerce.CommerceError('Producto no disponible para la venta.', 404);
 
     const nextCart = Array.isArray(cart) ? cart : [];
     const prior = nextCart.find((item) => item.productoId === productoId);
