@@ -154,6 +154,9 @@ const resources = {
     'admin/inventory/movements': {
         pageCss: css('admin-pagination.css', 'pages/inventory/movements.css'),
     },
+    'admin/inventory/reconciliation': {
+        pageCss: css('admin-pagination.css', 'pages/inventory/movements.css'),
+    },
     'admin/finance/index': { pageCss: css('pages/finance/dashboard.css') },
     'admin/finance/cash-flow': { pageCss: css('pages/finance/dashboard.css') },
     'admin/purchases/index': { pageCss: css('pages/finance/dashboard.css') },

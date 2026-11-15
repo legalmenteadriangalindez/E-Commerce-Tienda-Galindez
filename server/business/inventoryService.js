@@ -216,7 +216,10 @@ async function recordInitialEntry(product, metadata = {}, session) {
     await writeMovement(
         {
             productId: product._id,
-            type: 'ENTRADA',
+            // El stock con el que nace un producto es un saldo inicial. Las
+            // ENTRADA existentes se conservan para compras y movimientos
+            // históricos; la conciliación las sigue leyendo sin romper datos.
+            type: 'SALDO_INICIAL',
             quantity,
             delta: quantity,
             before: 0,
