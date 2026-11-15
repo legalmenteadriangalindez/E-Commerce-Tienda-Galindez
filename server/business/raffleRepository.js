@@ -36,27 +36,13 @@ async function getOrCreate(session) {
 async function publicConfig() {
     const projection =
         'titulo descripcion montoMinimo montoMinimoCents imagenUrl activo numeroRonda estadoRonda ganador.numero ganador.seleccionadoEn';
-    const [active, lastWinner] = await Promise.all([
-        Raffle.findOne({ clave: rules.KEY, estadoRonda: 'ACTIVA', activo: true })
-            .sort({ numeroRonda: -1, _id: -1 })
-            .select(projection)
-            .lean(),
-        Raffle.findOne({ clave: rules.KEY, 'ganador.numero': { $exists: true } })
-            .sort({ numeroRonda: -1, _id: -1 })
-            .select(projection)
-            .lean(),
-    ]);
-
-    const current = active || lastWinner;
-    if (!current) return null;
-    if (active && lastWinner && String(active._id) !== String(lastWinner._id)) {
-        current.ultimoGanador = {
-            numero: lastWinner.ganador.numero,
-            seleccionadoEn: lastWinner.ganador.seleccionadoEn,
-            numeroRonda: lastWinner.numeroRonda,
-        };
-    }
-    return current;
+    // La vista pública solo debe exponer la ronda vigente. El historial y el
+    // ganador de rondas cerradas se consultan desde el panel administrativo o
+    // desde los pedidos propios del cliente, nunca desde la tarjeta pública.
+    return Raffle.findOne({ clave: rules.KEY, estadoRonda: 'ACTIVA', activo: true })
+        .sort({ numeroRonda: -1, _id: -1 })
+        .select(projection)
+        .lean();
 }
 
 async function countEntries(raffleId) {

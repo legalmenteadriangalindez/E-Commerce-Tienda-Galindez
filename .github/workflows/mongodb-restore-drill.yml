@@ -55,7 +55,7 @@ jobs:
               with:
                   name: mongodb-restore-drill-${{ github.run_id }}
                   if-no-files-found: warn
-                  retention-days: 30
+                  retention-days: 90
                   path: |
                       ${{ runner.temp }}/mongodb-restore-drill/gridfs-restore-report.json
                       ${{ runner.temp }}/mongodb-restore-drill/restore-drill-manifest.json

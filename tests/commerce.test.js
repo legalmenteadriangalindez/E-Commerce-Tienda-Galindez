@@ -284,8 +284,7 @@ test(
             assert.equal(winner.numero, 1);
             assert.equal((await RaffleEntry.findOne({ order: order._id })).ganador, true);
             const publicData = await raffle.publicConfig();
-            assert.equal(publicData.activo, false);
-            assert.equal(publicData.ganador.numero, winner.numero);
+            assert.equal(publicData, null);
             const winnerEmail = await EmailEvent.findOne({ tipo: 'RIFA_GANADOR' });
             assert.equal(winnerEmail.destinatario.email, 'cliente@example.test');
             assert.equal(winnerEmail.datos.numero, winner.numero);
@@ -307,7 +306,7 @@ test(
             assert.equal(historical.estadoRonda, 'FINALIZADA');
             assert.equal(await RaffleEntry.countDocuments({ raffle: previousRound._id }), 1);
             assert.equal((await RaffleEntry.findById(previousEntry._id)).ganador, true);
-            assert.equal((await raffle.publicConfig()).ganador.numero, previousEntry.numero);
+            assert.equal(await raffle.publicConfig(), null);
         });
         await t.test('rechazo libera la reserva una vez y un vencimiento no la libera otra vez', async () => {
             await reset(10);

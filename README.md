@@ -125,7 +125,8 @@ Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicació
 - Copias y restauración: `npm run backup:restore-drill` crea una copia completa,
   restaura en una base desechable y verifica `media.files` y `media.chunks`;
   consulta la sección **Copias de MongoDB y prueba de restauración** de
-  `PRODUCCION.md` antes de ejecutarlo.
+  `PRODUCCION.md` y [`docs/backup-policy.md`](docs/backup-policy.md) antes de
+  ejecutarlo.
 - Revisión de planes MongoDB: `npm run explain:queries` con `MONGO_URI` apuntando a una base de desarrollo o a una copia de producción. El informe usa `executionStats` para las analíticas y listados administrativos; activa `EXPLAIN_FAIL_ON_COLLSCAN=true` para hacer fallar la revisión si aparece un escaneo completo.
 - Gestión de pagos: `/admin/payments`.
 - Informe de ventas: `/admin-analytics?period=week` o `?period=month`.
@@ -134,7 +135,7 @@ Lee **[PRODUCCION.md](PRODUCCION.md)** antes de desplegar. Incluye la aplicació
 - Seguridad de roles: `Admin` tiene los permisos completos del panel, incluida la gestión de roles. `npm run seed:admin` prepara `Admin`, `Cliente` y `dealer`; las cuentas nuevas se crean con el rol `Admin`.
 - Pedidos del cliente: `/mis-pedidos`.
 - Correos de pedidos: confirmación, cambios de estado, aviso de envío y entrega se guardan en una bandeja durable y se envían mediante Brevo con reintentos automáticos.
-- Sorteo de regalos: cada pedido pagado elegible recibe un número dentro de una ronda inmutable; al reiniciar se conserva el historial y se crea una ronda nueva. El ganador recibe un aviso por Brevo y el resultado público muestra el número, la fecha y el total de participaciones sin exponer datos personales.
+- Sorteo de regalos: cada pedido pagado elegible recibe un número dentro de una ronda inmutable; al reiniciar se conserva el historial y se crea una ronda nueva. La vista pública muestra únicamente una ronda activa; el historial y los ganadores permanecen en administración o en los pedidos propios del cliente.
 - Participaciones administrativas: la tabla usa paginación en MongoDB y permite consultar 10, 25 o 50 filas por página sin el límite anterior de 500 registros.
 - Reparto y seguimiento: el administrador asigna pedidos pagados o contra entrega a usuarios con rol `dealer`; cada repartidor ve únicamente sus entregas, confirma el efectivo al entregar y el cliente consulta una línea de tiempo desde `/mis-pedidos`.
 - Permisos por rol: `Admin` es el único rol administrativo del sistema, cuenta con todos los permisos del panel y puede gestionar roles desde `/read-rol`. Las cuentas antiguas que usaban el rol retirado se migran automáticamente a `Admin`; ese nombre no puede volver a crearse. Los roles personalizados permiten seleccionar módulos como catálogo, pedidos, pagos, analítica, reseñas, rifa, reparto, usuarios o proveedores. Los permisos se guardan en la colección `roldbs`, se comprueban en páginas y API, y el menú oculta las opciones no autorizadas. Un usuario no puede cambiar su propio rol.

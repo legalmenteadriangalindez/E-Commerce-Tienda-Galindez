@@ -1,5 +1,4 @@
 const raffle = require('../../business/raffleService');
-const banner = require('../../middleware/raffleBanner');
 const catalogPagination = require('../../services/catalogPagination');
 
 function logRaffle(event, req, extra = {}) {
@@ -77,7 +76,6 @@ exports.update = async (req, res, next) => {
     try {
         logRaffle('raffle_update_received', req);
         await raffle.updateConfig(req.body, req.file);
-        banner.clearCache();
         req.session.raffleNotice = 'Configuración de la rifa guardada.';
         logRaffle('raffle_update_succeeded', req);
         return res.redirect(303, '/admin/raffle');
@@ -90,7 +88,6 @@ exports.draw = async (req, res, next) => {
     try {
         if (req.body.confirmar !== 'si') throw new Error('Confirma el sorteo antes de continuar.');
         await raffle.drawWinner();
-        banner.clearCache();
         req.session.raffleNotice = 'Ganador seleccionado. La rifa se desactivó para evitar nuevas participaciones.';
         return res.redirect(303, '/admin/raffle');
     } catch (error) {
@@ -102,7 +99,6 @@ exports.reset = async (req, res, next) => {
     try {
         if (req.body.confirmar !== 'si') throw new Error('Confirma el reinicio antes de continuar.');
         await raffle.resetRaffle();
-        banner.clearCache();
         req.session.raffleNotice = 'Nueva ronda creada. Las participaciones anteriores se conservaron en el historial.';
         return res.redirect(303, '/admin/raffle');
     } catch (error) {

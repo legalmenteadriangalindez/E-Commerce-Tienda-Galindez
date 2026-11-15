@@ -72,7 +72,7 @@ El segundo comando solo debe ejecutarse después de crear y comprobar una copia 
 | Vencimiento              | La reserva dura 30 minutos. GitHub Actions ejecuta el mantenimiento en un horario programado cada 15 minutos (UTC), por lo que la liberación puede ocurrir en la siguiente ejecución. Un pago conocido que sigue pendiente conserva su reserva hasta conciliación.                                                                                   |
 | Wompi                    | Firma del webhook, consulta privada al proveedor y comparación de referencia, importe y moneda. Bandeja de eventos persistente y reintentos.                                                                                                                                                                                                         |
 | Correo de pedidos        | Confirmación de pedido, cambios de estado, aviso de envío y entrega. Los eventos se guardan en MongoDB, se envían por Brevo y se reintentan si el proveedor falla.                                                                                                                                                                                   |
-| Sorteo                   | Cada pedido pagado que cumple el monto recibe un número único dentro de una ronda. Al seleccionar ganador se encola un aviso por Brevo y `/sorteo` publica el número ganador, la fecha y el total de participaciones, sin nombres ni correos.                                                                                                        |
+| Sorteo                   | Cada pedido pagado que cumple el monto recibe un número único dentro de una ronda. La vista pública solo muestra una ronda `ACTIVA` y `activo=true`; al desactivar o finalizar, la tarjeta desaparece inmediatamente. El historial queda en administración y las participaciones propias siguen visibles en los pedidos del cliente.                 |
 | Participaciones          | El panel administrativo consulta las participaciones por páginas desde MongoDB y permite elegir 10, 25 o 50 filas; no carga ni limita la lista a 500 registros. Al reiniciar, la ronda anterior queda cerrada y sus participaciones se conservan en modo histórico. El ganador se obtiene con `$sample` en MongoDB, sin cargar la colección en Node. |
 | Reparto                  | El administrador asigna pedidos pagados desde `/admin/delivery`. El repartidor solo puede consultar y avanzar los pedidos asignados; el cliente ve el historial público de entrega en `/mis-pedidos`.                                                                                                                                                |
 | Cobro tardío o duplicado | El cobro queda registrado y se muestra una incidencia. No se envía automáticamente un pedido sin reserva confirmada.                                                                                                                                                                                                                                 |
@@ -158,6 +158,12 @@ aprobación del negocio: algunos clústeres gratuitos muestran una copia diaria
 opcional con retención limitada, mientras que otros planes requieren usar las
 Database Tools. En todos los casos conserva las copias fuera del repositorio y
 restringe el acceso a las personas que administran la tienda.
+
+La política concreta de frecuencia, retención, ubicación externa, número de
+copias, alertas y registro de la última restauración está en
+[`docs/backup-policy.md`](docs/backup-policy.md). La configuración de Atlas y
+del almacenamiento externo debe completarse con las cuentas autorizadas del
+negocio; no se guarda ninguna credencial en este repositorio.
 
 Para una prueba reproducible sin modificar producción, este repositorio incluye
 `npm run backup:restore-drill`. Usa `mongodump` para copiar **toda** la base (no
