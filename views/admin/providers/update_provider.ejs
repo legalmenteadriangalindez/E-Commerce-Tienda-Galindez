@@ -17,13 +17,23 @@
         </div>
 
         <div class="form-group">
+          <label for="provider-contact">Persona de contacto</label>
+          <input id="provider-contact" type="text" name="contacto" value="<%= provider.contacto || '' %>">
+        </div>
+
+        <div class="form-group">
           <label for="provider-phone">Teléfono</label>
-          <input id="provider-phone" type="text" name="telefono" value="<%= provider.telefono %>">
+          <input id="provider-phone" type="text" name="telefono" value="<%= provider.telefono || '' %>">
+        </div>
+
+        <div class="form-group">
+          <label for="provider-email">Email</label>
+          <input id="provider-email" type="email" name="email" value="<%= provider.email || '' %>">
         </div>
 
         <div class="form-group">
           <label for="provider-address">Dirección</label>
-          <input id="provider-address" type="text" name="direccion" value="<%= provider.direccion %>">
+          <input id="provider-address" type="text" name="direccion" value="<%= provider.direccion || '' %>">
         </div>
 
         <div class="form-group">

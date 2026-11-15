@@ -48,6 +48,21 @@ router.put(
     productController.update
 );
 
+router.post(
+    '/:id/retire',
+    requirePermission(P.CATALOG_WRITE, true),
+    csrfProtection.validateToken,
+    validate(schemas.idParams, 'params'),
+    productController.retire
+);
+router.post(
+    '/:id/reactivate',
+    requirePermission(P.CATALOG_WRITE, true),
+    csrfProtection.validateToken,
+    validate(schemas.idParams, 'params'),
+    productController.reactivate
+);
+
 router.delete(
     '/:id',
     requirePermission(P.CATALOG_WRITE, true),

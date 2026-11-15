@@ -55,6 +55,20 @@ router.post(
     validate(schemas.idParams, 'params'),
     productController.deleteFromPage
 );
+router.post(
+    '/retirar-producto/:id',
+    requirePermission(P.CATALOG_WRITE),
+    csrfProtection.validateToken,
+    validate(schemas.idParams, 'params'),
+    productController.retireFromPage
+);
+router.post(
+    '/reactivar-producto/:id',
+    requirePermission(P.CATALOG_WRITE),
+    csrfProtection.validateToken,
+    validate(schemas.idParams, 'params'),
+    productController.reactivateFromPage
+);
 router.get('/read-stock', requirePermission(P.INVENTORY_READ), productPageController.read_stock);
 
 // Marcas
@@ -93,6 +107,20 @@ router.post(
     requirePermission(P.PROVIDERS_MANAGE),
     csrfProtection.validateToken,
     providerPageController.delete_provider
+);
+router.post(
+    '/retirar-proveedor/:id',
+    requirePermission(P.PROVIDERS_MANAGE),
+    csrfProtection.validateToken,
+    validate(schemas.idParams, 'params'),
+    providerPageController.retire_provider
+);
+router.post(
+    '/reactivar-proveedor/:id',
+    requirePermission(P.PROVIDERS_MANAGE),
+    csrfProtection.validateToken,
+    validate(schemas.idParams, 'params'),
+    providerPageController.reactivate_provider
 );
 
 module.exports = router;

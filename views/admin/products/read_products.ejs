@@ -45,7 +45,8 @@
         <th scope="col">Promoción</th>
         <th scope="col" class="admin-mobile-secondary">Fecha Ingreso</th>
         <th scope="col">Editar</th>
-        <th scope="col">Eliminar</th>
+        <th scope="col">Disponibilidad</th>
+        <th scope="col">Acción</th>
       </tr>
     </thead>
 
@@ -127,11 +128,24 @@
             </a>
           </td>
 
-          <td data-label="Eliminar">
-            <form action="/delete-producto/<%= product._id %>" method="POST">
+          <td data-label="Disponibilidad">
+            <span class="admin-status <%= product.activo === false ? 'admin-status--muted' : 'admin-status--success' %>">
+              <%= product.activo === false ? 'Retirado de la venta' : 'Activo' %>
+            </span>
+          </td>
+
+          <td data-label="Acción">
+            <% if (product.activo === false) { %>
+              <form action="/reactivar-producto/<%= product._id %>" method="POST">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-              <button type="submit" class="btn btn-danger admin-button admin-button--danger">Eliminar</button>
-            </form>
+                <button type="submit" class="btn btn-success admin-button admin-button--primary">Reactivar</button>
+              </form>
+            <% } else { %>
+              <form action="/retirar-producto/<%= product._id %>" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn btn-warning admin-button">Retirar de venta</button>
+              </form>
+            <% } %>
           </td>
         </tr>
       <% }); %>

@@ -6,6 +6,15 @@ var schema = new mongoose.Schema({
         required: true,
     },
 
+    // Código legible para compras y reportes. El _id continúa siendo la
+    // referencia técnica interna y no se reemplaza con este código.
+    codigo: {
+        type: String,
+        unique: true,
+        sparse: true,
+        trim: true,
+    },
+
     contacto: {
         type: String,
     },
@@ -35,9 +44,15 @@ var schema = new mongoose.Schema({
             message: 'Los días de entrega deben ser un número entero',
         },
     },
+
+    activo: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 schema.index({ nombre: 1, _id: 1 });
+schema.index({ activo: 1, nombre: 1, _id: 1 });
 
 const Providerdb = mongoose.model('providerdb', schema);
 

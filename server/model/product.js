@@ -73,6 +73,13 @@ var schema = new mongoose.Schema({
         default: false,
     },
 
+    // Un producto retirado conserva su historial de pedidos e inventario,
+    // pero deja de estar disponible para nuevas ventas públicas.
+    activo: {
+        type: Boolean,
+        default: true,
+    },
+
     fechaIngreso: {
         type: Date,
         default: Date.now,
@@ -84,6 +91,7 @@ schema.index({ stock: 1, nombre: 1 });
 schema.index({ categoria: 1, fechaIngreso: -1 });
 schema.index({ marca: 1, fechaIngreso: -1 });
 schema.index({ enPromocion: 1, fechaIngreso: -1, _id: -1 });
+schema.index({ activo: 1, fechaIngreso: -1, _id: -1 });
 
 const Productdb = mongoose.model('productdb', schema);
 

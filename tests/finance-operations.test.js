@@ -3,9 +3,13 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { randomUUID } = require('node:crypto');
+const mongoose = require('mongoose');
 
 const finance = require('../server/business/financeService');
 const purchase = require('../server/business/supplierPurchaseService');
+const providerService = require('../server/business/providerService');
+const productService = require('../server/business/productService');
+const catalog = require('../server/business/catalogService');
 const schemas = require('../server/validation/financialSchemas');
 
 test('gastos y compras rechazan importes ambiguos, duplicados y fechas imposibles', () => {
@@ -57,7 +61,20 @@ test(
         );
         t.after(() => fixture.close());
         await Promise.all([Order, Sale, Detail, Purchase, Expense, Provider, InventoryMovement].map((m) => m.init()));
-        const provider = await Provider.create({ nombre: 'Proveedor de pruebas' });
+        const provider = await providerService.create({
+            nombre: 'Proveedor de pruebas',
+            contacto: 'Laura Compras',
+            email: 'compras@proveedor.test',
+            telefono: '3000000010',
+            direccion: 'Calle de pruebas 10',
+            diasEntrega: '3',
+        });
+        const savedProvider = await Provider.findById(provider._id).lean();
+        assert.equal(savedProvider.contacto, 'Laura Compras');
+        assert.equal(savedProvider.email, 'compras@proveedor.test');
+        assert.equal(savedProvider.telefono, '3000000010');
+        assert.equal(savedProvider.direccion, 'Calle de pruebas 10');
+        assert.match(savedProvider.codigo, /^PROV-\d{4,}$/);
         const actor = fixture.users.admin;
 
         const key = randomUUID();
@@ -71,6 +88,16 @@ test(
             pagado: 'NO',
             claveIdempotencia: key,
         };
+        const missingProviderData = { ...purchaseData, proveedor: new mongoose.Types.ObjectId().toString() };
+        await assert.rejects(
+            () => purchase.create(missingProviderData, actor),
+            (error) => error.status === 404 && /Proveedor no encontrado/.test(error.message)
+        );
+        const missingProductData = { ...purchaseData, producto: new mongoose.Types.ObjectId().toString() };
+        await assert.rejects(
+            () => purchase.create(missingProductData, actor),
+            (error) => error.status === 404 && /Producto no encontrado/.test(error.message)
+        );
         const created = await purchase.create(purchaseData, actor);
         const repeated = await purchase.create(purchaseData, actor);
         assert.equal(String(created._id), String(repeated._id));
@@ -165,6 +192,27 @@ test(
         assert.equal(monthlyCash.netMovement, finalCash.netMovement);
         assert.equal(monthlyCash.movements.length, finalCash.movements.length);
         assert.equal((await finance.financialSummary('week')).estimatedNetProfit, 1832.83);
+
+        // Retirar es reversible y no borra el documento histórico. Los
+        // productos retirados dejan de aparecer en el catálogo público.
+        await productService.retire(fixture.product._id);
+        assert.equal((await fixture.Product.findById(fixture.product._id).lean()).activo, false);
+        assert.equal(
+            await catalog.findPublicOne(fixture.product._id),
+            null,
+            'un producto retirado no debe exponerse en el detalle público'
+        );
+        await productService.reactivate(fixture.product._id);
+        assert.equal((await fixture.Product.findById(fixture.product._id).lean()).activo, true);
+
+        await providerService.retire(provider._id);
+        assert.equal((await Provider.findById(provider._id).lean()).activo, false);
+        await assert.rejects(
+            () => purchase.create({ ...purchaseData, claveIdempotencia: randomUUID() }, actor),
+            (error) => error.status === 404 && /Proveedor no encontrado/.test(error.message)
+        );
+        await providerService.reactivate(provider._id);
+        assert.equal((await Provider.findById(provider._id).lean()).activo, true);
 
         const admin = await fixture.actor('admin');
         for (const route of ['/admin/finanzas', '/admin/flujo-caja', '/admin/compras-proveedores']) {

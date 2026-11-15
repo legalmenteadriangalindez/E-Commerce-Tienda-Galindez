@@ -19,7 +19,7 @@
         role: 'alert',
         message: purchaseError
     }) %>
-    <p class="finance-explanation">Registrar una compra <strong>no incrementa el inventario</strong>. Solo la acción «Recibir mercancía» añade existencias, registra un movimiento de inventario y actualiza el costo unitario promedio de las unidades disponibles. Registrar el pago refleja una salida en el flujo de caja, sin duplicar costos en las ganancias.</p>
+    <p class="finance-explanation">El flujo tiene tres acciones separadas: <strong>1. Registrar compra</strong> (deja la obligación pendiente), <strong>2. Recibir mercancía</strong> (aumenta el stock una sola vez) y <strong>3. Registrar pago</strong> (marca la salida de caja una sola vez). El código del proveedor es automático: no debes escribir el <code>_id</code> de MongoDB.</p>
     <div class="finance-columns">
         <% if (canManage) { %>
             <section class="finance-panel">
@@ -31,10 +31,10 @@
                         <select name="proveedor" required>
                             <option value="">Selecciona proveedor</option>
                             <% providers.forEach(provider => { %>
-                                <option value="<%= provider._id %>"><%= provider.nombre %></option>
+                                <option value="<%= provider._id %>"><%= provider.nombre %> · <%= provider.codigo || 'código automático' %></option>
                             <% }) %>
                         </select>
-                        <small>Selecciona el nombre del proveedor; el código interno se envía automáticamente.</small>
+                        <small>Selecciona el proveedor por nombre. El código comercial visible es solo informativo; el sistema envía automáticamente la referencia interna.</small>
                     </label>
                     <label>Producto
                         <select name="producto" required>

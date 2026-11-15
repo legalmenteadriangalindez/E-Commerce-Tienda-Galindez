@@ -65,7 +65,9 @@ async function listPublic(options = {}) {
     const categoryName = normalizeFilterValue(options.category);
     const brandName = normalizeFilterValue(options.brand);
     const search = normalizeFilterValue(options.search);
-    const filter = {};
+    // Los documentos antiguos sin el campo siguen considerándose activos
+    // hasta que la migración los complete.
+    const filter = { activo: { $ne: false } };
 
     const [category, brand] = await Promise.all([
         categoryName
@@ -127,7 +129,7 @@ async function searchSuggestions(value, limit = 6) {
 
     const filter = await buildSearchFilter(search);
     const safeLimit = Math.max(1, Math.min(Number.parseInt(limit, 10) || 6, 10));
-    const products = await Product.find({ stock: { $gt: 0 }, ...filter })
+    const products = await Product.find({ stock: { $gt: 0 }, activo: { $ne: false }, ...filter })
         .select('nombre')
         .sort({ fechaIngreso: -1, _id: -1 })
         .limit(safeLimit)
@@ -137,7 +139,7 @@ async function searchSuggestions(value, limit = 6) {
 }
 
 async function listAllPublic() {
-    return Product.find()
+    return Product.find({ activo: { $ne: false } })
         .select(PUBLIC_FIELDS)
         .populate('marca', 'nombre')
         .populate('categoria', 'nombre')
@@ -148,7 +150,7 @@ async function listAllPublic() {
 
 async function findPublicOne(id) {
     if (!mongoose.Types.ObjectId.isValid(id)) return null;
-    return Product.findById(id)
+    return Product.findOne({ _id: id, activo: { $ne: false } })
         .select(PUBLIC_FIELDS)
         .populate('marca', 'nombre')
         .populate('categoria', 'nombre')
@@ -156,7 +158,7 @@ async function findPublicOne(id) {
 }
 
 async function listClothes() {
-    return Product.find()
+    return Product.find({ activo: { $ne: false } })
         .select(PUBLIC_FIELDS)
         .populate({ path: 'categoria', match: { nombre: /^ropa$/i }, select: 'nombre' })
         .populate('marca', 'nombre')

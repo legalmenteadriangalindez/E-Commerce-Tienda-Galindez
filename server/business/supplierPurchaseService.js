@@ -15,8 +15,8 @@ async function create(input, actor) {
     const old = await Purchase.findOne({ claveIdempotencia: value.claveIdempotencia }).lean();
     if (old) return old;
     const [provider, product] = await Promise.all([
-        Provider.exists({ _id: value.proveedor }),
-        Product.exists({ _id: value.producto }),
+        Provider.exists({ _id: value.proveedor, activo: { $ne: false } }),
+        Product.exists({ _id: value.producto, activo: { $ne: false } }),
     ]);
     if (!provider) throw new BusinessError('Proveedor no encontrado.', 404);
     if (!product) throw new BusinessError('Producto no encontrado.', 404);
@@ -109,13 +109,21 @@ async function pay(id, actor) {
 async function list(limit = 40) {
     const [items, providers, products] = await Promise.all([
         Purchase.find({})
-            .populate('proveedor', 'nombre')
+            .populate('proveedor', 'nombre codigo')
             .populate('producto', 'nombre')
             .sort({ createdAt: -1, _id: -1 })
             .limit(limit)
             .lean(),
-        Provider.find({}).select('nombre').sort({ nombre: 1 }).limit(500).lean(),
-        Product.find({}).select('nombre stock precioCosto precioCostoCents').sort({ nombre: 1 }).limit(500).lean(),
+        Provider.find({ activo: { $ne: false } })
+            .select('nombre codigo')
+            .sort({ nombre: 1 })
+            .limit(500)
+            .lean(),
+        Product.find({ activo: { $ne: false } })
+            .select('nombre stock precioCosto precioCostoCents')
+            .sort({ nombre: 1 })
+            .limit(500)
+            .lean(),
     ]);
     return { items, providers, products };
 }
