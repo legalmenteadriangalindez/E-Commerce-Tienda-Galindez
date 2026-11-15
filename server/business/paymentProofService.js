@@ -23,4 +23,15 @@ async function findAuthorizedOrder(mediaId, user) {
     return canReadAsAdmin || canReadAsAssignedDealer ? order : null;
 }
 
-module.exports = { findAuthorizedOrder };
+async function isPrivateMediaId(mediaId) {
+    return Boolean(
+        await Order.exists({
+            $or: [
+                { 'revisionPago.comprobanteFoto.mediaId': mediaId },
+                { 'historialPago.comprobanteFoto.mediaId': mediaId },
+            ],
+        })
+    );
+}
+
+module.exports = { findAuthorizedOrder, isPrivateMediaId };
