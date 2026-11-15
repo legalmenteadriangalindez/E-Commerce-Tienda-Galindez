@@ -6,7 +6,7 @@ const persistence = require('./paymentPersistence');
 const validation = require('./paymentValidation');
 const { CommerceError } = require('./commerceShared');
 
-async function resolveOrder(id, action, note, receipt, adminId, restock = false) {
+async function resolveOrder(id, action, note, receipt, adminId, restock = false, paymentProof = null) {
     validation.objectId(id, 'Pedido inválido.');
     const { motivo, comprobante } = validation.reviewFields(note, receipt);
     return mongoose.connection.transaction(async (session) => {
@@ -60,7 +60,14 @@ async function resolveOrder(id, action, note, receipt, adminId, restock = false)
             delivery.trackState(order, order.estado, adminId);
             await notifications.queueStatus(order, session);
         } else throw new CommerceError('Acción de revisión inválida.');
-        order.revisionPago = { accion: action, motivo, comprobante, administrador: adminId, fecha: new Date() };
+        order.revisionPago = {
+            accion: action,
+            motivo,
+            comprobante,
+            ...(paymentProof ? { comprobanteFoto: paymentProof } : {}),
+            administrador: adminId,
+            fecha: new Date(),
+        };
         await persistence.saveOrder(order, session);
         await persistence.updateOrderHistory(order._id, order.revisionPago, session);
         if (order.wompiTransactionId)

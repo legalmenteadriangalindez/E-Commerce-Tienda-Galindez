@@ -1,11 +1,17 @@
 const { pipeline } = require('node:stream/promises');
 const { bucket, idFromUrl } = require('../business/mediaService');
+const paymentProof = require('../business/paymentProofService');
 async function serve(req, res, next) {
     try {
         const id = idFromUrl('/uploads/' + req.params.filename);
         if (!id) return res.sendStatus(404);
         const [file] = await bucket().find({ _id: id }).limit(1).toArray();
         if (!file) return res.sendStatus(404);
+        // Los comprobantes de pago viven en GridFS, pero nunca deben quedar
+        // disponibles mediante el endpoint público de imágenes.
+        if (file.metadata?.purpose === 'payment-proof' || (await paymentProof.isPrivateMediaId(id))) {
+            return res.sendStatus(404);
+        }
         res.set({
             'Content-Type': 'image/webp',
             'Content-Length': String(file.length),

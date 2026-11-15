@@ -194,6 +194,22 @@ body {
     outline: 0;
 }
 
+.ap-field--wide {
+    grid-column: 1 / -1;
+}
+
+.ap-field input[type='file'] {
+    padding: 0.45rem;
+    font-size: 0.8rem;
+}
+
+.ap-field small {
+    color: var(--color-text-muted);
+    font-size: 0.76rem;
+    font-weight: 500;
+    line-height: 1.45;
+}
+
 .ap-helper {
     display: flex;
     align-items: flex-start;
