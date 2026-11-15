@@ -65,11 +65,6 @@
                 </div>
 
                 <div class="input-group">
-                    <span class="icon">🗺️</span>
-                    <input type="text" name="ubicacion" placeholder="Ubicación">
-                </div>
-
-                <div class="input-group">
                     <span class="icon">🏙️</span>
                     <input type="text" name="ciudad" placeholder="Ciudad">
                 </div>
@@ -79,12 +74,14 @@
                     <input type="text" name="puntoReferencia" placeholder="Punto de referencia">
                 </div>
 
-                <div class="input-group">
+                <div class="input-group input-group--select">
                     <span class="icon">⚧</span>
-                    <select name="genero">
-                        <option value="">Género</option>
+                    <select class="register-select" name="genero" aria-label="Género (opcional)">
+                        <option value="">Selecciona tu género (opcional)</option>
                         <option value="Masculino">Masculino</option>
                         <option value="Femenino">Femenino</option>
+                        <option value="Otro">Otro</option>
+                        <option value="Prefiero no decir">Prefiero no decir</option>
                     </select>
                 </div>
 

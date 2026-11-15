@@ -94,7 +94,7 @@
           <label for="new-user-gender">Género (opcional)</label>
           <select id="new-user-gender" name="genero">
             <option value="">Seleccione...</option>
-            <% ['Masculino', 'Femenino', 'Otro'].forEach(genero => { %>
+            <% ['Masculino', 'Femenino', 'Otro', 'Prefiero no decir'].forEach(genero => { %>
               <option value="<%= genero %>" <%= values.genero === genero ? 'selected' : '' %>><%= genero %></option>
             <% }) %>
           </select>

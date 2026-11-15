@@ -50,6 +50,11 @@ h3 {
     transition: 0.3s;
 }
 
+.input-group:focus-within {
+    background: var(--color-surface);
+    box-shadow: 0 0 0 3px rgba(242, 169, 92, 0.35);
+}
+
 .input-group input {
     border: none;
     outline: none;
@@ -152,17 +157,34 @@ h3 {
     }
 }
 
-/* SELECT IGUAL A INPUT */
-.input-group select {
+.input-group--select {
+    position: relative;
+}
+
+.input-group--select::after {
+    position: absolute;
+    right: 18px;
+    color: var(--color-brand-accent);
+    content: '⌄';
+    font-size: 1.15rem;
+    font-weight: 700;
+    pointer-events: none;
+    transform: translateY(-2px);
+}
+
+/* SELECTOR DE GÉNERO */
+.input-group select.register-select {
+    appearance: none;
     border: none;
     outline: none;
     background: transparent;
     width: 100%;
     color: var(--color-brand-dark);
     font-size: 14px;
+    cursor: pointer;
+    padding: 3px 34px 3px 0;
 }
 
-/* OPCIONAL: mejorar apariencia */
-.input-group select option {
+.input-group select.register-select option {
     color: #000;
 }
