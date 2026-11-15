@@ -10,7 +10,7 @@ const read = (name) => fs.readFileSync(path.join(root, name), 'utf8');
 
 test('los estilos globales no anulan los anchos máximos de cada pantalla administrativa', () => {
     const adminUi = read('public/css/components/admin-ui.css');
-    const rootRule = adminUi.match(/body\.admin-app > :not\(header\):not\(footer\)\s*\{([^}]*)\}/);
+    const rootRule = adminUi.match(/body\.admin-app \.admin-content\s*\{([^}]*)\}/);
 
     assert.ok(rootRule, 'debe existir una regla de seguridad para los contenedores');
     assert.match(rootRule[1], /min-width:\s*0;/);
@@ -36,15 +36,15 @@ test('los estilos globales no anulan los anchos máximos de cada pantalla admini
     }
 
     const brands = read('public/css/pages/admin-brand-forms.css');
-    assert.match(brands, /body\s*>\s*form\s*\{[^}]*max-width:\s*650px;/);
-    assert.match(brands, /body\s*>\s*form\s*\{[^}]*margin:\s*0 auto 40px;/);
+    assert.match(brands, /\.admin-content\s*>\s*form\s*\{[^}]*max-width:\s*650px;/);
+    assert.match(brands, /\.admin-content\s*>\s*form\s*\{[^}]*margin:\s*0 auto 40px;/);
 });
 
 test('las tarjetas pequeñas quedan centradas sin modificar las vistas ni sus formularios', () => {
     const adminUi = read('public/css/components/admin-ui.css');
     assert.match(
         adminUi,
-        /body\.admin-app > \.page-wrapper > \.form-card\.small-card\s*\{\s*margin-inline:\s*auto;\s*\}/
+        /body\.admin-app \.admin-content > \.page-wrapper > \.form-card\.small-card\s*\{\s*margin-inline:\s*auto;\s*\}/
     );
 
     for (const page of [
@@ -70,8 +70,5 @@ test('la barra lateral reserva espacio solo en escritorio y el resto de páginas
     assert.match(sidebar, /@media \(max-width: 991px\)\s*\{\s*body\.admin-app\s*\{\s*padding-left:\s*0;/);
     assert.match(admin, /\.admin-shell\s*\{[^}]*width:\s*min\(100% - 2rem, 1440px\)/);
     assert.match(adminUi, /@media \(max-width: 760px\)/);
-    assert.match(
-        adminUi,
-        /body\.admin-app > :not\(header\):not\(footer\) :is\(img, video, canvas\)\s*\{\s*max-width:\s*100%;/
-    );
+    assert.match(adminUi, /body\.admin-app \.admin-content :is\(img, video, canvas\)\s*\{\s*max-width:\s*100%;/);
 });

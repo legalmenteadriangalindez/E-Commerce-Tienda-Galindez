@@ -69,6 +69,10 @@ test('los componentes visuales tienen una hoja canónica y el área administrati
     const adminHeader = fs.readFileSync(path.join(viewsRoot, 'include', '_headerAdmin.ejs'), 'utf8');
     assert.match(adminHeader, /\/css\/components\/admin\.css/);
     assert.ok(fs.existsSync(path.join(cssRoot, 'components', 'admin.css')));
+    assert.match(adminHeader, /<div class="admin-content">/);
+
+    const adminFooter = fs.readFileSync(path.join(viewsRoot, 'include', '_footerAdmin.ejs'), 'utf8');
+    assert.match(adminFooter, /^\s*<\/div>\s*$/m);
 });
 
 test('la estructura core contiene reset, layout y tema canónicos', () => {
@@ -78,9 +82,13 @@ test('la estructura core contiene reset, layout y tema canónicos', () => {
 });
 
 test('las capas globales no publican selectores heredados sin ámbito', () => {
+    const adminUiSource = fs.readFileSync(path.join(cssRoot, 'components', 'admin-ui.css'), 'utf8');
     const layoutSource = fs.readFileSync(path.join(cssRoot, 'core', 'layout.css'), 'utf8');
     const headerSource = fs.readFileSync(path.join(cssRoot, 'core', 'header.css'), 'utf8');
     const footerSource = fs.readFileSync(path.join(cssRoot, 'core', 'footer.css'), 'utf8');
+
+    assert.doesNotMatch(adminUiSource, /body\.admin-app\s*>\s*:not\(header\):not\(footer\)/);
+    assert.match(adminUiSource, /body\.admin-app \.admin-content/);
 
     assert.doesNotMatch(layoutSource, /(?:^|[,{\s])\.container\s*\{/);
     assert.doesNotMatch(layoutSource, /\.(?:pay-link|descripcion-corta|text-sumary)\b/);

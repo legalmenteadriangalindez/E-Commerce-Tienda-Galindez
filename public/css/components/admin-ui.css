@@ -15,22 +15,22 @@ body.admin-app {
 /* No imponer max-width aquí: las páginas definen su propio ancho máximo.
  * La regla anterior sobrescribía .page-wrapper, .admin-brand-form y otros
  * formularios centrados, porque tenía mayor especificidad que sus CSS. */
-body.admin-app > :not(header):not(footer) {
+body.admin-app .admin-content {
     box-sizing: border-box;
     min-width: 0;
 }
 
 /* Los formularios pequeños de categorías y roles se centran dentro
  * del ancho que ya establece su contenedor de página. */
-body.admin-app > .page-wrapper > .form-card.small-card {
+body.admin-app .admin-content > .page-wrapper > .form-card.small-card {
     margin-inline: auto;
 }
 
-body.admin-app > :not(header):not(footer) :is(img, video, canvas) {
+body.admin-app .admin-content :is(img, video, canvas) {
     max-width: 100%;
 }
 
-body.admin-app > :not(header):not(footer) h1 {
+body.admin-app .admin-content h1 {
     margin-top: 0;
     color: var(--color-brand-dark);
     font-size: clamp(1.5rem, 2vw, 2rem);
@@ -38,13 +38,13 @@ body.admin-app > :not(header):not(footer) h1 {
     line-height: 1.2;
 }
 
-body.admin-app > :not(header):not(footer) :is(h2, h3) {
+body.admin-app .admin-content :is(h2, h3) {
     color: var(--color-brand-dark);
     font-weight: 700;
     line-height: 1.3;
 }
 
-body.admin-app > :not(header):not(footer) :is(.admin-list-heading, .admin-page-header) {
+body.admin-app .admin-content :is(.admin-list-heading, .admin-page-header) {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
@@ -52,7 +52,7 @@ body.admin-app > :not(header):not(footer) :is(.admin-list-heading, .admin-page-h
     margin-bottom: 1.25rem;
 }
 
-body.admin-app > :not(header):not(footer) :is(.admin-list-eyebrow, .admin-page-header__eyebrow) {
+body.admin-app .admin-content :is(.admin-list-eyebrow, .admin-page-header__eyebrow) {
     margin: 0 0 0.3rem;
     color: var(--color-brand-accent-dark);
     font-size: 0.73rem;
@@ -61,14 +61,14 @@ body.admin-app > :not(header):not(footer) :is(.admin-list-eyebrow, .admin-page-h
     text-transform: uppercase;
 }
 
-body.admin-app > :not(header):not(footer) :is(.admin-list-description, .admin-page-header__description) {
+body.admin-app .admin-content :is(.admin-list-description, .admin-page-header__description) {
     max-width: 720px;
     margin: 0.45rem 0 0;
     color: var(--color-text-muted);
     line-height: 1.5;
 }
 
-body.admin-app > :not(header):not(footer) :is(.admin-list-primary, .admin-page-header__action, .admin-button--primary) {
+body.admin-app .admin-content :is(.admin-list-primary, .admin-page-header__action, .admin-button--primary) {
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
@@ -89,16 +89,14 @@ body.admin-app > :not(header):not(footer) :is(.admin-list-primary, .admin-page-h
         transform 160ms ease;
 }
 
-body.admin-app
-    > :not(header):not(footer)
-    :is(.admin-list-primary, .admin-page-header__action, .admin-button--primary):hover {
+body.admin-app .admin-content :is(.admin-list-primary, .admin-page-header__action, .admin-button--primary):hover {
     border-color: var(--color-brand-accent-dark);
     background: var(--color-brand-dark);
     color: var(--color-surface);
     transform: translateY(-1px);
 }
 
-body.admin-app > :not(header):not(footer) :is(.admin-list-empty, .admin-empty-state) {
+body.admin-app .admin-content :is(.admin-list-empty, .admin-empty-state) {
     margin: 1.1rem 0 0;
     padding: 1.35rem;
     border: 1px dashed var(--color-border);
@@ -108,20 +106,20 @@ body.admin-app > :not(header):not(footer) :is(.admin-list-empty, .admin-empty-st
     text-align: center;
 }
 
-body.admin-app > :not(header):not(footer) .admin-card {
+body.admin-app .admin-content .admin-card {
     border: 1px solid var(--color-border);
     background: var(--color-surface);
 }
 
-body.admin-app > :not(header):not(footer) .admin-page-header__content {
+body.admin-app .admin-content .admin-page-header__content {
     min-width: 0;
 }
 
-body.admin-app > :not(header):not(footer) .admin-page-header__action {
+body.admin-app .admin-content .admin-page-header__action {
     white-space: nowrap;
 }
 
-body.admin-app > :not(header):not(footer) .admin-empty-state__icon {
+body.admin-app .admin-content .admin-empty-state__icon {
     display: grid;
     width: 2.7rem;
     height: 2.7rem;
@@ -133,34 +131,34 @@ body.admin-app > :not(header):not(footer) .admin-empty-state__icon {
     font-size: 1.15rem;
 }
 
-body.admin-app > :not(header):not(footer) .admin-empty-state__message,
-body.admin-app > :not(header):not(footer) .admin-empty-state__description {
+body.admin-app .admin-content .admin-empty-state__message,
+body.admin-app .admin-content .admin-empty-state__description {
     margin: 0;
 }
 
-body.admin-app > :not(header):not(footer) .admin-empty-state__message {
+body.admin-app .admin-content .admin-empty-state__message {
     color: var(--color-brand-dark);
     font-weight: 750;
 }
 
-body.admin-app > :not(header):not(footer) .admin-empty-state__description {
+body.admin-app .admin-content .admin-empty-state__description {
     color: var(--color-text-muted);
     line-height: 1.5;
 }
 
-body.admin-app > :not(header):not(footer) .admin-empty-state__link {
+body.admin-app .admin-content .admin-empty-state__link {
     margin-top: 0.25rem;
     color: var(--color-brand-accent-dark);
     font-weight: 700;
     text-decoration: none;
 }
 
-body.admin-app > :not(header):not(footer) .admin-empty-state__link:hover {
+body.admin-app .admin-content .admin-empty-state__link:hover {
     color: var(--color-brand-dark);
     text-decoration: underline;
 }
 
-body.admin-app > :not(header):not(footer) .admin-alert {
+body.admin-app .admin-content .admin-alert {
     display: flex;
     align-items: flex-start;
     gap: 0.6rem;
@@ -172,48 +170,48 @@ body.admin-app > :not(header):not(footer) .admin-alert {
     line-height: 1.45;
 }
 
-body.admin-app > :not(header):not(footer) .admin-alert > i {
+body.admin-app .admin-content .admin-alert > i {
     flex: 0 0 auto;
     margin-top: 0.12rem;
 }
 
-body.admin-app > :not(header):not(footer) .admin-alert--success {
+body.admin-app .admin-content .admin-alert--success {
     border-color: #b8dec2;
     background: #f0faf2;
 }
 
-body.admin-app > :not(header):not(footer) .admin-alert--success > i {
+body.admin-app .admin-content .admin-alert--success > i {
     color: var(--color-success);
 }
 
-body.admin-app > :not(header):not(footer) .admin-alert--error {
+body.admin-app .admin-content .admin-alert--error {
     border-color: #e6b8b8;
     background: #fff5f5;
 }
 
-body.admin-app > :not(header):not(footer) .admin-alert--error > i {
+body.admin-app .admin-content .admin-alert--error > i {
     color: var(--color-danger);
 }
 
-body.admin-app > :not(header):not(footer) .admin-alert--warning {
+body.admin-app .admin-content .admin-alert--warning {
     border-color: #ead49a;
     background: #fffaf0;
 }
 
-body.admin-app > :not(header):not(footer) .admin-alert--warning > i {
+body.admin-app .admin-content .admin-alert--warning > i {
     color: #9a6d00;
 }
 
-body.admin-app > :not(header):not(footer) .admin-alert--info {
+body.admin-app .admin-content .admin-alert--info {
     border-color: #c9d8e8;
     background: #f4f8fc;
 }
 
-body.admin-app > :not(header):not(footer) .admin-alert--info > i {
+body.admin-app .admin-content .admin-alert--info > i {
     color: var(--color-primary);
 }
 
-body.admin-app > :not(header):not(footer) .admin-filter-bar {
+body.admin-app .admin-content .admin-filter-bar {
     display: flex;
     align-items: flex-end;
     flex-wrap: wrap;
@@ -226,27 +224,27 @@ body.admin-app > :not(header):not(footer) .admin-filter-bar {
     box-shadow: var(--shadow-soft);
 }
 
-body.admin-app > :not(header):not(footer) .admin-filter-bar__field {
+body.admin-app .admin-content .admin-filter-bar__field {
     display: grid;
     flex: 1 1 12rem;
     gap: 0.35rem;
     min-width: min(100%, 12rem);
 }
 
-body.admin-app > :not(header):not(footer) .admin-filter-bar__label {
+body.admin-app .admin-content .admin-filter-bar__label {
     color: var(--color-brand-dark);
     font-size: 0.78rem;
     font-weight: 700;
 }
 
-body.admin-app > :not(header):not(footer) .admin-filter-bar__actions {
+body.admin-app .admin-content .admin-filter-bar__actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
 }
 
 body.admin-app
-    > :not(header):not(footer)
+    .admin-content
     :is(
         button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not(
                 [data-password-toggle]
@@ -287,7 +285,7 @@ body.admin-app
 }
 
 body.admin-app
-    > :not(header):not(footer)
+    .admin-content
     :is(.btn-primary, .btn-success, .btn-warning, .ui-button--primary, .admin-button--primary) {
     border-color: var(--color-brand-accent-dark);
     background: var(--color-brand-accent-dark);
@@ -295,7 +293,7 @@ body.admin-app
 }
 
 body.admin-app
-    > :not(header):not(footer)
+    .admin-content
     :is(.btn-primary, .btn-success, .btn-warning, .ui-button--primary, .admin-button--primary):hover {
     border-color: var(--color-brand-dark);
     background: var(--color-brand-dark);
@@ -303,7 +301,7 @@ body.admin-app
 }
 
 body.admin-app
-    > :not(header):not(footer)
+    .admin-content
     :is(.btn-info, .btn-secondary, .btn-outline-primary, .btn-outline-secondary, .admin-button--secondary) {
     border-color: var(--color-border);
     background: var(--color-surface);
@@ -311,26 +309,26 @@ body.admin-app
 }
 
 body.admin-app
-    > :not(header):not(footer)
+    .admin-content
     :is(.btn-info, .btn-secondary, .btn-outline-primary, .btn-outline-secondary, .admin-button--secondary):hover {
     border-color: var(--color-brand-dark);
     background: var(--color-brand-dark);
     color: var(--color-surface);
 }
 
-body.admin-app > :not(header):not(footer) :is(.btn-danger, .admin-button--danger) {
+body.admin-app .admin-content :is(.btn-danger, .admin-button--danger) {
     border-color: var(--color-danger);
     background: var(--color-danger);
     color: var(--color-surface);
 }
 
-body.admin-app > :not(header):not(footer) :is(.btn-dark, .admin-button--dark) {
+body.admin-app .admin-content :is(.btn-dark, .admin-button--dark) {
     border-color: var(--color-brand-dark);
     background: var(--color-brand-dark);
     color: var(--color-surface);
 }
 
-body.admin-app > :not(header):not(footer) .admin-status {
+body.admin-app .admin-content .admin-status {
     display: inline-flex;
     align-items: center;
     min-height: 1.8rem;
@@ -344,19 +342,19 @@ body.admin-app > :not(header):not(footer) .admin-status {
     line-height: 1.1;
 }
 
-body.admin-app > :not(header):not(footer) .admin-status--success {
+body.admin-app .admin-content .admin-status--success {
     border-color: color-mix(in srgb, var(--color-success) 35%, var(--color-border));
     background: color-mix(in srgb, var(--color-success) 12%, var(--color-surface));
     color: var(--color-success);
 }
 
-body.admin-app > :not(header):not(footer) .admin-status--muted {
+body.admin-app .admin-content .admin-status--muted {
     background: var(--color-surface-soft);
     color: var(--color-text-muted);
 }
 
 body.admin-app
-    > :not(header):not(footer)
+    .admin-content
     :is(
         button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not(
                 [data-password-toggle]
@@ -372,7 +370,7 @@ body.admin-app
         [role='button']
     ):focus-visible,
 body.admin-app
-    > :not(header):not(footer)
+    .admin-content
     :is(
         input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='submit']),
         select,
@@ -383,7 +381,7 @@ body.admin-app
 }
 
 body.admin-app
-    > :not(header):not(footer)
+    .admin-content
     :is(
         input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='submit']),
         select,
@@ -397,12 +395,12 @@ body.admin-app
     font: inherit;
 }
 
-body.admin-app > :not(header):not(footer) textarea {
+body.admin-app .admin-content textarea {
     min-height: 7rem;
 }
 
 body.admin-app
-    > :not(header):not(footer)
+    .admin-content
     :is(
         .admin-panel,
         .ui-card,
@@ -430,7 +428,7 @@ body.admin-app
 }
 
 body.admin-app
-    > :not(header):not(footer)
+    .admin-content
     :is(.table-responsive, .admin-table-wrap, .ui-table-wrap, [class*='table-wrap'], [class*='table-scroll']):not(
         .admin-mobile-card-wrap
     ) {
@@ -441,7 +439,7 @@ body.admin-app
 }
 
 body.admin-app
-    > :not(header):not(footer)
+    .admin-content
     :is(
         button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not(
                 [data-password-toggle]
@@ -462,7 +460,7 @@ body.admin-app
 }
 
 body.admin-app
-    > :not(header):not(footer)
+    .admin-content
     :is(
         a.btn,
         a.admin-list-primary,
@@ -477,78 +475,78 @@ body.admin-app
 }
 
 @media (max-width: 760px) {
-    body.admin-app > :not(header):not(footer) .admin-shell {
+    body.admin-app .admin-content .admin-shell {
         width: min(100% - 1.25rem, 1440px);
         margin: 1.25rem auto 2.5rem;
     }
 
-    body.admin-app > :not(header):not(footer) .admin-list-page {
+    body.admin-app .admin-content .admin-list-page {
         padding-right: 0;
         padding-left: 0;
     }
 
-    body.admin-app > :not(header):not(footer) :is(.admin-list-heading, .admin-page-header) {
+    body.admin-app .admin-content :is(.admin-list-heading, .admin-page-header) {
         align-items: stretch;
         flex-direction: column;
         gap: 0.9rem;
     }
 
     body.admin-app
-        > :not(header):not(footer)
+        .admin-content
         :is(.admin-list-primary, .admin-page-header__action, .admin-button--primary, .admin-button--secondary) {
         width: 100%;
     }
 
-    body.admin-app > :not(header):not(footer) :is(.admin-toolbar, .admin-toolbar__filters) {
+    body.admin-app .admin-content :is(.admin-toolbar, .admin-toolbar__filters) {
         align-items: stretch;
         flex-direction: column;
     }
 
-    body.admin-app > :not(header):not(footer) .admin-toolbar__filters > * {
+    body.admin-app .admin-content .admin-toolbar__filters > * {
         width: 100%;
         min-width: 0;
     }
 
-    body.admin-app > :not(header):not(footer) .admin-filter-bar {
+    body.admin-app .admin-content .admin-filter-bar {
         align-items: stretch;
         flex-direction: column;
     }
 
-    body.admin-app > :not(header):not(footer) .admin-filter-bar__field,
-    body.admin-app > :not(header):not(footer) .admin-filter-bar__actions {
+    body.admin-app .admin-content .admin-filter-bar__field,
+    body.admin-app .admin-content .admin-filter-bar__actions {
         width: 100%;
         min-width: 0;
     }
 
-    body.admin-app > :not(header):not(footer) .admin-filter-bar__actions > * {
+    body.admin-app .admin-content .admin-filter-bar__actions > * {
         flex: 1 1 100%;
     }
 
-    body.admin-app > :not(header):not(footer) :is(.ui-form-grid, .admin-form-grid) {
+    body.admin-app .admin-content :is(.ui-form-grid, .admin-form-grid) {
         grid-template-columns: minmax(0, 1fr);
     }
 
-    body.admin-app > :not(header):not(footer) .ui-form__actions {
+    body.admin-app .admin-content .ui-form__actions {
         align-items: stretch;
         flex-direction: column;
     }
 
-    body.admin-app > :not(header):not(footer) .ui-form__actions > * {
+    body.admin-app .admin-content .ui-form__actions > * {
         width: 100%;
     }
 
-    body.admin-app > :not(header):not(footer) .admin-pagination__links {
+    body.admin-app .admin-content .admin-pagination__links {
         flex-wrap: wrap;
         justify-content: center;
     }
 
-    body.admin-app > :not(header):not(footer) .admin-pagination {
+    body.admin-app .admin-content .admin-pagination {
         align-items: stretch;
         flex-direction: column;
     }
 
     body.admin-app
-        > :not(header):not(footer)
+        .admin-content
         :is(.table-responsive, .admin-table-wrap, .ui-table-wrap, [class*='table-wrap'], [class*='table-scroll']):not(
             .admin-mobile-card-wrap
         ) {
@@ -558,7 +556,7 @@ body.admin-app
 
 @media (max-width: 540px) {
     body.admin-app
-        > :not(header):not(footer)
+        .admin-content
         :is(
             button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not(
                     [data-password-toggle]
@@ -577,14 +575,14 @@ body.admin-app
         max-width: 100%;
     }
 
-    body.admin-app > :not(header):not(footer) form > :is(button[type='submit'], input[type='submit']) {
+    body.admin-app .admin-content form > :is(button[type='submit'], input[type='submit']) {
         width: 100%;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
     body.admin-app
-        > :not(header):not(footer)
+        .admin-content
         :is(
             button:not(.navbar-toggler):not(.btn-close):not(.dropdown-item):not(.password-toggle):not(
                     [data-password-toggle]

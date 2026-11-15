@@ -7,7 +7,7 @@ body {
 }
 
 /* Se conserva este contrato para los formularios administrativos directos. */
-body > form {
+.admin-content > form {
     max-width: 650px;
     margin: 0 auto 40px;
 }
