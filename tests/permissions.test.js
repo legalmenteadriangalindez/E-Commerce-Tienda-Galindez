@@ -34,6 +34,14 @@ test('un rol personalizado solo puede usar los módulos seleccionados', () => {
     assert.equal(auth.hasPermission({ rol: role }, P.PAYMENTS_MANAGE), false);
 });
 
+test('la selección explícita de un rol coincide con sus permisos efectivos', () => {
+    const selected = [P.ADMIN_ACCESS, P.CATALOG_READ, P.ROLES_MANAGE];
+    const role = { nombre: 'Auditor', permisos: selected };
+    assert.deepEqual(auth.permissionsForRole(role), selected);
+    assert.equal(auth.hasPermission({ rol: role }, P.CATALOG_READ), true);
+    assert.equal(auth.hasPermission({ rol: role }, P.SALES_READ), false);
+});
+
 test('un permiso administrativo sin acceso al panel no autoriza una ruta', () => {
     const role = { nombre: 'Integración', permisos: [P.CATALOG_READ] };
     assert.equal(auth.hasPermission({ rol: role }, P.CATALOG_READ), false);
