@@ -12,6 +12,32 @@ body {
     margin-bottom: 2rem;
 }
 
+.best-selling-period {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: -1rem 0 1rem;
+}
+
+.best-selling-period a {
+    border: 1px solid var(--color-brand-accent);
+    border-radius: 999px;
+    color: var(--color-brand-dark);
+    padding: 0.55rem 0.9rem;
+    text-decoration: none;
+}
+
+.best-selling-period a:hover,
+.best-selling-period a.active {
+    background: var(--color-brand-accent);
+    color: var(--color-brand-dark);
+}
+
+.best-selling-period__summary {
+    color: #666;
+    margin: -0.5rem 0 1.5rem;
+}
+
 .product-card {
     background: white;
     border-radius: 20px;

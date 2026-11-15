@@ -8,6 +8,7 @@ const Order = require('../server/model/order');
 const Sale = require('../server/model/sales');
 const Detail = require('../server/model/saleDetails');
 const Event = require('../server/model/paymentEvent');
+const salesPage = require('../server/controller/pages/renderSales');
 
 test('periodos de analítica y variación se calculan de forma estable', () => {
     const now = new Date('2026-10-27T12:00:00.000Z');
@@ -21,6 +22,23 @@ test('periodos de analítica y variación se calculan de forma estable', () => {
     assert.equal(analytics.percentChange(120, 100), 20);
     assert.equal(analytics.percentChange(0, 0), 0);
     assert.equal(analytics.percentChange(120, 0), null);
+});
+
+test('productos más vendidos acepta historial completo y periodos acotados', () => {
+    const now = new Date('2026-10-27T12:00:00.000Z');
+    const all = salesPage.bestSellingPeriod('all', now);
+    const week = salesPage.bestSellingPeriod('week', now);
+    const month = salesPage.bestSellingPeriod('month', now);
+    const invalid = salesPage.bestSellingPeriod('periodo-invalido', now);
+
+    assert.deepEqual(all, { key: 'all', label: 'Todo el historial', start: null, end: null });
+    assert.equal(week.key, 'week');
+    assert.equal(week.label, 'Últimos 7 días');
+    assert.equal(week.end.getTime(), now.getTime());
+    assert.equal(week.end.getTime() - week.start.getTime(), 7 * 24 * 60 * 60 * 1000);
+    assert.equal(month.key, 'month');
+    assert.equal(month.label, 'Últimos 30 días');
+    assert.equal(invalid.key, 'all');
 });
 
 test(
@@ -58,6 +76,8 @@ test(
         assert.equal(week.kpis.orders.current, 1);
         assert.equal(week.kpis.units.current, 2);
         assert.equal(week.topProducts[0].unidades, 2);
+        const bestSelling = await analytics.bestSellingProducts(10, week.period.start, week.period.end);
+        assert.equal(bestSelling[0].unidadesVendidas, 2);
         assert.equal(week.topCategories[0].nombre, 'Prueba');
         assert.equal(week.channels[0].nombre, 'Wompi');
         assert.equal(week.trend.length, 1);

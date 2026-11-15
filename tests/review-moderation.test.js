@@ -370,6 +370,56 @@ test(
             assert.match(html, /name="returnTo"[^>]+producto=Caf/);
         });
 
+        await t.test('ordena por productos con más reseñas y conserva la paginación', async () => {
+            const mostReviewedProduct = await app.Product.create({
+                nombre: 'Producto con más reseñas',
+                descripcion: 'Producto de prueba para ordenar reseñas',
+                precioCosto: 8000,
+                precioVenta: 12000,
+                stock: 10,
+                marca: app.product.marca,
+                categoria: app.product.categoria,
+                fotos: [],
+            });
+            await app.Review.insertMany([
+                {
+                    producto: app.product._id,
+                    usuario: app.users.owner._id,
+                    calificacion: 5,
+                    comentario: 'Una reseña del producto base.',
+                    fecha: new Date('2026-01-01T00:00:00.000Z'),
+                },
+                {
+                    producto: mostReviewedProduct._id,
+                    usuario: app.users.owner._id,
+                    calificacion: 5,
+                    comentario: 'Primera reseña del producto destacado.',
+                    fecha: new Date('2026-01-02T00:00:00.000Z'),
+                },
+                {
+                    producto: mostReviewedProduct._id,
+                    usuario: app.users.second._id,
+                    calificacion: 4,
+                    comentario: 'Segunda reseña del producto destacado.',
+                    fecha: new Date('2026-01-03T00:00:00.000Z'),
+                },
+            ]);
+
+            const ranked = await getPanel('?orden=mas_resenas');
+            assert.equal(ranked.filters.orden, 'mas_resenas');
+            assert.equal(ranked.reviews.length, 3);
+            assert.deepEqual(
+                ranked.reviews.slice(0, 2).map((review) => String(review.producto._id)),
+                [String(mostReviewedProduct._id), String(mostReviewedProduct._id)]
+            );
+            assert.equal(ranked.reviews[0].productReviewCount, 2);
+            assert.equal(ranked.reviews[2].productReviewCount, 1);
+
+            const html = await (await app.request(actors.admin, '/admin/reviews?orden=mas_resenas')).text();
+            assert.match(html, /Productos con más reseñas primero/);
+            assert.match(html, /2 reseñas de este producto/);
+        });
+
         await t.test('el historial conserva las últimas 50 acciones sin modificar la reseña', async () => {
             const review = await seed();
             await app.Review.collection.updateOne(

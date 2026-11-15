@@ -15,6 +15,15 @@ restauración.
 | Alerta de fallos        | Alertas de Atlas para retraso o fallo de snapshots y notificaciones de fallo del workflow de GitHub Actions al equipo administrador. Una alerta no sustituye la revisión del informe.                                                    |
 | Restauración productiva | Manual, aprobada y ejecutada por una persona autorizada. El restaurador del repositorio solo acepta una base nueva y desechable.                                                                                                         |
 
+Además de los snapshots administrados por Atlas, el repositorio ejecuta el
+workflow **Respaldo cifrado diario de MongoDB** a las 02:00 hora de Colombia.
+Genera un `.tgbackup` con AES-256-GCM, conserva el manifiesto y lo publica como
+artefacto externo durante 35 días. El job requiere los secretos
+`PROD_MONGO_URI`, `PROD_MONGO_DB_NAME` y `PROD_BACKUP_PASSPHRASE`; si falta
+cualquiera, falla sin tocar la base de producción. Este artefacto es una copia
+de contingencia y no sustituye Atlas ni la copia externa de objetos definida
+arriba.
+
 ## Prueba de restauración
 
 La prueba reproducible se ejecuta con **Prueba manual de restauración MongoDB**

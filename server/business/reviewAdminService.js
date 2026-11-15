@@ -16,6 +16,7 @@ function normalizeFilters(query = {}) {
         calificacion:
             typeof query.calificacion === 'string' && /^[1-5]$/.test(query.calificacion) ? query.calificacion : '',
         respuesta: ['con_respuesta', 'sin_respuesta'].includes(query.respuesta) ? query.respuesta : 'todas',
+        orden: query.orden === 'mas_resenas' ? 'mas_resenas' : 'recientes',
     };
 }
 
@@ -28,10 +29,53 @@ function literalRegex(text) {
 function panelUrl(filters, page = 1) {
     const query = new URLSearchParams();
     for (const [key, value] of Object.entries(filters)) {
-        if (value && value !== 'todas') query.set(key, value);
+        if (value && value !== 'todas' && !(key === 'orden' && value === 'recientes')) query.set(key, value);
     }
     if (page > 1) query.set('page', String(page));
     return '/admin/reviews' + (query.size ? '?' + query.toString() : '');
+}
+
+const REVIEW_PROJECTION =
+    'producto usuario calificacion comentario fotos video fecha fechaEdicion oculta moderacion respuestaTienda historialGestion __v';
+
+function populateReviews(query) {
+    return query
+        .select(REVIEW_PROJECTION)
+        .populate('producto', 'nombre')
+        .populate('usuario', 'nombre')
+        .populate('moderacion.administrador', 'nombre')
+        .populate('respuestaTienda.administrador', 'nombre')
+        .populate('historialGestion.administrador', 'nombre');
+}
+
+async function mostReviewedIds(filter, skip, limit) {
+    return Reviewdb.aggregate([
+        { $match: filter },
+        {
+            $group: {
+                _id: '$producto',
+                reviewCount: { $sum: 1 },
+                reviews: {
+                    $push: {
+                        id: '$_id',
+                        fecha: { $ifNull: ['$fecha', new Date(0)] },
+                    },
+                },
+            },
+        },
+        { $unwind: '$reviews' },
+        {
+            $sort: {
+                reviewCount: -1,
+                'reviews.fecha': -1,
+                'reviews.id': -1,
+                _id: 1,
+            },
+        },
+        { $skip: skip },
+        { $limit: limit },
+        { $project: { _id: '$reviews.id', reviewCount: 1 } },
+    ]);
 }
 
 async function getPage(query = {}) {
@@ -84,25 +128,31 @@ async function getPage(query = {}) {
     const totalPages = Math.ceil(totalItems / PAGE_SIZE);
     const requested = Number(query.page);
     const page = Math.min(Number.isSafeInteger(requested) && requested > 0 ? requested : 1, totalPages || 1);
-    const reviews = await Reviewdb.find(filter)
-        .select(
-            'producto usuario calificacion comentario fotos video fecha fechaEdicion oculta moderacion respuestaTienda historialGestion __v'
-        )
-        .populate('producto', 'nombre')
-        .populate('usuario', 'nombre')
-        .populate('moderacion.administrador', 'nombre')
-        .populate('respuestaTienda.administrador', 'nombre')
-        .populate('historialGestion.administrador', 'nombre')
-        .sort({ fecha: -1, _id: -1 })
-        .skip((page - 1) * PAGE_SIZE)
-        .limit(PAGE_SIZE)
-        .lean();
+    let reviews;
+    let reviewCounts = new Map();
+    if (filters.orden === 'mas_resenas') {
+        const ranked = await mostReviewedIds(filter, (page - 1) * PAGE_SIZE, PAGE_SIZE);
+        reviewCounts = new Map(ranked.map((row) => [String(row._id), row.reviewCount]));
+        const ids = ranked.map((row) => row._id);
+        const fetched = ids.length ? await populateReviews(Reviewdb.find({ _id: { $in: ids } })).lean() : [];
+        const byId = new Map(fetched.map((review) => [String(review._id), review]));
+        reviews = ids.map((id) => byId.get(String(id))).filter(Boolean);
+    } else {
+        reviews = await populateReviews(Reviewdb.find(filter))
+            .sort({ fecha: -1, _id: -1 })
+            .skip((page - 1) * PAGE_SIZE)
+            .limit(PAGE_SIZE)
+            .lean();
+    }
 
     const summary = stats[0] || { total: 0, ocultas: 0, sinRespuesta: 0 };
     return {
         filters,
         reviews: reviews.map((review) => ({
             ...review,
+            ...(reviewCounts.has(String(review._id))
+                ? { productReviewCount: reviewCounts.get(String(review._id)) }
+                : {}),
             oculta: review.oculta === true,
             version: Number.isSafeInteger(review.__v) ? review.__v : 0,
             historialGestion: (review.historialGestion || []).slice(-50).reverse(),

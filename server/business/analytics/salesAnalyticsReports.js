@@ -20,8 +20,8 @@ async function totalProfit() {
     };
 }
 
-async function bestSellingProducts(limit = common.PRODUCT_LIMIT) {
-    const rows = await salesAnalytics.aggregateProductRows(undefined, undefined, limit, 'units');
+async function bestSellingProducts(limit = common.PRODUCT_LIMIT, start, end) {
+    const rows = await salesAnalytics.aggregateProductRows(start, end, limit, 'units');
     return rows.map((row) => ({
         productoId: String(row.productoId),
         nombre: row.nombre || 'Producto histórico',

@@ -32,6 +32,13 @@
             <option value="con_respuesta" <%= filters.respuesta === 'con_respuesta' ? 'selected' : '' %>>Con respuesta</option>
         </select>
     </div>
+    <div class="ar-field">
+        <label for="ar-order">Ordenar</label>
+        <select id="ar-order" name="orden">
+            <option value="recientes" <%= filters.orden === 'recientes' ? 'selected' : '' %>>Más recientes</option>
+            <option value="mas_resenas" <%= filters.orden === 'mas_resenas' ? 'selected' : '' %>>Productos con más reseñas</option>
+        </select>
+    </div>
     <div class="ar-filter-actions">
         <button class="ar-button" type="submit">Aplicar filtros</button>
         <a href="/admin/reviews">Limpiar</a>
