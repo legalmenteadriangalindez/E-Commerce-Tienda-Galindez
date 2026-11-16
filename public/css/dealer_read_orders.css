@@ -77,9 +77,9 @@
 .dealer-orders-panel {
     overflow: hidden;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
+    border-radius: var(--ui-card-radius);
     background: var(--color-surface);
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--ui-card-shadow);
 }
 
 .dealer-orders-panel__header {
@@ -210,22 +210,26 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 40px;
-    gap: 0.3rem;
-    border-radius: 0.55rem;
+    min-height: var(--ui-control-height);
+    gap: var(--ui-control-gap);
+    border-radius: var(--ui-control-radius);
     font-weight: 700;
     white-space: nowrap;
+    padding: var(--ui-button-padding);
+    transition: var(--ui-control-transition);
 }
 
 .dealer-action-btn--primary {
-    background: var(--color-brand-accent);
-    border-color: var(--color-brand-accent);
+    background: var(--ui-button-primary-background);
+    border-color: var(--ui-button-primary-background);
+    color: var(--ui-button-text-color);
 }
 
 .dealer-action-btn--primary:hover,
 .dealer-action-btn--primary:focus-visible {
-    background: var(--color-brand-accent-dark);
-    border-color: var(--color-brand-accent-dark);
+    background: var(--ui-button-primary-hover-background);
+    border-color: var(--ui-button-primary-hover-background);
+    color: var(--ui-button-text-color);
 }
 
 .dealer-empty-state {
@@ -356,9 +360,9 @@
     margin-bottom: 1.25rem;
     padding: 1.15rem 1.25rem;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
+    border-radius: var(--ui-card-radius);
     background: var(--color-surface);
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--ui-card-shadow);
 }
 
 .dealer-orders-filters__header {
@@ -410,20 +414,28 @@
 .dealer-filter-field input,
 .dealer-filter-field select {
     width: 100%;
-    min-height: 42px;
-    padding: 0.55rem 0.7rem;
-    border: 1px solid var(--color-border);
-    border-radius: 0.55rem;
-    background: var(--color-input-background);
+    min-height: var(--ui-control-height);
+    padding: var(--ui-field-padding);
+    border: 1px solid var(--ui-control-border-color);
+    border-radius: var(--ui-control-radius);
+    background: var(--ui-control-background);
     color: var(--color-text-strong);
     font: inherit;
     font-weight: 500;
+    transition: var(--ui-control-transition);
 }
 
 .dealer-filter-field input:focus,
 .dealer-filter-field select:focus {
     border-color: var(--color-brand-accent);
-    outline: 3px solid rgb(216 92 50 / 18%);
+    outline: none;
+    box-shadow: var(--ui-control-focus-shadow);
+}
+
+.dealer-filter-field input:focus-visible,
+.dealer-filter-field select:focus-visible {
+    outline: var(--ui-focus-outline);
+    outline-offset: var(--ui-focus-outline-offset);
 }
 
 .dealer-filter-actions {
@@ -434,8 +446,11 @@
 }
 
 .dealer-filter-button {
-    min-height: 42px;
+    min-height: var(--ui-control-height);
     white-space: nowrap;
+    border-radius: var(--ui-control-radius);
+    padding: var(--ui-button-padding);
+    transition: var(--ui-control-transition);
 }
 
 @media (max-width: 1100px) {
@@ -544,5 +559,89 @@
 
     .dealer-incident-summary__item {
         text-align: left;
+    }
+}
+
+body.dealer-app .dealer-order-list-feedback {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ui-alert-gap);
+    margin: var(--ui-alert-margin);
+    padding: var(--ui-alert-padding);
+    border: 1px solid var(--color-border);
+    border-radius: var(--ui-alert-radius);
+    color: var(--color-text-strong);
+    line-height: 1.45;
+}
+
+body.dealer-app .dealer-order-list-feedback--success {
+    border-color: var(--ui-alert-success-border);
+    background: var(--ui-alert-success-background);
+}
+
+body.dealer-app .dealer-order-list-feedback--error {
+    border-color: var(--ui-alert-error-border);
+    background: var(--ui-alert-error-background);
+}
+
+.dealer-action-btn--primary {
+    color: var(--ui-button-text-color);
+}
+
+.dealer-action-btn--primary:hover,
+.dealer-action-btn--primary:focus-visible {
+    color: var(--ui-button-text-color);
+}
+
+.dealer-action-btn:not(.dealer-action-btn--primary) {
+    border-color: var(--ui-button-secondary-border);
+    background: var(--ui-button-secondary-background);
+    color: var(--ui-button-secondary-color);
+}
+
+.dealer-action-btn:not(.dealer-action-btn--primary):hover,
+.dealer-action-btn:not(.dealer-action-btn--primary):focus-visible {
+    border-color: var(--ui-button-primary-hover-background);
+    background: var(--ui-button-primary-hover-background);
+    color: var(--ui-button-text-color);
+}
+
+.dealer-filter-button.btn-success {
+    border-color: var(--ui-button-primary-background);
+    background: var(--ui-button-primary-background);
+    color: var(--ui-button-text-color);
+}
+
+.dealer-filter-button.btn-success:hover,
+.dealer-filter-button.btn-success:focus-visible {
+    border-color: var(--ui-button-primary-hover-background);
+    background: var(--ui-button-primary-hover-background);
+    color: var(--ui-button-text-color);
+}
+
+.dealer-filter-button.btn-outline-secondary {
+    border-color: var(--ui-button-secondary-border);
+    background: var(--ui-button-secondary-background);
+    color: var(--ui-button-secondary-color);
+}
+
+.dealer-filter-button.btn-outline-secondary:hover,
+.dealer-filter-button.btn-outline-secondary:focus-visible {
+    border-color: var(--ui-button-primary-hover-background);
+    background: var(--ui-button-primary-hover-background);
+    color: var(--ui-button-text-color);
+}
+
+@media (max-width: 768px) {
+    .dealer-action-btn,
+    .dealer-filter-button {
+        min-height: var(--ui-control-height-touch);
+    }
+}
+
+@media (max-width: 768px) {
+    .dealer-filter-field input,
+    .dealer-filter-field select {
+        min-height: var(--ui-control-height-touch);
     }
 }

@@ -10,13 +10,13 @@
         </div>
 
         <% if (dealerOrderNotice) { %>
-            <div class="dealer-order-feedback dealer-order-feedback--success" role="status">
+            <div class="ui-alert ui-alert--success dealer-order-feedback dealer-order-feedback--success" role="status">
                 <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
                 <span><%= dealerOrderNotice %></span>
             </div>
         <% } %>
         <% if (dealerOrderError) { %>
-            <div class="dealer-order-feedback dealer-order-feedback--error" role="alert">
+            <div class="ui-alert ui-alert--error dealer-order-feedback dealer-order-feedback--error" role="alert">
                 <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
                 <span><%= dealerOrderError %></span>
             </div>

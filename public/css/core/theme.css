@@ -61,4 +61,41 @@
     --radius-sm: 0.375rem;
     --radius-md: 0.75rem;
     --radius-lg: 1rem;
+    /* Contrato visual de controles compartido por administración y dealer */
+    --ui-control-height: 2.75rem;
+    --ui-control-height-touch: 3rem;
+    --ui-control-radius: 0.65rem;
+    --ui-control-gap: 0.45rem;
+    --ui-button-padding: 0.65rem 0.95rem;
+    --ui-field-padding: 0.65rem 0.75rem;
+    --ui-control-border-color: var(--color-border);
+    --ui-control-background: var(--color-input-background);
+    --ui-focus-outline: 3px solid color-mix(in srgb, var(--color-brand-accent) 35%, transparent);
+    --ui-focus-outline-offset: 2px;
+    --ui-control-focus-shadow: 0 0 0 3px rgb(216 92 50 / 18%);
+    --ui-control-transition:
+        background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, color 160ms ease,
+        transform 160ms ease;
+    --ui-button-primary-background: var(--color-brand-accent-dark);
+    --ui-button-primary-hover-background: var(--color-brand-dark);
+    --ui-button-secondary-background: var(--color-surface);
+    --ui-button-secondary-border: var(--color-border);
+    --ui-button-secondary-color: var(--color-brand-dark);
+    --ui-button-danger-background: var(--color-danger);
+    --ui-button-text-color: var(--color-surface);
+    --ui-card-radius: var(--radius-md);
+    --ui-card-shadow: var(--shadow-soft);
+    --ui-card-border-color: var(--color-border);
+    --ui-alert-radius: var(--ui-control-radius);
+    --ui-alert-gap: 0.6rem;
+    --ui-alert-margin: 0 0 1.1rem;
+    --ui-alert-padding: 0.8rem 0.95rem;
+    --ui-alert-success-border: #b8dec2;
+    --ui-alert-success-background: #f0faf2;
+    --ui-alert-error-border: #e6b8b8;
+    --ui-alert-error-background: #fff5f5;
+    --ui-alert-warning-border: #ead49a;
+    --ui-alert-warning-background: #fffaf0;
+    --ui-alert-info-border: #c9d8e8;
+    --ui-alert-info-background: #f4f8fc;
 }

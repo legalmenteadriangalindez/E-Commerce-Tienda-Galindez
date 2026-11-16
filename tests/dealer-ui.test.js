@@ -149,7 +149,8 @@ test('la lista dealer conserva sus acciones y agrega soporte visual accesible', 
     assert.match(view, /data-label="Estado"/);
     assert.match(view, /dealer-empty-state/);
     assert.match(styles, /@media \(max-width: 768px\)/);
-    assert.match(styles, /min-height: 40px/);
+    assert.match(styles, /min-height: var\(--ui-control-height\)/);
+    assert.match(styles, /--ui-control-height-touch/);
 });
 
 test('todas las vistas del dealer usan el pie de página de reparto', () => {

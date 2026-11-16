@@ -3,10 +3,10 @@
 .dealer-dashboard-summary {
     margin-bottom: 1.25rem;
     padding: 1.25rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
+    border: 1px solid var(--ui-card-border-color);
+    border-radius: var(--ui-card-radius);
     background: var(--color-surface);
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--ui-card-shadow);
 }
 
 .dealer-dashboard-summary__header {
@@ -31,11 +31,16 @@
 .dealer-dashboard-summary__link {
     display: inline-flex;
     align-items: center;
-    min-height: 40px;
-    gap: 0.35rem;
-    border-radius: 0.55rem;
+    min-height: var(--ui-control-height);
+    gap: var(--ui-control-gap);
+    border-radius: var(--ui-control-radius);
     font-weight: 700;
     white-space: nowrap;
+    padding: var(--ui-button-padding);
+    border: 1px solid var(--ui-button-secondary-border);
+    background: var(--ui-button-secondary-background);
+    color: var(--ui-button-secondary-color);
+    transition: var(--ui-control-transition);
 }
 
 .dealer-kpi-grid {
@@ -51,9 +56,10 @@
     align-items: flex-start;
     gap: 0.75rem;
     padding: 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: 0.85rem;
+    border: 1px solid var(--ui-card-border-color);
+    border-radius: var(--ui-card-radius);
     background: var(--color-surface-warm);
+    box-shadow: var(--ui-card-shadow);
 }
 
 .dealer-kpi-card__icon {
@@ -156,5 +162,18 @@
 
     .dealer-kpi-card {
         min-height: auto;
+    }
+}
+
+.dealer-dashboard-summary__link:hover,
+.dealer-dashboard-summary__link:focus-visible {
+    border-color: var(--ui-button-primary-hover-background);
+    background: var(--ui-button-primary-hover-background);
+    color: var(--ui-button-text-color);
+}
+
+@media (max-width: 768px) {
+    .dealer-dashboard-summary__link {
+        min-height: var(--ui-control-height-touch);
     }
 }
