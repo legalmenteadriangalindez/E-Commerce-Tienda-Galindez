@@ -245,8 +245,10 @@ body.dealer-app .profile-container {
 
 body.dealer-app .profile-card {
     max-width: 640px;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--ui-card-border-color);
     padding: clamp(1rem, 4vw, 2rem);
+    border-radius: var(--ui-card-radius);
+    box-shadow: var(--ui-card-shadow);
 }
 
 body.dealer-app .profile-card:hover {
@@ -267,8 +269,10 @@ body.dealer-app .edit-profile-container {
 
 body.dealer-app .edit-profile-card {
     max-width: 700px;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--ui-card-border-color);
     padding: clamp(1rem, 4vw, 2.25rem);
+    border-radius: var(--ui-card-radius);
+    box-shadow: var(--ui-card-shadow);
 }
 
 body.dealer-app .edit-profile-form {
@@ -276,7 +280,7 @@ body.dealer-app .edit-profile-form {
 }
 
 body.dealer-app .edit-profile-form input {
-    min-height: 46px;
+    min-height: var(--ui-control-height);
     max-width: 100%;
 }
 
@@ -285,7 +289,11 @@ body.dealer-app .edit-profile-form .btn-save {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 46px;
+    min-height: var(--ui-control-height);
+    gap: var(--ui-control-gap);
+    padding: var(--ui-button-padding);
+    border-radius: var(--ui-control-radius);
+    transition: var(--ui-control-transition);
 }
 
 body.dealer-app .dealer-orders-page {
@@ -310,8 +318,9 @@ body.dealer-app .page-wrapper .page-header h1 {
 }
 
 body.dealer-app .page-wrapper .form-card {
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--ui-card-border-color);
+    box-shadow: var(--ui-card-shadow);
+    border-radius: var(--ui-card-radius);
 }
 
 body.dealer-app .page-wrapper .form-group input,
@@ -319,7 +328,7 @@ body.dealer-app .page-wrapper .form-group select,
 body.dealer-app .page-wrapper .form-group textarea {
     width: 100%;
     max-width: 100%;
-    min-height: 46px;
+    min-height: var(--ui-control-height);
 }
 
 body.dealer-app .page-wrapper .form-group textarea {
@@ -456,7 +465,7 @@ body.dealer-app .delivery-timeline__content p {
     }
 
     body.dealer-app .page-wrapper .form-actions button {
-        min-height: 48px;
+        min-height: var(--ui-control-height-touch);
     }
 
     body.dealer-app .page-wrapper .table-orders td {
@@ -553,4 +562,115 @@ body.dealer-app .delivery-timeline__content p {
     body.dealer-app .detail-order-container .product-table td::before {
         width: 34%;
     }
+}
+
+/* Contrato común de campos y acciones dentro de formularios del dealer. */
+body.dealer-app
+    :is(.edit-profile-form, .page-wrapper)
+    .form-group
+    :where(
+        input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='submit']),
+        select,
+        textarea
+    ) {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--ui-control-height);
+    padding: var(--ui-field-padding);
+    border: 1px solid var(--ui-control-border-color);
+    border-radius: var(--ui-control-radius);
+    background: var(--ui-control-background);
+    color: var(--color-text-strong);
+    font: inherit;
+    transition: var(--ui-control-transition);
+}
+
+body.dealer-app :is(.edit-profile-form, .page-wrapper) .form-group textarea {
+    min-height: 7rem;
+}
+
+body.dealer-app
+    :is(.edit-profile-form, .page-wrapper)
+    .form-group
+    :where(
+        input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='submit']),
+        select,
+        textarea
+    ):focus {
+    border-color: var(--color-brand-accent);
+    background: var(--color-surface);
+    box-shadow: var(--ui-control-focus-shadow);
+    outline: none;
+}
+
+body.dealer-app
+    :is(.edit-profile-form, .page-wrapper)
+    .form-group
+    :where(
+        input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='submit']),
+        select,
+        textarea
+    ):focus-visible {
+    outline: var(--ui-focus-outline);
+    outline-offset: var(--ui-focus-outline-offset);
+}
+
+body.dealer-app .edit-profile-form :is(.btn-cancel, .btn-save) {
+    box-sizing: border-box;
+    font: inherit;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+body.dealer-app .edit-profile-form .btn-save {
+    border: 1px solid var(--ui-button-primary-background);
+    background: var(--ui-button-primary-background);
+    color: var(--ui-button-text-color);
+}
+
+body.dealer-app .edit-profile-form .btn-save:hover {
+    border-color: var(--ui-button-primary-hover-background);
+    background: var(--ui-button-primary-hover-background);
+}
+
+body.dealer-app .edit-profile-form .btn-cancel {
+    border: 1px solid var(--ui-button-secondary-border);
+    background: var(--ui-button-secondary-background);
+    color: var(--ui-button-secondary-color);
+}
+
+body.dealer-app .edit-profile-form .btn-cancel:hover {
+    border-color: var(--ui-button-primary-hover-background);
+    background: var(--ui-button-primary-hover-background);
+    color: var(--ui-button-text-color);
+}
+
+@media (max-width: 768px) {
+    body.dealer-app
+        :is(.edit-profile-form, .page-wrapper)
+        .form-group
+        :where(
+            input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not(
+                    [type='submit']
+                ),
+            select
+        ) {
+        min-height: var(--ui-control-height-touch);
+    }
+
+    body.dealer-app .edit-profile-form :is(.btn-cancel, .btn-save) {
+        min-height: var(--ui-control-height-touch);
+    }
+}
+
+/* Unifica las tarjetas de detalle y seguimiento dentro del área dealer. */
+body.dealer-app :is(.detail-order-container .order-card, .delivery-timeline, .delivery-proof, .delivery-proof-upload) {
+    border-color: var(--ui-card-border-color);
+    border-radius: var(--ui-card-radius);
+    box-shadow: var(--ui-card-shadow);
+}
+
+body.dealer-app :is(main, .page-wrapper) :is(button, a.btn, .btn-save, .btn-cancel, .ui-button):focus-visible {
+    outline: var(--ui-focus-outline);
+    outline-offset: var(--ui-focus-outline-offset);
 }

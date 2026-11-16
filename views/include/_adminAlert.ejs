@@ -8,7 +8,7 @@
     const alertRole = typeof role === 'string' && role === 'alert' ? 'alert' : 'status';
 %>
 <% if (alertMessage) { %>
-    <div class="admin-alert admin-alert--<%= alertType %>" role="<%= alertRole %>">
+    <div class="ui-alert ui-alert--<%= alertType %> admin-alert admin-alert--<%= alertType %>" role="<%= alertRole %>">
         <% if (alertIcon) { %><i class="<%= alertIcon %>" aria-hidden="true"></i><% } %>
         <span class="admin-alert__message"><%= alertMessage %></span>
     </div>

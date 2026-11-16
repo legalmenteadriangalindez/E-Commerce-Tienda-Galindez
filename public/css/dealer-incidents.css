@@ -17,10 +17,10 @@
     width: min(100% - 2rem, 1100px);
     margin: 1.25rem auto;
     padding: 1.2rem;
-    border: 1px solid #f0c7b9;
-    border-radius: var(--radius-lg);
+    border: 1px solid var(--ui-card-border-color);
+    border-radius: var(--ui-card-radius);
     background: var(--color-surface);
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--ui-card-shadow);
 }
 
 .dealer-incidents-panel__header {
@@ -53,12 +53,15 @@
 }
 
 .dealer-incident-notice {
-    margin: 0 0 1rem;
-    padding: 0.7rem 0.85rem;
-    border: 1px solid #b8ddc2;
-    border-radius: 0.6rem;
-    background: #effaf1;
-    color: #235c32;
+    margin: var(--ui-alert-margin);
+    padding: var(--ui-alert-padding);
+    border: 1px solid var(--ui-alert-success-border);
+    border-radius: var(--ui-alert-radius);
+    background: var(--ui-alert-success-background);
+    color: var(--color-text-strong);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ui-alert-gap);
 }
 
 .dealer-incidents-list {
@@ -69,8 +72,9 @@
 .dealer-incident-card {
     padding: 0.85rem;
     border: 1px solid var(--color-border);
-    border-radius: 0.7rem;
+    border-radius: var(--ui-card-radius);
     background: var(--color-surface-warm);
+    box-shadow: var(--ui-card-shadow);
 }
 
 .dealer-incident-card--resuelta {
@@ -154,12 +158,14 @@
 .dealer-incident-report select,
 .dealer-incident-report textarea {
     width: 100%;
-    padding: 0.6rem 0.7rem;
-    border: 1px solid var(--color-border);
-    border-radius: 0.55rem;
-    background: var(--color-input-background);
+    padding: var(--ui-field-padding);
+    border: 1px solid var(--ui-control-border-color);
+    border-radius: var(--ui-control-radius);
+    background: var(--ui-control-background);
     color: var(--color-text-strong);
     font: inherit;
+    min-height: var(--ui-control-height);
+    transition: var(--ui-control-transition);
 }
 
 .dealer-incident-report textarea {
@@ -168,9 +174,16 @@
 
 .dealer-incident-report__button {
     justify-self: start;
-    min-height: 42px;
+    min-height: var(--ui-control-height);
     margin-top: 0.35rem;
     font-weight: 800;
+    gap: var(--ui-control-gap);
+    padding: var(--ui-button-padding);
+    border-radius: var(--ui-control-radius);
+    background: var(--ui-button-primary-background);
+    border-color: var(--ui-button-primary-background);
+    color: var(--ui-button-text-color);
+    transition: var(--ui-control-transition);
 }
 
 @media (max-width: 768px) {
@@ -186,5 +199,38 @@
 
     .dealer-incident-report__button {
         width: 100%;
+    }
+}
+
+.dealer-incident-report select:focus,
+.dealer-incident-report textarea:focus {
+    border-color: var(--color-brand-accent);
+    background: var(--color-surface);
+    outline: none;
+    box-shadow: var(--ui-control-focus-shadow);
+}
+
+.dealer-incident-report select:focus-visible,
+.dealer-incident-report textarea:focus-visible {
+    outline: var(--ui-focus-outline);
+    outline-offset: var(--ui-focus-outline-offset);
+}
+
+.dealer-incident-report__button:hover,
+.dealer-incident-report__button:focus-visible {
+    border-color: var(--ui-button-primary-hover-background);
+    background: var(--ui-button-primary-hover-background);
+    color: var(--ui-button-text-color);
+}
+
+@media (max-width: 768px) {
+    .dealer-incident-report__button {
+        min-height: var(--ui-control-height-touch);
+    }
+}
+
+@media (max-width: 768px) {
+    .dealer-incident-report select {
+        min-height: var(--ui-control-height-touch);
     }
 }

@@ -4,9 +4,9 @@
  * esta capa unifica controles, foco, medidas táctiles y desplazamiento móvil.
  */
 body.admin-app {
-    --admin-control-radius: 0.65rem;
-    --admin-control-height: 2.7rem;
-    --admin-control-height-touch: 2.85rem;
+    --admin-control-radius: var(--ui-control-radius);
+    --admin-control-height: var(--ui-control-height);
+    --admin-control-height-touch: var(--ui-control-height-touch);
     background-color: var(--color-background);
     color: var(--color-text-strong);
     font-family: 'Segoe UI', Arial, sans-serif;
@@ -74,24 +74,21 @@ body.admin-app .admin-content :is(.admin-list-primary, .admin-page-header__actio
     align-items: center;
     justify-content: center;
     min-height: var(--admin-control-height);
-    padding: 0.65rem 1rem;
+    padding: var(--ui-button-padding);
     border: 1px solid var(--color-brand-accent-dark);
     border-radius: var(--admin-control-radius);
-    background: var(--color-brand-accent-dark);
+    background: var(--ui-button-primary-background);
     color: var(--color-surface);
     font-size: 0.9rem;
     font-weight: 700;
     text-align: center;
     text-decoration: none;
-    transition:
-        background-color 160ms ease,
-        border-color 160ms ease,
-        transform 160ms ease;
+    transition: var(--ui-control-transition);
 }
 
 body.admin-app .admin-content :is(.admin-list-primary, .admin-page-header__action, .admin-button--primary):hover {
-    border-color: var(--color-brand-accent-dark);
-    background: var(--color-brand-dark);
+    border-color: var(--ui-button-primary-hover-background);
+    background: var(--ui-button-primary-hover-background);
     color: var(--color-surface);
     transform: translateY(-1px);
 }
@@ -161,11 +158,11 @@ body.admin-app .admin-content .admin-empty-state__link:hover {
 body.admin-app .admin-content .admin-alert {
     display: flex;
     align-items: flex-start;
-    gap: 0.6rem;
-    margin: 0 0 1.1rem;
-    padding: 0.8rem 0.95rem;
+    gap: var(--ui-alert-gap);
+    margin: var(--ui-alert-margin);
+    padding: var(--ui-alert-padding);
     border: 1px solid var(--color-border);
-    border-radius: var(--admin-control-radius);
+    border-radius: var(--ui-alert-radius);
     color: var(--color-text-strong);
     line-height: 1.45;
 }
@@ -176,8 +173,8 @@ body.admin-app .admin-content .admin-alert > i {
 }
 
 body.admin-app .admin-content .admin-alert--success {
-    border-color: #b8dec2;
-    background: #f0faf2;
+    border-color: var(--ui-alert-success-border);
+    background: var(--ui-alert-success-background);
 }
 
 body.admin-app .admin-content .admin-alert--success > i {
@@ -185,8 +182,8 @@ body.admin-app .admin-content .admin-alert--success > i {
 }
 
 body.admin-app .admin-content .admin-alert--error {
-    border-color: #e6b8b8;
-    background: #fff5f5;
+    border-color: var(--ui-alert-error-border);
+    background: var(--ui-alert-error-background);
 }
 
 body.admin-app .admin-content .admin-alert--error > i {
@@ -194,8 +191,8 @@ body.admin-app .admin-content .admin-alert--error > i {
 }
 
 body.admin-app .admin-content .admin-alert--warning {
-    border-color: #ead49a;
-    background: #fffaf0;
+    border-color: var(--ui-alert-warning-border);
+    background: var(--ui-alert-warning-background);
 }
 
 body.admin-app .admin-content .admin-alert--warning > i {
@@ -203,8 +200,8 @@ body.admin-app .admin-content .admin-alert--warning > i {
 }
 
 body.admin-app .admin-content .admin-alert--info {
-    border-color: #c9d8e8;
-    background: #f4f8fc;
+    border-color: var(--ui-alert-info-border);
+    background: var(--ui-alert-info-background);
 }
 
 body.admin-app .admin-content .admin-alert--info > i {
@@ -263,10 +260,10 @@ body.admin-app
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
+    gap: var(--ui-control-gap);
     min-height: var(--admin-control-height);
     max-width: 100%;
-    padding: 0.65rem 0.95rem;
+    padding: var(--ui-button-padding);
     border-radius: var(--admin-control-radius);
     cursor: pointer;
     font-family: inherit;
@@ -276,12 +273,7 @@ body.admin-app
     text-align: center;
     text-decoration: none;
     vertical-align: middle;
-    transition:
-        background-color 160ms ease,
-        border-color 160ms ease,
-        box-shadow 160ms ease,
-        color 160ms ease,
-        transform 160ms ease;
+    transition: var(--ui-control-transition);
 }
 
 body.admin-app
@@ -376,8 +368,8 @@ body.admin-app
         select,
         textarea
     ):focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--color-brand-accent) 35%, transparent);
-    outline-offset: 2px;
+    outline: var(--ui-focus-outline);
+    outline-offset: var(--ui-focus-outline-offset);
 }
 
 body.admin-app
@@ -393,6 +385,10 @@ body.admin-app
     border-radius: var(--admin-control-radius);
     color: var(--color-text-strong);
     font: inherit;
+    padding: var(--ui-field-padding);
+    border: 1px solid var(--ui-control-border-color);
+    background: var(--ui-control-background);
+    transition: var(--ui-control-transition);
 }
 
 body.admin-app .admin-content textarea {
@@ -423,8 +419,8 @@ body.admin-app
         .summary-card,
         .table-card
     ) {
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-soft);
+    border-radius: var(--ui-card-radius);
+    box-shadow: var(--ui-card-shadow);
 }
 
 body.admin-app
@@ -554,7 +550,7 @@ body.admin-app
     }
 }
 
-@media (max-width: 540px) {
+@media (max-width: 768px) {
     body.admin-app
         .admin-content
         :is(
@@ -577,6 +573,17 @@ body.admin-app
 
     body.admin-app .admin-content form > :is(button[type='submit'], input[type='submit']) {
         width: 100%;
+    }
+
+    body.admin-app
+        .admin-content
+        :is(
+            input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not(
+                    [type='submit']
+                ),
+            select
+        ) {
+        min-height: var(--admin-control-height-touch);
     }
 }
 

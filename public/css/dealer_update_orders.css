@@ -37,13 +37,13 @@ body.dealer-app .dealer-order-update__header p {
 body.dealer-app .dealer-order-feedback {
     display: flex;
     align-items: flex-start;
-    gap: 0.6rem;
+    gap: var(--ui-alert-gap);
     width: 100%;
     box-sizing: border-box;
-    margin: 0 0 1rem;
-    padding: 0.8rem 1rem;
+    margin: var(--ui-alert-margin);
+    padding: var(--ui-alert-padding);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
+    border-radius: var(--ui-alert-radius);
     line-height: 1.45;
 }
 
@@ -53,8 +53,8 @@ body.dealer-app .dealer-order-feedback > i {
 }
 
 body.dealer-app .dealer-order-feedback--success {
-    border-color: #b8dec2;
-    background: #f0faf2;
+    border-color: var(--ui-alert-success-border);
+    background: var(--ui-alert-success-background);
     color: var(--color-text-strong);
 }
 
@@ -63,8 +63,8 @@ body.dealer-app .dealer-order-feedback--success > i {
 }
 
 body.dealer-app .dealer-order-feedback--error {
-    border-color: #e6b8b8;
-    background: #fff5f5;
+    border-color: var(--ui-alert-error-border);
+    background: var(--ui-alert-error-background);
     color: var(--color-text-strong);
 }
 
@@ -147,18 +147,15 @@ body.dealer-app .dealer-order-update__form .form-group select,
 body.dealer-app .dealer-order-update__form .form-group textarea {
     width: 100%;
     box-sizing: border-box;
-    min-height: 2.75rem;
-    padding: 0.65rem 0.75rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-input-background);
+    min-height: var(--ui-control-height);
+    padding: var(--ui-field-padding);
+    border: 1px solid var(--ui-control-border-color);
+    border-radius: var(--ui-control-radius);
+    background: var(--ui-control-background);
     color: var(--color-text-strong);
     font: inherit;
     outline: none;
-    transition:
-        border-color 160ms ease,
-        box-shadow 160ms ease,
-        background-color 160ms ease;
+    transition: var(--ui-control-transition);
 }
 
 body.dealer-app .dealer-order-update__form .form-group textarea {
@@ -171,7 +168,7 @@ body.dealer-app .dealer-order-update__form .form-group select:focus,
 body.dealer-app .dealer-order-update__form .form-group textarea:focus {
     border-color: var(--color-brand-accent);
     background: var(--color-surface);
-    box-shadow: 0 0 0 3px rgb(216 92 50 / 18%);
+    box-shadow: var(--ui-control-focus-shadow);
 }
 
 body.dealer-app .dealer-order-update__form .form-group input:disabled {
@@ -264,25 +261,27 @@ body.dealer-app .dealer-order-update__form .delivery-proof-upload label i {
 
 body.dealer-app .dealer-order-update__form .delivery-proof-upload input[type='file'] {
     width: 100%;
-    min-height: 2.75rem;
-    padding: 0.45rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-surface);
+    min-height: var(--ui-control-height);
+    padding: var(--ui-field-padding);
+    border: 1px solid var(--ui-control-border-color);
+    border-radius: var(--ui-control-radius);
+    background: var(--ui-control-background);
     color: var(--color-text-strong);
     font: inherit;
+    transition: var(--ui-control-transition);
 }
 
 body.dealer-app .dealer-order-update__form .delivery-proof-upload input[type='file']::file-selector-button {
     margin-right: 0.6rem;
-    padding: 0.45rem 0.7rem;
+    padding: var(--ui-button-padding);
     border: 0;
-    border-radius: var(--radius-sm);
-    background: var(--color-brand-accent);
+    border-radius: var(--ui-control-radius);
+    background: var(--ui-button-primary-background);
     color: var(--color-surface);
     cursor: pointer;
     font: inherit;
     font-weight: 700;
+    transition: var(--ui-control-transition);
 }
 
 body.dealer-app .dealer-order-update__form .delivery-proof-upload small {
@@ -302,24 +301,21 @@ body.dealer-app .dealer-order-update__form > .form-actions {
 
 body.dealer-app .dealer-order-update__form > .form-actions button {
     min-width: 13rem;
-    min-height: 2.75rem;
-    padding: 0.65rem 1.25rem;
-    border: 1px solid var(--color-brand-accent);
-    border-radius: var(--radius-sm);
-    background: var(--color-brand-accent);
+    min-height: var(--ui-control-height);
+    padding: var(--ui-button-padding);
+    border: 1px solid var(--ui-button-primary-background);
+    border-radius: var(--ui-control-radius);
+    background: var(--ui-button-primary-background);
     color: var(--color-surface);
     cursor: pointer;
     font: inherit;
     font-weight: 800;
-    transition:
-        background-color 160ms ease,
-        border-color 160ms ease,
-        transform 160ms ease;
+    transition: var(--ui-control-transition);
 }
 
 body.dealer-app .dealer-order-update__form > .form-actions button:hover {
-    border-color: var(--color-brand-accent-dark);
-    background: var(--color-brand-accent-dark);
+    border-color: var(--ui-button-primary-hover-background);
+    background: var(--ui-button-primary-hover-background);
     transform: translateY(-1px);
 }
 
@@ -440,5 +436,14 @@ body.dealer-app .dealer-order-support > .delivery-timeline {
 
     body.dealer-app .dealer-order-support {
         gap: 1rem;
+    }
+}
+
+@media (max-width: 760px) {
+    body.dealer-app .dealer-order-update__form .form-group input:not([type='checkbox']),
+    body.dealer-app .dealer-order-update__form .form-group select,
+    body.dealer-app .dealer-order-update__form .delivery-proof-upload input[type='file'],
+    body.dealer-app .dealer-order-update__form > .form-actions button {
+        min-height: var(--ui-control-height-touch);
     }
 }

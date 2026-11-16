@@ -26,7 +26,7 @@ test('el menú administrativo es responsive y gestiona el foco', () => {
 test('los controles administrativos conservan foco visible y tamaño táctil', () => {
     const css = read('public/css/components/admin-ui.css');
 
-    assert.match(css, /--admin-control-height-touch: 2\.85rem/);
+    assert.match(css, /--admin-control-height-touch:\s*var\(--ui-control-height-touch\)/);
     assert.match(css, /:focus-visible/);
     assert.match(css, /\.ui-button--primary/);
     assert.match(css, /var\(--color-brand-accent-dark\)/);
