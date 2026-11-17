@@ -195,7 +195,12 @@ const resources = {
     },
     'admin/settings/shipping': { pageCss: css('admin-settings.css') },
     'admin/sales/read_sales': {
-        pageCss: css('pages/sales/table.css', 'pages/sales/export.css', 'admin-pagination.css'),
+        pageCss: css(
+            'pages/sales/table.css',
+            'pages/sales/export.css',
+            'admin-pagination.css',
+            'components/admin-mobile-table-cards.css'
+        ),
     },
     'admin/sales/read_detailsSales': { pageCss: css('read_detailsSales.css') },
     'admin/products/read_products': {

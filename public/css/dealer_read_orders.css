@@ -313,19 +313,21 @@
     }
 
     .dealer-orders-table td {
-        position: relative;
-        min-height: 2.8rem;
-        padding: 0.65rem 0.25rem 0.65rem 48%;
+        display: grid;
+        grid-template-columns: minmax(5.75rem, 0.42fr) minmax(0, 1fr);
+        align-items: start;
+        gap: 0.5rem;
+        min-width: 0;
+        padding: 0.65rem 0.25rem;
         border: 0;
         border-bottom: 1px solid var(--color-border-light);
-        text-align: right;
+        overflow-wrap: anywhere;
+        text-align: left;
     }
 
     .dealer-orders-table td::before {
-        position: absolute;
-        top: 0.65rem;
-        left: 0.25rem;
-        width: 43%;
+        position: static;
+        width: auto;
         color: var(--color-text-muted);
         content: attr(data-label);
         font-size: 0.72rem;
@@ -341,14 +343,28 @@
 
     .dealer-orders-table .dealer-cell-primary,
     .dealer-orders-table small {
-        text-align: right;
+        text-align: left;
+    }
+
+    .dealer-orders-table .dealer-order-number,
+    .dealer-orders-table .dealer-payment-method,
+    .dealer-orders-table .dealer-status {
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }
+
+    .dealer-orders-table td[data-label='Acciones'] {
+        grid-template-columns: minmax(0, 1fr);
+        padding-left: 0.25rem;
     }
 
     .dealer-actions {
         display: grid;
         min-width: 0;
         gap: 0.5rem;
-        padding-left: 0.25rem;
+        padding-left: 0;
     }
 
     .dealer-action-btn {
@@ -643,5 +659,12 @@ body.dealer-app .dealer-order-list-feedback--error {
     .dealer-filter-field input,
     .dealer-filter-field select {
         min-height: var(--ui-control-height-touch);
+    }
+}
+
+@media (max-width: 380px) {
+    .dealer-orders-table td {
+        grid-template-columns: minmax(5.25rem, 0.42fr) minmax(0, 1fr);
+        gap: 0.4rem;
     }
 }

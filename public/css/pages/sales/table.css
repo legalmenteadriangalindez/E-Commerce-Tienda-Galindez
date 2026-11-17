@@ -20,11 +20,11 @@
    TITULO
    ========================================================= */
 
-.admin-sales-page > div:first-child {
+.admin-sales-page .admin-list-heading {
     margin-bottom: 25px;
 }
 
-.admin-sales-page > div:first-child h1 {
+.admin-sales-page .admin-list-heading h1 {
     margin: 0;
     color: var(--color-brand-dark);
     font-size: 28px;
@@ -184,21 +184,12 @@
         padding: 20px 15px;
     }
 
-    .admin-sales-page > div:first-child h1 {
+    .admin-sales-page .admin-list-heading h1 {
         font-size: 24px;
     }
 
-    /*
-       Permite desplazamiento horizontal de la tabla
-       sin romper el diseño.
-    */
-
     .admin-sales-page {
-        overflow-x: auto;
-    }
-
-    .admin-sales-page .table {
-        min-width: 750px;
+        min-width: 0;
     }
 }
 
@@ -215,11 +206,15 @@
         margin-bottom: 18px;
     }
 
-    .admin-sales-page > div:first-child h1 {
+    .admin-sales-page .admin-list-heading h1 {
         font-size: 21px;
     }
+}
 
-    .admin-sales-page .table {
-        min-width: 700px;
+@media (min-width: 1101px) {
+    .admin-sales-page .admin-mobile-card-wrap {
+        max-width: 100%;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
     }
 }

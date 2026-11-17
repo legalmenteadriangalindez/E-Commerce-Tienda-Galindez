@@ -1,8 +1,12 @@
-/* Cart responsive rules consolidated after the generic breakpoint layer. */
+/* Responsive layout for the cart and its product controls. */
 
 @media (max-width: 1000px) {
     .summary-card {
         position: static;
+    }
+
+    .cart-wrapper {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
@@ -21,46 +25,6 @@
     .remove-btn {
         grid-column: 4;
         grid-row: 1;
-    }
-}
-
-@media (max-width: 576px) {
-    .cart-page-subtitle {
-        padding: 0 15px;
-    }
-
-    .cart-header {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .quantity-picker {
-        grid-column: 2;
-        grid-row: 2;
-        margin-top: 5px;
-    }
-
-    .price {
-        grid-column: 2;
-        grid-row: 3;
-        justify-self: start;
-    }
-
-    .remove-btn {
-        grid-column: 3;
-        grid-row: 2;
-        justify-self: end;
-    }
-
-    .pay-btn {
-        min-height: 48px;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 1000px) {
-    .cart-wrapper {
-        grid-template-columns: 1fr;
     }
 }
 
@@ -94,7 +58,7 @@
     }
 
     .product-card {
-        grid-template-columns: 72px minmax(0, 1fr) 40px;
+        grid-template-columns: 72px minmax(0, 1fr) 44px;
         gap: 11px 12px;
         min-height: 0;
         padding: 13px;
@@ -112,10 +76,38 @@
         grid-row: 1;
     }
 
+    .product-info h3,
+    .category {
+        overflow: visible;
+        overflow-wrap: anywhere;
+        text-overflow: clip;
+        white-space: normal;
+    }
+
     .quantity-picker {
         grid-column: 2;
         grid-row: 2;
-        width: 132px;
+        grid-template-columns: 44px minmax(38px, 1fr) 44px;
+        width: min(132px, 100%);
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .quantity-btn {
+        width: 44px !important;
+        height: 44px !important;
+    }
+
+    .remove-btn {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .continue-shopping,
+    .update-cart-btn {
+        min-height: 44px;
     }
 
     .price {
@@ -128,6 +120,79 @@
         grid-column: 3;
         grid-row: 1;
         justify-self: end;
+    }
+
+    .main-cart,
+    .cart-wrapper,
+    .items-section,
+    .product-list,
+    .product-card,
+    .summary-section,
+    .summary-card,
+    .cart-add-products {
+        min-width: 0;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .cart-page-subtitle {
+        padding: 0 15px;
+    }
+
+    .cart-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .quantity-picker {
+        grid-column: 2;
+        grid-row: 2;
+        margin-top: 5px;
+    }
+
+    .price {
+        grid-column: 2;
+        grid-row: 3;
+        justify-self: start;
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }
+
+    .remove-btn {
+        grid-column: 3;
+        grid-row: 2;
+        justify-self: end;
+    }
+
+    .pay-btn {
+        min-height: 48px;
+        font-size: 0.9rem;
+    }
+
+    .summary-line {
+        align-items: flex-start;
+        gap: 0.5rem;
+        min-width: 0;
+    }
+
+    .summary-line > span {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .summary-line.total {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .summary-line.total .shipping-hint {
+        grid-column: 1 / -1;
+    }
+
+    .total-amount {
+        font-size: 1.25rem;
     }
 }
 
@@ -148,18 +213,12 @@
         font-size: 1.55rem;
     }
 
-    .cart-header {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 12px;
-    }
-
     .items-section {
         padding: 14px;
     }
 
     .product-card {
-        grid-template-columns: 60px minmax(0, 1fr) 38px;
+        grid-template-columns: 60px minmax(0, 1fr) 44px;
         padding: 11px;
     }
 
@@ -169,17 +228,24 @@
     }
 
     .quantity-picker {
-        width: 126px;
+        width: min(126px, 100%);
         height: 46px;
-        grid-template-columns: 36px minmax(38px, 1fr) 36px;
+    }
+}
+
+@media (max-width: 380px) {
+    .product-card {
+        grid-template-columns: 56px minmax(0, 1fr) 44px;
+        gap: 10px 8px;
+        padding: 10px;
     }
 
-    .quantity-btn {
-        width: 36px !important;
-        height: 36px !important;
+    .img-container {
+        width: 56px;
+        height: 56px;
     }
 
-    .quantity-picker input {
-        height: 44px;
+    .quantity-picker {
+        grid-template-columns: 44px minmax(38px, 1fr) 44px;
     }
 }

@@ -387,8 +387,27 @@
         grid-template-columns: minmax(0, 1fr);
     }
 
+    .billing-page__shell,
+    .billing-page__grid,
+    .billing-page__grid > *,
+    .billing-page .billing-panel,
+    .billing-page .billing-summary-card,
+    .billing-page .order-items-list {
+        min-width: 0;
+    }
+
+    .billing-page__notice {
+        overflow-wrap: anywhere;
+    }
+
     .billing-page .billing-summary-card {
         position: static;
+    }
+
+    .billing-page .billing-add-btn,
+    .billing-page .billing-review-btn,
+    .billing-page .billing-cancel-btn {
+        min-height: var(--ui-control-height-touch);
     }
 }
 

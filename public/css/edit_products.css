@@ -77,7 +77,7 @@ body {
 .form-grid {
     display: grid;
 
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 
     gap: 16px;
 }
@@ -377,6 +377,24 @@ body {
     box-shadow: 0 5px 12px rgba(49, 27, 20, 0.15);
 }
 
+.page-wrapper,
+.page-wrapper .form-card,
+.product-form,
+.form-grid,
+.form-group,
+.image-section,
+.image-grid,
+.image-card,
+.upload-new {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.form-group small,
+.image-section__description {
+    overflow-wrap: anywhere;
+}
+
 /* =========================================================
    RESPONSIVE
    ========================================================= */
@@ -393,7 +411,7 @@ body {
     }
 
     .form-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .full {
@@ -401,7 +419,19 @@ body {
     }
 
     .form-actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
         text-align: center;
+    }
+
+    .form-actions button {
+        width: 100%;
+        min-height: var(--ui-control-height-touch);
+    }
+
+    .image-actions input[type='file'],
+    .upload-new input[type='file'] {
+        min-height: var(--ui-control-height-touch);
     }
 }
 

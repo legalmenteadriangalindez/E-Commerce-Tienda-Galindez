@@ -62,9 +62,7 @@
           </td>
 
           <td class="product-description-truncated admin-mobile-secondary" data-label="Descripción">
-            <%= product.descripcion
-              ? product.descripcion.substring(0, 50) + '...'
-              : 'Sin descripción' %>
+            <%= product.descripcion || 'Sin descripción' %>
           </td>
 
           <td data-label="Foto">
