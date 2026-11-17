@@ -10,9 +10,16 @@
             <p class="dealer-eyebrow">Operación de entregas</p>
             <h1>Detalle de Orden</h1>
         </div>
-        <a class="btn btn-outline-secondary" href="<%= dealerBackUrl %>">
-            <i class="bi bi-arrow-left" aria-hidden="true"></i> Volver a la lista
-        </a>
+        <div class="dealer-detail-actions d-flex flex-wrap gap-2 justify-content-center justify-content-md-end">
+            <% if (!history && !incidentHistory) { %>
+                <a class="btn btn-success" href="<%= updateUrl %>">
+                    <i class="bi bi-pencil-square" aria-hidden="true"></i> Actualizar entrega
+                </a>
+            <% } %>
+            <a class="btn btn-outline-secondary" href="<%= dealerBackUrl %>">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> Volver a la lista
+            </a>
+        </div>
     </div>
 
     <%- include('../../include/orders/delivery-status', { order, isDealer: true }) %>

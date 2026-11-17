@@ -91,12 +91,14 @@ exports.detail_order = wrap(async (req, res) => {
           ? '/dealer/orders/history'
           : '/dealer/orders/read';
     const backUrl = query ? baseUrl + '?' + query : baseUrl;
+    const updateUrl = '/dealer/orders/update/' + encodeURIComponent(req.params.id) + (query ? '?' + query : '');
     return res.render('dealer/orders/detail_orders', {
         order: await delivery.orderForDealer(req.params.id, req.session.user._id, { history, incidentHistory }),
         statusLabels: delivery.STATUS_LABELS,
         history,
         incidentHistory,
         backUrl,
+        updateUrl,
         incidentLabels: delivery.INCIDENT_LABELS,
         incidentStatusLabels: delivery.INCIDENT_STATUS_LABELS,
     });

@@ -239,6 +239,17 @@ test('el dealer puede filtrar y buscar sus entregas conservando el contexto', ()
     assert.match(styles, /dealer-orders-filters/);
 });
 
+test('el detalle de un pedido activo ofrece acceso al formulario de actualización', () => {
+    const controller = read('server/controller/pages/renderDealer.js');
+    const detailView = read('views/dealer/orders/detail_orders.ejs');
+
+    assert.match(controller, /const updateUrl = .*\/dealer\/orders\/update\//);
+    assert.match(controller, /updateUrl,/);
+    assert.match(detailView, /if \(!history && !incidentHistory\)/);
+    assert.match(detailView, /href="<%= updateUrl %>"/);
+    assert.match(detailView, /Actualizar entrega/);
+});
+
 test('el flujo de incidencias está conectado al dealer y al administrador', () => {
     const dealerRoutes = read('server/routes/dealer.routes.js');
     const dealerController = read('server/controller/pages/renderDealer.js');
