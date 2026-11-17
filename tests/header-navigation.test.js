@@ -45,18 +45,16 @@ test('el menú de perfil muestra las acciones de la cuenta autenticada', () => {
 test('la navegación pública ofrece controles con nombre y destinos para teclado', () => {
     const html = render();
     const anchors = [...html.matchAll(/<a\b[^>]*>/gs)].map(([tag]) => tag);
-    const dropdownButtons = [...html.matchAll(/<button\b[^>]*data-bs-toggle="dropdown"[^>]*>/gs)].map(([tag]) =>
-        tag
-    );
+    const dropdownButtons = [...html.matchAll(/<button\b[^>]*data-bs-toggle="dropdown"[^>]*>/gs)];
 
     assert.ok(anchors.length > 0);
     assert.ok(anchors.every((tag) => /\bhref="[^"]+"/.test(tag)));
     assert.equal(dropdownButtons.length, 2);
-    dropdownButtons.forEach((tag) => {
+    for (const [tag] of dropdownButtons) {
         assert.match(tag, /type="button"/);
         assert.match(tag, /aria-controls="[^"]+"/);
         assert.match(tag, /aria-expanded="false"/);
-    });
+    }
     assert.match(html, /aria-label="Abrir menú de cuenta"/);
     assert.match(html, /aria-label="Abrir menú principal"/);
     assert.match(html, /id="cart-count"[^>]*role="status"/);

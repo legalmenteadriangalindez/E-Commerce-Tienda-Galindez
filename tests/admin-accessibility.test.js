@@ -52,16 +52,14 @@ test('los menús administrativos tienen controles de botón y textos normalizado
         'views/admin/inventory/movements.ejs',
         'views/admin/inventory/replenishment.ejs',
     ].map(read);
-    const dropdownButtons = [...adminHeader.matchAll(/<button\b[^>]*data-bs-toggle="dropdown"[^>]*>/gs)].map(
-        ([tag]) => tag
-    );
+    const dropdownButtons = [...adminHeader.matchAll(/<button\b[^>]*data-bs-toggle="dropdown"[^>]*>/gs)];
 
     assert.equal(dropdownButtons.length, 3);
-    dropdownButtons.forEach((tag) => {
+    for (const [tag] of dropdownButtons) {
         assert.match(tag, /type="button"/);
         assert.match(tag, /aria-controls="[^"]+"/);
         assert.match(tag, /aria-expanded="false"/);
-    });
+    }
     assert.doesNotMatch(adminHeader, /<a\b[^>]*data-bs-toggle="dropdown"/);
     assert.match(adminHeader, /Informes/);
     assert.doesNotMatch(adminHeader, /Analitics|Productos mas vendidos|read-Stock/);
