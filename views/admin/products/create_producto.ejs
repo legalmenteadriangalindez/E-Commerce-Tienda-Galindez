@@ -18,30 +18,30 @@
       <div class="form-grid ui-form-grid">
 
         <div class="form-group full">
-          <label>Nombre del producto</label>
-          <input type="text" name="nombre" required>
+          <label for="product-name">Nombre del producto</label>
+          <input id="product-name" type="text" name="nombre" required>
         </div>
 
         <div class="form-group full">
-          <label>Descripción</label>
-          <textarea name="descripcion" rows="4" placeholder="Describe el producto..."></textarea>
+          <label for="product-description">Descripción</label>
+          <textarea id="product-description" name="descripcion" rows="4" placeholder="Describe el producto..."></textarea>
         </div>
 
         <div class="form-group">
-          <label>Precio de costo</label>
-          <input type="number" step="0.01" min="0" name="precioCosto" required placeholder="Ej. 50000" aria-describedby="cost-price-cop-help">
+          <label for="product-cost">Precio de costo</label>
+          <input id="product-cost" type="number" step="0.01" min="0" name="precioCosto" required placeholder="Ej. 50000" aria-describedby="cost-price-cop-help">
           <small id="cost-price-cop-help">Pesos colombianos: escribe 50000 (no 50.000). Usa punto solo para centavos.</small>
         </div>
 
         <div class="form-group">
-          <label>Precio de venta</label>
-          <input type="number" step="0.01" min="0" name="precioVenta" required placeholder="Ej. 80000" aria-describedby="sale-price-cop-help">
+          <label for="product-sale">Precio de venta</label>
+          <input id="product-sale" type="number" step="0.01" min="0" name="precioVenta" required placeholder="Ej. 80000" aria-describedby="sale-price-cop-help">
           <small id="sale-price-cop-help">Precio en COP sin puntos de miles. Ejemplo: 80000.</small>
         </div>
 
         <div class="form-group">
-          <label>Stock inicial</label>
-          <input type="number" min="0" name="stock" required>
+          <label for="product-stock-initial">Stock inicial</label>
+          <input id="product-stock-initial" type="number" min="0" name="stock" required>
         </div>
 
         <div class="form-group">
@@ -62,13 +62,13 @@
         </div>
 
         <div class="form-group full">
-          <label>Motivo del stock inicial (opcional)</label>
-          <input type="text" name="motivoStockInicial" maxlength="500" placeholder="Ej.: inventario recibido al crear el producto">
+          <label for="product-initial-stock-reason">Motivo del stock inicial (opcional)</label>
+          <input id="product-initial-stock-reason" type="text" name="motivoStockInicial" maxlength="500" placeholder="Ej.: inventario recibido al crear el producto">
         </div>
 
         <div class="form-group">
-          <label>Categoría</label>
-          <select name="categoria" required>
+          <label for="product-category">Categoría</label>
+          <select id="product-category" name="categoria" required>
             <option value="">Seleccione una categoría</option>
             <% categorias.forEach(c => { %>
               <option value="<%= c._id %>"><%= c.nombre %></option>
@@ -77,8 +77,8 @@
         </div>
 
         <div class="form-group">
-          <label>Marca</label>
-          <select name="marca" required>
+          <label for="product-brand">Marca</label>
+          <select id="product-brand" name="marca" required>
             <option value="">Seleccione una marca</option>
             <% marcas.forEach(m => { %>
               <option value="<%= m._id %>"><%= m.nombre %></option>
@@ -87,8 +87,8 @@
         </div>
 
         <div class="form-group">
-          <label>Proveedor</label>
-          <select name="proveedor">
+          <label for="product-provider">Proveedor</label>
+          <select id="product-provider" name="proveedor">
             <option value="">Seleccione un proveedor</option>
             <% proveedores.forEach(p => { %>
               <option value="<%= p._id %>"><%= p.nombre %></option>
@@ -98,8 +98,8 @@
         </div>
 
         <div class="form-group full">
-          <label>Imágenes del producto (máx. 4, 2 MB por imagen)</label>
-          <input type="file" name="fotos" multiple accept="image/jpeg,image/png,image/webp">
+          <label for="product-images">Imágenes del producto (máx. 4, 2 MB por imagen)</label>
+          <input id="product-images" type="file" name="fotos" multiple accept="image/jpeg,image/png,image/webp">
         </div>
 
       </div>

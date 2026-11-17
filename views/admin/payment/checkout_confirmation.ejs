@@ -29,9 +29,10 @@
             <!-- NOMBRE -->
             <div class="input-group">
 
-                <label>Nombre</label>
+                <label for="checkout-customer-name">Nombre</label>
 
                 <input
+                    id="checkout-customer-name"
                     type="text"
                     value="<%= orden?.cliente?.nombre || '' %>"
                     readonly
@@ -44,9 +45,10 @@
                 <!-- EMAIL -->
                 <div class="input-group">
 
-                    <label>Email</label>
+                    <label for="checkout-customer-email">Email</label>
 
                     <input
+                        id="checkout-customer-email"
                         type="email"
                         value="<%= orden?.cliente?.email || '' %>"
                         readonly
@@ -57,9 +59,10 @@
                 <!-- TELÉFONO -->
                 <div class="input-group">
 
-                    <label>Teléfono</label>
+                    <label for="checkout-customer-phone">Teléfono</label>
 
                     <input
+                        id="checkout-customer-phone"
                         type="text"
                         value="<%= orden?.cliente?.telefono || '' %>"
                         readonly
@@ -72,9 +75,10 @@
             <!-- DIRECCIÓN -->
             <div class="input-group">
 
-                <label>Dirección</label>
+                <label for="checkout-shipping-address">Dirección</label>
 
                 <input
+                    id="checkout-shipping-address"
                     type="text"
                     value="<%= orden?.direccionEnvio?.direccion || '' %>"
                     readonly
@@ -87,9 +91,10 @@
                 <!-- CIUDAD -->
                 <div class="input-group">
 
-                    <label>Ciudad</label>
+                    <label for="checkout-shipping-city">Ciudad</label>
 
                     <input
+                        id="checkout-shipping-city"
                         type="text"
                         value="<%= orden?.direccionEnvio?.ciudad || '' %>"
                         readonly

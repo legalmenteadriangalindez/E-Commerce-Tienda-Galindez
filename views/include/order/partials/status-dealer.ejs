@@ -1,8 +1,8 @@
 <div class="form-section">
     <h3>Estado de la Orden</h3>
     <div class="form-group">
-        <label>Estado</label>
-        <select name="estado" required>
+        <label for="order-state">Estado</label>
+        <select id="order-state" name="estado" required>
             <option value="<%= order.estado %>" selected>Estado actual: <%= statusLabels[order.estado] || order.estado %></option>
             <% if (order.metodoPago === 'CASH_ON_DELIVERY' && order.estado === 'PENDIENTE') { %><option value="PREPARANDO">Marcar como en preparación</option><% } %>
             <% if (order.estado === 'PAGADA') { %><option value="PREPARANDO">Marcar como en preparación</option><% } %>

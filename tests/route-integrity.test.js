@@ -126,6 +126,19 @@ test('las vistas no enlazan a la página heredada /carrito', () => {
     }
 });
 
+test('las vistas no exponen enlaces ni formularios sin destino', () => {
+    const viewFiles = walkFiles(path.join(root, 'views'), (filename) => filename.endsWith('.ejs'));
+
+    for (const filename of viewFiles) {
+        const source = fs.readFileSync(filename, 'utf8');
+        assert.doesNotMatch(
+            source,
+            /(?:href|action)\s*=\s*["'](?:#|javascript:|)["']/i,
+            `${path.relative(root, filename)} contiene un enlace o formulario sin destino`
+        );
+    }
+});
+
 test('cada método y ruta se registra una sola vez', () => {
     const routes = collectRoutes(require('../server/routes'));
     const seen = new Set();
