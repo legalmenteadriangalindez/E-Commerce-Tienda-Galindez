@@ -121,13 +121,10 @@ test('los formularios clave tienen foco visible y anuncian carga, error y vacío
 });
 
 test('el pie administrativo solo muestra enlaces habilitados para el rol', () => {
-    const footer = ejs.render(
-        read('views/include/_footerAdmin.ejs'),
-        {
-            can: (permission) => permission === 'catalog:read',
-            cspNonce: 'nonce-test',
-        }
-    );
+    const footer = ejs.render(read('views/include/_footerAdmin.ejs'), {
+        can: (permission) => permission === 'catalog:read',
+        cspNonce: 'nonce-test',
+    });
 
     assert.match(footer, /href="\/read-producto"/);
     assert.match(footer, /href="\/read-categoria"/);
@@ -136,17 +133,14 @@ test('el pie administrativo solo muestra enlaces habilitados para el rol', () =>
 });
 
 test('la barra lateral no muestra secciones vacías con permisos limitados', () => {
-    const sidebar = ejs.render(
-        read('views/include/admin-sidebar.ejs'),
-        {
-            adminHome: '/billing-point',
-            adminDisplayName: 'Usuario de pedidos',
-            canAccess: (permission) => permission === 'orders:read',
-            csrfToken: 'csrf-test',
-            showManagement: true,
-            showAnalytics: false,
-        }
-    );
+    const sidebar = ejs.render(read('views/include/admin-sidebar.ejs'), {
+        adminHome: '/billing-point',
+        adminDisplayName: 'Usuario de pedidos',
+        canAccess: (permission) => permission === 'orders:read',
+        csrfToken: 'csrf-test',
+        showManagement: true,
+        showAnalytics: false,
+    });
 
     assert.match(sidebar, /<span>Pedidos<\/span>/);
     assert.match(sidebar, /admin-sidebar__section-title">Operación/);
