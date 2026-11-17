@@ -1,0 +1,24 @@
+name: Temporary format probe
+on:
+    pull_request:
+        branches: [main]
+jobs:
+    format:
+        if: github.head_ref == 'codex/phase4-ux-accessibility'
+        runs-on: ubuntu-22.04
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+            - name: Instalar dependencias
+              run: npm ci
+            - name: Formatear archivo de prueba
+              run: npx prettier --write tests/admin-accessibility.test.js
+            - name: Imprimir resultado temporal
+              run: |
+                  node - <<'NODE'
+                  const fs = require('node:fs');
+                  const source = fs.readFileSync('tests/admin-accessibility.test.js');
+                  console.log('FORMATTED_TEST=' + source.toString('base64'));
+                  NODE
