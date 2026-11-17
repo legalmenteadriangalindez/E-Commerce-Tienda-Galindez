@@ -227,7 +227,6 @@
     }
 }
 
-
 @media (max-width: 440px) {
     .suggested-product-info h4,
     .suggested-product-info p {
@@ -237,7 +236,6 @@
         white-space: normal;
     }
 }
-
 
 @media (max-width: 760px) {
     .cart-add-products-close,

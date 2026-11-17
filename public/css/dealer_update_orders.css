@@ -465,7 +465,6 @@ body.dealer-app .dealer-order-support > .delivery-timeline {
     }
 }
 
-
 @media (max-width: 380px) {
     body.dealer-app .dealer-order-update__form .table-orders td {
         grid-template-columns: minmax(5.25rem, 0.42fr) minmax(0, 1fr);

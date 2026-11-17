@@ -662,7 +662,6 @@ body.dealer-app .dealer-order-list-feedback--error {
     }
 }
 
-
 @media (max-width: 380px) {
     .dealer-orders-table td {
         grid-template-columns: minmax(5.25rem, 0.42fr) minmax(0, 1fr);
