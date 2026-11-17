@@ -1,10 +1,7 @@
 const mongoose = require('mongoose');
-const sharp = require('sharp');
 const { pipeline } = require('node:stream/promises');
 const { Readable } = require('node:stream');
-
-const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
-const MAX_IMAGE_PIXELS = 8_000_000;
+const imageProcessing = require('./imageProcessingService');
 
 function bucket() {
     if (!mongoose.connection.db) throw new Error('Base de datos no disponible');
@@ -20,26 +17,7 @@ async function storeImage(file, options = {}) {
     if (!/^\/(?:uploads|private-media\/[a-z0-9-]+)$/.test(urlPrefix)) {
         throw new Error('Ruta de almacenamiento de imágenes inválida');
     }
-    let buffer;
-    try {
-        if (!Buffer.isBuffer(file?.buffer) || file.buffer.length > MAX_IMAGE_BYTES) {
-            throw new Error('Tamaño de imagen no permitido');
-        }
-        const instance = sharp(file.buffer, { limitInputPixels: MAX_IMAGE_PIXELS, animated: false, failOn: 'warning' });
-        const metadata = await instance.metadata();
-        if (!['jpeg', 'png', 'webp'].includes(metadata.format) || (metadata.pages || 1) > 1)
-            throw new Error('Formato inválido');
-        buffer = await instance
-            .rotate()
-            .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
-            .webp({ quality: 82 })
-            .toBuffer();
-    } catch {
-        const error = new Error('La imagen debe ser JPG, PNG o WEBP válida, de hasta 2 MB y 8 megapíxeles.');
-        error.status = 400;
-        error.expose = true;
-        throw error;
-    }
+    const buffer = await imageProcessing.optimizeImage(file);
     const stream = bucket().openUploadStream('imagen.webp', {
         metadata: { ...(options.metadata || {}), contentType: 'image/webp' },
     });
@@ -100,5 +78,5 @@ module.exports = {
     cleanup,
     bucket,
     idFromUrl,
-    limits: Object.freeze({ maxImageBytes: MAX_IMAGE_BYTES, maxImagePixels: MAX_IMAGE_PIXELS }),
+    limits: imageProcessing.limits,
 };

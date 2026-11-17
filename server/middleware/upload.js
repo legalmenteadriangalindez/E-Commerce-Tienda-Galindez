@@ -1,6 +1,7 @@
 const multer = require('multer');
 const csrf = require('./csrfProtection');
 const media = require('../business/mediaService');
+const catalogMedia = require('../business/catalogMediaService');
 
 // La memoria de la petición no debe crecer con el número de imágenes que
 // envía el cliente. Antes eran 5 MB por archivo y hasta 8 archivos (40 MB),
@@ -36,7 +37,7 @@ const parser = multer({
     },
 });
 
-function checked(parse, store = media.storeImage) {
+function checked(parse, store = media.storeImage, remove = media.removeUnused) {
     return (req, res, next) => {
         const contentLength = Number(req.headers['content-length']);
         if (Number.isFinite(contentLength) && contentLength > UPLOAD_LIMITS.requestSizeBytes) {
@@ -72,7 +73,7 @@ function checked(parse, store = media.storeImage) {
                 const files = req.file ? [req.file] : Object.values(req.files || {}).flat();
                 const uploaded = [];
                 const cleanup = () =>
-                    Promise.all(uploaded.map(media.removeUnused)).catch(() => {
+                    Promise.all(uploaded.map(remove)).catch(() => {
                         console.error('No se pudieron limpiar imágenes temporales; se reintentará en mantenimiento.');
                     });
                 res.once('finish', cleanup);
@@ -94,10 +95,28 @@ function checked(parse, store = media.storeImage) {
 }
 module.exports = {
     single: (name) => checked(parser.single(name)),
+    catalogSingle: (name, collection = 'products') =>
+        checked(
+            parser.single(name),
+            (file) => catalogMedia.storeCatalogImage(file, collection),
+            catalogMedia.removeUnused
+        ),
     privateSingle: (name, purpose = 'payment-proof') =>
         checked(parser.single(name), (file) => media.storePrivateImage(file, purpose)),
     array: (name, count) => checked(parser.array(name, count)),
+    catalogArray: (name, count, collection = 'products') =>
+        checked(
+            parser.array(name, count),
+            (file) => catalogMedia.storeCatalogImage(file, collection),
+            catalogMedia.removeUnused
+        ),
     fields: (fields) => checked(parser.fields(fields)),
+    catalogFields: (fields, collection = 'products') =>
+        checked(
+            parser.fields(fields),
+            (file) => catalogMedia.storeCatalogImage(file, collection),
+            catalogMedia.removeUnused
+        ),
     none: () => checked(parser.none()),
     limits: UPLOAD_LIMITS,
 };

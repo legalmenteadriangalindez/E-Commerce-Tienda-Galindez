@@ -1,6 +1,6 @@
 'use strict';
 
-const media = require('./mediaService');
+const media = require('./catalogMediaService');
 const { BusinessError } = require('./errors');
 
 function uploadedFiles(files) {

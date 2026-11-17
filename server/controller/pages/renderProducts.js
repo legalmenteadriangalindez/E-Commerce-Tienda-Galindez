@@ -53,7 +53,7 @@ exports.product_detail = async (req, res) => {
                 ? product.descripcion.substring(0, 155)
                 : 'Compra ' + product.nombre + ' en Tienda Galindez. Consulta precio y disponibilidad.',
             seoCanonical: siteUrl + reviewUrl,
-            seoImage: product.fotos?.[0] ? siteUrl + product.fotos[0] : null,
+            seoImage: product.fotos?.[0] ? new URL(product.fotos[0], siteUrl).href : null,
             siteUrl,
         });
     } catch (error) {

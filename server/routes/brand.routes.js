@@ -11,7 +11,7 @@ const schemas = require('../validation/schemas');
 router.post(
     '/',
     requirePermission(P.CATALOG_WRITE, true),
-    upload.single('foto'),
+    upload.catalogSingle('foto', 'brands'),
     csrfProtection.validateToken,
     validate(schemas.brand),
     brandController.create
@@ -25,7 +25,7 @@ router.get('/:nombre', brandController.findOne);
 router.put(
     '/:id',
     requirePermission(P.CATALOG_WRITE, true),
-    upload.single('foto'),
+    upload.catalogSingle('foto', 'brands'),
     csrfProtection.validateToken,
     validate(schemas.idParams, 'params'),
     validate(schemas.brand),

@@ -26,7 +26,7 @@ router.post('/delete-categoria/:id', requirePermission(P.CATALOG_WRITE), categor
 router.post(
     '/create-producto',
     requirePermission(P.CATALOG_WRITE),
-    upload.array('fotos', 4),
+    upload.catalogArray('fotos', 4),
     validate(schemas.product),
     productController.create
 );
@@ -36,7 +36,7 @@ router.get('/update-producto/:id', requirePermission(P.CATALOG_WRITE), productPa
 router.post(
     '/update-producto/:id',
     requirePermission(P.CATALOG_WRITE),
-    upload.fields([
+    upload.catalogFields([
         { name: 'foto_0', maxCount: 1 },
         { name: 'foto_1', maxCount: 1 },
         { name: 'foto_2', maxCount: 1 },
@@ -79,7 +79,7 @@ router.get('/update-marca', requirePermission(P.CATALOG_WRITE), brandPageControl
 router.post(
     '/update-marca/:id',
     requirePermission(P.CATALOG_WRITE),
-    upload.single('foto'),
+    upload.catalogSingle('foto', 'brands'),
     csrfProtection.validateToken,
     brandPageController.update_brand_data
 );

@@ -17,7 +17,7 @@ router.get('/', requirePermission(P.CATALOG_READ, true), validate(schemas.pagina
 router.post(
     '/',
     requirePermission(P.CATALOG_WRITE, true),
-    upload.array('fotos', 4),
+    upload.catalogArray('fotos', 4),
     csrfProtection.validateToken,
     validate(schemas.product),
     productController.create
@@ -35,7 +35,7 @@ router.get(
 router.put(
     '/:id',
     requirePermission(P.CATALOG_WRITE, true),
-    upload.fields([
+    upload.catalogFields([
         { name: 'foto_0', maxCount: 1 },
         { name: 'foto_1', maxCount: 1 },
         { name: 'foto_2', maxCount: 1 },

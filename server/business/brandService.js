@@ -1,6 +1,6 @@
 const Brand = require('../model/brands');
 const Product = require('../model/product');
-const media = require('./mediaService');
+const media = require('./catalogMediaService');
 const queryPage = require('./queryPage');
 const { BusinessError, validId, parse } = require('./errors');
 const { brand: schema } = require('../validation/schemas');
