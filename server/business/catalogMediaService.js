@@ -6,7 +6,7 @@ const media = require('./mediaService');
 const imageProcessing = require('./imageProcessingService');
 
 const CATALOG_FOLDER = 'tienda-galindez/catalog';
-const COLLECTIONS = new Set(['products', 'brands']);
+const COLLECTIONS = new Set(['products', 'brands', 'raffles']);
 
 function credentials() {
     const values = {
@@ -31,11 +31,12 @@ function cloudinaryClient(config) {
 }
 
 function publicIdFromUrl(value) {
-    const config = credentials();
-    if (!config || typeof value !== 'string') return null;
+    if (typeof value !== 'string') return null;
     try {
         const assetUrl = new URL(value);
         if (assetUrl.protocol !== 'https:' || assetUrl.hostname !== 'res.cloudinary.com') return null;
+        const config = credentials();
+        if (!config) return null;
         const segments = assetUrl.pathname
             .split('/')
             .filter(Boolean)
@@ -49,14 +50,16 @@ function publicIdFromUrl(value) {
         if (!filename || !/\.webp$/i.test(filename)) return null;
 
         const publicId = [...assetPath, filename.replace(/\.webp$/i, '')].join('/');
-        return /^tienda-galindez\/catalog\/(?:products|brands)\/[a-f\d-]{36}$/i.test(publicId) ? publicId : null;
+        return /^tienda-galindez\/(?:catalog\/(?:products|brands)|raffles)\/[a-f\d-]{36}$/i.test(publicId)
+            ? publicId
+            : null;
     } catch {
         return null;
     }
 }
 
 function cloudinaryUploadError(cause) {
-    const error = new Error('No se pudo guardar la imagen del catálogo. Inténtalo de nuevo.');
+    const error = new Error('No se pudo guardar la imagen. Inténtalo de nuevo.');
     error.status = 502;
     error.code = 'CLOUDINARY_UPLOAD_FAILED';
     error.expose = true;
@@ -70,7 +73,8 @@ async function storeCatalogImage(file, collection = 'products') {
     if (!COLLECTIONS.has(collection)) throw new Error('Colección de imágenes no permitida.');
 
     const buffer = await imageProcessing.optimizeImage(file);
-    const publicId = `${CATALOG_FOLDER}/${collection}/${randomUUID()}`;
+    const folder = collection === 'raffles' ? 'tienda-galindez/raffles' : `${CATALOG_FOLDER}/${collection}`;
+    const publicId = `${folder}/${randomUUID()}`;
     return new Promise((resolve, reject) => {
         const upload = cloudinaryClient(config).uploader.upload_stream(
             {
@@ -102,8 +106,12 @@ async function removeUnused(url) {
     const publicId = publicIdFromUrl(url);
     if (!publicId) return media.removeUnused(url);
 
-    const [product, brand] = await Promise.all([Product.exists({ fotos: url }), Brand.exists({ foto: url })]);
-    if (product || brand) return;
+    const [product, brand, raffle] = await Promise.all([
+        Product.exists({ fotos: url }),
+        Brand.exists({ foto: url }),
+        require('../model/raffle').exists({ imagenUrl: url }),
+    ]);
+    if (product || brand || raffle) return;
 
     const result = await cloudinaryClient(credentials()).uploader.destroy(publicId, {
         resource_type: 'image',

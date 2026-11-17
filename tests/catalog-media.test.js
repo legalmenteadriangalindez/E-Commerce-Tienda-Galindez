@@ -1,9 +1,11 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const { Writable } = require('node:stream');
+const { readFileSync } = require('node:fs');
 const { v2: cloudinary } = require('cloudinary');
 const Product = require('../server/model/product');
 const Brand = require('../server/model/brands');
+const Raffle = require('../server/model/raffle');
 const media = require('../server/business/mediaService');
 const imageProcessing = require('../server/business/imageProcessingService');
 const catalogMedia = require('../server/business/catalogMediaService');
@@ -40,12 +42,12 @@ test('catálogo: conserva GridFS local cuando Cloudinary no está configurado', 
     assert.equal(store.mock.calls.length, 1);
 });
 
-test('catálogo: Cloudinary recibe una imagen optimizada en la carpeta asignada', async (t) => {
+test('catálogo y rifa: Cloudinary guarda imágenes optimizadas en carpetas públicas separadas', async (t) => {
     setCredentials(t, testCredentials);
     t.mock.method(imageProcessing, 'optimizeImage', async () => Buffer.from('webp-image'));
-    let uploadOptions;
+    const uploadOptions = [];
     const uploadMethod = t.mock.method(cloudinary.uploader, 'upload_stream', (options, callback) => {
-        uploadOptions = options;
+        uploadOptions.push(options);
         const stream = new Writable({
             write(_chunk, _encoding, done) {
                 done();
@@ -61,21 +63,40 @@ test('catálogo: Cloudinary recibe una imagen optimizada en la carpeta asignada'
     });
 
     const stored = await catalogMedia.storeCatalogImage({ buffer: Buffer.from('original') }, 'products');
+    const raffleImage = await catalogMedia.storeCatalogImage({ buffer: Buffer.from('original') }, 'raffles');
 
-    assert.equal(uploadMethod.mock.calls.length, 1);
-    assert.match(uploadOptions.public_id, /^tienda-galindez\/catalog\/products\/[a-f\d-]{36}$/i);
-    assert.equal(uploadOptions.format, 'webp');
+    assert.equal(uploadMethod.mock.calls.length, 2);
+    assert.match(uploadOptions[0].public_id, /^tienda-galindez\/catalog\/products\/[a-f\d-]{36}$/i);
+    assert.match(uploadOptions[1].public_id, /^tienda-galindez\/raffles\/[a-f\d-]{36}$/i);
+    assert.equal(uploadOptions[0].format, 'webp');
+    assert.equal(uploadOptions[1].format, 'webp');
     assert.equal(stored.url, `https://res.cloudinary.com/test-cloud/image/upload/v123/${stored.id}.webp`);
     assert.equal(catalogMedia.publicIdFromUrl(stored.url), stored.id);
+    assert.equal(catalogMedia.publicIdFromUrl(raffleImage.url), raffleImage.id);
 });
 
 test('catálogo: no elimina una imagen Cloudinary todavía usada', async (t) => {
     setCredentials(t, testCredentials);
     t.mock.method(Product, 'exists', async () => ({ _id: 'product' }));
     t.mock.method(Brand, 'exists', async () => null);
+    t.mock.method(Raffle, 'exists', async () => null);
     const destroy = t.mock.method(cloudinary.uploader, 'destroy', async () => ({ result: 'ok' }));
     const url =
         'https://res.cloudinary.com/test-cloud/image/upload/v123/tienda-galindez/catalog/products/123e4567-e89b-12d3-a456-426614174000.webp';
+
+    await catalogMedia.removeUnused(url);
+
+    assert.equal(destroy.mock.calls.length, 0);
+});
+
+test('rifa: no elimina de Cloudinary una imagen todavía usada por una ronda', async (t) => {
+    setCredentials(t, testCredentials);
+    t.mock.method(Product, 'exists', async () => null);
+    t.mock.method(Brand, 'exists', async () => null);
+    t.mock.method(Raffle, 'exists', async () => ({ _id: 'raffle' }));
+    const destroy = t.mock.method(cloudinary.uploader, 'destroy', async () => ({ result: 'ok' }));
+    const url =
+        'https://res.cloudinary.com/test-cloud/image/upload/v123/tienda-galindez/raffles/123e4567-e89b-12d3-a456-426614174000.webp';
 
     await catalogMedia.removeUnused(url);
 
@@ -86,6 +107,7 @@ test('catálogo: elimina imágenes Cloudinary sin referencias y conserva otras U
     setCredentials(t, testCredentials);
     t.mock.method(Product, 'exists', async () => null);
     t.mock.method(Brand, 'exists', async () => null);
+    t.mock.method(Raffle, 'exists', async () => null);
     const destroyed = [];
     t.mock.method(cloudinary.uploader, 'destroy', async (...args) => {
         destroyed.push(args);
@@ -121,6 +143,15 @@ test('catálogo: rechaza una configuración parcial de credenciales', async (t) 
     assert.equal(localStore.mock.calls.length, 0);
 });
 
+test('catálogo: conserva la limpieza de imágenes GridFS anteriores con configuración parcial', async (t) => {
+    setCredentials(t, { CLOUDINARY_CLOUD_NAME: 'test-cloud' });
+    const cleanup = t.mock.method(media, 'removeUnused', async () => {});
+
+    await catalogMedia.removeUnused('/uploads/507f1f77bcf86cd799439011.webp');
+
+    assert.equal(cleanup.mock.calls.length, 1);
+});
+
 test('catálogo: restringe la eliminación a las URLs y carpetas de la tienda', (t) => {
     setCredentials(t, testCredentials);
 
@@ -132,8 +163,24 @@ test('catálogo: restringe la eliminación a las URLs y carpetas de la tienda', 
     );
     assert.equal(
         catalogMedia.publicIdFromUrl(
+            'https://res.cloudinary.com/test-cloud/image/upload/v123/tienda-galindez/raffles/123e4567-e89b-12d3-a456-426614174000.webp'
+        ),
+        'tienda-galindez/raffles/123e4567-e89b-12d3-a456-426614174000'
+    );
+    assert.equal(
+        catalogMedia.publicIdFromUrl(
             'https://res.cloudinary.com/other-cloud/image/upload/v123/tienda-galindez/catalog/products/file.webp'
         ),
         null
     );
+});
+
+test('rifa pública usa Cloudinary; los comprobantes conservan sus cargas actuales', () => {
+    const raffleRoutes = readFileSync(require.resolve('../server/routes/admin/settings.routes'), 'utf8');
+    const dealerRoutes = readFileSync(require.resolve('../server/routes/dealer.routes'), 'utf8');
+    const paymentRoutes = readFileSync(require.resolve('../server/routes/admin/payments.routes'), 'utf8');
+
+    assert.match(raffleRoutes, /upload\.catalogSingle\('imagenPremio', 'raffles'\)/);
+    assert.match(dealerRoutes, /upload\.single\('fotoEntrega'\)/);
+    assert.match(paymentRoutes, /upload\.privateSingle\('comprobantePago', 'payment-proof'\)/);
 });

@@ -19,7 +19,7 @@ router.get('/admin/raffle', requirePermission(P.RAFFLE_MANAGE), rafflePageContro
 router.post(
     '/admin/raffle',
     requirePermission(P.RAFFLE_MANAGE),
-    upload.single('imagenPremio'),
+    upload.catalogSingle('imagenPremio', 'raffles'),
     rafflePageController.update
 );
 router.post('/admin/raffle/draw', requirePermission(P.RAFFLE_MANAGE), rafflePageController.draw);

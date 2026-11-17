@@ -29,7 +29,7 @@ async function updateConfig(body, file) {
     await repository.save(raffle);
 
     if (previousImage && previousImage !== raffle.imagenUrl) {
-        await require('./mediaService').removeUnused(previousImage);
+        await require('./catalogMediaService').removeUnused(previousImage);
     }
     banner.clearCache();
     return raffle;
