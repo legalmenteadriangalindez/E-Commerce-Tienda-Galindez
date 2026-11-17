@@ -153,10 +153,18 @@ const resources = {
         ),
     },
     'admin/inventory/movements': {
-        pageCss: css('admin-pagination.css', 'pages/inventory/movements.css'),
+        pageCss: css(
+            'admin-pagination.css',
+            'pages/inventory/movements.css',
+            'pages/inventory/movements-responsive.css'
+        ),
     },
     'admin/inventory/reconciliation': {
-        pageCss: css('admin-pagination.css', 'pages/inventory/movements.css'),
+        pageCss: css(
+            'admin-pagination.css',
+            'pages/inventory/movements.css',
+            'pages/inventory/movements-responsive.css'
+        ),
     },
     'admin/finance/index': { pageCss: css('pages/finance/dashboard.css') },
     'admin/finance/cash-flow': { pageCss: css('pages/finance/dashboard.css') },
@@ -236,6 +244,7 @@ const resources = {
             'dealer-dashboard.css',
             'dealer-incidents.css',
             'dealer_read_orders.css',
+            'dealer_read_orders-controls.css',
             'admin-pagination.css'
         ),
     },

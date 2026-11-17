@@ -63,7 +63,7 @@ test('las tarjetas pequeñas quedan centradas sin modificar las vistas ni sus fo
 test('la barra lateral reserva espacio solo en escritorio y el resto de páginas conserva su diseño', () => {
     const sidebar = read('public/css/components/admin-sidebar.css');
     const admin = read('public/css/components/admin.css');
-    const adminUi = read('public/css/components/admin-ui.css');
+    const adminUi = read('public/css/components/admin-ui.css') + read('public/css/components/admin-ui-responsive.css');
 
     assert.match(sidebar, /--admin-sidebar-width:\s*17rem;/);
     assert.match(sidebar, /padding-left:\s*var\(--admin-sidebar-width\);/);

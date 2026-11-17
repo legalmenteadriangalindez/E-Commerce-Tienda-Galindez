@@ -1,0 +1,21 @@
+<tr>
+    <td colspan="<%= isIncidentHistory ? 9 : 8 %>">
+        <div class="dealer-empty-state" role="status">
+            <span class="dealer-empty-state__icon" aria-hidden="true"><i class="bi bi-inbox"></i></span>
+            <strong><%= hasDealerFilters
+                ? 'No encontramos pedidos con esos filtros'
+                : (isIncidentHistory
+                    ? 'Todavía no tienes pedidos con incidencias o fallidos'
+                    : isHistory
+                      ? 'Todavía no tienes entregas finalizadas'
+                      : 'Todavía no tienes pedidos asignados') %></strong>
+            <span><%= hasDealerFilters
+                ? 'Prueba con otros criterios o limpia los filtros.'
+                : (isIncidentHistory
+                    ? 'Cuando exista una novedad, aparecerá aquí.'
+                    : isHistory
+                      ? 'Cuando completes una entrega, aparecerá aquí.'
+                      : 'Cuando la tienda te asigne una entrega, aparecerá aquí.') %></span>
+        </div>
+    </td>
+</tr>

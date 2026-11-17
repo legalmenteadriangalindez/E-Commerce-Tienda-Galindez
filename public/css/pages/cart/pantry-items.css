@@ -131,13 +131,13 @@
     border-left: 1px solid #f0e4dc;
 }
 
-.quantity-btn {
-    width: 38px !important;
-    height: 38px !important;
+.main-cart .quantity-picker .quantity-btn {
+    width: 38px;
+    height: 38px;
     flex: 0 0 35px;
-    border: 0 !important;
-    background: #f8e4d7 !important;
-    color: var(--color-brand-dark) !important;
+    border: 0;
+    background: #f8e4d7;
+    color: var(--color-brand-dark);
     font-size: 1.45rem;
     font-weight: 800;
     line-height: 1;
@@ -146,8 +146,8 @@
         background 0.2s ease,
         color 0.2s ease,
         transform 0.2s ease;
-    display: grid !important;
-    margin: 0 !important;
+    display: grid;
+    margin: 0;
     place-items: center;
     border-radius: 10px;
     font-family: Arial, sans-serif;
@@ -161,19 +161,19 @@
     transform: translateY(-1px);
 }
 
-.quantity-btn:hover:not(:disabled),
-.quantity-btn:focus-visible:not(:disabled) {
-    background: var(--color-brand-accent) !important;
-    color: var(--color-surface) !important;
+.main-cart .quantity-picker .quantity-btn:hover:not(:disabled),
+.main-cart .quantity-picker .quantity-btn:focus-visible:not(:disabled) {
+    background: var(--color-brand-accent);
+    color: var(--color-surface);
     outline: none;
     transform: scale(1.06);
 }
 
-.quantity-btn:disabled {
+.main-cart .quantity-picker .quantity-btn:disabled {
     cursor: not-allowed;
     opacity: 1;
-    background: #f1e9e3 !important;
-    color: #8d766b !important;
+    background: #f1e9e3;
+    color: #8d766b;
 }
 
 .price {

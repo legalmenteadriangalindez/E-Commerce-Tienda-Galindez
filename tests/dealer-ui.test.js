@@ -5,6 +5,17 @@ const test = require('node:test');
 
 const root = path.join(__dirname, '..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
+const readDealerOrderMarkup = () =>
+    [
+        'views/dealer/orders/read_orders.ejs',
+        'views/dealer/orders/partials/dashboard-summary.ejs',
+        'views/dealer/orders/partials/empty-state.ejs',
+        'views/dealer/orders/partials/order-row.ejs',
+    ]
+        .map(read)
+        .join('\n');
+const readDealerOrderStyles = () =>
+    read('public/css/dealer_read_orders.css') + read('public/css/dealer_read_orders-controls.css');
 
 test('las operaciones de reparto conservan una fachada estable tras la modularización', () => {
     const delivery = require('../server/business/deliveryService');
@@ -83,7 +94,7 @@ test('las rutas de perfil del dealer conservan su contexto', () => {
 test('el dealer dispone de un historial de entregas de solo lectura', () => {
     const routes = read('server/routes/dealer.routes.js');
     const controller = read('server/controller/pages/renderDealer.js');
-    const view = read('views/dealer/orders/read_orders.ejs');
+    const view = readDealerOrderMarkup();
     const rules = require('../server/business/deliveryRules');
     const delivery = require('../server/business/deliveryService');
 
@@ -115,7 +126,7 @@ test('el dealer dispone de una sección separada para incidencias y pedidos no c
     const routes = read('server/routes/dealer.routes.js');
     const controller = read('server/controller/pages/renderDealer.js');
     const queries = read('server/business/deliveryQueries.js');
-    const view = read('views/dealer/orders/read_orders.ejs');
+    const view = readDealerOrderMarkup();
     const header = read('views/include/_headerDealer.ejs');
     const footer = read('views/include/_footerDealer.ejs');
     const rules = require('../server/business/deliveryRules');
@@ -140,8 +151,8 @@ test('el dealer dispone de una sección separada para incidencias y pedidos no c
 });
 
 test('la lista dealer conserva sus acciones y agrega soporte visual accesible', () => {
-    const view = read('views/dealer/orders/read_orders.ejs');
-    const styles = read('public/css/dealer_read_orders.css');
+    const view = readDealerOrderMarkup();
+    const styles = readDealerOrderStyles();
 
     for (const route of ['/dealer/orders/update/', '/dealer/orders/detail/']) assert.match(view, new RegExp(route));
     for (const label of ['Actualizar estado del pedido', 'Ver seguimiento del pedido'])
@@ -171,7 +182,7 @@ test('el panel operativo del dealer muestra sus indicadores principales', () => 
     const controller = read('server/controller/pages/renderDealer.js');
     const dashboard = read('server/business/deliveryDashboard.js');
     const resources = read('server/config/pageResources.js');
-    const view = read('views/dealer/orders/read_orders.ejs');
+    const view = readDealerOrderMarkup();
     const styles = read('public/css/dealer-dashboard.css');
 
     assert.match(controller, /dashboardForDealer/);
@@ -195,10 +206,10 @@ test('el dealer puede filtrar y buscar sus entregas conservando el contexto', ()
     const delivery = require('../server/business/deliveryService');
     const controller = read('server/controller/pages/renderDealer.js');
     const queries = read('server/business/deliveryQueries.js');
-    const view = read('views/dealer/orders/read_orders.ejs');
+    const view = readDealerOrderMarkup();
     const updateView = read('views/dealer/orders/update_order.ejs');
     const detailView = read('views/dealer/orders/detail_orders.ejs');
-    const styles = read('public/css/dealer_read_orders.css');
+    const styles = readDealerOrderStyles();
 
     const filters = delivery.normalizeDealerFilters(
         {

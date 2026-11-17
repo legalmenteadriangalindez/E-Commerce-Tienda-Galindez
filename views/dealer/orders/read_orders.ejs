@@ -110,72 +110,7 @@
         </form>
     </section>
 
-    <% if (!isHistory && !isIncidentHistory && dashboard) { %>
-    <section class="dealer-dashboard-summary" aria-labelledby="dealer-dashboard-title">
-        <div class="dealer-dashboard-summary__header">
-            <div>
-                <p class="dealer-eyebrow">Resumen operativo</p>
-                <h2 id="dealer-dashboard-title">Panel de reparto</h2>
-                <p>Consulta rápidamente el estado de tus entregas y el recaudo contra entrega.</p>
-            </div>
-            <a href="/dealer/orders/history" class="btn btn-outline-secondary dealer-dashboard-summary__link">
-                <i class="bi bi-clock-history" aria-hidden="true"></i> Ver historial
-            </a>
-        </div>
-
-        <div class="dealer-kpi-grid">
-            <article class="dealer-kpi-card dealer-kpi-card--pending">
-                <span class="dealer-kpi-card__icon" aria-hidden="true"><i class="bi bi-hourglass-split"></i></span>
-                <div>
-                    <p>Entregas pendientes</p>
-                    <strong><%= dashboard.pending %></strong>
-                    <span>Asignadas y aún no entregadas</span>
-                </div>
-            </article>
-
-            <article class="dealer-kpi-card dealer-kpi-card--route">
-                <span class="dealer-kpi-card__icon" aria-hidden="true"><i class="bi bi-bicycle"></i></span>
-                <div>
-                    <p>Entregas en ruta</p>
-                    <strong><%= dashboard.inRoute %></strong>
-                    <span>Pedidos con estado en camino</span>
-                </div>
-            </article>
-
-            <article class="dealer-kpi-card dealer-kpi-card--completed">
-                <span class="dealer-kpi-card__icon" aria-hidden="true"><i class="bi bi-check2-circle"></i></span>
-                <div>
-                    <p>Entregas completadas hoy</p>
-                    <strong><%= dashboard.completedToday %></strong>
-                    <span>Confirmadas durante el día</span>
-                </div>
-            </article>
-
-            <article class="dealer-kpi-card dealer-kpi-card--cash">
-                <span class="dealer-kpi-card__icon" aria-hidden="true"><i class="bi bi-cash-coin"></i></span>
-                <div>
-                    <p>Total recaudado contra entrega</p>
-                    <strong><%= formatCOP(dashboard.cashCollectedCents, dashboard.cashCollected) %></strong>
-                    <span>Acumulado de pedidos entregados</span>
-                </div>
-            </article>
-
-            <article class="dealer-kpi-card dealer-kpi-card--overdue">
-                <span class="dealer-kpi-card__icon" aria-hidden="true"><i class="bi bi-exclamation-triangle"></i></span>
-                <div>
-                    <p>Pedidos atrasados</p>
-                    <strong><%= dashboard.overdue %></strong>
-                    <span>Asignados antes de hoy</span>
-                </div>
-            </article>
-        </div>
-
-        <p class="dealer-dashboard-summary__note">
-            <i class="bi bi-info-circle" aria-hidden="true"></i>
-            Se considera atrasado un pedido activo asignado antes del inicio del día actual.
-        </p>
-    </section>
-    <% } %>
+    <%- include('./partials/dashboard-summary', { dashboard, formatCOP, isHistory, isIncidentHistory }) %>
 
     <section class="dealer-orders-panel" aria-labelledby="dealer-orders-panel-title">
         <div class="dealer-orders-panel__header">
@@ -211,88 +146,19 @@
                 </thead>
                 <tbody>
                     <% if (!orders.length) { %>
-                        <tr>
-                            <td colspan="<%= isIncidentHistory ? 9 : 8 %>">
-                                <div class="dealer-empty-state" role="status">
-                                    <span class="dealer-empty-state__icon" aria-hidden="true"><i class="bi bi-inbox"></i></span>
-                                    <strong><%= hasDealerFilters
-    ? 'No encontramos pedidos con esos filtros'
-    : (isIncidentHistory
-        ? 'Todavía no tienes pedidos con incidencias o fallidos'
-        : isHistory
-          ? 'Todavía no tienes entregas finalizadas'
-          : 'Todavía no tienes pedidos asignados') %></strong>
-                                    <span><%= hasDealerFilters
-    ? 'Prueba con otros criterios o limpia los filtros.'
-    : (isIncidentHistory
-        ? 'Cuando exista una novedad, aparecerá aquí.'
-        : isHistory
-          ? 'Cuando completes una entrega, aparecerá aquí.'
-          : 'Cuando la tienda te asigne una entrega, aparecerá aquí.') %></span>
-                                </div>
-                            </td>
-                        </tr>
+                        <%- include('./partials/empty-state', { hasDealerFilters, isIncidentHistory, isHistory }) %>
                     <% } else { %>
                         <% orders.forEach(order => { %>
-                            <% const openIncidentCount = Array.isArray(order.incidenciasEntrega)
-                                ? order.incidenciasEntrega.filter((incident) => incident.estado === 'ABIERTA').length
-                                : 0; %>
-                            <% const incidentList = Array.isArray(order.incidenciasEntrega) ? order.incidenciasEntrega : []; %>
-                            <tr>
-                                <td data-label="Orden"><strong class="dealer-order-number"><%= order.numeroOrden %></strong></td>
-                                <td data-label="Cliente">
-                                    <span class="dealer-cell-primary"><%= order.cliente?.nombre || order.usuario?.nombre || 'Sin usuario' %></span>
-                                    <small><%= order.cliente?.telefono || order.usuario?.telefono || '' %></small>
-                                </td>
-                                <td data-label="Destino">
-                                    <span class="dealer-cell-primary"><%= order.direccionEnvio?.direccion || 'Sin dirección' %></span>
-                                    <small><%= order.direccionEnvio?.ciudad || '' %></small>
-                                </td>
-                                <td data-label="Total"><strong><%= formatCOP(order.totalCents, order.total) %></strong></td>
-                                <td data-label="Pago">
-                                    <span class="dealer-payment-method">
-                                        <i class="bi bi-wallet2" aria-hidden="true"></i>
-                                        <%= order.metodoPago === 'CASH_ON_DELIVERY'
-                                            ? 'Contra entrega'
-                                            : order.metodoPago === 'WOMPI_NEQUI'
-                                                ? 'Nequi · Wompi'
-                                                : 'Tarjeta · Wompi' %>
-                                    </span>
-                                </td>
-                                <td data-label="Estado">
-                                    <span class="dealer-status dealer-status--<%= order.estado.toLowerCase() %>">
-                                        <%= statusLabels[order.estado] || order.estado %>
-                                    </span>
-                                    <% if (openIncidentCount) { %>
-                                        <span class="dealer-incident-badge"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> <%= openIncidentCount %> incidencia(s)</span>
-                                    <% } %>
-                                </td>
-                                <% if (isIncidentHistory) { %>
-                                    <td data-label="Incidencias">
-                                        <% if (incidentList.length) { %>
-                                            <div class="dealer-incident-summary">
-                                                <% incidentList.forEach(incident => { %>
-                                                    <div class="dealer-incident-summary__item">
-                                                        <strong><%= incidentLabels[incident.tipo] || incident.tipo %></strong>
-                                                        <span><%= incidentStatusLabels[incident.estado] || incident.estado %></span>
-                                                        <small><%= incident.nota || 'Sin detalle adicional.' %></small>
-                                                        <% if (incident.resolucion) { %><small><strong>Resolución:</strong> <%= incident.resolucion %></small><% } %>
-                                                    </div>
-                                                <% }) %>
-                                            </div>
-                                        <% } else { %>
-                                            <span class="dealer-incident-summary__empty">Cancelación sin incidencia registrada.</span>
-                                        <% } %>
-                                    </td>
-                                <% } %>
-                                <td data-label="Fecha"><%= new Date(order.createdAt).toLocaleDateString('es-CO') %></td>
-                                <td data-label="Acciones" class="dealer-actions">
-                                    <% if (!isHistory && !isIncidentHistory) { %>
-                                        <a href="/dealer/orders/update/<%= order._id %><%= dealerDetailSuffix %>" class="btn btn-success btn-sm dealer-action-btn dealer-action-btn--primary" aria-label="Actualizar estado del pedido <%= order.numeroOrden %>"><i class="bi bi-pencil-square" aria-hidden="true"></i> Actualizar</a>
-                                    <% } %>
-                                    <a href="/dealer/orders/detail/<%= order._id %><%= dealerDetailSuffix %>" class="btn btn-outline-secondary btn-sm dealer-action-btn" aria-label="<%= isIncidentHistory ? 'Ver detalle de la novedad ' : isHistory ? 'Ver detalle de la entrega ' : 'Ver seguimiento del pedido ' %><%= order.numeroOrden %>"><i class="bi bi-geo-alt" aria-hidden="true"></i> <%= isIncidentHistory ? 'Ver detalle' : isHistory ? 'Ver detalle' : 'Seguimiento' %></a>
-                                </td>
-                            </tr>
+                            <%- include('./partials/order-row', {
+                                order,
+                                isHistory,
+                                isIncidentHistory,
+                                dealerDetailSuffix,
+                                statusLabels,
+                                incidentLabels,
+                                incidentStatusLabels,
+                                formatCOP
+                            }) %>
                         <% }) %>
                     <% } %>
                 </tbody>
