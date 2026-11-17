@@ -1,4 +1,7 @@
 .nequi-float {
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
     position: fixed;
     width: 65px;
     height: 65px;

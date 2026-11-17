@@ -286,3 +286,20 @@ body {
         width: 100%;
     }
 }
+
+.category-form input:focus-visible,
+.category-form button:focus-visible,
+.role-form input:focus-visible,
+.role-form textarea:focus-visible,
+.role-form button:focus-visible,
+.provider-form input:focus-visible,
+.provider-form textarea:focus-visible,
+.provider-form button:focus-visible {
+    outline: var(--ui-focus-outline);
+    outline-offset: 2px;
+}
+
+.permission-option:focus-within {
+    outline: var(--ui-focus-outline);
+    outline-offset: 2px;
+}

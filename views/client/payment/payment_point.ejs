@@ -18,46 +18,46 @@
                 <div class="section-title"><i class="fas fa-user-pen"></i><span>Información de facturación</span></div>
 
                 <div class="input-group">
-                    <label>Nombre completo</label>
+                    <label for="fullName">Nombre completo</label>
                     <input type="text" id="fullName" name="fullName" value="<%= locals.user?.nombre || '' %>" required>
                 </div>
 
                 <div class="input-row">
                     <div class="input-group">
-                        <label>Correo electrónico</label>
+                        <label for="email">Correo electrónico</label>
                         <input type="email" id="email" name="email" value="<%= locals.user?.email || '' %>" required>
                     </div>
                     <div class="input-group">
-                        <label>Teléfono</label>
+                        <label for="phone">Teléfono</label>
                         <input type="tel" id="phone" name="phone" value="<%= locals.user?.telefono || '' %>" required>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label>Dirección</label>
+                    <label for="address">Dirección</label>
                     <input type="text" id="address" name="address" value="<%= locals.user?.direccion || '' %>" required>
                 </div>
 
                 <div class="input-row">
                     <div class="input-group">
-                        <label>Departamento</label>
+                        <label for="department">Departamento</label>
                         <input type="text" id="department" name="department" placeholder="Departamento" value="cauca" required>
                     </div>
                     <div class="input-group">
-                        <label>Ciudad</label>
+                        <label for="city">Ciudad</label>
                         <input type="text" id="city" name="city" value="<%= locals.user?.ciudad || '' %>" required>
                     </div>
                 </div>
 
                 <div class="input-row">
                     <div class="input-group">
-                        <label>Referencia</label>
+                        <label for="reference">Referencia</label>
                         <input type="text" id="reference" name="reference" placeholder="Apartamento, torre, referencia...">
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label>Notas</label>
+                    <label for="notes">Notas</label>
                     <textarea id="notes" name="notes" rows="4" placeholder="Notas adicionales para la entrega..."></textarea>
                 </div>
 

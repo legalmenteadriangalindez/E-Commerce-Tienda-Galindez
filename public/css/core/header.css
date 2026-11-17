@@ -181,3 +181,23 @@
     padding: 3px 6px;
     border-radius: 50%;
 }
+
+.app-navbar button.app-nav-link {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+}
+
+.app-navbar button.app-profile-btn {
+    border: 0;
+    background: transparent;
+    padding: 0.35rem;
+}
+
+.app-navbar :is(a, button, input):focus-visible {
+    border-radius: var(--radius-sm);
+    outline: 3px solid var(--color-brand-tan);
+    outline-offset: 3px;
+    box-shadow: none;
+}

@@ -1,56 +1,68 @@
+<%
+    const footerCanAccess = typeof can === 'function' ? can : () => true;
+    const footerManagementPermissions = ['catalog:read', 'reviews:moderate', 'delivery:manage', 'users:manage'];
+    const footerSystemPermissions = ['analytics:read', 'sales:read', 'payments:manage', 'store-settings:manage', 'profile:manage'];
+    const showFooterManagement = footerManagementPermissions.some((permission) => footerCanAccess(permission));
+    const showFooterSystem = footerSystemPermissions.some((permission) => footerCanAccess(permission));
+%>
 </div>
 
 <footer class="app-footer">
-
     <div class="app-footer-container">
-
-        <!-- MARCA ADMIN -->
         <div class="app-footer-col">
             <h3>Admin Galindez</h3>
             <p>Panel de administración para gestionar productos, usuarios y ventas.</p>
         </div>
 
-        <!-- ENLACES -->
-        <div class="app-footer-col">
-            <h4>Gestión</h4>
-            <ul>
-                <li><a href="/read-producto">Productos</a></li>
-                <li><a href="/read-categoria">Categorías</a></li>
-                <li><a href="/admin/brands/read-brands">Marcas</a></li>
-                <li><a href="/admin/reviews">Reseñas</a></li>
-                <li><a href="/admin/delivery">Reparto</a></li>
-                <li><a href="/read-user">Usuarios</a></li>
-            </ul>
-        </div>
+        <% if (showFooterManagement) { %>
+            <nav class="app-footer-col" aria-label="Enlaces de gestión">
+                <h4>Gestión</h4>
+                <ul>
+                    <% if (footerCanAccess('catalog:read')) { %>
+                        <li><a href="/read-producto">Productos</a></li>
+                        <li><a href="/read-categoria">Categorías</a></li>
+                        <li><a href="/admin/brands/read-brands">Marcas</a></li>
+                    <% } %>
+                    <% if (footerCanAccess('reviews:moderate')) { %>
+                        <li><a href="/admin/reviews">Reseñas</a></li>
+                    <% } %>
+                    <% if (footerCanAccess('delivery:manage')) { %>
+                        <li><a href="/admin/delivery">Reparto</a></li>
+                    <% } %>
+                    <% if (footerCanAccess('users:manage')) { %>
+                        <li><a href="/read-user">Usuarios</a></li>
+                    <% } %>
+                </ul>
+            </nav>
+        <% } %>
 
-        <!-- SISTEMA -->
-        <div class="app-footer-col">
-            <h4>Sistema</h4>
-            <ul>
-                <li><a href="/admin-analytics">Dashboard</a></li>
-                <li><a href="/read-sales">Ventas</a></li>
-                <li><a href="/billing-point">Panel</a></li>
-                <li><a href="/admin/settings/shipping">Tarifas de envío</a></li>
-                <li><a href="/admin/perfil">Perfil</a></li>
-            </ul>
-        </div>
-
-        <!-- REDES -->
-        <div class="app-footer-col">
-            <h4>Redes</h4>
-            <div class="app-socials">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-whatsapp"></i></a>
-            </div>
-        </div>
-
+        <% if (showFooterSystem) { %>
+            <nav class="app-footer-col" aria-label="Enlaces del sistema">
+                <h4>Sistema</h4>
+                <ul>
+                    <% if (footerCanAccess('analytics:read')) { %>
+                        <li><a href="/admin-analytics">Analítica</a></li>
+                    <% } %>
+                    <% if (footerCanAccess('sales:read')) { %>
+                        <li><a href="/read-sales">Ventas</a></li>
+                    <% } %>
+                    <% if (footerCanAccess('payments:manage')) { %>
+                        <li><a href="/billing-point">Punto de facturación</a></li>
+                    <% } %>
+                    <% if (footerCanAccess('store-settings:manage')) { %>
+                        <li><a href="/admin/settings/shipping">Tarifas de envío</a></li>
+                    <% } %>
+                    <% if (footerCanAccess('profile:manage')) { %>
+                        <li><a href="/admin/perfil">Perfil</a></li>
+                    <% } %>
+                </ul>
+            </nav>
+        <% } %>
     </div>
 
     <div class="app-footer-bottom">
         © 2026 Tienda Galindez Admin - Todos los derechos reservados
     </div>
-
 </footer>
 <script nonce="<%= cspNonce %>" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>

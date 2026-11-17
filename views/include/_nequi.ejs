@@ -1,29 +1,30 @@
 <!-- BOTÓN NEQUI -->
-<a
-    href="#"
+<button
+    type="button"
     class="nequi-float"
     data-bs-toggle="modal"
     data-bs-target="#nequiModal"
+    aria-label="Mostrar opciones de pago por Nequi"
 >
     N
-</a>
+</button>
 
 
 <!-- MODAL NEQUI -->
-<div class="modal fade" id="nequiModal" tabindex="-1">
+<div class="modal fade" id="nequiModal" tabindex="-1" role="dialog" aria-labelledby="nequiModalTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title">Pago por Nequi</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title" id="nequiModalTitle">Pago por Nequi</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar ventana de pago Nequi"></button>
       </div>
 
       <div class="modal-body text-center">
 
         <img
             src="/img/nequi-qr.png"
-            alt="QR Nequi"
+            alt="Código QR para pagar por Nequi"
 
          class="nequi-qr">
 

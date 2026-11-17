@@ -3,7 +3,7 @@
 <main class="commerce-panel">
   <h1>Mis pedidos</h1>
   <p>Consulta aquí el pago y la entrega de tus compras.</p>
-  <% if (!orders.length) { %><p>Todavía no hay pedidos en esta página.</p><% } %>
+  <% if (!orders.length) { %><p role="status" aria-live="polite">Todavía no hay pedidos en esta página.</p><% } %>
   <% orders.forEach(order => { %>
     <% const raffleEntry = entriesByOrder[String(order._id)]; %>
     <article class="commerce-card">

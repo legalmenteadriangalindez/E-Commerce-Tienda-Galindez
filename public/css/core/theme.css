@@ -70,7 +70,7 @@
     --ui-field-padding: 0.65rem 0.75rem;
     --ui-control-border-color: var(--color-border);
     --ui-control-background: var(--color-input-background);
-    --ui-focus-outline: 3px solid color-mix(in srgb, var(--color-brand-accent) 35%, transparent);
+    --ui-focus-outline: 3px solid var(--color-brand-accent-dark);
     --ui-focus-outline-offset: 2px;
     --ui-control-focus-shadow: 0 0 0 3px rgb(216 92 50 / 18%);
     --ui-control-transition:

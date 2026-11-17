@@ -33,8 +33,28 @@
         container.replaceChildren();
         const status = document.createElement('p');
         status.className = className || 'search-message';
+        status.setAttribute('role', className && className.includes('--error') ? 'alert' : 'status');
         status.textContent = message;
         container.appendChild(status);
+    }
+
+    function showFeedback(message, type = 'status') {
+        const feedback = input('billingFeedback');
+        feedback.dataset.state = type;
+        feedback.setAttribute('role', type === 'error' ? 'alert' : 'status');
+        feedback.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+        input('billingFeedbackMessage').textContent = message;
+
+        const iconClasses = {
+            error: 'fa-exclamation-circle',
+            success: 'fa-check-circle',
+            loading: 'fa-spinner fa-spin',
+        };
+        feedback.querySelector('i').className = 'fas ' + (iconClasses[type] || 'fa-info-circle');
+    }
+
+    function clearFeedback() {
+        showFeedback('Busca un producto por nombre y agrega la cantidad necesaria a la venta.');
     }
 
     function renderSearchResults(products, onSelect) {
@@ -180,6 +200,7 @@
         if (!data.cart.length) {
             const empty = document.createElement('p');
             empty.className = 'empty-cart';
+            empty.setAttribute('role', 'status');
             empty.textContent = 'Agrega productos a la venta.';
             list.appendChild(empty);
         }
@@ -187,7 +208,7 @@
     }
 
     function showCartError(error) {
-        input('listaProductos').textContent = error.message;
+        showFeedback(error.message, 'error');
     }
 
     window.PointOfSaleView = {
@@ -196,6 +217,8 @@
         renderSearchResults,
         selectProduct,
         clearProductForm,
+        clearFeedback,
+        showFeedback,
         renderCart,
         showCartError,
     };

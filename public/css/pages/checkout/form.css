@@ -36,3 +36,8 @@ select:focus {
     border-color: var(--color-brand-accent);
     box-shadow: 0 0 0 3px rgba(216, 92, 50, 0.2);
 }
+
+.checkout-wrapper :is(a, button, input, select, textarea):focus-visible {
+    outline: var(--ui-focus-outline);
+    outline-offset: 2px;
+}

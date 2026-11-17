@@ -214,6 +214,12 @@
     outline: none;
 }
 
+.billing-page input:focus-visible,
+.billing-page select:focus-visible {
+    outline: var(--ui-focus-outline);
+    outline-offset: 2px;
+}
+
 .billing-search-field {
     margin-bottom: 1.1rem;
 }
@@ -446,4 +452,27 @@
     .billing-summary-card__status {
         font-size: 0.68rem;
     }
+}
+
+.billing-page__notice[data-state='loading'] {
+    border-color: var(--ui-alert-info-border);
+    background: var(--ui-alert-info-background);
+}
+
+.billing-page__notice[data-state='success'] {
+    border-color: var(--ui-alert-success-border);
+    background: var(--ui-alert-success-background);
+}
+
+.billing-page__notice[data-state='error'] {
+    border-color: var(--ui-alert-error-border);
+    background: var(--ui-alert-error-background);
+}
+
+.billing-page__notice[data-state='success'] i {
+    color: var(--color-success);
+}
+
+.billing-page__notice[data-state='error'] i {
+    color: var(--color-danger);
 }
