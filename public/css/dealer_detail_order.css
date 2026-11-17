@@ -173,12 +173,16 @@ p {
     }
 
     .product-table td {
-        position: relative;
-        padding-left: 50%;
-        text-align: right;
+        display: grid;
+        grid-template-columns: minmax(5.75rem, 0.42fr) minmax(0, 1fr);
+        align-items: start;
+        gap: 0.5rem;
+        min-width: 0;
+        padding: 0.65rem 0.25rem;
         border: none;
         border-bottom: 1px solid #eee;
-        min-height: 45px;
+        overflow-wrap: anywhere;
+        text-align: left;
     }
 
     .product-table td:last-child {
@@ -187,10 +191,38 @@ p {
 
     .product-table td::before {
         content: attr(data-label);
-        position: absolute;
-        left: 12px;
-        top: 12px;
+        position: static;
+        width: auto;
         font-weight: bold;
         text-align: left;
+    }
+
+    body.dealer-app .detail-order-container .product-table {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    body.dealer-app .detail-order-container .card-body:has(.product-table) {
+        max-width: 100%;
+        overflow-x: visible;
+    }
+
+    body.dealer-app .detail-order-container .product-table td {
+        display: grid;
+        grid-template-columns: minmax(5.75rem, 0.42fr) minmax(0, 1fr);
+    }
+
+    body.dealer-app .detail-order-container .product-table td::before {
+        position: static;
+        width: auto;
+    }
+
+    body.dealer-app .detail-order-container .product-table td:last-child {
+        border-bottom: 0;
+    }
+
+    body.dealer-app .dealer-detail-heading .btn {
+        min-height: 44px;
     }
 }

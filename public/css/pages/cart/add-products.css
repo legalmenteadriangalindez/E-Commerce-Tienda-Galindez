@@ -226,3 +226,27 @@
         padding: 14px;
     }
 }
+
+
+@media (max-width: 440px) {
+    .suggested-product-info h4,
+    .suggested-product-info p {
+        overflow: visible;
+        overflow-wrap: anywhere;
+        text-overflow: clip;
+        white-space: normal;
+    }
+}
+
+
+@media (max-width: 760px) {
+    .cart-add-products-close,
+    .suggested-product-add {
+        min-height: 44px;
+    }
+
+    .cart-add-products-close {
+        width: 44px;
+        height: 44px;
+    }
+}

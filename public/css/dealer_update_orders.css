@@ -392,20 +392,21 @@ body.dealer-app .dealer-order-support > .delivery-timeline {
     }
 
     body.dealer-app .dealer-order-update__form .table-orders td {
-        position: relative;
-        min-height: 2.6rem;
-        padding: 0.6rem 0.25rem 0.6rem 43%;
+        display: grid;
+        grid-template-columns: minmax(5.75rem, 0.42fr) minmax(0, 1fr);
+        align-items: start;
+        gap: 0.5rem;
+        min-width: 0;
+        padding: 0.6rem 0.25rem;
         border: 0;
         border-bottom: 1px solid var(--color-border-light);
-        text-align: right;
         overflow-wrap: anywhere;
+        text-align: left;
     }
 
     body.dealer-app .dealer-order-update__form .table-orders td::before {
-        position: absolute;
-        top: 0.6rem;
-        left: 0.25rem;
-        width: 38%;
+        position: static;
+        width: auto;
         color: var(--color-text-muted);
         content: attr(data-label);
         font-size: 0.7rem;
@@ -417,6 +418,22 @@ body.dealer-app .dealer-order-support > .delivery-timeline {
 
     body.dealer-app .dealer-order-update__form .table-orders td:last-child {
         border-bottom: 0;
+    }
+
+    body.dealer-app .dealer-order-update__form .form-group input:not([type='checkbox']),
+    body.dealer-app .dealer-order-update__form .form-group select,
+    body.dealer-app .dealer-order-update__form .form-group textarea,
+    body.dealer-app .dealer-order-update__form .delivery-proof-upload input[type='file'] {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    body.dealer-app .dealer-order-update__form .delivery-proof-upload,
+    body.dealer-app .dealer-order-update__form .delivery-proof-upload small {
+        min-width: 0;
+        overflow-wrap: anywhere;
     }
 }
 
@@ -445,5 +462,13 @@ body.dealer-app .dealer-order-support > .delivery-timeline {
     body.dealer-app .dealer-order-update__form .delivery-proof-upload input[type='file'],
     body.dealer-app .dealer-order-update__form > .form-actions button {
         min-height: var(--ui-control-height-touch);
+    }
+}
+
+
+@media (max-width: 380px) {
+    body.dealer-app .dealer-order-update__form .table-orders td {
+        grid-template-columns: minmax(5.25rem, 0.42fr) minmax(0, 1fr);
+        gap: 0.4rem;
     }
 }

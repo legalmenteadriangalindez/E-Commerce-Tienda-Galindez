@@ -1,5 +1,5 @@
-<div class="admin-table-wrap ui-table-wrap">
-  <table class="table ui-table">
+<div class="admin-table-wrap ui-table-wrap admin-mobile-card-wrap">
+  <table class="table ui-table admin-mobile-card-table admin-sales-card-table" aria-label="Ventas registradas">
     <thead>
         <tr>
             <th hidden>#</th>
@@ -25,7 +25,7 @@
             </th>
 
             <!-- FECHA -->
-            <td>
+            <td data-label="Fecha">
                 <%= sale.createdAt
                     ? new Date(sale.createdAt).toLocaleDateString('es-CO')
                     : sale.fechaOrden
@@ -35,10 +35,10 @@
             </td>
 
             <!-- PEDIDO -->
-            <td><strong><%= sale.order?.numeroOrden || '—' %></strong></td>
+            <td data-label="Pedido"><strong><%= sale.order?.numeroOrden || '—' %></strong></td>
 
             <!-- PRODUCTO -->
-            <td>
+            <td data-label="Producto">
                 <% if (sale.detalles && sale.detalles.length > 0) { %>
 
                     <% sale.detalles.forEach(function(detalle) { %>
@@ -57,7 +57,7 @@
             </td>
 
             <!-- CANTIDAD -->
-            <td>
+            <td data-label="Cantidad">
                 <% if (sale.detalles && sale.detalles.length > 0) { %>
 
                     <% sale.detalles.forEach(function(detalle) { %>
@@ -76,27 +76,27 @@
             </td>
 
             <!-- CLIENTE -->
-            <td>
+            <td data-label="Cliente">
                 <%= sale.cliente?.nombre || 'Consumidor Final' %>
             </td>
 
-            <td>
+            <td data-label="Pago">
                 <span class="sales-status-badge sales-status-badge--<%= String(sale.estadoPago || '').toLowerCase() %>">
                     <%= sale.estadoPago || 'Sin estado' %>
                 </span>
             </td>
 
-            <td>
+            <td data-label="Canal">
                 <%= sale.order?.canal || 'Sin canal' %>
             </td>
 
             <!-- TOTAL -->
-            <td class="sales-total">
+            <td class="sales-total" data-label="Total">
                 <%= formatCOP(sale.totalCents, sale.total) %>
             </td>
 
             <!-- DETALLES -->
-            <td>
+            <td data-label="Detalles">
                 <a href="/sale/<%= sale._id %>" class="btn btn-info">Detalles</a>
             </td>
 
