@@ -30,53 +30,63 @@
 
                 <div class="input-group">
                     <span class="icon">👤</span>
-                    <input type="text" name="nombre" placeholder="Nombre completo" required>
+                    <label class="auth-visually-hidden" for="register-name">Nombre completo</label>
+                    <input id="register-name" type="text" name="nombre" autocomplete="name" placeholder="Nombre completo" required>
                 </div>
 
                 <div class="input-group">
                     <span class="icon">📧</span>
-                    <input type="email" name="email" placeholder="Correo electrónico" required>
+                    <label class="auth-visually-hidden" for="register-email">Correo electrónico</label>
+                    <input id="register-email" type="email" name="email" autocomplete="email" placeholder="Correo electrónico" required>
                 </div>
 
                 <div class="input-group">
                     <span class="icon">🔒</span>
+                    <label class="auth-visually-hidden" for="register-password">Contraseña</label>
                     <input id="register-password" type="password" name="password" minlength="12" maxlength="72" autocomplete="new-password" placeholder="Contraseña" data-password-input required>
                     <button class="password-toggle" type="button" data-password-toggle aria-controls="register-password" aria-label="Visibilidad de la contraseña" aria-pressed="false" hidden><span data-password-toggle-label aria-hidden="true">Mostrar</span></button>
                 </div>
 
                 <div class="input-group">
                     <span class="icon">📱</span>
-                    <input type="text" name="telefono" placeholder="Teléfono" required>
+                    <label class="auth-visually-hidden" for="register-phone">Teléfono</label>
+                    <input id="register-phone" type="text" name="telefono" autocomplete="tel" placeholder="Teléfono" required>
                 </div>
 
                 <div class="input-group">
                     <span class="icon">🪪</span>
-                    <input type="text" name="cedula" placeholder="Cédula (opcional)" inputmode="numeric" pattern="[0-9]{5,15}" maxlength="15" autocomplete="off" aria-label="Cédula opcional para localizar tus compras">
+                    <label class="auth-visually-hidden" for="register-cedula">Cédula opcional para localizar tus compras</label>
+                    <input id="register-cedula" type="text" name="cedula" placeholder="Cédula (opcional)" inputmode="numeric" pattern="[0-9]{5,15}" maxlength="15" autocomplete="off">
                 </div>
 
                 <div class="input-group">
                     <span class="icon">🏠</span>
-                    <input type="text" name="direccion" placeholder="Dirección" required>
+                    <label class="auth-visually-hidden" for="register-address">Dirección</label>
+                    <input id="register-address" type="text" name="direccion" autocomplete="street-address" placeholder="Dirección" required>
                 </div>
 
                 <div class="input-group">
                     <span class="icon">📍</span>
-                    <input type="text" name="barrio" placeholder="Barrio">
+                    <label class="auth-visually-hidden" for="register-neighborhood">Barrio</label>
+                    <input id="register-neighborhood" type="text" name="barrio" placeholder="Barrio">
                 </div>
 
                 <div class="input-group">
                     <span class="icon">🏙️</span>
-                    <input type="text" name="ciudad" placeholder="Ciudad">
+                    <label class="auth-visually-hidden" for="register-city">Ciudad</label>
+                    <input id="register-city" type="text" name="ciudad" autocomplete="address-level2" placeholder="Ciudad">
                 </div>
 
                 <div class="input-group">
                     <span class="icon">📌</span>
-                    <input type="text" name="puntoReferencia" placeholder="Punto de referencia">
+                    <label class="auth-visually-hidden" for="register-reference">Punto de referencia</label>
+                    <input id="register-reference" type="text" name="puntoReferencia" placeholder="Punto de referencia">
                 </div>
 
                 <div class="input-group input-group--select">
                     <span class="icon">⚧</span>
-                    <select class="register-select" name="genero" aria-label="Género (opcional)">
+                    <label class="auth-visually-hidden" for="register-gender">Género (opcional)</label>
+                    <select id="register-gender" class="register-select" name="genero">
                         <option value="">Selecciona tu género (opcional)</option>
                         <option value="Masculino">Masculino</option>
                         <option value="Femenino">Femenino</option>

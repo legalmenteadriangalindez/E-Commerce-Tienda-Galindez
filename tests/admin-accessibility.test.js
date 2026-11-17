@@ -7,6 +7,11 @@ const ejs = require('ejs');
 const root = path.join(__dirname, '..');
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8');
 
+function assertAssociatedLabel(source, id) {
+    assert.match(source, new RegExp(`<label\\b[^>]*\\bfor="${id}"`), `Falta label para ${id}`);
+    assert.match(source, new RegExp(`<[^>]+\\bid="${id}"`), `Falta el control ${id}`);
+}
+
 test('el menú administrativo es responsive y gestiona el foco', () => {
     const css = read('public/css/components/admin-sidebar.css');
     const js = read('public/js/admin-sidebar.js');
@@ -94,6 +99,101 @@ test('los campos principales de checkout y edición de producto tienen etiquetas
     });
 });
 
+test('los formularios operativos asocian sus etiquetas con cada campo', () => {
+    const productCreation = read('views/admin/products/create_producto.ejs');
+    const profile = read('views/client/profile/Edit_profile.ejs');
+    const checkoutConfirmation = read('views/admin/payment/checkout_confirmation.ejs');
+    const orderSummary = read('views/include/order/partials/summary.ejs');
+    const orderTotals = read('views/include/order/partials/totals.ejs');
+    const dealerOrderStatus = read('views/include/order/partials/status-dealer.ejs');
+    const pointOfSale = read('views/admin/payment/payment_point.ejs');
+    const login = read('views/client/auth/login.ejs');
+    const register = read('views/client/auth/register.ejs');
+
+    [
+        [
+            productCreation,
+            [
+                'product-name',
+                'product-description',
+                'product-cost',
+                'product-sale',
+                'product-stock-initial',
+                'product-min-stock',
+                'product-initial-stock-reason',
+                'product-category',
+                'product-brand',
+                'product-provider',
+                'product-images',
+            ],
+        ],
+        [
+            profile,
+            [
+                'profile-name',
+                'profile-email',
+                'profile-phone',
+                'profile-cedula',
+                'profile-address',
+                'profile-city',
+                'profile-neighborhood',
+            ],
+        ],
+        [
+            checkoutConfirmation,
+            [
+                'checkout-customer-name',
+                'checkout-customer-email',
+                'checkout-customer-phone',
+                'checkout-shipping-address',
+                'checkout-shipping-city',
+            ],
+        ],
+        [
+            orderSummary,
+            [
+                'order-number',
+                'order-created-at',
+                'order-client-name',
+                'order-client-email',
+                'order-client-phone',
+                'order-shipping-department',
+                'order-shipping-city',
+                'order-shipping-address',
+                'order-shipping-reference',
+            ],
+        ],
+        [orderTotals, ['order-subtotal', 'order-taxes', 'order-shipping-cost', 'order-total']],
+        [dealerOrderStatus, ['order-state']],
+        [pointOfSale, ['fullName', 'email', 'phone', 'address', 'department', 'city', 'reference', 'notes']],
+        [login, ['login-email', 'login-password']],
+        [
+            register,
+            [
+                'register-name',
+                'register-email',
+                'register-password',
+                'register-phone',
+                'register-cedula',
+                'register-address',
+                'register-neighborhood',
+                'register-city',
+                'register-reference',
+                'register-gender',
+            ],
+        ],
+    ].forEach(([source, ids]) => ids.forEach((id) => assertAssociatedLabel(source, id)));
+});
+
+test('los controles de icono tienen un nombre accesible', () => {
+    const whatsapp = read('views/include/_whatsApp.ejs');
+    const carousel = read('views/client/products/partials/product-carousel.ejs');
+
+    assert.match(whatsapp, /aria-label="Contactar a la tienda por WhatsApp"/);
+    assert.match(carousel, /aria-label="Imagen anterior del producto"/);
+    assert.match(carousel, /aria-label="Imagen siguiente del producto"/);
+});
+
 test('los formularios clave tienen foco visible y anuncian carga, error y vacío', () => {
     const headerCss = read('public/css/core/header.css');
     const footerCss = read('public/css/core/footer.css');
@@ -112,6 +212,7 @@ test('los formularios clave tienen foco visible y anuncian carga, error y vacío
     assert.match(checkoutCss, /:focus-visible/);
     assert.match(catalogFormCss, /:focus-visible/);
     assert.match(productEditCss, /:focus-visible/);
+    assert.match(read('public/css/pages/edit-profile.css'), /\.edit-profile-form \.form-group input:focus-visible/);
     assert.match(billingView, /setAttribute\('role', type === 'error' \? 'alert' : 'status'\)/);
     assert.match(billingView, /empty\.setAttribute\('role', 'status'\)/);
     assert.match(billingController, /Cargando venta…/);

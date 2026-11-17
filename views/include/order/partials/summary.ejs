@@ -1,7 +1,7 @@
 <div class="form-section">
     <h3>Información General</h3>
-    <div class="form-group"><label>Número de Orden</label><input type="text" value="<%= order.numeroOrden %>" disabled></div>
-    <div class="form-group"><label>Fecha</label><input type="text" value="<%= new Date(order.createdAt).toLocaleString() %>" disabled></div>
+    <div class="form-group"><label for="order-number">Número de Orden</label><input id="order-number" type="text" value="<%= order.numeroOrden %>" disabled></div>
+    <div class="form-group"><label for="order-created-at">Fecha</label><input id="order-created-at" type="text" value="<%= new Date(order.createdAt).toLocaleString() %>" disabled></div>
 </div>
 
 <% const address = order.direccionEnvio || {}; %>
@@ -17,15 +17,15 @@
 
 <div class="form-section">
     <h3>Datos del Cliente</h3>
-    <div class="form-group"><label>Nombre</label><input type="text" value="<%= order.cliente.nombre %>" disabled></div>
-    <div class="form-group"><label>Email</label><input type="email" value="<%= order.cliente.email %>" disabled></div>
-    <div class="form-group"><label>Teléfono</label><input type="text" value="<%= order.cliente.telefono %>" disabled></div>
+    <div class="form-group"><label for="order-client-name">Nombre</label><input id="order-client-name" type="text" value="<%= order.cliente.nombre %>" disabled></div>
+    <div class="form-group"><label for="order-client-email">Email</label><input id="order-client-email" type="email" value="<%= order.cliente.email %>" disabled></div>
+    <div class="form-group"><label for="order-client-phone">Teléfono</label><input id="order-client-phone" type="text" value="<%= order.cliente.telefono %>" disabled></div>
 </div>
 
 <div class="form-section">
     <h3>Dirección de Envío</h3>
-    <div class="form-group"><label>Departamento</label><input type="text" value="<%= address.departamento || '' %>" disabled></div>
-    <div class="form-group"><label>Ciudad</label><input type="text" value="<%= address.ciudad || '' %>" disabled></div>
-    <div class="form-group"><label>Dirección</label><input type="text" value="<%= address.direccion || '' %>" disabled></div>
-    <div class="form-group"><label>Referencia</label><input type="text" value="<%= address.referencia || '' %>" disabled></div>
+    <div class="form-group"><label for="order-shipping-department">Departamento</label><input id="order-shipping-department" type="text" value="<%= address.departamento || '' %>" disabled></div>
+    <div class="form-group"><label for="order-shipping-city">Ciudad</label><input id="order-shipping-city" type="text" value="<%= address.ciudad || '' %>" disabled></div>
+    <div class="form-group"><label for="order-shipping-address">Dirección</label><input id="order-shipping-address" type="text" value="<%= address.direccion || '' %>" disabled></div>
+    <div class="form-group"><label for="order-shipping-reference">Referencia</label><input id="order-shipping-reference" type="text" value="<%= address.referencia || '' %>" disabled></div>
 </div>

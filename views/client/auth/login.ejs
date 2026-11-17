@@ -38,11 +38,13 @@
 
                 <div class="input-group">
                     <span class="icon">👤</span>
-                    <input type="email" name="email" placeholder="Tu Correo Electrónico" required>
+                    <label class="auth-visually-hidden" for="login-email">Correo electrónico</label>
+                    <input id="login-email" type="email" name="email" placeholder="Tu Correo Electrónico" autocomplete="email" required>
                 </div>
 
                 <div class="input-group">
                     <span class="icon">🔒</span>
+                    <label class="auth-visually-hidden" for="login-password">Contraseña</label>
                     <input
                         id="login-password"
                         type="password"
