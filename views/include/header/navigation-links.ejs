@@ -2,15 +2,20 @@
 
     <li class="nav-item dropdown">
 
-        <a
+        <button
             class="nav-link app-nav-link dropdown-toggle"
+            type="button"
+            id="categoriesMenuButton"
             data-bs-toggle="dropdown"
+            aria-controls="categoriesMenu"
+            aria-haspopup="true"
+            aria-expanded="false"
         >
             <i class="bi bi-grid"></i>
             Categorías
-        </a>
+        </button>
 
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu" id="categoriesMenu" aria-labelledby="categoriesMenuButton">
 
             <% if (categorias && categorias.length > 0) { %>
 
@@ -113,6 +118,9 @@
             <span
                 id="cart-count"
                 class="app-cart-badge"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
             >
 
                 <%= Array.isArray(cart)

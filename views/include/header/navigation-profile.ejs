@@ -11,15 +11,21 @@
 
 <div class="dropdown">
 
-    <a
+    <button
         class="app-profile-btn"
+        type="button"
+        id="profileMenuButton"
         data-bs-toggle="dropdown"
+        aria-controls="profileMenu"
+        aria-haspopup="true"
+        aria-expanded="false"
+        aria-label="Abrir menú de cuenta"
     >
-        <i class="bi bi-person-circle"></i>
-    </a>
+        <i class="bi bi-person-circle" aria-hidden="true"></i>
+    </button>
 
 
-    <ul class="dropdown-menu dropdown-menu-end">
+    <ul class="dropdown-menu dropdown-menu-end" id="profileMenu" aria-labelledby="profileMenuButton">
 
         <% if (headerUser && headerUser._id) { %>
             <% if (headerCanManageProfile) { %>

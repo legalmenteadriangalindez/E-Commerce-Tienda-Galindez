@@ -448,3 +448,13 @@ body {
         width: 100%;
     }
 }
+
+.form-group input:not([type='checkbox']):not([type='hidden']):focus-visible,
+.form-group textarea:focus-visible,
+.form-group select:focus-visible,
+.image-actions input:focus-visible,
+.upload-new input:focus-visible,
+.form-actions button:focus-visible {
+    outline: var(--ui-focus-outline);
+    outline-offset: 2px;
+}

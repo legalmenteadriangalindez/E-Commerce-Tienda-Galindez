@@ -41,3 +41,37 @@ test('el menú de perfil muestra las acciones de la cuenta autenticada', () => {
     assert.match(html, /Cerrar sesión/);
     assert.doesNotMatch(html, /Crear cuenta/);
 });
+
+test('la navegación pública ofrece controles con nombre y destinos para teclado', () => {
+    const html = render();
+    const anchors = [...html.matchAll(/<a\b[^>]*>/gs)].map(([tag]) => tag);
+    const dropdownButtons = [...html.matchAll(/<button\b[^>]*data-bs-toggle="dropdown"[^>]*>/gs)].map(([tag]) =>
+        tag
+    );
+
+    assert.ok(anchors.length > 0);
+    assert.ok(anchors.every((tag) => /\bhref="[^"]+"/.test(tag)));
+    assert.equal(dropdownButtons.length, 2);
+    dropdownButtons.forEach((tag) => {
+        assert.match(tag, /type="button"/);
+        assert.match(tag, /aria-controls="[^"]+"/);
+        assert.match(tag, /aria-expanded="false"/);
+    });
+    assert.match(html, /aria-label="Abrir menú de cuenta"/);
+    assert.match(html, /aria-label="Abrir menú principal"/);
+    assert.match(html, /id="cart-count"[^>]*role="status"/);
+});
+
+test('los controles de acción y enlaces rápidos no usan destinos vacíos', () => {
+    const root = path.join(__dirname, '..');
+    const templates = ['views/include/_nequi.ejs', 'views/include/_footer.ejs', 'views/include/_footerAdmin.ejs'];
+
+    for (const relativePath of templates) {
+        const source = fs.readFileSync(path.join(root, relativePath), 'utf8');
+        assert.doesNotMatch(source, /href=["'](?:#|)["']/);
+    }
+
+    const nequi = fs.readFileSync(path.join(root, 'views/include/_nequi.ejs'), 'utf8');
+    assert.match(nequi, /<button[\s\S]*aria-label="Mostrar opciones de pago por Nequi"/);
+    assert.match(nequi, /aria-labelledby="nequiModalTitle"/);
+});

@@ -20,9 +20,10 @@
       <div class="form-grid ui-form-grid">
 
         <div class="form-group full">
-          <label>Nombre</label>
+          <label for="product-name">Nombre</label>
           <input
             type="text"
+            id="product-name"
             name="nombre"
             value="<%= producto.nombre %>"
             required
@@ -30,17 +31,19 @@
         </div>
 
         <div class="form-group full">
-          <label>Descripción</label>
+          <label for="product-description">Descripción</label>
           <textarea
+            id="product-description"
             name="descripcion"
             rows="4"
           ><%= producto.descripcion || '' %></textarea>
         </div>
 
         <div class="form-group">
-          <label>Precio de costo</label>
+          <label for="product-cost">Precio de costo</label>
           <input
             type="number"
+            id="product-cost"
             name="precioCosto"
             value="<%= formatCOPInput(producto.precioCostoCents, producto.precioCosto) %>"
             min="0"
@@ -52,9 +55,10 @@
         </div>
 
         <div class="form-group">
-          <label>Precio de venta</label>
+          <label for="product-sale">Precio de venta</label>
           <input
             type="number"
+            id="product-sale"
             name="precioVenta"
             value="<%= formatCOPInput(producto.precioVentaCents, producto.precioVenta) %>"
             min="0"
@@ -66,8 +70,9 @@
         </div>
 
         <div class="form-group">
-          <label>Stock actual</label>
-          <input type="number" value="<%= producto.stock || 0 %>" readonly aria-describedby="stock-movement-link">
+          <label for="product-current-stock">Stock actual</label>
+          <input type="number" id="product-current-stock"
+            value="<%= producto.stock || 0 %>" readonly aria-describedby="stock-movement-link">
           <input type="hidden" name="stockOriginal" value="<%= producto.stock %>">
           <small id="stock-movement-link"><a href="/inventory/movements?producto=<%= producto._id %>">Consultar o ajustar en el historial</a></small>
         </div>
@@ -90,8 +95,8 @@
         </div>
 
         <div class="form-group">
-          <label>Categoría</label>
-          <select name="categoria" required>
+          <label for="product-category">Categoría</label>
+          <select id="product-category" name="categoria" required>
             <option value="">Seleccione una categoría</option>
 
             <% categorias.forEach(c => { %>
@@ -107,8 +112,8 @@
         </div>
 
         <div class="form-group">
-          <label>Marca</label>
-          <select name="marca" required>
+          <label for="product-brand">Marca</label>
+          <select id="product-brand" name="marca" required>
             <option value="">Seleccione una marca</option>
 
             <% marcas.forEach(m => { %>
@@ -124,8 +129,8 @@
         </div>
 
         <div class="form-group">
-          <label>Proveedor</label>
-          <select name="proveedor">
+          <label for="product-provider">Proveedor</label>
+          <select id="product-provider" name="proveedor">
             <option value="">Sin proveedor</option>
 
             <% proveedores.forEach(p => { %>
@@ -201,7 +206,7 @@
 
           <% } else { %>
 
-            <p class="empty">Sin imágenes registradas</p>
+            <p class="empty" role="status">Sin imágenes registradas</p>
 
           <% } %>
 

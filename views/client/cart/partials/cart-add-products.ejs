@@ -40,7 +40,7 @@
 
   <div class="suggested-products">
     <% if (productosSugeridos.length === 0) { %>
-      <p class="suggested-products-empty">
+      <p class="suggested-products-empty" role="status" aria-live="polite">
         No encontramos productos disponibles con esa búsqueda.
         <a href="/view_cart">Ver sugerencias</a>
       </p>

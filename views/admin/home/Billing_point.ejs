@@ -22,9 +22,9 @@
             </div>
         </div>
 
-        <div class="billing-page__notice" role="status">
+        <div class="billing-page__notice" id="billingFeedback" role="status" aria-live="polite" aria-atomic="true" data-state="info">
             <i class="fas fa-info-circle" aria-hidden="true"></i>
-            <span>Busca un producto por nombre y agrega la cantidad necesaria a la venta.</span>
+            <span id="billingFeedbackMessage">Busca un producto por nombre y agrega la cantidad necesaria a la venta.</span>
         </div>
 
         <div class="checkout-grid billing-page__grid">
@@ -98,7 +98,7 @@
                     <span class="billing-panel__helper">Revisa antes de continuar</span>
                 </div>
 
-                <div id="listaProductos" class="order-items-list"></div>
+                <div id="listaProductos" class="order-items-list" aria-label="Productos agregados a la venta"></div>
                 <div id="productosHidden"></div>
             </div>
 

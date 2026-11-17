@@ -124,3 +124,9 @@
 .app-footer {
     margin-top: auto;
 }
+
+.app-footer a:focus-visible {
+    border-radius: var(--radius-sm);
+    outline: 3px solid var(--color-brand-tan);
+    outline-offset: 3px;
+}

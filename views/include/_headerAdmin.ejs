@@ -39,14 +39,14 @@
 
 <% const canAccess = typeof can === 'function' ? can : () => true; %>
 <% const adminHome = canAccess('payments:manage') ? '/billing-point' : canAccess('analytics:read') ? '/admin-analytics' : canAccess('catalog:read') ? '/read-producto' : canAccess('orders:read') ? '/read-order' : canAccess('payments:read') ? '/admin/payments' : canAccess('sales:read') ? '/read-sales' : canAccess('delivery:manage') ? '/admin/delivery' : canAccess('finance:read') ? '/admin/finanzas' : canAccess('purchases:read') ? '/admin/compras-proveedores' : canAccess('roles:manage') ? '/read-rol' : canAccess('users:manage') ? '/read-user' : '/'; %>
-<% const showManagement = ['payments:read', 'delivery:manage', 'catalog:read', 'catalog:write', 'inventory:read', 'providers:manage', 'purchases:read', 'roles:manage', 'reviews:moderate', 'users:manage'].some(canAccess); %>
-<% const showAnalytics = ['analytics:read', 'finance:read', 'orders:read', 'inventory:read', 'sales:read', 'raffle:manage'].some(canAccess); %>
+<% const showManagement = ['payments:read', 'delivery:manage', 'orders:read', 'catalog:read', 'catalog:write', 'inventory:read', 'providers:manage', 'purchases:read', 'roles:manage', 'reviews:moderate', 'users:manage'].some(canAccess); %>
+<% const showAnalytics = ['analytics:read', 'finance:read', 'inventory:read', 'sales:read', 'raffle:manage'].some(canAccess); %>
 <% const adminDisplayName = (typeof authUser !== 'undefined' && authUser?.nombre) || sessionUser?.nombre || 'Administrador'; %>
 
 <%- include('./admin-sidebar', { adminHome, canAccess, showManagement, showAnalytics, adminDisplayName, csrfToken }) %>
 
 <header id="header">
-<nav class="navbar navbar-expand-lg navbar-dark app-navbar">
+<nav class="navbar navbar-expand-lg navbar-dark app-navbar" aria-label="Navegación administrativa principal">
   <div class="container-fluid">
     <!-- BRAND -->
     <a class="navbar-brand d-flex align-items-center" href="<%= adminHome %>">
@@ -61,13 +61,14 @@
       <!-- LEFT -->
       <ul class="navbar-nav me-auto">
         <% if (showManagement) { %><li class="nav-item dropdown">
-          <a class="nav-link app-nav-link dropdown-toggle" data-bs-toggle="dropdown">
-            <i class="bi bi-gear"></i> Gestión
-          </a>
-          <ul class="dropdown-menu">
+          <button class="nav-link app-nav-link dropdown-toggle" type="button" id="managementMenuButton" data-bs-toggle="dropdown" aria-controls="managementMenu" aria-haspopup="true" aria-expanded="false">
+            <i class="bi bi-gear" aria-hidden="true"></i> Gestión
+          </button>
+          <ul class="dropdown-menu" id="managementMenu" aria-labelledby="managementMenuButton">
             <% if (canAccess('payments:read')) { %><li><a class="dropdown-item" href="/admin/payments">Pagos y conciliación</a></li><% } %>
-            <% if (canAccess('delivery:manage')) { %><li><a class="dropdown-item" href="/admin/delivery"><i class="bi bi-bicycle"></i> Reparto y seguimiento</a></li><% } %>
-            <% if (canAccess('catalog:read')) { %><li><a class="dropdown-item" href="/read-producto"><i class="bi bi-box-seam"></i> Productos</a></li><% } %>
+            <% if (canAccess('delivery:manage')) { %><li><a class="dropdown-item" href="/admin/delivery"><i class="bi bi-bicycle" aria-hidden="true"></i> Reparto y seguimiento</a></li><% } %>
+            <% if (canAccess('orders:read')) { %><li><a class="dropdown-item" href="/read-order"><i class="bi bi-receipt" aria-hidden="true"></i> Pedidos</a></li><% } %>
+            <% if (canAccess('catalog:read')) { %><li><a class="dropdown-item" href="/read-producto"><i class="bi bi-box-seam" aria-hidden="true"></i> Productos</a></li><% } %>
             <% if (canAccess('inventory:read') || canAccess('catalog:write')) { %><li><a class="dropdown-item" href="/inventory/replenishment"><i class="bi bi-basket"></i> Reposición guiada</a></li><% } %>
             <% if (canAccess('catalog:read')) { %><li><a class="dropdown-item" href="/read-categoria"><i class="bi bi-tags"></i> Categorías</a></li><% } %>
             <% if (canAccess('catalog:read')) { %><li><a class="dropdown-item" href="/admin/brands/read-brands"><i class="bi bi-bookmark-star"></i> Marcas</a></li><% } %>
@@ -81,18 +82,17 @@
           </ul>
         </li><% } %>
              <% if (showAnalytics) { %><li class="nav-item dropdown">
-            <a class="nav-link app-nav-link dropdown-toggle" data-bs-toggle="dropdown">
-              <i class="bi bi-graph-up-arrow"></i> Analitics
-            </a>
-          <ul class="dropdown-menu">
+            <button class="nav-link app-nav-link dropdown-toggle" type="button" id="reportsMenuButton" data-bs-toggle="dropdown" aria-controls="reportsMenu" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-graph-up-arrow" aria-hidden="true"></i> Informes
+            </button>
+          <ul class="dropdown-menu" id="reportsMenu" aria-labelledby="reportsMenuButton">
             <% if (canAccess('analytics:read')) { %><li><a class="dropdown-item" href="/admin-analytics"><i class="bi bi-speedometer2"></i> Informe de ventas</a></li><% } %>
             <% if (canAccess('finance:read')) { %><li><a class="dropdown-item" href="/admin/finanzas"><i class="bi bi-currency-dollar"></i> Gastos y resultado neto</a></li><% } %>
             <% if (canAccess('finance:read')) { %><li><a class="dropdown-item" href="/admin/flujo-caja"><i class="bi bi-arrow-left-right"></i> Flujo de caja</a></li><% } %>
-            <% if (canAccess('orders:read')) { %><li><a class="dropdown-item" href="/read-order"><i class="bi bi-receipt-cutoff"></i> Ordenes </a></li><% } %>
-            <% if (canAccess('inventory:read')) { %><li><a class="dropdown-item" href="/read-Stock"><i class="bi bi-box-seam"></i> Stock </a></li><% } %>
+            <% if (canAccess('inventory:read')) { %><li><a class="dropdown-item" href="/read-stock"><i class="bi bi-box-seam" aria-hidden="true"></i> Stock</a></li><% } %>
             <% if (canAccess('inventory:read') || canAccess('catalog:write')) { %><li><a class="dropdown-item" href="/inventory/movements"><i class="bi bi-clock-history"></i> Historial de movimientos</a></li><% } %>
             <% if (canAccess('inventory:read') || canAccess('catalog:write')) { %><li><a class="dropdown-item" href="/inventory/reconciliation"><i class="bi bi-clipboard2-pulse"></i> Conciliación de inventario</a></li><% } %>
-            <% if (canAccess('sales:read')) { %><li><a class="dropdown-item" href="/admin-best_selling_products"><i class="bi bi-box-seam"></i> Productos mas vendidos </a></li><% } %>
+            <% if (canAccess('sales:read')) { %><li><a class="dropdown-item" href="/admin-best_selling_products"><i class="bi bi-box-seam"></i> Productos más vendidos </a></li><% } %>
             <% if (canAccess('raffle:manage')) { %><li><a class="dropdown-item" href="/admin/raffle"><i class="bi bi-gift"></i> Sorteo de regalos</a></li><% } %>
             <% if (canAccess('sales:read')) { %><li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/read-sales"><i class="bi bi-cart-check"></i> Ventas</a></li><% } %>
           </ul>
@@ -103,10 +103,10 @@
       <div class="app-nav-right">
         <!-- PERFIL ADMIN -->
         <div class="dropdown">
-          <a class="app-profile-btn d-flex align-items-center" data-bs-toggle="dropdown">
-            <i class="bi bi-person-circle"></i>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
+          <button class="app-profile-btn d-flex align-items-center" type="button" id="adminAccountMenuButton" data-bs-toggle="dropdown" aria-controls="adminAccountMenu" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menú de cuenta">
+            <i class="bi bi-person-circle" aria-hidden="true"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" id="adminAccountMenu" aria-labelledby="adminAccountMenuButton">
             <% if (canAccess('profile:manage')) { %><li><a class="dropdown-item" href="/admin/perfil"><i class="bi bi-person"></i> Perfil</a></li><% } %>
             <li><a class="dropdown-item" href="/change-password"><i class="bi bi-key"></i> Cambiar contraseña</a></li>
             <% if (canAccess('payments:manage')) { %><li><a class="dropdown-item" href="/billing-point"><i class="bi bi-grid"></i> Panel</a></li><% } %>

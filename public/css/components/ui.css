@@ -155,7 +155,7 @@
 .ui-input:focus-visible,
 .ui-select:focus-visible,
 .ui-textarea:focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--color-brand-accent) 35%, transparent);
+    outline: var(--ui-focus-outline);
     outline-offset: 2px;
 }
 
