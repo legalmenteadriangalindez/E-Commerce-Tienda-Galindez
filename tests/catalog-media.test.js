@@ -68,6 +68,8 @@ test('catálogo y rifa: Cloudinary guarda imágenes optimizadas en carpetas púb
     assert.equal(uploadMethod.mock.calls.length, 2);
     assert.match(uploadOptions[0].public_id, /^tienda-galindez\/catalog\/products\/[a-f\d-]{36}$/i);
     assert.match(uploadOptions[1].public_id, /^tienda-galindez\/raffles\/[a-f\d-]{36}$/i);
+    assert.equal(uploadOptions[0].asset_folder, 'tienda-galindez/catalog/products');
+    assert.equal(uploadOptions[1].asset_folder, 'tienda-galindez/raffles');
     assert.equal(uploadOptions[0].format, 'webp');
     assert.equal(uploadOptions[1].format, 'webp');
     assert.equal(stored.url, `https://res.cloudinary.com/test-cloud/image/upload/v123/${stored.id}.webp`);

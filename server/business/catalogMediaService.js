@@ -79,6 +79,7 @@ async function storeCatalogImage(file, collection = 'products') {
         const upload = cloudinaryClient(config).uploader.upload_stream(
             {
                 public_id: publicId,
+                asset_folder: folder,
                 overwrite: false,
                 resource_type: 'image',
                 type: 'upload',
