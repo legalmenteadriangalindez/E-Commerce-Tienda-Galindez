@@ -38,6 +38,18 @@ module.exports = (error, req, res, next) => {
             type: error.name,
             code: error.code,
             message: typeof error.message === 'string' ? error.message.slice(0, 500) : undefined,
+            provider: error.providerDiagnostics?.provider === 'cloudinary' ? 'cloudinary' : undefined,
+            providerStatus: Number.isInteger(error.providerDiagnostics?.status)
+                ? error.providerDiagnostics.status
+                : undefined,
+            providerCode:
+                typeof error.providerDiagnostics?.code === 'string'
+                    ? error.providerDiagnostics.code.slice(0, 40)
+                    : undefined,
+            providerRequestId:
+                typeof error.providerDiagnostics?.requestId === 'string'
+                    ? error.providerDiagnostics.requestId.slice(0, 100)
+                    : undefined,
         })
     );
     const diagnostics = error.diagnostics || null;

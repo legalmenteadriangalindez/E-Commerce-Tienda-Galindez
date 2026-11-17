@@ -64,6 +64,16 @@ function cloudinaryUploadError(cause) {
     error.code = 'CLOUDINARY_UPLOAD_FAILED';
     error.expose = true;
     error.cause = cause;
+    const providerError = cause?.error && typeof cause.error === 'object' ? cause.error : cause;
+    const status = Number(providerError?.http_code ?? providerError?.statusCode ?? cause?.http_code);
+    const requestId = providerError?.request_id ?? cause?.request_id;
+    const code = providerError?.code ?? cause?.code;
+    error.providerDiagnostics = {
+        provider: 'cloudinary',
+        ...(Number.isInteger(status) && status >= 100 && status <= 599 ? { status } : {}),
+        ...(typeof code === 'string' && /^[a-z\d_.-]{1,40}$/i.test(code) ? { code } : {}),
+        ...(typeof requestId === 'string' && /^[a-z\d_.-]{1,100}$/i.test(requestId) ? { requestId } : {}),
+    };
     return error;
 }
 
@@ -87,14 +97,19 @@ async function storeCatalogImage(file, collection = 'products') {
                 invalidate: true,
             },
             (cause, result) => {
-                if (cause) return reject(cloudinaryUploadError(cause));
-                if (!result?.secure_url || result.public_id !== publicId) {
+                const response = result ?? cause;
+                const uploadError =
+                    (result !== undefined && cause ? cause : null) ||
+                    (response?.error ? response : null) ||
+                    (cause instanceof Error ? cause : null);
+                if (uploadError) return reject(cloudinaryUploadError(uploadError));
+                if (!response?.secure_url || response.public_id !== publicId) {
                     return reject(cloudinaryUploadError(new Error('Respuesta incompleta del servicio de imágenes.')));
                 }
                 return resolve({
-                    id: result.public_id,
-                    url: result.secure_url,
-                    filename: `${result.public_id}.webp`,
+                    id: response.public_id,
+                    url: response.secure_url,
+                    filename: `${response.public_id}.webp`,
                 });
             }
         );

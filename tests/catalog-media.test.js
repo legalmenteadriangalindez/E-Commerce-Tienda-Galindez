@@ -54,7 +54,9 @@ test('catálogo y rifa: Cloudinary guarda imágenes optimizadas en carpetas púb
             },
         });
         stream.on('finish', () => {
-            callback(null, {
+            // Cloudinary's Node SDK returns one response object; errors are
+            // represented by that object's `error` property.
+            callback({
                 public_id: options.public_id,
                 secure_url: `https://res.cloudinary.com/test-cloud/image/upload/v123/${options.public_id}.webp`,
             });
@@ -143,6 +145,36 @@ test('catálogo: rechaza una configuración parcial de credenciales', async (t) 
         /configuración del almacenamiento de imágenes está incompleta/
     );
     assert.equal(localStore.mock.calls.length, 0);
+});
+
+test('catálogo: conserva solo metadatos seguros del rechazo de Cloudinary', async (t) => {
+    setCredentials(t, testCredentials);
+    t.mock.method(imageProcessing, 'optimizeImage', async () => Buffer.from('webp-image'));
+    t.mock.method(cloudinary.uploader, 'upload_stream', (options, callback) => {
+        const stream = new Writable({
+            write(_chunk, _encoding, done) {
+                done();
+            },
+        });
+        stream.on('finish', () =>
+            callback({
+                error: {
+                    message: 'Invalid signature for secret value that must not be logged',
+                    http_code: 401,
+                    request_id: 'cloudinary-request-123',
+                },
+            })
+        );
+        return stream;
+    });
+
+    await assert.rejects(catalogMedia.storeCatalogImage({ buffer: Buffer.from('original') }, 'products'), (error) => {
+        assert.equal(error.providerDiagnostics.provider, 'cloudinary');
+        assert.equal(error.providerDiagnostics.status, 401);
+        assert.equal(error.providerDiagnostics.requestId, 'cloudinary-request-123');
+        assert.doesNotMatch(JSON.stringify(error.providerDiagnostics), /secret value/i);
+        return true;
+    });
 });
 
 test('catálogo: conserva la limpieza de imágenes GridFS anteriores con configuración parcial', async (t) => {
